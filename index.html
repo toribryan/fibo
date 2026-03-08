@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Golden Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================
+   GOLDEN DESIGN SYSTEM — TOKENS
+   Update these CSS variables to match your
+   exact hex values from Figma.
+   ============================================ */
+:root {
+  /* BRAND */
+  --brand-100: #FFF8E6;
+  --brand-200: #FEEFC3;
+  --brand-300: #FDE08A;
+  --brand-400: #FBCA4A;
+  --brand-500: #F5A623;
+  --brand-600: #D4831A;
+  --brand-700: #A85F10;
+  --brand-800: #7A420A;
+  --brand-900: #4D2805;
+
+  /* DESIGNER (Blue-violet) */
+  --designer-100: #EEF0FF;
+  --designer-200: #D4D9FF;
+  --designer-300: #A8B0FF;
+  --designer-400: #7B87FF;
+  --designer-500: #5663F5;
+  --designer-600: #3D48D4;
+  --designer-700: #2A32A8;
+  --designer-800: #1B2278;
+  --designer-900: #0E1348;
+
+  /* SUCCESS */
+  --success-100: #ECFDF5;
+  --success-200: #C8F5E0;
+  --success-300: #8AE3BC;
+  --success-400: #48CA95;
+  --success-500: #18A871;
+  --success-600: #0F8558;
+  --success-700: #096340;
+  --success-800: #054229;
+  --success-900: #022114;
+
+  /* WARNING */
+  --warning-100: #FFFBEA;
+  --warning-200: #FFF0C0;
+  --warning-300: #FFD97A;
+  --warning-400: #FFC130;
+  --warning-500: #F5A000;
+  --warning-600: #C47D00;
+  --warning-700: #925B00;
+  --warning-800: #613C00;
+  --warning-900: #301E00;
+
+  /* NEUTRAL */
+  --neutral-100: #F9F9F9;
+  --neutral-200: #F0F0F0;
+  --neutral-300: #D9D9D9;
+  --neutral-400: #BABABA;
+  --neutral-500: #8F8F8F;
+  --neutral-600: #636363;
+  --neutral-700: #404040;
+  --neutral-800: #222222;
+  --neutral-900: #0F0F0F;
+
+  /* TYPE SCALE — Poppins */
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+  --text-5xl:  3rem;
+
+  /* SPACING */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* RADIUS */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* SHADOWS */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+
+  /* UI */
+  --sidebar-w: 260px;
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
+  --border: #EBEBEB;
+  --text-primary: #0F0F0F;
+  --text-secondary: #636363;
+  --text-tertiary: #BABABA;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===================== SIDEBAR ===================== */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  height: 100vh;
+  position: fixed;
+  top: 0; left: 0;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-mark {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--brand-400), var(--brand-600));
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.logo-text {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.logo-text span {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+}
+.sidebar-nav { padding: 12px 0; flex: 1; }
+.nav-section {
+  margin-bottom: 8px;
+}
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  padding: 8px 20px 4px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 0;
+  transition: all 0.15s;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.nav-link:hover { color: var(--text-primary); background: var(--neutral-100); }
+.nav-link.active {
+  color: var(--brand-600);
+  background: var(--brand-100);
+  font-weight: 500;
+}
+.nav-link .nav-icon {
+  width: 16px; height: 16px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+.nav-link.active .nav-icon { opacity: 1; }
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.version-badge {
+  background: var(--brand-100);
+  color: var(--brand-600);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* ===================== MAIN ===================== */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-height: 100vh;
+}
+.page { display: none; }
+.page.active { display: block; }
+
+/* ===================== PAGE HEADER ===================== */
+.page-header {
+  padding: 48px 48px 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.page-header-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand-500);
+  margin-bottom: 8px;
+}
+.page-header h1 {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+.page-header p {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  max-width: 560px;
+  font-weight: 300;
+}
+.page-content { padding: 40px 48px; max-width: 1000px; }
+
+/* ===================== SECTION ===================== */
+.doc-section {
+  margin-bottom: 56px;
+}
+.doc-section h2 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+.doc-section .section-desc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  font-weight: 300;
+}
+.doc-divider {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 24px;
+}
+
+/* ===================== HOME PAGE ===================== */
+.home-hero {
+  background: linear-gradient(135deg, var(--neutral-900) 0%, #1a1408 100%);
+  padding: 80px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.home-hero-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--brand-400);
+  margin-bottom: 16px;
+}
+.home-hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+.home-hero h1 span { color: var(--brand-400); }
+.home-hero p {
+  font-size: var(--text-lg);
+  color: rgba(255,255,255,0.55);
+  max-width: 500px;
+  font-weight: 300;
+  margin-bottom: 36px;
+  line-height: 1.7;
+}
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--brand-500); color: #fff; }
+.btn-primary:hover { background: var(--brand-600); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15); }
+.btn-secondary:hover { background: rgba(255,255,255,0.15); }
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-top: 1px solid var(--border);
+}
+.home-stat {
+  background: var(--surface);
+  padding: 28px 32px;
+}
+.home-stat .num {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--brand-500);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.home-stat .label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+.quick-links {
+  padding: 40px 48px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.quick-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+.quick-card:hover { border-color: var(--brand-300); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.quick-card-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--brand-100);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+.quick-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.quick-card p { font-size: 12px; color: var(--text-secondary); font-weight: 300; line-height: 1.6; }
+
+/* ===================== COLOR SWATCHES ===================== */
+.color-scale {
+  margin-bottom: 32px;
+}
+.color-scale-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.color-row {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 4px;
+}
+.color-swatch {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s;
+  position: relative;
+}
+.color-swatch:hover { transform: scale(1.05); z-index: 1; }
+.swatch-block {
+  height: 56px;
+  width: 100%;
+}
+.swatch-info {
+  padding: 6px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: none;
+}
+.swatch-step { font-size: 10px; font-weight: 600; color: var(--text-secondary); }
+.swatch-hex { font-size: 10px; color: var(--text-tertiary); font-family: monospace; }
+
+/* ===================== TYPOGRAPHY ===================== */
+.type-sample {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.type-row {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.type-row:last-child { border-bottom: none; }
+.type-row:hover { background: var(--neutral-100); }
+.type-meta {
+  min-width: 140px;
+  flex-shrink: 0;
+}
+.type-name { font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+.type-spec { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; font-family: monospace; }
+.type-preview { flex: 1; font-family: 'Poppins', sans-serif; color: var(--text-primary); }
+
+/* ===================== COMPONENT DOCS ===================== */
+.component-preview {
+  background: var(--neutral-100);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 48px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-height: 140px;
+}
+.code-block {
+  background: var(--neutral-900);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: 20px 24px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #e8e3d9;
+  line-height: 1.8;
+  overflow-x: auto;
+  position: relative;
+}
+.code-tag { color: #93c5fd; }
+.code-attr { color: #fde68a; }
+.code-val { color: #86efac; }
+.copy-btn {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.6);
+  font-size: 11px;
+  font-family: 'Poppins', sans-serif;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.copy-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.copy-btn.copied { color: #86efac; border-color: #86efac; }
+
+/* ===================== PLAYGROUND ===================== */
+.playground-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+.playground-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--neutral-100);
+}
+.playground-title { font-size: 13px; font-weight: 600; }
+.playground-badge {
+  font-size: 10px;
+  background: var(--brand-100);
+  color: var(--brand-600);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+.playground-body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  min-height: 400px;
+}
+.playground-canvas {
+  background: #F6F6F6;
+  background-image: radial-gradient(var(--neutral-300) 1px, transparent 1px);
+  background-size: 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  border-right: 1px solid var(--border);
+}
+.playground-controls {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: 500px;
+}
+.control-group { margin-bottom: 20px; }
+.control-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  display: block;
+}
+.control-options {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.control-chip {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text-secondary);
+}
+.control-chip:hover { border-color: var(--brand-400); color: var(--brand-600); }
+.control-chip.active {
+  background: var(--brand-500);
+  border-color: var(--brand-500);
+  color: #fff;
+}
+.control-input {
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.control-input:focus { border-color: var(--brand-400); }
+.color-dot-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.color-dot {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 2px solid transparent;
+}
+.color-dot:hover { transform: scale(1.15); }
+.color-dot.active { border-color: var(--text-primary); transform: scale(1.15); }
+
+/* ===================== BUTTONS (the actual UI components) ===================== */
+/* Primary */
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1;
+}
+.ds-btn-primary { background: var(--brand-500); color: #fff; }
+.ds-btn-primary:hover { background: var(--brand-600); box-shadow: 0 4px 12px rgba(245,166,35,0.35); transform: translateY(-1px); }
+.ds-btn-secondary { background: transparent; color: var(--text-primary); border: 1.5px solid var(--border); }
+.ds-btn-secondary:hover { border-color: var(--brand-400); color: var(--brand-600); background: var(--brand-100); }
+.ds-btn-ghost { background: transparent; color: var(--text-secondary); }
+.ds-btn-ghost:hover { background: var(--neutral-200); color: var(--text-primary); }
+.ds-btn-danger { background: #EF4444; color: #fff; }
+.ds-btn-danger:hover { background: #DC2626; }
+.ds-btn-designer { background: var(--designer-500); color: #fff; }
+.ds-btn-designer:hover { background: var(--designer-600); }
+.ds-btn-xs  { font-size: 11px; padding: 6px 12px; border-radius: var(--radius-sm); }
+.ds-btn-sm  { font-size: 12px; padding: 8px 16px; border-radius: var(--radius-md); }
+.ds-btn-md  { font-size: 13px; padding: 10px 20px; border-radius: var(--radius-md); }
+.ds-btn-lg  { font-size: 15px; padding: 13px 26px; border-radius: var(--radius-lg); }
+.ds-btn-xl  { font-size: 16px; padding: 16px 32px; border-radius: var(--radius-lg); }
+
+/* ===================== BADGE COMPONENT ===================== */
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+.ds-badge-sm { font-size: 10px; padding: 2px 8px; }
+.ds-badge-md { font-size: 11px; padding: 3px 10px; }
+.ds-badge-lg { font-size: 12px; padding: 4px 12px; }
+.ds-badge-brand    { background: var(--brand-100);   color: var(--brand-700); }
+.ds-badge-designer { background: var(--designer-100); color: var(--designer-700); }
+.ds-badge-success  { background: var(--success-100);  color: var(--success-700); }
+.ds-badge-warning  { background: var(--warning-100);  color: var(--warning-700); }
+.ds-badge-neutral  { background: var(--neutral-200);  color: var(--neutral-700); }
+
+/* ===================== INPUT COMPONENT ===================== */
+.ds-input-wrap { display: flex; flex-direction: column; gap: 4px; width: 100%; max-width: 320px; }
+.ds-input-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+.ds-input {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.15s;
+  width: 100%;
+}
+.ds-input-sm  { padding: 6px 10px; font-size: 12px; }
+.ds-input-md  { padding: 9px 14px; }
+.ds-input-lg  { padding: 12px 16px; font-size: 15px; }
+.ds-input:focus { border-color: var(--brand-400); box-shadow: 0 0 0 3px rgba(245,166,35,0.15); }
+.ds-input-error { border-color: #EF4444 !important; }
+.ds-input-error:focus { box-shadow: 0 0 0 3px rgba(239,68,68,0.15) !important; }
+.ds-input-hint { font-size: 11px; color: var(--text-tertiary); }
+.ds-input-hint.error-hint { color: #EF4444; }
+
+/* ===================== CARD COMPONENT ===================== */
+.ds-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.ds-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.ds-card-img { width: 100%; height: 140px; object-fit: cover; background: linear-gradient(135deg, var(--brand-200), var(--brand-400)); display: flex; align-items: center; justify-content: center; font-size: 32px; }
+.ds-card-body { padding: 20px; }
+.ds-card-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.ds-card-desc { font-size: 13px; color: var(--text-secondary); font-weight: 300; line-height: 1.6; }
+.ds-card-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+
+/* ===================== UTILITY ===================== */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  background: var(--neutral-200);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  margin: 2px;
+}
+.divider-section { height: 1px; background: var(--border); margin: 32px 0; }
+
+/* ===================== TOKEN TABLE ===================== */
+.token-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.token-table th {
+  background: var(--neutral-100);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+}
+.token-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+.token-table td:first-child { font-weight: 600; color: var(--text-primary); font-family: 'Poppins', sans-serif; }
+.token-table tr:last-child td { border-bottom: none; }
+.token-swatch-inline {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">✦</div>
+    <div class="logo-text">
+      Golden
+      <span>Design System</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-label">Overview</div>
+      <button class="nav-link active" onclick="showPage('home', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 7v8h5v-5h4v5h5V7L8 1z"/></svg>
+        Home
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Foundations</div>
+      <button class="nav-link" onclick="showPage('colors', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 4a4 4 0 0 1 0 8"/></svg>
+        Colors
+      </button>
+      <button class="nav-link" onclick="showPage('typography', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 3h12v2H9v8H7V5H2V3z"/></svg>
+        Typography
+      </button>
+      <button class="nav-link" onclick="showPage('spacing', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="12" height="4" rx="1"/><line x1="2" y1="3" x2="14" y2="3"/><line x1="2" y1="13" x2="14" y2="13"/></svg>
+        Spacing
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Components</div>
+      <button class="nav-link" onclick="showPage('buttons', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="14" height="6" rx="2"/></svg>
+        Buttons
+      </button>
+      <button class="nav-link" onclick="showPage('badges', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="12" height="6" rx="3"/></svg>
+        Badges
+      </button>
+      <button class="nav-link" onclick="showPage('inputs', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="8" rx="2"/><line x1="4" y1="8" x2="8" y2="8"/></svg>
+        Inputs
+      </button>
+      <button class="nav-link" onclick="showPage('cards', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="14" height="12" rx="2"/><line x1="1" y1="6" x2="15" y2="6"/></svg>
+        Cards
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Playground</div>
+      <button class="nav-link" onclick="showPage('playground', this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Component Playground
+      </button>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <span>Golden DS</span>
+    <span class="version-badge">v1.0</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HOME PAGE -->
+  <div id="page-home" class="page active">
+    <div class="home-hero">
+      <div class="home-hero-eyebrow">Documentation</div>
+      <h1>Golden<br/><span>Design System</span></h1>
+      <p>A unified visual language for building consistent, accessible, and beautiful products — from components to tokens.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="showPage('colors', document.querySelector('.nav-link:nth-child(2)'))">Explore Foundations →</button>
+        <button class="btn btn-secondary" onclick="showPage('playground', document.querySelector('.nav-link:last-child'))">Open Playground</button>
+      </div>
+    </div>
+
+    <div class="home-stats">
+      <div class="home-stat"><div class="num">5</div><div class="label">Color Scales</div></div>
+      <div class="home-stat"><div class="num">9</div><div class="label">Type Styles</div></div>
+      <div class="home-stat"><div class="num">4+</div><div class="label">Components</div></div>
+      <div class="home-stat"><div class="num">∞</div><div class="label">Possibilities</div></div>
+    </div>
+
+    <div class="quick-links">
+      <div class="quick-card" onclick="showPage('colors', null)">
+        <div class="quick-card-icon">🎨</div>
+        <h3>Color System</h3>
+        <p>Brand, Designer, Success, Warning, and Neutral scales — all with alpha variants.</p>
+      </div>
+      <div class="quick-card" onclick="showPage('typography', null)">
+        <div class="quick-card-icon">✦</div>
+        <h3>Typography</h3>
+        <p>Poppins type scale from Display to Caption. Weights, sizes, and usage guidance.</p>
+      </div>
+      <div class="quick-card" onclick="showPage('playground', null)">
+        <div class="quick-card-icon">⚡</div>
+        <h3>Playground</h3>
+        <p>Tweak component props interactively and copy the code you need.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLORS PAGE -->
+  <div id="page-colors" class="page">
+    <div class="page-header">
+      <div class="page-header-eyebrow">Foundations</div>
+      <h1>Colors</h1>
+      <p>Every color in the Golden system is tokenized with semantic names. Update your Figma hex values in the CSS variables at the top of the file.</p>
+    </div>
+    <div class="page-content">
+
+      <div class="doc-section">
+        <h2>Brand</h2>
+        <p class="section-desc">The core gold palette. Used for primary actions, highlights, and brand moments.</p>
+        <div class="doc-divider"></div>
+        <div class="color-scale">
+          <div class="color-row">
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--brand-100)"></div><div class="swatch-info"><div class="swatch-step">100</div><div class="swatch-hex">--brand-100</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--brand-200)"></div><div class="swatch-info"><div class="swatch-step">200</div><div class="swatch-hex">--brand-200</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--brand-300)"></div><div class="swatch-info"><div class="swatch-step">300</div><div class="swatch-hex">--brand-300</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--brand-400)"></div><div class="swatch-info"><div class="swatch-step">400</div><div class="swatch-hex">--brand-400</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--brand-500)"></div><div class="swatch-info"><div class="swatch-step">500</div><div class="swatch-hex">--brand-500</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--brand-600)"></div><div class="swatch-info"><div class="swatch-step">600</div><div class="swatch-hex">--brand-600</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--brand-700)"></div><div class="swatch-info"><div class="swatch-step">700</div><div class="swatch-hex">--brand-700</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--brand-800)"></div><div class="swatch-info"><div class="swatch-step">800</div><div class="swatch-hex">--brand-800</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--brand-900)"></div><div class="swatch-info"><div class="swatch-step">900</div><div class="swatch-hex">--brand-900</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h2>Designer</h2>
+        <p class="section-desc">A complementary blue-violet accent scale for UI elements and interactions.</p>
+        <div class="doc-divider"></div>
+        <div class="color-scale">
+          <div class="color-row">
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--designer-100)"></div><div class="swatch-info"><div class="swatch-step">100</div><div class="swatch-hex">--designer-100</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--designer-200)"></div><div class="swatch-info"><div class="swatch-step">200</div><div class="swatch-hex">--designer-200</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--designer-300)"></div><div class="swatch-info"><div class="swatch-step">300</div><div class="swatch-hex">--designer-300</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--designer-400)"></div><div class="swatch-info"><div class="swatch-step">400</div><div class="swatch-hex">--designer-400</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--designer-500)"></div><div class="swatch-info"><div class="swatch-step">500</div><div class="swatch-hex">--designer-500</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--designer-600)"></div><div class="swatch-info"><div class="swatch-step">600</div><div class="swatch-hex">--designer-600</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--designer-700)"></div><div class="swatch-info"><div class="swatch-step">700</div><div class="swatch-hex">--designer-700</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--designer-800)"></div><div class="swatch-info"><div class="swatch-step">800</div><div class="swatch-hex">--designer-800</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--designer-900)"></div><div class="swatch-info"><div class="swatch-step">900</div><div class="swatch-hex">--designer-900</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h2>Semantic Colors</h2>
+        <p class="section-desc">Success, Warning, and Neutral — use these for status, feedback, and UI grays.</p>
+        <div class="doc-divider"></div>
+        <div class="color-scale">
+          <div class="color-scale-label">Success</div>
+          <div class="color-row">
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--success-100)"></div><div class="swatch-info"><div class="swatch-step">100</div><div class="swatch-hex">--success-100</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--success-200)"></div><div class="swatch-info"><div class="swatch-step">200</div><div class="swatch-hex">--success-200</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--success-300)"></div><div class="swatch-info"><div class="swatch-step">300</div><div class="swatch-hex">--success-300</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--success-400)"></div><div class="swatch-info"><div class="swatch-step">400</div><div class="swatch-hex">--success-400</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--success-500)"></div><div class="swatch-info"><div class="swatch-step">500</div><div class="swatch-hex">--success-500</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--success-600)"></div><div class="swatch-info"><div class="swatch-step">600</div><div class="swatch-hex">--success-600</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--success-700)"></div><div class="swatch-info"><div class="swatch-step">700</div><div class="swatch-hex">--success-700</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--success-800)"></div><div class="swatch-info"><div class="swatch-step">800</div><div class="swatch-hex">--success-800</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--success-900)"></div><div class="swatch-info"><div class="swatch-step">900</div><div class="swatch-hex">--success-900</div></div></div>
+          </div>
+        </div>
+        <div class="color-scale" style="margin-top:24px;">
+          <div class="color-scale-label">Warning</div>
+          <div class="color-row">
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--warning-100)"></div><div class="swatch-info"><div class="swatch-step">100</div><div class="swatch-hex">--warning-100</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--warning-200)"></div><div class="swatch-info"><div class="swatch-step">200</div><div class="swatch-hex">--warning-200</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--warning-300)"></div><div class="swatch-info"><div class="swatch-step">300</div><div class="swatch-hex">--warning-300</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--warning-400)"></div><div class="swatch-info"><div class="swatch-step">400</div><div class="swatch-hex">--warning-400</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--warning-500)"></div><div class="swatch-info"><div class="swatch-step">500</div><div class="swatch-hex">--warning-500</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--warning-600)"></div><div class="swatch-info"><div class="swatch-step">600</div><div class="swatch-hex">--warning-600</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--warning-700)"></div><div class="swatch-info"><div class="swatch-step">700</div><div class="swatch-hex">--warning-700</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--warning-800)"></div><div class="swatch-info"><div class="swatch-step">800</div><div class="swatch-hex">--warning-800</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--warning-900)"></div><div class="swatch-info"><div class="swatch-step">900</div><div class="swatch-hex">--warning-900</div></div></div>
+          </div>
+        </div>
+        <div class="color-scale" style="margin-top:24px;">
+          <div class="color-scale-label">Neutral</div>
+          <div class="color-row">
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--neutral-100);border:1px solid var(--border)"></div><div class="swatch-info"><div class="swatch-step">100</div><div class="swatch-hex">--neutral-100</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--neutral-200)"></div><div class="swatch-info"><div class="swatch-step">200</div><div class="swatch-hex">--neutral-200</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--neutral-300)"></div><div class="swatch-info"><div class="swatch-step">300</div><div class="swatch-hex">--neutral-300</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--neutral-400)"></div><div class="swatch-info"><div class="swatch-step">400</div><div class="swatch-hex">--neutral-400</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--neutral-500)"></div><div class="swatch-info"><div class="swatch-step">500</div><div class="swatch-hex">--neutral-500</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--neutral-600)"></div><div class="swatch-info"><div class="swatch-step">600</div><div class="swatch-hex">--neutral-600</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--neutral-700)"></div><div class="swatch-info"><div class="swatch-step">700</div><div class="swatch-hex">--neutral-700</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--neutral-800)"></div><div class="swatch-info"><div class="swatch-step">800</div><div class="swatch-hex">--neutral-800</div></div></div>
+            <div class="color-swatch"><div class="swatch-block" style="background:var(--neutral-900)"></div><div class="swatch-info"><div class="swatch-step">900</div><div class="swatch-hex">--neutral-900</div></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY PAGE -->
+  <div id="page-typography" class="page">
+    <div class="page-header">
+      <div class="page-header-eyebrow">Foundations</div>
+      <h1>Typography</h1>
+      <p>Poppins across all weights and sizes. Every style maps directly to a CSS variable and Figma text style.</p>
+    </div>
+    <div class="page-content">
+      <div class="doc-section">
+        <h2>Type Scale</h2>
+        <p class="section-desc">A consistent scale from Display to Caption. Use semantically — don't pick sizes based on aesthetics alone.</p>
+        <div class="doc-divider"></div>
+        <div class="type-sample">
+          <div class="type-row">
+            <div class="type-meta"><div class="type-name">Display</div><div class="type-spec">48px / 700</div></div>
+            <div class="type-preview" style="font-size:48px;font-weight:700;line-height:1.1;letter-spacing:-0.03em;">Golden</div>
+          </div>
+          <div class="type-row">
+            <div class="type-meta"><div class="type-name">H1</div><div class="type-spec">36px / 700</div></div>
+            <div class="type-preview" style="font-size:36px;font-weight:700;line-height:1.15;letter-spacing:-0.02em;">Heading One</div>
+          </div>
+          <div class="type-row">
+            <div class="type-meta"><div class="type-name">H2</div><div class="type-spec">28px / 600</div></div>
+            <div class="type-preview" style="font-size:28px;font-weight:600;line-height:1.2;letter-spacing:-0.01em;">Heading Two</div>
+          </div>
+          <div class="type-row">
+            <div class="type-meta"><div class="type-name">H3</div><div class="type-spec">22px / 600</div></div>
+            <div class="type-preview" style="font-size:22px;font-weight:600;line-height:1.3;">Heading Three</div>
+          </div>
+          <div class="type-row">
+            <div class="type-meta"><div class="type-name">H4</div><div class="type-spec">18px / 600</div></div>
+            <div class="type-preview" style="font-size:18px;font-weight:600;">Heading Four</div>
+          </div>
+          <div class="type-row">
+            <div class="type-meta"><div class="type-name">Body LG</div><div class="type-spec">16px / 400</div></div>
+            <div class="type-preview" style="font-size:16px;font-weight:400;">The quick brown fox jumps over the lazy dog.</div>
+          </div>
+          <div class="type-row">
+            <div class="type-meta"><div class="type-name">Body MD</div><div class="type-spec">14px / 400</div></div>
+            <div class="type-preview" style="font-size:14px;font-weight:400;">The quick brown fox jumps over the lazy dog.</div>
+          </div>
+          <div class="type-row">
+            <div class="type-meta"><div class="type-name">Body SM</div><div class="type-spec">13px / 400</div></div>
+            <div class="type-preview" style="font-size:13px;font-weight:400;">The quick brown fox jumps over the lazy dog.</div>
+          </div>
+          <div class="type-row">
+            <div class="type-meta"><div class="type-name">Caption</div><div class="type-spec">11px / 500</div></div>
+            <div class="type-preview" style="font-size:11px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;">CAPTION LABEL TEXT</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h2>Font Weights</h2>
+        <p class="section-desc">Poppins ships with a full weight range. Use these intentionally.</p>
+        <div class="doc-divider"></div>
+        <div class="type-sample">
+          <div class="type-row"><div class="type-meta"><div class="type-name">Light</div><div class="type-spec">300</div></div><div class="type-preview" style="font-size:22px;font-weight:300;">Golden Design System</div></div>
+          <div class="type-row"><div class="type-meta"><div class="type-name">Regular</div><div class="type-spec">400</div></div><div class="type-preview" style="font-size:22px;font-weight:400;">Golden Design System</div></div>
+          <div class="type-row"><div class="type-meta"><div class="type-name">Medium</div><div class="type-spec">500</div></div><div class="type-preview" style="font-size:22px;font-weight:500;">Golden Design System</div></div>
+          <div class="type-row"><div class="type-meta"><div class="type-name">SemiBold</div><div class="type-spec">600</div></div><div class="type-preview" style="font-size:22px;font-weight:600;">Golden Design System</div></div>
+          <div class="type-row"><div class="type-meta"><div class="type-name">Bold</div><div class="type-spec">700</div></div><div class="type-preview" style="font-size:22px;font-weight:700;">Golden Design System</div></div>
+          <div class="type-row"><div class="type-meta"><div class="type-name">ExtraBold</div><div class="type-spec">800</div></div><div class="type-preview" style="font-size:22px;font-weight:800;">Golden Design System</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPACING PAGE -->
+  <div id="page-spacing" class="page">
+    <div class="page-header">
+      <div class="page-header-eyebrow">Foundations</div>
+      <h1>Spacing</h1>
+      <p>An 8-point base grid. All spacing values are multiples of 4px for consistency.</p>
+    </div>
+    <div class="page-content">
+      <div class="doc-section">
+        <h2>Spacing Scale</h2>
+        <p class="section-desc">Use these tokens everywhere — padding, margin, gap. Never use arbitrary values.</p>
+        <div class="doc-divider"></div>
+        <table class="token-table" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;">
+          <thead><tr><th>Token</th><th>Value</th><th>Visual</th><th>Usage</th></tr></thead>
+          <tbody>
+            <tr><td>--space-1</td><td>4px</td><td><div style="height:12px;background:var(--brand-400);border-radius:2px;width:4px;"></div></td><td>Icon gap, tight padding</td></tr>
+            <tr><td>--space-2</td><td>8px</td><td><div style="height:12px;background:var(--brand-400);border-radius:2px;width:8px;"></div></td><td>Internal component padding</td></tr>
+            <tr><td>--space-3</td><td>12px</td><td><div style="height:12px;background:var(--brand-400);border-radius:2px;width:12px;"></div></td><td>Small gaps</td></tr>
+            <tr><td>--space-4</td><td>16px</td><td><div style="height:12px;background:var(--brand-400);border-radius:2px;width:16px;"></div></td><td>Base unit — card padding, form fields</td></tr>
+            <tr><td>--space-6</td><td>24px</td><td><div style="height:12px;background:var(--brand-400);border-radius:2px;width:24px;"></div></td><td>Section gaps, card padding LG</td></tr>
+            <tr><td>--space-8</td><td>32px</td><td><div style="height:12px;background:var(--brand-400);border-radius:2px;width:32px;"></div></td><td>Section spacing</td></tr>
+            <tr><td>--space-12</td><td>48px</td><td><div style="height:12px;background:var(--brand-400);border-radius:2px;width:48px;"></div></td><td>Page padding, hero padding</td></tr>
+            <tr><td>--space-16</td><td>64px</td><td><div style="height:12px;background:var(--brand-400);border-radius:2px;width:64px;"></div></td><td>Large section breaks</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="doc-section">
+        <h2>Border Radius</h2>
+        <p class="section-desc">From tight UI elements to fully rounded pills.</p>
+        <div class="doc-divider"></div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end;">
+          <div style="text-align:center;"><div style="width:64px;height:64px;background:var(--brand-500);border-radius:var(--radius-sm);margin:0 auto 8px;"></div><div style="font-size:11px;color:var(--text-secondary);">sm — 4px</div></div>
+          <div style="text-align:center;"><div style="width:64px;height:64px;background:var(--brand-500);border-radius:var(--radius-md);margin:0 auto 8px;"></div><div style="font-size:11px;color:var(--text-secondary);">md — 8px</div></div>
+          <div style="text-align:center;"><div style="width:64px;height:64px;background:var(--brand-500);border-radius:var(--radius-lg);margin:0 auto 8px;"></div><div style="font-size:11px;color:var(--text-secondary);">lg — 12px</div></div>
+          <div style="text-align:center;"><div style="width:64px;height:64px;background:var(--brand-500);border-radius:var(--radius-xl);margin:0 auto 8px;"></div><div style="font-size:11px;color:var(--text-secondary);">xl — 16px</div></div>
+          <div style="text-align:center;"><div style="width:64px;height:64px;background:var(--brand-500);border-radius:var(--radius-full);margin:0 auto 8px;"></div><div style="font-size:11px;color:var(--text-secondary);">full</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUTTONS PAGE -->
+  <div id="page-buttons" class="page">
+    <div class="page-header">
+      <div class="page-header-eyebrow">Components</div>
+      <h1>Buttons</h1>
+      <p>5 variants × 5 sizes. Use Primary for one key action per screen. Secondary and Ghost for supporting actions.</p>
+    </div>
+    <div class="page-content">
+      <div class="doc-section">
+        <h2>Variants</h2>
+        <p class="section-desc">Choose the variant based on hierarchy — not aesthetics.</p>
+        <div class="doc-divider"></div>
+        <div class="component-preview">
+          <button class="ds-btn ds-btn-primary ds-btn-md">Primary</button>
+          <button class="ds-btn ds-btn-secondary ds-btn-md">Secondary</button>
+          <button class="ds-btn ds-btn-ghost ds-btn-md">Ghost</button>
+          <button class="ds-btn ds-btn-danger ds-btn-md">Danger</button>
+          <button class="ds-btn ds-btn-designer ds-btn-md">Designer</button>
+        </div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"ds-btn ds-btn-primary ds-btn-md"</span><span class="code-tag">&gt;</span>Primary<span class="code-tag">&lt;/button&gt;</span>
+<span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"ds-btn ds-btn-secondary ds-btn-md"</span><span class="code-tag">&gt;</span>Secondary<span class="code-tag">&lt;/button&gt;</span>
+<span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"ds-btn ds-btn-ghost ds-btn-md"</span><span class="code-tag">&gt;</span>Ghost<span class="code-tag">&lt;/button&gt;</span></div>
+      </div>
+
+      <div class="doc-section">
+        <h2>Sizes</h2>
+        <p class="section-desc">From xs to xl. md is the default for most interfaces.</p>
+        <div class="doc-divider"></div>
+        <div class="component-preview">
+          <button class="ds-btn ds-btn-primary ds-btn-xs">XSmall</button>
+          <button class="ds-btn ds-btn-primary ds-btn-sm">Small</button>
+          <button class="ds-btn ds-btn-primary ds-btn-md">Medium</button>
+          <button class="ds-btn ds-btn-primary ds-btn-lg">Large</button>
+          <button class="ds-btn ds-btn-primary ds-btn-xl">XLarge</button>
+        </div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"ds-btn ds-btn-primary ds-btn-xs"</span><span class="code-tag">&gt;</span>XSmall<span class="code-tag">&lt;/button&gt;</span>
+<span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"ds-btn ds-btn-primary ds-btn-lg"</span><span class="code-tag">&gt;</span>Large<span class="code-tag">&lt;/button&gt;</span>
+<span class="code-tag">&lt;button</span> <span class="code-attr">class</span>=<span class="code-val">"ds-btn ds-btn-primary ds-btn-xl"</span><span class="code-tag">&gt;</span>XLarge<span class="code-tag">&lt;/button&gt;</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BADGES PAGE -->
+  <div id="page-badges" class="page">
+    <div class="page-header">
+      <div class="page-header-eyebrow">Components</div>
+      <h1>Badges</h1>
+      <p>Use badges for status labels, tags, and short categorical labels. Never use for actions.</p>
+    </div>
+    <div class="page-content">
+      <div class="doc-section">
+        <h2>Variants</h2>
+        <p class="section-desc">Each badge variant maps to a semantic color scale.</p>
+        <div class="doc-divider"></div>
+        <div class="component-preview">
+          <span class="ds-badge ds-badge-md ds-badge-brand">Brand</span>
+          <span class="ds-badge ds-badge-md ds-badge-designer">Designer</span>
+          <span class="ds-badge ds-badge-md ds-badge-success">Success</span>
+          <span class="ds-badge ds-badge-md ds-badge-warning">Warning</span>
+          <span class="ds-badge ds-badge-md ds-badge-neutral">Neutral</span>
+        </div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<span class="code-tag">&lt;span</span> <span class="code-attr">class</span>=<span class="code-val">"ds-badge ds-badge-md ds-badge-brand"</span><span class="code-tag">&gt;</span>Brand<span class="code-tag">&lt;/span&gt;</span>
+<span class="code-tag">&lt;span</span> <span class="code-attr">class</span>=<span class="code-val">"ds-badge ds-badge-md ds-badge-success"</span><span class="code-tag">&gt;</span>Success<span class="code-tag">&lt;/span&gt;</span>
+<span class="code-tag">&lt;span</span> <span class="code-attr">class</span>=<span class="code-val">"ds-badge ds-badge-md ds-badge-warning"</span><span class="code-tag">&gt;</span>Warning<span class="code-tag">&lt;/span&gt;</span></div>
+      </div>
+      <div class="doc-section">
+        <h2>Sizes</h2>
+        <div class="doc-divider"></div>
+        <div class="component-preview">
+          <span class="ds-badge ds-badge-sm ds-badge-brand">Small</span>
+          <span class="ds-badge ds-badge-md ds-badge-brand">Medium</span>
+          <span class="ds-badge ds-badge-lg ds-badge-brand">Large</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUTS PAGE -->
+  <div id="page-inputs" class="page">
+    <div class="page-header">
+      <div class="page-header-eyebrow">Components</div>
+      <h1>Inputs</h1>
+      <p>Form inputs in multiple sizes and states. Always pair with a label and a helper hint.</p>
+    </div>
+    <div class="page-content">
+      <div class="doc-section">
+        <h2>Sizes</h2>
+        <div class="doc-divider"></div>
+        <div class="component-preview" style="flex-direction:column;gap:20px;align-items:flex-start;">
+          <div class="ds-input-wrap">
+            <label class="ds-input-label">Small input</label>
+            <input class="ds-input ds-input-sm" placeholder="Placeholder text…"/>
+          </div>
+          <div class="ds-input-wrap">
+            <label class="ds-input-label">Medium input (default)</label>
+            <input class="ds-input ds-input-md" placeholder="Placeholder text…"/>
+          </div>
+          <div class="ds-input-wrap">
+            <label class="ds-input-label">Large input</label>
+            <input class="ds-input ds-input-lg" placeholder="Placeholder text…"/>
+          </div>
+        </div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"ds-input-wrap"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;label</span> <span class="code-attr">class</span>=<span class="code-val">"ds-input-label"</span><span class="code-tag">&gt;</span>Label<span class="code-tag">&lt;/label&gt;</span>
+  <span class="code-tag">&lt;input</span> <span class="code-attr">class</span>=<span class="code-val">"ds-input ds-input-md"</span> <span class="code-attr">placeholder</span>=<span class="code-val">"Placeholder…"</span><span class="code-tag">/&gt;</span>
+  <span class="code-tag">&lt;span</span> <span class="code-attr">class</span>=<span class="code-val">"ds-input-hint"</span><span class="code-tag">&gt;</span>Helper text<span class="code-tag">&lt;/span&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></div>
+      </div>
+
+      <div class="doc-section">
+        <h2>States</h2>
+        <div class="doc-divider"></div>
+        <div class="component-preview" style="flex-direction:column;gap:20px;align-items:flex-start;">
+          <div class="ds-input-wrap">
+            <label class="ds-input-label">Default</label>
+            <input class="ds-input ds-input-md" placeholder="Default state"/>
+            <span class="ds-input-hint">Helper text goes here</span>
+          </div>
+          <div class="ds-input-wrap">
+            <label class="ds-input-label">Error state</label>
+            <input class="ds-input ds-input-md ds-input-error" value="bad@input"/>
+            <span class="ds-input-hint error-hint">This field is required</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARDS PAGE -->
+  <div id="page-cards" class="page">
+    <div class="page-header">
+      <div class="page-header-eyebrow">Components</div>
+      <h1>Cards</h1>
+      <p>Flexible container for grouped content. Use for lists, dashboards, and content previews.</p>
+    </div>
+    <div class="page-content">
+      <div class="doc-section">
+        <h2>Default Card</h2>
+        <div class="doc-divider"></div>
+        <div class="component-preview" style="align-items:flex-start;">
+          <div class="ds-card" style="width:260px;">
+            <div class="ds-card-img">✦</div>
+            <div class="ds-card-body">
+              <div class="ds-card-title">Card Title</div>
+              <div class="ds-card-desc">A short description that gives context about what this card contains.</div>
+            </div>
+            <div class="ds-card-footer">
+              <span class="ds-badge ds-badge-sm ds-badge-brand">Brand</span>
+              <button class="ds-btn ds-btn-secondary ds-btn-xs">View →</button>
+            </div>
+          </div>
+        </div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"ds-card"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"ds-card-img"</span><span class="code-tag">&gt;</span>…<span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"ds-card-body"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"ds-card-title"</span><span class="code-tag">&gt;</span>Title<span class="code-tag">&lt;/div&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-val">"ds-card-desc"</span><span class="code-tag">&gt;</span>Description<span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAYGROUND PAGE -->
+  <div id="page-playground" class="page">
+    <div class="page-header">
+      <div class="page-header-eyebrow">Interactive</div>
+      <h1>Component Playground</h1>
+      <p>Tweak props in real time. Select a component, adjust its properties, and copy the code.</p>
+    </div>
+    <div class="page-content">
+
+      <!-- COMPONENT SELECTOR -->
+      <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
+        <button class="control-chip active" onclick="selectComponent('button', this)">Button</button>
+        <button class="control-chip" onclick="selectComponent('badge', this)">Badge</button>
+        <button class="control-chip" onclick="selectComponent('input', this)">Input</button>
+        <button class="control-chip" onclick="selectComponent('card', this)">Card</button>
+      </div>
+
+      <!-- BUTTON PLAYGROUND -->
+      <div id="pg-button" class="playground-wrap" style="display:block;">
+        <div class="playground-header">
+          <span class="playground-title">Button</span>
+          <span class="playground-badge">Interactive</span>
+        </div>
+        <div class="playground-body">
+          <div class="playground-canvas">
+            <button id="pg-btn-preview" class="ds-btn ds-btn-primary ds-btn-md">Click me</button>
+          </div>
+          <div class="playground-controls">
+
+            <div class="control-group">
+              <span class="control-label">Label</span>
+              <input class="control-input" type="text" value="Click me" oninput="updateBtnLabel(this.value)"/>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Variant</span>
+              <div class="control-options">
+                <button class="control-chip active" onclick="updateBtnVariant('ds-btn-primary', this)">Primary</button>
+                <button class="control-chip" onclick="updateBtnVariant('ds-btn-secondary', this)">Secondary</button>
+                <button class="control-chip" onclick="updateBtnVariant('ds-btn-ghost', this)">Ghost</button>
+                <button class="control-chip" onclick="updateBtnVariant('ds-btn-danger', this)">Danger</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Size</span>
+              <div class="control-options">
+                <button class="control-chip" onclick="updateBtnSize('ds-btn-xs', this)">XS</button>
+                <button class="control-chip" onclick="updateBtnSize('ds-btn-sm', this)">SM</button>
+                <button class="control-chip active" onclick="updateBtnSize('ds-btn-md', this)">MD</button>
+                <button class="control-chip" onclick="updateBtnSize('ds-btn-lg', this)">LG</button>
+                <button class="control-chip" onclick="updateBtnSize('ds-btn-xl', this)">XL</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Radius</span>
+              <div class="control-options">
+                <button class="control-chip" onclick="updateBtnRadius('4px', this)">Sharp</button>
+                <button class="control-chip active" onclick="updateBtnRadius('8px', this)">Default</button>
+                <button class="control-chip" onclick="updateBtnRadius('9999px', this)">Pill</button>
+              </div>
+            </div>
+
+            <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+              <span class="control-label">Generated Code</span>
+              <div id="pg-btn-code" style="background:var(--neutral-900);border-radius:8px;padding:12px;font-family:monospace;font-size:11px;color:#e8e3d9;line-height:1.8;margin-top:8px;word-break:break-all;">
+                &lt;button class="ds-btn ds-btn-primary ds-btn-md"&gt;Click me&lt;/button&gt;
+              </div>
+              <button onclick="copyGeneratedCode()" style="margin-top:8px;width:100%;padding:8px;background:var(--brand-500);color:#fff;border:none;border-radius:6px;font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;cursor:pointer;">Copy Code</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- BADGE PLAYGROUND -->
+      <div id="pg-badge" class="playground-wrap" style="display:none;">
+        <div class="playground-header">
+          <span class="playground-title">Badge</span>
+          <span class="playground-badge">Interactive</span>
+        </div>
+        <div class="playground-body">
+          <div class="playground-canvas">
+            <span id="pg-badge-preview" class="ds-badge ds-badge-md ds-badge-brand">New</span>
+          </div>
+          <div class="playground-controls">
+            <div class="control-group">
+              <span class="control-label">Label</span>
+              <input class="control-input" type="text" value="New" oninput="updateBadgeLabel(this.value)"/>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Color</span>
+              <div class="control-options">
+                <button class="control-chip active" onclick="updateBadgeColor('ds-badge-brand', this)">Brand</button>
+                <button class="control-chip" onclick="updateBadgeColor('ds-badge-designer', this)">Designer</button>
+                <button class="control-chip" onclick="updateBadgeColor('ds-badge-success', this)">Success</button>
+                <button class="control-chip" onclick="updateBadgeColor('ds-badge-warning', this)">Warning</button>
+                <button class="control-chip" onclick="updateBadgeColor('ds-badge-neutral', this)">Neutral</button>
+              </div>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Size</span>
+              <div class="control-options">
+                <button class="control-chip" onclick="updateBadgeSize('ds-badge-sm', this)">SM</button>
+                <button class="control-chip active" onclick="updateBadgeSize('ds-badge-md', this)">MD</button>
+                <button class="control-chip" onclick="updateBadgeSize('ds-badge-lg', this)">LG</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INPUT PLAYGROUND -->
+      <div id="pg-input" class="playground-wrap" style="display:none;">
+        <div class="playground-header">
+          <span class="playground-title">Input</span>
+          <span class="playground-badge">Interactive</span>
+        </div>
+        <div class="playground-body">
+          <div class="playground-canvas">
+            <div class="ds-input-wrap">
+              <label id="pg-input-label-el" class="ds-input-label">Label</label>
+              <input id="pg-input-preview" class="ds-input ds-input-md" placeholder="Placeholder…"/>
+              <span id="pg-input-hint-el" class="ds-input-hint">Helper text</span>
+            </div>
+          </div>
+          <div class="playground-controls">
+            <div class="control-group">
+              <span class="control-label">Label text</span>
+              <input class="control-input" type="text" value="Label" oninput="document.getElementById('pg-input-label-el').textContent=this.value"/>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Placeholder</span>
+              <input class="control-input" type="text" value="Placeholder…" oninput="document.getElementById('pg-input-preview').placeholder=this.value"/>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Size</span>
+              <div class="control-options">
+                <button class="control-chip" onclick="updateInputSize('ds-input-sm', this)">SM</button>
+                <button class="control-chip active" onclick="updateInputSize('ds-input-md', this)">MD</button>
+                <button class="control-chip" onclick="updateInputSize('ds-input-lg', this)">LG</button>
+              </div>
+            </div>
+            <div class="control-group">
+              <span class="control-label">State</span>
+              <div class="control-options">
+                <button class="control-chip active" onclick="updateInputState('', this)">Default</button>
+                <button class="control-chip" onclick="updateInputState('ds-input-error', this)">Error</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD PLAYGROUND -->
+      <div id="pg-card" class="playground-wrap" style="display:none;">
+        <div class="playground-header">
+          <span class="playground-title">Card</span>
+          <span class="playground-badge">Interactive</span>
+        </div>
+        <div class="playground-body">
+          <div class="playground-canvas">
+            <div id="pg-card-preview" class="ds-card" style="width:260px;">
+              <div class="ds-card-img">✦</div>
+              <div class="ds-card-body">
+                <div id="pg-card-title" class="ds-card-title">Card Title</div>
+                <div id="pg-card-desc" class="ds-card-desc">A short description that gives context about this card.</div>
+              </div>
+              <div class="ds-card-footer">
+                <span class="ds-badge ds-badge-sm ds-badge-brand">Badge</span>
+                <button class="ds-btn ds-btn-secondary ds-btn-xs">View →</button>
+              </div>
+            </div>
+          </div>
+          <div class="playground-controls">
+            <div class="control-group">
+              <span class="control-label">Title</span>
+              <input class="control-input" type="text" value="Card Title" oninput="document.getElementById('pg-card-title').textContent=this.value"/>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Description</span>
+              <input class="control-input" type="text" value="A short description…" oninput="document.getElementById('pg-card-desc').textContent=this.value"/>
+            </div>
+            <div class="control-group">
+              <span class="control-label">Shadow</span>
+              <div class="control-options">
+                <button class="control-chip active" onclick="updateCardShadow('none',this)">None</button>
+                <button class="control-chip" onclick="updateCardShadow('var(--shadow-md)',this)">MD</button>
+                <button class="control-chip" onclick="updateCardShadow('var(--shadow-lg)',this)">LG</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ===================== NAVIGATION =====================
+function showPage(pageId, triggerEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+  if (triggerEl) triggerEl.classList.add('active');
+}
+
+// ===================== COPY CODE =====================
+function copyCode(btn) {
+  const block = btn.parentElement;
+  const text = block.innerText.replace('Copy\n','').replace('Copied!\n','').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ===================== PLAYGROUND STATE =====================
+let pgBtnState = { variant: 'ds-btn-primary', size: 'ds-btn-md', label: 'Click me', radius: '8px' };
+let pgBadgeState = { color: 'ds-badge-brand', size: 'ds-badge-md', label: 'New' };
+let pgInputState = { size: 'ds-input-md', state: '' };
+
+function selectComponent(id, el) {
+  document.querySelectorAll('[id^="pg-"]').forEach(e => e.style.display = 'none');
+  document.getElementById('pg-' + id).style.display = 'block';
+  document.querySelectorAll('.control-chip').forEach(c => {
+    if (c.getAttribute('onclick') && c.getAttribute('onclick').includes('selectComponent')) c.classList.remove('active');
+  });
+  el.classList.add('active');
+}
+
+function setActiveChip(el) {
+  el.closest('.control-options').querySelectorAll('.control-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// BUTTON
+function updateBtnLabel(v) {
+  pgBtnState.label = v;
+  document.getElementById('pg-btn-preview').textContent = v;
+  updateBtnCode();
+}
+function updateBtnVariant(v, el) {
+  setActiveChip(el);
+  const btn = document.getElementById('pg-btn-preview');
+  ['ds-btn-primary','ds-btn-secondary','ds-btn-ghost','ds-btn-danger','ds-btn-designer'].forEach(c => btn.classList.remove(c));
+  btn.classList.add(v);
+  pgBtnState.variant = v;
+  updateBtnCode();
+}
+function updateBtnSize(v, el) {
+  setActiveChip(el);
+  const btn = document.getElementById('pg-btn-preview');
+  ['ds-btn-xs','ds-btn-sm','ds-btn-md','ds-btn-lg','ds-btn-xl'].forEach(c => btn.classList.remove(c));
+  btn.classList.add(v);
+  pgBtnState.size = v;
+  updateBtnCode();
+}
+function updateBtnRadius(v, el) {
+  setActiveChip(el);
+  document.getElementById('pg-btn-preview').style.borderRadius = v;
+  pgBtnState.radius = v;
+  updateBtnCode();
+}
+function updateBtnCode() {
+  document.getElementById('pg-btn-code').textContent =
+    `<button class="ds-btn ${pgBtnState.variant} ${pgBtnState.size}">${pgBtnState.label}</button>`;
+}
+function copyGeneratedCode() {
+  navigator.clipboard.writeText(document.getElementById('pg-btn-code').textContent);
+  event.target.textContent = 'Copied!';
+  setTimeout(() => event.target.textContent = 'Copy Code', 2000);
+}
+
+// BADGE
+function updateBadgeLabel(v) {
+  document.getElementById('pg-badge-preview').textContent = v;
+}
+function updateBadgeColor(v, el) {
+  setActiveChip(el);
+  const b = document.getElementById('pg-badge-preview');
+  ['ds-badge-brand','ds-badge-designer','ds-badge-success','ds-badge-warning','ds-badge-neutral'].forEach(c => b.classList.remove(c));
+  b.classList.add(v);
+}
+function updateBadgeSize(v, el) {
+  setActiveChip(el);
+  const b = document.getElementById('pg-badge-preview');
+  ['ds-badge-sm','ds-badge-md','ds-badge-lg'].forEach(c => b.classList.remove(c));
+  b.classList.add(v);
+}
+
+// INPUT
+function updateInputSize(v, el) {
+  setActiveChip(el);
+  const inp = document.getElementById('pg-input-preview');
+  ['ds-input-sm','ds-input-md','ds-input-lg'].forEach(c => inp.classList.remove(c));
+  inp.classList.add(v);
+}
+function updateInputState(v, el) {
+  setActiveChip(el);
+  const inp = document.getElementById('pg-input-preview');
+  inp.classList.remove('ds-input-error');
+  if (v) inp.classList.add(v);
+}
+
+// CARD
+function updateCardShadow(v, el) {
+  setActiveChip(el);
+  document.getElementById('pg-card-preview').style.boxShadow = v;
+}
+</script>
+</body>
+</html>
