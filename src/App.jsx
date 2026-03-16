@@ -1,46 +1,22 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
+import Layout from './components/Layout'
+import Home from './pages/Home'
+import Colors from './pages/Colors'
+import Typography from './pages/Typography'
+import Components from './pages/Components'
 
-function App() {
+export default function App() {
   return (
-    <div className="app">
-
-      {/* Navigation */}
-      <nav className="nav">
-        <span className="nav-logo">✦ Golden</span>
-        <div className="nav-links">
-          <a href="#">Colors</a>
-          <a href="#">Typography</a>
-          <a href="#">Components</a>
-        </div>
-        <span className="nav-version">v1.0</span>
-      </nav>
-
-      {/* Hero */}
-      <section className="hero">
-        <p className="hero-eyebrow">Design System</p>
-        <h1 className="hero-title">
-          Build with <span className="gold">Golden.</span>
-        </h1>
-        <p className="hero-sub">
-          A unified visual language for building consistent,
-          accessible, and beautiful products.
-        </p>
-        <div className="hero-actions">
-          <button className="btn-primary">Get Started →</button>
-          <button className="btn-secondary">View Components</button>
-        </div>
-      </section>
-
-      {/* Stats bar */}
-      <div className="stats">
-        <div className="stat"><span className="stat-num">5</span><span className="stat-label">Color Scales</span></div>
-        <div className="stat"><span className="stat-num">9</span><span className="stat-label">Type Styles</span></div>
-        <div className="stat"><span className="stat-num">4+</span><span className="stat-label">Components</span></div>
-        <div className="stat"><span className="stat-num">∞</span><span className="stat-label">Possibilities</span></div>
-      </div>
-
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route element={<Layout />}>
+          <Route path="/colors" element={<Colors />} />
+          <Route path="/typography" element={<Typography />} />
+          <Route path="/components" element={<Components />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App
