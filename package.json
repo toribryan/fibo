@@ -5,6 +5,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "storybook": "turbo run dev --filter=storybook",
     "lint": "turbo lint",
     "format": "turbo format",
     "typecheck": "turbo typecheck"
@@ -12,6 +13,7 @@
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "eslint-plugin-storybook": "10.5.9",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "turbo": "^2.9.18",

@@ -1,0 +1,11 @@
+{
+  "extends": "@workspace/typescript-config/react-library.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "paths": {
+      "@workspace/ui/*": ["../../packages/ui/src/*"]
+    }
+  },
+  "include": [".storybook/**/*.ts", ".storybook/**/*.tsx"],
+  "exclude": ["node_modules"]
+}
