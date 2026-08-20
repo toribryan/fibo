@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "shadcncraft-generate-code": {
+      "source": "shadcncraft/skills",
+      "sourceType": "github",
+      "skillPath": "skills/shadcncraft-generate-code/SKILL.md",
+      "computedHash": "1da4c104a0ca68b1fec30b39ce078c06846be7cdd58f619e73f40331e93c8a25"
+    },
+    "shadcncraft-import-variables": {
+      "source": "shadcncraft/skills",
+      "sourceType": "github",
+      "skillPath": "skills/shadcncraft-import-variables/SKILL.md",
+      "computedHash": "ee482e7b99f06dd1cf152d547c9e978621ecffbeec3ee7e151e14f957689a82d"
+    }
+  }
+}
