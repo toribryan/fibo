@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ComponentProps } from "react";
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import type { ComponentProps } from "react"
 
-import { Button } from "./button.js";
+import { Button } from "./button.js"
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
@@ -21,7 +21,16 @@ const meta: Meta<typeof Button> = {
     },
     size: {
       control: "select",
-      options: ["default", "xs", "sm", "lg", "icon", "icon-xs", "icon-sm", "icon-lg"],
+      options: [
+        "default",
+        "xs",
+        "sm",
+        "lg",
+        "icon",
+        "icon-xs",
+        "icon-sm",
+        "icon-lg",
+      ],
     },
     disabled: { control: "boolean" },
   },
@@ -30,12 +39,12 @@ const meta: Meta<typeof Button> = {
     variant: "default",
     size: "default",
   },
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof Button>;
+export default meta
+type Story = StoryObj<typeof Button>
 
-export const Default: Story = {};
+export const Default: Story = {}
 
 export const AllVariants: Story = {
   render: (args: ComponentProps<typeof Button>) => (
@@ -56,7 +65,7 @@ export const AllVariants: Story = {
       ))}
     </div>
   ),
-};
+}
 
 export const AllSizes: Story = {
   render: (args: ComponentProps<typeof Button>) => (
@@ -68,10 +77,10 @@ export const AllSizes: Story = {
       ))}
     </div>
   ),
-};
+}
 
 export const Disabled: Story = {
   args: {
     disabled: true,
   },
-};
+}

@@ -12,5 +12,5 @@ module.exports = {
     "**/coverage/**",
   ],
 
-  extends: ["plugin:storybook/recommended"]
+  extends: ["plugin:storybook/recommended"],
 }

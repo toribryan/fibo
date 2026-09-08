@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import type { Preview } from "@storybook/react-vite";
+import React, { useEffect } from "react"
+import type { Preview } from "@storybook/react-vite"
 
-import "@workspace/ui/globals.css";
+import "@workspace/ui/globals.css"
 
 const preview: Preview = {
   parameters: {
@@ -37,19 +37,19 @@ const preview: Preview = {
   },
   decorators: [
     (Story, context) => {
-      const theme = context.globals.theme ?? "light";
+      const theme = context.globals.theme ?? "light"
 
       useEffect(() => {
-        document.documentElement.classList.toggle("dark", theme === "dark");
-      }, [theme]);
+        document.documentElement.classList.toggle("dark", theme === "dark")
+      }, [theme])
 
       return (
-        <div className="bg-background text-foreground min-h-24 p-6">
+        <div className="min-h-24 bg-background p-6 text-foreground">
           <Story />
         </div>
-      );
+      )
     },
   ],
-};
+}
 
-export default preview;
+export default preview
