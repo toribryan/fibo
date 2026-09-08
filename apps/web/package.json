@@ -27,7 +27,7 @@
     "@workspace/eslint-config": "workspace:^",
     "@workspace/typescript-config": "workspace:*",
     "eslint": "^9",
-    "typescript": "^5",
+    "typescript": "^6",
     "shadcn": "^4.18.0"
   }
 }
