@@ -25,6 +25,22 @@ one with its install command.
 
 ### Using a component in another project
 
+Add the namespace once, in the consuming project's `components.json`:
+
+```json
+"registries": {
+  "@fibo-ds": "https://golden-design-system.vercel.app/r/{name}.json"
+}
+```
+
+Then install by name:
+
+```bash
+pnpm dlx shadcn@latest add @fibo-ds/button
+```
+
+Without that entry, the full URL works anywhere:
+
 ```bash
 pnpm dlx shadcn@latest add https://golden-design-system.vercel.app/r/button.json
 ```
