@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/react-vite"
 
 /*
  * Tailwind only generates CSS for utility classes it can find as literal
@@ -19,7 +19,7 @@ const BRAND_BG: Record<string, string> = {
   "800": "bg-brand-800",
   "900": "bg-brand-900",
   "950": "bg-brand-950",
-};
+}
 
 const NEUTRAL_BG: Record<string, string> = {
   "50": "bg-neutral-50",
@@ -33,11 +33,17 @@ const NEUTRAL_BG: Record<string, string> = {
   "800": "bg-neutral-800",
   "900": "bg-neutral-900",
   "950": "bg-neutral-950",
-};
+}
 
-const STEPS = Object.keys(BRAND_BG);
+const STEPS = Object.keys(BRAND_BG)
 
-function Ramp({ name, classes }: { name: string; classes: Record<string, string> }) {
+function Ramp({
+  name,
+  classes,
+}: {
+  name: string
+  classes: Record<string, string>
+}) {
   return (
     <div className="flex flex-col gap-2">
       <p className="text-label text-muted-foreground capitalize">{name}</p>
@@ -60,7 +66,7 @@ function Ramp({ name, classes }: { name: string; classes: Record<string, string>
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 const SEMANTIC_BG: Record<string, string> = {
@@ -74,17 +80,19 @@ const SEMANTIC_BG: Record<string, string> = {
   accent: "bg-accent",
   destructive: "bg-destructive",
   border: "bg-border",
-};
+}
 
-const SEMANTIC_TOKENS = Object.keys(SEMANTIC_BG);
+const SEMANTIC_TOKENS = Object.keys(SEMANTIC_BG)
 
 function SemanticSwatch({ name }: { name: string }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className={`h-16 rounded-lg border border-border ${SEMANTIC_BG[name]}`} />
+      <div
+        className={`h-16 rounded-lg border border-border ${SEMANTIC_BG[name]}`}
+      />
       <code className="text-caption text-muted-foreground">--{name}</code>
     </div>
-  );
+  )
 }
 
 function ColorFoundations() {
@@ -104,7 +112,7 @@ function ColorFoundations() {
         </div>
       </section>
     </div>
-  );
+  )
 }
 
 const meta: Meta<typeof ColorFoundations> = {
@@ -113,9 +121,9 @@ const meta: Meta<typeof ColorFoundations> = {
   parameters: {
     layout: "padded",
   },
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof ColorFoundations>;
+export default meta
+type Story = StoryObj<typeof ColorFoundations>
 
-export const Palette: Story = {};
+export const Palette: Story = {}
