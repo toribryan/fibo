@@ -11,8 +11,7 @@ const web = path.resolve(import.meta.dirname, "..")
 const root = path.resolve(web, "../..")
 const componentsDir = path.join(root, "packages/ui/src/components")
 const transformedDir = path.join(web, "registry/ui")
-const homepage =
-  process.env.NEXT_PUBLIC_APP_URL || "https://golden-design-system.vercel.app"
+const homepage = process.env.NEXT_PUBLIC_APP_URL || "https://fibo.toribryan.com"
 
 const rewrites = [
   [/@workspace\/ui\/lib\/utils/g, "@/lib/utils"],
@@ -66,7 +65,7 @@ for (const file of files) {
     name,
     type: "registry:ui",
     title: titleCase(name),
-    description: `${titleCase(name)} from fibo-ds.`,
+    description: `${titleCase(name)} from fibo.`,
     dependencies: [...dependencies],
     registryDependencies: [...registryDependencies],
     files: [{ path: `registry/ui/${file}`, type: "registry:ui" }],
@@ -75,7 +74,7 @@ for (const file of files) {
 
 const registry = {
   $schema: "https://ui.shadcn.com/schema/registry.json",
-  name: "fibo-ds",
+  name: "fibo",
   homepage,
   items,
 }

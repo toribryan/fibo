@@ -1,4 +1,4 @@
-# fibo-ds
+# fibo
 
 A design system for experimental projects. Components are built on shadcn/ui
 and Base UI, documented in Storybook, and published as a shadcn registry so

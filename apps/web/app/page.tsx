@@ -6,7 +6,7 @@ export default async function Page() {
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-10 px-6 py-16">
       <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight">fibo-ds</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">fibo</h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
           A design system for experimental projects, built on shadcn/ui and Base
           UI. Every component below installs into any shadcn project with one
