@@ -3,12 +3,16 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "turbo build",
     "dev": "turbo dev",
+    "build": "turbo build",
     "storybook": "turbo run dev --filter=storybook",
     "lint": "turbo lint",
-    "format": "turbo format",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "check-types": "turbo typecheck",
+    "format:check": "prettier --check . --cache",
+    "format:write": "prettier --write . --cache",
+    "registry:build": "pnpm --filter web registry:build",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
@@ -17,7 +21,9 @@
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "turbo": "^2.9.18",
-    "typescript": "^5"
+    "typescript": "^5",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.0"
   },
   "packageManager": "pnpm@10.33.4",
   "engines": {

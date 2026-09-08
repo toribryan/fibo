@@ -3,5 +3,13 @@ node_modules/
 .next/
 .turbo/
 coverage/
+storybook-static/
 pnpm-lock.yaml
 .pnpm-store/
+.husky/
+apps/web/registry/
+apps/web/registry.json
+apps/web/public/r/
+skills-lock.json
+.agents/
+.claude/

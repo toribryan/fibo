@@ -5,11 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm registry:build && next build",
     "start": "next start",
     "lint": "eslint",
-    "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "registry:build": "node scripts/build-registry.mjs"
   },
   "dependencies": {
     "@workspace/ui": "workspace:*",
@@ -27,6 +27,7 @@
     "@workspace/eslint-config": "workspace:^",
     "@workspace/typescript-config": "workspace:*",
     "eslint": "^9",
-    "typescript": "^5"
+    "typescript": "^5",
+    "shadcn": "^4.18.0"
   }
 }
