@@ -23,6 +23,6 @@
     "@workspace/typescript-config": "workspace:*",
     "storybook": "10.5.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^6"
   }
 }
