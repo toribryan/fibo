@@ -46,3 +46,12 @@ next-env.d.ts
 
 *storybook.log
 storybook-static
+
+# generated shadcn registry (rebuilt by apps/web/scripts/build-registry.mjs)
+apps/web/registry
+apps/web/registry.json
+apps/web/public/r
+
+# caches
+.eslintcache
+.prettiercache
