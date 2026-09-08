@@ -33,6 +33,10 @@ and `@/components/ui/*`, writes `apps/web/registry.json`, then runs
 `shadcn build` to produce `apps/web/public/r/<name>.json`. The web build runs
 it first, so the deployed site serves the registry at `/r/<name>.json`.
 
+The web app is a static export (`output: "export"`), and `vercel.json` at the
+repo root builds only the web workspace and serves `apps/web/out`. Anything
+that needs a server at request time will not work on this site.
+
 Package dependencies are read from each component's imports. A component that
 imports another component through `@workspace/ui/components/*` gets it as a
 registry dependency automatically.
