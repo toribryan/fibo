@@ -1,10 +1,12 @@
-# fibo-ds
+# fibo
 
 A design system for experimental projects. Components are built on shadcn/ui
 and Base UI, documented in Storybook, and published as a shadcn registry so any
 project can install them with one command.
 
-Live site: https://golden-design-system.vercel.app
+The name is short for Fibonacci, the sequence behind the golden ratio.
+
+Live site: https://fibo.toribryan.com
 
 ## Overview
 
@@ -29,20 +31,20 @@ Add the namespace once, in the consuming project's `components.json`:
 
 ```json
 "registries": {
-  "@fibo-ds": "https://golden-design-system.vercel.app/r/{name}.json"
+  "@fibo": "https://fibo.toribryan.com/r/{name}.json"
 }
 ```
 
 Then install by name:
 
 ```bash
-pnpm dlx shadcn@latest add @fibo-ds/button
+pnpm dlx shadcn@latest add @fibo/button
 ```
 
 Without that entry, the full URL works anywhere:
 
 ```bash
-pnpm dlx shadcn@latest add https://golden-design-system.vercel.app/r/button.json
+pnpm dlx shadcn@latest add https://fibo.toribryan.com/r/button.json
 ```
 
 The full list is on the live site. Components install into your project's
