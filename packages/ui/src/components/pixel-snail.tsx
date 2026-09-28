@@ -22,13 +22,17 @@ type Frame = {
   blink?: boolean
   /** Nudges the whole snail sideways, for shuffling while it rests. */
   dx?: number
+  /** Lifts the shell off the foot, for a hop. */
+  bob?: number
+  /** Where the eyes look: up on raised stalks, level, or down on lowered ones. */
+  gaze?: -1 | 0 | 1
 }
 
 const FRAMES: Frame[] = [
-  { tail: 0, head: 13, lean: 0, shift: 0 },
-  { tail: 0, head: 14, lean: 1, shift: 0 },
-  { tail: -1, head: 14, lean: 1, shift: 1 },
-  { tail: -1, head: 13, lean: 0, shift: 2 },
+  { tail: 0, head: 15, lean: 0, shift: 0 },
+  { tail: 0, head: 16, lean: 1, shift: 0 },
+  { tail: -1, head: 16, lean: 1, shift: 1 },
+  { tail: -1, head: 15, lean: 0, shift: 2 },
 ]
 const CYCLE_SHIFT = 2
 
@@ -45,31 +49,58 @@ const IDLE: [frame: Frame, ms: number][] = [
   [REST, 900],
   [{ ...REST, blink: true }, 140],
   [REST, 1500],
-  [{ ...REST, head: 14, lean: 1 }, 600],
+  [{ ...REST, head: 16, lean: 1 }, 600],
   [{ ...REST, dx: 1 }, 1600],
   [{ ...REST, dx: 1, lean: -1 }, 900],
   [{ ...REST, dx: 1 }, 700],
   [{ ...REST, dx: 1, blink: true }, 140],
   [{ ...REST, dx: 1 }, 1200],
-  [{ ...REST, tail: -1, head: 13, dx: 0 }, 500],
+  [{ ...REST, tail: -1, head: 15, dx: 0 }, 500],
+]
+
+/*
+ * A little dance: the stalks sway on the beat while the shell hops, then a
+ * shuffle to one side and back, then a breather so it never turns frantic.
+ */
+const SWAY: [frame: Frame, ms: number][] = [
+  [{ ...REST, lean: -1 }, 280],
+  [{ ...REST, lean: 1, head: 16, bob: 1, gaze: -1 }, 280],
+]
+const DANCE: [frame: Frame, ms: number][] = [
+  ...SWAY,
+  ...SWAY,
+  ...SWAY,
+  [REST, 500],
+  [{ ...REST, blink: true }, 140],
+  [REST, 400],
+  [{ ...REST, lean: 1, dx: 1 }, 260],
+  [{ ...REST, lean: -1, dx: 1, bob: 1 }, 260],
+  [{ ...REST, lean: 1, dx: 1 }, 260],
+  [{ ...REST, lean: -1, bob: 1 }, 260],
+  [REST, 1600],
 ]
 
 const SHELL = [
-  "..#####..",
-  ".#.....#.",
-  "#..###..#",
-  "#.#...#.#",
-  "#.#.#.#.#",
-  "#.#..#..#",
-  "#..##...#",
-  ".#.....#.",
-  "..#####..",
+  "...#####...",
+  ".###.#.###.",
+  ".#.##..#.#.",
+  "####....###",
+  "#.#..##...#",
+  "#.##..#...#",
+  "##.####..##",
+  ".#.......#.",
+  ".###...###.",
+  "...#####...",
 ]
+// The shell's top row; it stands a row taller than the head.
+const SHELL_TOP = -1
 
-// The drawing spans columns -1 to 17 and rows 0 to 12; the ground is row 12.
+// The drawing spans columns -1 to 18 and rows -2 to 12, leaving the shell a
+// row to hop into; the ground is row 12.
 const MIN_X = -1
-const COLS = 19
-const ROWS = 13
+const MIN_Y = SHELL_TOP - 1
+const COLS = 20
+const ROWS = 15
 const GROUND_ROW = 12
 const GROUND_PITCH = 4
 
@@ -80,16 +111,34 @@ function row(y: number, from: number, to: number): Pixel[] {
   return Array.from({ length: to - from + 1 }, (_, i) => [from + i, y])
 }
 
-function snailPixels({ tail, head, lean, blink, dx = 0 }: Frame): Pixel[] {
+function snailPixels({
+  tail,
+  head,
+  lean,
+  blink,
+  dx = 0,
+  bob = 0,
+  gaze = 0,
+}: Frame): Pixel[] {
   const shell = SHELL.flatMap((line, y) =>
-    [...line].flatMap((cell, x): Pixel[] => (cell === "#" ? [[x + 1, y]] : []))
+    [...line].flatMap((cell, x): Pixel[] =>
+      cell === "#" ? [[x + 1, y + SHELL_TOP - bob]] : []
+    )
   )
-  // Two stalks splay into a V, and their tips nod forward as the head reaches.
-  const stalk = (x: number, splay: -1 | 1): Pixel[] => [
-    ...(blink ? [] : [[x + splay + lean, 1] satisfies Pixel]),
-    [x + splay + lean, 2],
-    [x, 3],
-  ]
+  /*
+   * Two stalks splay into a V, and their tips nod forward as the head
+   * reaches. The eye is the top pixel; looking up raises it a row, looking
+   * down drops it, and a blink leaves it out.
+   */
+  const eye = 1 + gaze
+  const stalk = (x: number, splay: -1 | 1): Pixel[] => {
+    const tip = x + splay + lean
+    const tips = Array.from(
+      { length: 3 - eye },
+      (_, i): Pixel => [tip, eye + i]
+    )
+    return [...tips.slice(blink ? 1 : 0), [x, 3]]
+  }
   const pixels: Pixel[] = [
     ...shell,
     ...stalk(head - 1, -1),
@@ -143,18 +192,109 @@ function useCrawl(pace: Pace, paused: boolean) {
   return step
 }
 
-function useIdle(paused: boolean) {
+function useLoop(script: [frame: Frame, ms: number][], paused: boolean) {
   const [beat, setBeat] = React.useState(0)
+  const index = beat % script.length
   React.useEffect(() => {
     if (paused) return
-    const id = window.setTimeout(
-      () => setBeat((b) => (b + 1) % IDLE.length),
-      IDLE[beat]![1]
-    )
+    const id = window.setTimeout(() => setBeat((b) => b + 1), script[index]![1])
     return () => window.clearTimeout(id)
-  }, [beat, paused])
-  return IDLE[beat]![0]
+  }, [script, index, paused])
+  return script[index]![0]
 }
+
+const ASSEMBLE_TICK_MS = 40
+// Ticks spent at each stage: coarse blocks arriving, then holding, then
+// halving, until the art is whole.
+const ASSEMBLE_STAGES = [
+  { block: 4, ticks: 10, reveal: true },
+  { block: 4, ticks: 3, reveal: false },
+  { block: 2, ticks: 4, reveal: false },
+] as const
+const ASSEMBLE_TICKS = ASSEMBLE_STAGES.reduce((sum, s) => sum + s.ticks, 0)
+
+type Assembly = { block: number; shown: number } | "hidden" | "whole"
+
+function useAssemble(delay: number | undefined, skip: boolean): Assembly {
+  const [tick, setTick] = React.useState(-1)
+  const active = delay !== undefined && !skip
+  React.useEffect(() => {
+    if (!active) return
+    let id = 0
+    const start = window.setTimeout(() => {
+      setTick(0)
+      id = window.setInterval(
+        () =>
+          setTick((t) => {
+            if (t + 1 >= ASSEMBLE_TICKS) window.clearInterval(id)
+            return t + 1
+          }),
+        ASSEMBLE_TICK_MS
+      )
+    }, delay)
+    return () => {
+      window.clearTimeout(start)
+      window.clearInterval(id)
+    }
+  }, [active, delay])
+  if (!active || tick >= ASSEMBLE_TICKS) return "whole"
+  if (tick < 0) return "hidden"
+  let rest = tick
+  for (const stage of ASSEMBLE_STAGES) {
+    if (rest < stage.ticks)
+      return {
+        block: stage.block,
+        shown: stage.reveal ? (rest + 1) / stage.ticks : 1,
+      }
+    rest -= stage.ticks
+  }
+  return "whole"
+}
+
+/*
+ * The art at a coarser grid: a block is filled when enough of its pixels
+ * are. Blocks arrive in a scattered but fixed order, so the snail builds up
+ * like a picture loading rather than wiping in from one side.
+ */
+function Mosaic({
+  pixels,
+  block,
+  shown,
+}: {
+  pixels: Pixel[]
+  block: number
+  shown: number
+}) {
+  const counts = new Map<string, [number, number, number]>()
+  for (const [x, y] of pixels) {
+    const bx = Math.floor((x - MIN_X) / block)
+    const by = Math.floor((y - MIN_Y) / block)
+    const key = `${bx}:${by}`
+    const count = counts.get(key)?.[2] ?? 0
+    counts.set(key, [bx, by, count + 1])
+  }
+  const threshold = Math.max(1, (block * block) / 4)
+  const blocks = [...counts.values()]
+    .filter(([, , count]) => count >= threshold)
+    .sort(([ax, ay], [bx, by]) => scatter(ax, ay) - scatter(bx, by))
+  return blocks
+    .slice(0, Math.ceil(blocks.length * shown))
+    .map(([bx, by]) => (
+      <rect
+        key={`${bx}:${by}`}
+        x={MIN_X + bx * block}
+        y={MIN_Y + by * block}
+        width={block}
+        height={block}
+      />
+    ))
+}
+
+function scatter(x: number, y: number) {
+  return ((x * 73856093) ^ (y * 19349663)) % 97
+}
+
+type Look = { x: -1 | 0 | 1; y: -1 | 0 | 1 }
 
 type PixelSnailSpriteProps = Omit<React.ComponentProps<"g">, "children"> & {
   /** Size of one art pixel, in the parent SVG's user units. */
@@ -162,10 +302,20 @@ type PixelSnailSpriteProps = Omit<React.ComponentProps<"g">, "children"> & {
   /** How long each frame of the crawl holds. */
   pace?: Pace
   /**
-   * Stops crawling and idles on the spot: it looks about, blinks and
-   * shuffles, but goes nowhere.
+   * `crawl` walks in place, for riding a path. `rest` idles on the spot,
+   * looking about and shuffling. `dance` sways and hops on a loop.
    */
-  resting?: boolean
+  mode?: "crawl" | "rest" | "dance"
+  /**
+   * Holds still and points the eyes: `x` back, ahead or level, `y` up,
+   * level or down. Pass `null` to let the mode play.
+   */
+  look?: Look | null
+  /**
+   * Builds the snail up from coarse blocks after this many milliseconds,
+   * instead of showing it at once.
+   */
+  assembleDelay?: number
 }
 
 /**
@@ -176,14 +326,25 @@ type PixelSnailSpriteProps = Omit<React.ComponentProps<"g">, "children"> & {
 function PixelSnailSprite({
   pixel = 1,
   pace = "default",
-  resting = false,
+  mode = "crawl",
+  look = null,
+  assembleDelay,
   transform,
   ...props
 }: PixelSnailSpriteProps) {
   const reduceMotion = useReducedMotion()
-  const step = useCrawl(pace, resting || reduceMotion)
-  const idle = useIdle(!resting || reduceMotion)
-  const frame = resting ? idle : FRAMES[step % FRAMES.length]!
+  const still = reduceMotion || look !== null
+  const step = useCrawl(pace, still || mode !== "crawl")
+  const idle = useLoop(IDLE, still || mode !== "rest")
+  const dance = useLoop(DANCE, still || mode !== "dance")
+  const assembly = useAssemble(assembleDelay, reduceMotion)
+
+  const frame: Frame = look
+    ? { ...REST, lean: look.x, gaze: look.y }
+    : reduceMotion
+      ? REST
+      : { crawl: FRAMES[step % FRAMES.length]!, rest: idle, dance }[mode]
+  const pixels = snailPixels(frame)
   const origin = `scale(${pixel}) translate(${-(MIN_X + COLS / 2)} -11)`
   return (
     <g
@@ -193,7 +354,11 @@ function PixelSnailSprite({
       transform={transform ? `${transform} ${origin}` : origin}
       {...props}
     >
-      <Pixels pixels={snailPixels(frame)} />
+      {assembly === "hidden" ? null : assembly === "whole" ? (
+        <Pixels pixels={pixels} />
+      ) : (
+        <Mosaic pixels={pixels} {...assembly} />
+      )}
     </g>
   )
 }
@@ -253,7 +418,7 @@ function PixelSnail({
       aria-hidden="true"
       width={width}
       height={height}
-      viewBox={`${MIN_X} 0 ${COLS} ${ROWS}`}
+      viewBox={`${MIN_X} ${MIN_Y} ${COLS} ${ROWS}`}
       shapeRendering="crispEdges"
       fill="currentColor"
       className="block shrink-0"
@@ -291,7 +456,7 @@ function PixelSnail({
               aria-hidden="true"
               className="absolute inset-x-0"
               style={{
-                top: GROUND_ROW * scale,
+                top: (GROUND_ROW - MIN_Y) * scale,
                 height: scale,
                 backgroundImage: `linear-gradient(to right, currentColor ${scale}px, transparent ${scale}px)`,
                 backgroundSize: `${GROUND_PITCH * scale}px ${scale}px`,
@@ -313,4 +478,4 @@ function PixelSnail({
 }
 
 export { PixelSnail, PixelSnailSprite }
-export type { PixelSnailProps, PixelSnailSpriteProps }
+export type { PixelSnailProps, PixelSnailSpriteProps, Look as PixelSnailLook }
