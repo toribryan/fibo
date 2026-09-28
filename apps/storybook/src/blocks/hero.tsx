@@ -5,9 +5,8 @@ import {
   useSyncExternalStore,
   type ComponentType,
   type CSSProperties,
-  type MouseEvent,
-  type PointerEvent,
   type ReactNode,
+  type RefObject,
 } from "react"
 import { ArrowRightIcon, Volume2Icon } from "lucide-react"
 
@@ -28,7 +27,9 @@ import {
   TailwindIcon,
 } from "./brand-icons.js"
 import { DocLink } from "./doc-link.js"
+import { createHeckle, FIBO_LINES, type FiboLine } from "./lines.js"
 import { LINKS } from "./links.js"
+import { listenForUnlock, sfx } from "./sounds.js"
 
 /*
  * Geometry is ncdai's hero-01 (@ncdai/hero-01): a golden rectangle whose
@@ -36,7 +37,7 @@ import { LINKS } from "./links.js"
  * spiral from the pole out past the frame. `wide` is the landscape frame;
  * `tall` turns it upright for narrow containers. fibo adds the motion: the
  * spiral draws outward from the pole, and fibo, a pixel snail, builds up on
- * the cut beside it and dances there.
+ * a line clear of it and dances there.
  */
 type Geometry = {
   viewBox: string
@@ -51,7 +52,7 @@ type Geometry = {
   }[]
   /** Pole to the frame's edge. */
   spiral: string
-  /** Where fibo stands: a point on one of the cuts, under his foot. */
+  /** Where fibo stands: a point on a cut or the frame's edge, under his foot. */
   fibo: { x: number; y: number }
   /** The last quarter turn, which leaves the frame. */
   tail: string
@@ -149,7 +150,7 @@ const TALL: Geometry = {
   ],
   spiral:
     "M149.643 239.897C155.106 239.897 159.619 244.414 159.619 249.882C159.619 255.35 155.106 259.868 149.643 259.868C138.717 259.868 129.69 250.833 129.69 239.897C129.69 223.493 143.23 209.941 159.619 209.941C186.935 209.941 209.5 232.527 209.5 259.868C209.5 303.613 173.396 339.75 129.69 339.75C58.6695 339.75 0 281.027 0 209.941C0 95.1103 94.7738 0.24998 209.5 0.249985",
-  fibo: { x: 185, y: 260 },
+  fibo: { x: 30, y: 340 },
   tail: "C395.69 0.250001 549.5 154.06 549.5 340.25",
   stroke: 0.9,
   dot: 3,
@@ -287,48 +288,19 @@ const FIBO_GLANCE = 1.5
 // How far past his middle the pointer must go before he turns round. The
 // gap between the two sides keeps him from flipping back and forth.
 const FIBO_TURN = 4
+// How far round him, in art pixels from his origin, a click counts as being
+// on him: his outline plus a margin so a click beside him still lands.
+const FIBO_REACH = { left: 19, right: 21, top: 24, bottom: 8 }
 
-// What he says depends on where he is clicked: on him, or above his eyes,
-// where a pointer only goes if it is looking for trouble.
-const FIBO_LINES = {
-  poke: "do you just go around poking people? ...",
-  rage: "i can see those rage clicks. go poke around fibo instead?",
-}
-type FiboLine = keyof typeof FIBO_LINES
+const FIBO_HELLO_MS = 1000
 const FIBO_TYPE_MS = 35
 const FIBO_LINGER_MS = 2800
-
-/*
- * Chiptune-ish sounds, synthesised so there is nothing to load: a square
- * wave sliding between two pitches and fading out.
- */
-function chirp(
-  audio: AudioContext,
-  from: number,
-  to: number,
-  ms: number,
-  volume: number
-) {
-  const start = audio.currentTime
-  const end = start + ms / 1000
-  const tone = audio.createOscillator()
-  const gain = audio.createGain()
-  tone.type = "square"
-  tone.frequency.setValueAtTime(from, start)
-  tone.frequency.exponentialRampToValueAtTime(to, end)
-  gain.gain.setValueAtTime(volume, start)
-  gain.gain.exponentialRampToValueAtTime(0.0001, end)
-  tone.connect(gain).connect(audio.destination)
-  tone.start(start)
-  tone.stop(end)
-}
 
 /*
  * A poke sets fibo talking: a speech bubble types his line out with a blip
  * every other letter, then clears. Poking again starts him over.
  */
 function useSpeech(reduced: boolean) {
-  const audio = useRef<AudioContext | null>(null)
   const [poke, setPoke] = useState(0)
   const [line, setLine] = useState<FiboLine>("poke")
   const [typed, setTyped] = useState(0)
@@ -346,8 +318,7 @@ function useSpeech(reduced: boolean) {
       }
       count += 1
       setTyped(count)
-      if (audio.current && count % 2 === 0 && text[count - 1] !== " ")
-        chirp(audio.current, 440 + Math.random() * 160, 400, 40, 0.02)
+      if (count % 2 === 0 && text[count - 1] !== " ") sfx.blip()
     }, FIBO_TYPE_MS)
     return () => {
       window.clearInterval(typing)
@@ -356,14 +327,35 @@ function useSpeech(reduced: boolean) {
   }, [poke, text, reduced])
 
   const speak = (next: FiboLine) => {
-    audio.current ??= new AudioContext()
-    chirp(audio.current, 880, 220, 90, 0.04)
+    sfx.voice(next)
     setLine(next)
     setTyped(reduced ? FIBO_LINES[next].length : 0)
     setPoke((p) => p + 1)
   }
 
   return { speaking: poke > 0, text, typed, speak }
+}
+
+/*
+ * Both layouts are in the page with one hidden, and a hidden SVG still
+ * reports a screen matrix, so the fibo on show is found by its size.
+ */
+function isShown(svg: SVGSVGElement | null): svg is SVGSVGElement {
+  return !!svg && svg.getBoundingClientRect().width > 0
+}
+
+// The pointer in art pixels from fibo's origin, under the middle of his foot.
+function pointerOffset(
+  svg: SVGSVGElement | null,
+  { clientX, clientY }: { clientX: number; clientY: number },
+  origin: { x: number; y: number },
+  pixel: number
+) {
+  if (!isShown(svg)) return null
+  const matrix = svg.getScreenCTM()?.inverse()
+  if (!matrix) return null
+  const point = new DOMPoint(clientX, clientY).matrixTransform(matrix)
+  return { dx: (point.x - origin.x) / pixel, dy: (point.y - origin.y) / pixel }
 }
 
 function glance(offset: number): -1 | 0 | 1 {
@@ -373,48 +365,110 @@ function glance(offset: number): -1 | 0 | 1 {
 
 /*
  * fibo builds up from coarse blocks once the spiral has drawn, then dances.
- * With the pointer near him he stops and turns to it: eyes, head and neck
- * follow, and he turns round when it goes behind him. Clicking him earns a
- * remark. His hit area is padded so a pointer beside him still counts.
+ * With the pointer anywhere in the hero he stops and turns to it: eyes, head
+ * and neck follow, and he turns round when it goes behind him. Clicking him
+ * earns a remark; his click area is padded so a click beside him counts.
  */
-function Fibo({ geometry }: { geometry: Geometry }) {
+function Fibo({
+  geometry,
+  area,
+}: {
+  geometry: Geometry
+  /** Where the pointer is followed: the whole hero, not just around him. */
+  area: RefObject<HTMLElement | null>
+}) {
+  const svg = useRef<SVGSVGElement>(null)
   const [look, setLook] = useState<PixelSnailLook | null>(null)
   const { speaking, text, typed, speak } = useSpeech(usePrefersReducedMotion())
   const pixel = geometry.stroke * FIBO_SCALE
   const { x, y } = geometry.fibo
   const [, , width = 1, height = 1] = geometry.viewBox.split(" ").map(Number)
-  const pad = 8 * pixel
+  const opensRight = x < width / 2
+  const reply = useRef(speak)
+  useEffect(() => {
+    reply.current = speak
+  })
 
-  // The pointer in art pixels from his origin, under the middle of his foot.
-  const offset = (event: MouseEvent<SVGRectElement>) => {
-    const matrix = event.currentTarget.ownerSVGElement
-      ?.getScreenCTM()
-      ?.inverse()
-    if (!matrix) return null
-    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(
-      matrix
-    )
-    return { dx: (point.x - x) / pixel, dy: (point.y - y) / pixel }
-  }
+  // A click anywhere in the hero gets a line, bar the buttons and links,
+  // which keep their own jobs.
+  useEffect(() => {
+    const node = area.current
+    if (!node) return
+    const heckle = createHeckle()
+    const respond = (event: globalThis.MouseEvent) => {
+      if (event.target instanceof Element && event.target.closest("a, button"))
+        return
+      const at = pointerOffset(svg.current, event, geometry.fibo, pixel)
+      if (!at) return
+      const onHim =
+        at.dx >= -FIBO_REACH.left &&
+        at.dx <= FIBO_REACH.right &&
+        at.dy >= -FIBO_REACH.top &&
+        at.dy <= FIBO_REACH.bottom
+      reply.current(heckle({ onHim, at: performance.now() }))
+    }
+    node.addEventListener("click", respond)
+    return () => node.removeEventListener("click", respond)
+  }, [area, geometry.fibo, pixel])
 
-  const follow = (event: PointerEvent<SVGRectElement>) => {
-    const at = offset(event)
-    if (!at) return
-    const { dx, dy } = at
-    setLook((current) => {
-      const turned = current?.facing ?? 1
-      const facing = dx < -FIBO_TURN ? -1 : dx > FIBO_TURN ? 1 : turned
-      return {
+  // Once per visit to the hero, a pointer that stays a while without
+  // clicking gets a hello, from the fibo on show only.
+  useEffect(() => {
+    const node = area.current
+    if (!node) return
+    let wait = 0
+    const cancel = () => window.clearTimeout(wait)
+    const arrive = () => {
+      cancel()
+      wait = window.setTimeout(() => {
+        if (isShown(svg.current)) reply.current("hello")
+      }, FIBO_HELLO_MS)
+    }
+    node.addEventListener("pointerenter", arrive)
+    node.addEventListener("pointerleave", cancel)
+    node.addEventListener("click", cancel)
+    return () => {
+      cancel()
+      node.removeEventListener("pointerenter", arrive)
+      node.removeEventListener("pointerleave", cancel)
+      node.removeEventListener("click", cancel)
+    }
+  }, [area])
+
+  useEffect(() => {
+    const node = area.current
+    if (!node) return
+    let facing: -1 | 1 = 1
+    const follow = (event: globalThis.PointerEvent) => {
+      const at = pointerOffset(svg.current, event, geometry.fibo, pixel)
+      if (!at) return
+      const { dx, dy } = at
+      const next = dx < -FIBO_TURN ? -1 : dx > FIBO_TURN ? 1 : facing
+      if (next !== facing) sfx.turn()
+      facing = next
+      setLook({
         facing,
         x: glance((dx - facing * FIBO_EYES.x) * facing),
         y: glance(dy - FIBO_EYES.y),
-      }
-    })
-  }
+      })
+    }
+    // Left alone he faces right again, so the next visit starts from there.
+    const forget = () => {
+      facing = 1
+      setLook(null)
+    }
+    node.addEventListener("pointermove", follow)
+    node.addEventListener("pointerleave", forget)
+    return () => {
+      node.removeEventListener("pointermove", follow)
+      node.removeEventListener("pointerleave", forget)
+    }
+  }, [area, geometry.fibo, pixel])
 
   return (
     <>
       <svg
+        ref={svg}
         className="pointer-events-none absolute inset-0 size-full overflow-visible"
         viewBox={geometry.viewBox}
         aria-hidden="true"
@@ -426,38 +480,45 @@ function Fibo({ geometry }: { geometry: Geometry }) {
           mode="dance"
           look={look}
           assembleDelay={FIBO_ASSEMBLE_MS}
+          onAssemble={(step) => {
+            if (!isShown(svg.current)) return
+            if (step === "whole") sfx.settle()
+            else sfx.pixels(step)
+          }}
         />
         <rect
-          x={x - 11 * pixel - pad}
-          y={y - 16 * pixel - pad}
-          width={24 * pixel + pad * 2}
-          height={16 * pixel + pad * 2}
+          x={x - FIBO_REACH.left * pixel}
+          y={y - FIBO_REACH.top * pixel}
+          width={(FIBO_REACH.left + FIBO_REACH.right) * pixel}
+          height={(FIBO_REACH.top + FIBO_REACH.bottom) * pixel}
           fill="transparent"
           pointerEvents="all"
           className="cursor-pointer"
-          onPointerMove={follow}
-          onPointerLeave={() => setLook(null)}
-          onClick={(event) => {
-            const at = offset(event)
-            speak(at && at.dy < FIBO_EYES.y - FIBO_GLANCE ? "rage" : "poke")
-          }}
         />
       </svg>
       {speaking ? (
-        // Anchored by its right edge over his head, so it opens back across
-        // the frame instead of off the side of it. The untyped rest of the
-        // line holds its place, so the bubble keeps its size as it fills.
+        // Anchored by the edge over his head nearest the frame's side, so it
+        // opens back across the frame instead of off the side of it. The
+        // untyped rest of the line holds its place, so the bubble keeps its
+        // size as it fills.
         <div
           aria-hidden="true"
           className="pointer-events-none absolute z-10 w-max max-w-[15rem] rounded-lg border border-border bg-popover px-2.5 py-1.5 font-mono text-xs leading-snug text-popover-foreground shadow-sm"
           style={{
-            right: `${(1 - (x + 12 * pixel) / width) * 100}%`,
+            ...(opensRight
+              ? { left: `${((x - 12 * pixel) / width) * 100}%` }
+              : { right: `${(1 - (x + 12 * pixel) / width) * 100}%` }),
             bottom: `${(1 - (y - 18 * pixel) / height) * 100}%`,
           }}
         >
           {text.slice(0, typed)}
           <span className="text-transparent">{text.slice(typed)}</span>
-          <span className="absolute right-6 -bottom-[5px] size-2 rotate-45 border-r border-b border-border bg-popover" />
+          <span
+            className={cn(
+              "absolute -bottom-[5px] size-2 rotate-45 border-r border-b border-border bg-popover",
+              opensRight ? "left-6" : "right-6"
+            )}
+          />
         </div>
       ) : null}
     </>
@@ -806,11 +867,13 @@ function Plate({ id, geometry }: { id: string; geometry: Geometry }) {
 function Frame({
   geometry,
   id,
+  area,
   className,
   children,
 }: {
   geometry: Geometry
   id: string
+  area: RefObject<HTMLElement | null>
   className: string
   children: ReactNode
 }) {
@@ -820,19 +883,25 @@ function Frame({
       <Spiral geometry={geometry} />
       <div className={cn("relative grid", className)}>{children}</div>
       <Interactive id={id} geometry={geometry} />
-      <Fibo geometry={geometry} />
+      <Fibo geometry={geometry} area={area} />
     </div>
   )
 }
 
 function Hero() {
+  const area = useRef<HTMLElement>(null)
+  useEffect(listenForUnlock, [])
   return (
-    <header className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden px-8 pb-12">
+    <header
+      ref={area}
+      className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden px-8 pb-12"
+    >
       <div className="@container relative mx-auto w-full max-w-[68rem]">
         <div className="hidden @3xl:block">
           <Frame
             geometry={WIDE}
             id="fibo-hero-spiral"
+            area={area}
             className="aspect-[1.618/1] grid-cols-[1.618fr_minmax(0,1fr)] grid-rows-[1fr_1.618fr]"
           >
             <Pitch width={340} className="col-1 row-[1/span_2]" />
@@ -842,6 +911,7 @@ function Hero() {
           <Frame
             geometry={TALL}
             id="fibo-hero-spiral-tall"
+            area={area}
             className="aspect-[1/1.618] grid-cols-[1.618fr_minmax(0,1fr)] grid-rows-[1.618fr_1fr]"
           >
             <Pitch width={210} className="col-[1/span_2] row-1" />
