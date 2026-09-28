@@ -98,4 +98,35 @@ describe("FilterMenu", () => {
       "In progress"
     )
   })
+
+  describe("with a search button", () => {
+    it("slides into search and back", async () => {
+      const screen = await openMenu(
+        <FilterMenu fields={fields} search="button" />
+      )
+      expect(screen.getByRole("combobox").query()).toBeNull()
+      await userEvent.click(
+        screen.getByRole("button", { name: "Search filters" })
+      )
+      await expect.element(screen.getByRole("combobox")).toHaveFocus()
+      await userEvent.click(
+        screen.getByRole("button", { name: "Back to filters" })
+      )
+      await expect
+        .element(screen.getByRole("button", { name: "Search filters" }))
+        .toBeVisible()
+    })
+
+    it("starts a search from a letter typed on the list", async () => {
+      const screen = await openMenu(
+        <FilterMenu fields={fields} search="button" />
+      )
+      await expect.element(screen.getByRole("listbox")).toHaveFocus()
+      await userEvent.keyboard("l")
+      await expect.element(screen.getByRole("combobox")).toHaveValue("l")
+      await expect
+        .element(screen.getByRole("option", { name: "Low" }))
+        .toBeVisible()
+    })
+  })
 })

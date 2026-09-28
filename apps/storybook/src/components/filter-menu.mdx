@@ -23,6 +23,8 @@ field and value, like a command menu.
   values. Each field shows how many of its values are on.
 - Typing turns the menu into a search, grouped by field, with the matching
   letters in bold. Inside a field, the search stays within it.
+- Or, with `search="button"`, a Search filters button takes the place of the
+  search box, and the menu slides over to its search state when it's used.
 - Escape steps back: first it clears the search, then it leaves the field,
   and only then does it close the menu.
 - Views slide forward and back, and the popup's height follows its content.
@@ -109,7 +111,14 @@ type FilterValue = Record<string, string[]>
           {
             name: "search",
             slot: "filter-menu-search",
-            note: "The search box, with a back button inside a field.",
+            note: "The header: the search box, or a field's name, with a back button.",
+            children: [
+              {
+                name: "search button",
+                slot: "filter-menu-search-button",
+                note: 'With search="button", on the field menu.',
+              },
+            ],
           },
           {
             name: "group label",
@@ -157,6 +166,15 @@ The component only picks filters. Here the app shows each applied field as a
 chip beside the button, with a button to remove it.
 
 <Canvas of={Stories.AppliedAsChips} />
+
+### Search button
+
+`search="button"` swaps the search box for a Search filters button. Using it
+slides the whole menu, header and body, over to the search state, which
+lists every value until you type. Back, Escape or Backspace slides it home.
+Typing a letter on the menu starts a search too.
+
+<Canvas of={Stories.SearchButton} />
 
 ### Default
 
@@ -251,6 +269,24 @@ A search with no results says so, using `emptyText`.
       when: "Always.",
     },
     {
+      attribute: 'data-slot="filter-menu-search-button"',
+      element: "The Search filters button",
+      when: (
+        <>
+          <code>search="button"</code>, on the field menu.
+        </>
+      ),
+    },
+    {
+      attribute: "data-search",
+      element: "The popup",
+      when: (
+        <>
+          While it's open. <code>inline</code> or <code>button</code>.
+        </>
+      ),
+    },
+    {
       attribute: 'data-slot="filter-menu-group-label"',
       element: "A field's name in search results",
       when: "Searching from the field menu.",
@@ -283,6 +319,7 @@ A search with no results says so, using `emptyText`.
 <UsageGuidelines
   guidelines={[
     "Focus goes to the search box when the menu opens, and stays there. The box is a combobox, and aria-activedescendant points to the highlighted row, so screen readers read each row as the arrows move.",
+    "With the search button, the list takes focus instead and points at the highlighted row itself, and the button is one Tab away. Entering search moves focus into the search box; leaving it moves focus back to the list.",
     "Values are options in a multi-select listbox, announced as selected or not. Each field is read with how many of its values are chosen and that it opens its values.",
     "A search announces how many results it found.",
     "Escape steps back one level at a time, and the last press returns focus to the Filter button.",
