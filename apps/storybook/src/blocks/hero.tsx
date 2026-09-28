@@ -5,12 +5,16 @@ import {
   useSyncExternalStore,
   type ComponentType,
   type CSSProperties,
+  type PointerEvent,
   type ReactNode,
 } from "react"
 import { ArrowRightIcon, Volume2Icon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
-import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
+import {
+  PixelSnailSprite,
+  type PixelSnailLook,
+} from "@workspace/ui/components/pixel-snail"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -29,8 +33,8 @@ import { LINKS } from "./links.js"
  * large square holds the copy, a few hairlines marking the cuts, and a
  * spiral from the pole out past the frame. `wide` is the landscape frame;
  * `tall` turns it upright for narrow containers. fibo adds the motion: the
- * spiral draws outward from the pole, and a pixel snail crawls in along it
- * and settles on the cut through the pole.
+ * spiral draws outward from the pole, and fibo, a pixel snail, builds up on
+ * the cut beside it and dances there.
  */
 type Geometry = {
   viewBox: string
@@ -45,12 +49,8 @@ type Geometry = {
   }[]
   /** Pole to the frame's edge. */
   spiral: string
-  /**
-   * The snail's route: a short run from outside the frame, so it slides into
-   * view, then along the spiral until it meets the cut through the pole, and
-   * off along that cut to rest.
-   */
-  crawl: string
+  /** Where fibo stands: a point on one of the cuts, under his foot. */
+  fibo: { x: number; y: number }
   /** The last quarter turn, which leaves the frame. */
   tail: string
   /** Stroke and dot size in viewBox units, about 2px and 7px at full size. */
@@ -84,8 +84,7 @@ const WIDE: Geometry = {
   ],
   spiral:
     "M239.897 60.3571C239.897 54.894 244.414 50.381 249.882 50.381C255.35 50.381 259.868 54.894 259.868 60.3571C259.868 71.2835 250.833 80.3095 239.897 80.3095C223.493 80.3095 209.941 66.7704 209.941 50.381C209.941 23.0652 232.527 0.499999 259.868 0.5C303.613 0.499995 339.75 36.6043 339.75 80.3095C339.75 151.33 281.027 210 209.941 210C95.1103 210 0.25 115.226 0.25 0.5",
-  crawl:
-    "M0.25 -40V0.5C0.25 115.226 95.1103 210 209.941 210C281.027 210 339.75 151.33 339.75 80.3095C339.75 36.6043 303.613 0.5 259.868 0.5C232.527 0.5 209.941 23.0652 209.941 50.381C209.941 66.7704 223.493 80.3095 239.897 80.3095H300",
+  fibo: { x: 300, y: 80.5 },
   tail: "C0.250008 -185.69 154.06 -339.5 340.25 -339.5",
   stroke: 0.62,
   dot: 2.2,
@@ -148,8 +147,7 @@ const TALL: Geometry = {
   ],
   spiral:
     "M149.643 239.897C155.106 239.897 159.619 244.414 159.619 249.882C159.619 255.35 155.106 259.868 149.643 259.868C138.717 259.868 129.69 250.833 129.69 239.897C129.69 223.493 143.23 209.941 159.619 209.941C186.935 209.941 209.5 232.527 209.5 259.868C209.5 303.613 173.396 339.75 129.69 339.75C58.6695 339.75 0 281.027 0 209.941C0 95.1103 94.7738 0.24998 209.5 0.249985",
-  crawl:
-    "M250 0.249985H209.5C94.7738 0.24998 0 95.1103 0 209.941C0 281.027 58.6695 339.75 129.69 339.75C173.396 339.75 209.5 303.613 209.5 259.868C209.5 232.527 186.935 209.941 159.619 209.941C143.23 209.941 129.69 223.493 129.69 239.897V300",
+  fibo: { x: 185, y: 260 },
   tail: "C395.69 0.250001 549.5 154.06 549.5 340.25",
   stroke: 0.9,
   dot: 3,
@@ -178,8 +176,7 @@ type Rect = Geometry["rects"][number]
 // a border.
 const LINE_OPACITY = 0.55
 
-function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
-  const reduced = usePrefersReducedMotion()
+function Spiral({ geometry }: { geometry: Geometry }) {
   const { viewBox, diagonals, lines, rects, spiral, tail, stroke, sketch } =
     geometry
   return (
@@ -271,67 +268,75 @@ function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
           </g>
         </>
       ) : null}
-
-      <path id={id} d={geometry.crawl} className="hidden" />
-      {reduced ? null : <Snail href={`#${id}`} pixel={stroke} />}
     </svg>
   )
 }
 
 /*
- * Both frames' routes are the same length, and the entry and spiral are this
- * share of it; the rest is the straight run along the cut.
+ * fibo stands at twice the spiral's weight per pixel, so he reads as the
+ * logo rather than a mark on the drawing.
  */
-const SPIRAL_SHARE = 0.932
-const CRAWL_DELAY_S = 1.4
-const SPIRAL_S = 5
-const SETTLE_S = 2
+const FIBO_SCALE = 2
+const FIBO_ASSEMBLE_MS = 1200
+// Sprite units from his origin to his eyes, and how far the pointer must be
+// from them, in art pixels, before he looks that way.
+const FIBO_EYES = { x: 6, y: -10 }
+const FIBO_GLANCE = 1.5
+
+function glance(offset: number): -1 | 0 | 1 {
+  if (offset < -FIBO_GLANCE) return -1
+  return offset > FIBO_GLANCE ? 1 : 0
+}
 
 /*
- * The snail crawls the spiral at a steady pace, turns onto the cut, and
- * eases to a stop there, where it idles. The second spline's opening slope
- * matches the first's closing speed, so it slows down rather than lurching.
+ * fibo builds up from coarse blocks once the spiral has drawn, then dances.
+ * With the pointer over him he stops and follows it with his eyes. His hit
+ * area is padded so a pointer beside him still counts.
  */
-function Snail({ href, pixel }: { href: string; pixel: number }) {
-  const [phase, setPhase] = useState<"spiral" | "settle" | "rest">("spiral")
+function Fibo({ geometry }: { geometry: Geometry }) {
+  const [look, setLook] = useState<PixelSnailLook | null>(null)
+  const pixel = geometry.stroke * FIBO_SCALE
+  const { x, y } = geometry.fibo
+  const pad = 6 * pixel
 
-  useEffect(() => {
-    const settle = window.setTimeout(
-      () => setPhase("settle"),
-      (CRAWL_DELAY_S + SPIRAL_S) * 1000
+  const follow = (event: PointerEvent<SVGRectElement>) => {
+    const svg = event.currentTarget.ownerSVGElement
+    const matrix = svg?.getScreenCTM()?.inverse()
+    if (!svg || !matrix) return
+    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(
+      matrix
     )
-    const rest = window.setTimeout(
-      () => setPhase("rest"),
-      (CRAWL_DELAY_S + SPIRAL_S + SETTLE_S) * 1000
-    )
-    return () => {
-      window.clearTimeout(settle)
-      window.clearTimeout(rest)
-    }
-  }, [])
+    setLook({
+      x: glance((point.x - x) / pixel - FIBO_EYES.x),
+      y: glance((point.y - y) / pixel - FIBO_EYES.y),
+    })
+  }
 
   return (
-    <g opacity={0} className="text-foreground">
-      {/* Until its motion starts the snail would sit at the SVG origin. */}
-      <set attributeName="opacity" to="1" begin={`${CRAWL_DELAY_S}s`} />
-      <animateMotion
-        dur={`${SPIRAL_S + SETTLE_S}s`}
-        begin={`${CRAWL_DELAY_S}s`}
-        fill="freeze"
-        rotate="auto"
-        keyPoints={`0;${SPIRAL_SHARE};1`}
-        keyTimes={`0;${SPIRAL_S / (SPIRAL_S + SETTLE_S)};1`}
-        calcMode="spline"
-        keySplines="0.3 0 0.7 0.7; 0.1 0.55 0.3 1"
-      >
-        <mpath href={href} />
-      </animateMotion>
+    <svg
+      className="pointer-events-none absolute inset-0 size-full overflow-visible"
+      viewBox={geometry.viewBox}
+      aria-hidden="true"
+    >
       <PixelSnailSprite
+        className="text-foreground"
+        transform={`translate(${x} ${y})`}
         pixel={pixel}
-        pace={phase === "spiral" ? "default" : "slow"}
-        resting={phase === "rest"}
+        mode="dance"
+        look={look}
+        assembleDelay={FIBO_ASSEMBLE_MS}
       />
-    </g>
+      <rect
+        x={x - 10 * pixel - pad}
+        y={y - 14 * pixel - pad}
+        width={20 * pixel + pad * 2}
+        height={14 * pixel + pad * 2}
+        fill="transparent"
+        pointerEvents="all"
+        onPointerMove={follow}
+        onPointerLeave={() => setLook(null)}
+      />
+    </svg>
   )
 }
 
@@ -678,9 +683,10 @@ function Frame({
   return (
     <div className="fibo-screen-lines relative border-x border-border">
       <Plate id={id} geometry={geometry} />
-      <Spiral id={id} geometry={geometry} />
+      <Spiral geometry={geometry} />
       <div className={cn("relative grid", className)}>{children}</div>
       <Interactive id={id} geometry={geometry} />
+      <Fibo geometry={geometry} />
     </div>
   )
 }
