@@ -1,0 +1,286 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/toast.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Toast
+
+A toast is a brief message in the corner of the screen about something that
+just happened, such as a save or a failed upload. It leaves on its own.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Built on Base UI's Toast: queue a toast from anywhere, even outside React,
+  with `toast.add()`.
+- Toasts stack in the bottom corner and fan out on hover or focus.
+- Success, info, warning and error types, each with its own icon, plus a
+  loading state that follows a promise.
+- An optional action, such as Undo, and swipe to dismiss.
+
+## Installation
+
+<Install name="toast" exports={["Toaster", "toast"]} />
+
+Toast installs the Button component too, for its action and close buttons.
+
+## Usage
+
+Mount the Toaster once, near the root of your app:
+
+```tsx
+import { Toaster } from "@/components/ui/toast"
+
+export function App({ children }: { children: React.ReactNode }) {
+  return <Toaster>{children}</Toaster>
+}
+```
+
+Then add toasts from anywhere:
+
+```tsx
+import { toast } from "@/components/ui/toast"
+
+toast.add({
+  title: "Changes saved",
+  description: "Your profile is up to date.",
+})
+```
+
+`toast.add` returns an id you can pass to `toast.close` or `toast.update`.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Toaster",
+    note: "Holds the queue. Renders its children, then the toasts in a portal.",
+    children: [
+      {
+        name: "viewport",
+        slot: "toast-viewport",
+        note: "The Notifications region in the bottom corner.",
+        children: [
+          {
+            name: "toast",
+            slot: "toast",
+            note: "One per message. Carries data-type.",
+            children: [
+              {
+                name: "content",
+                slot: "toast-content",
+                children: [
+                  {
+                    name: "icon",
+                    slot: "toast-icon",
+                    note: "For typed toasts only.",
+                  },
+                  { name: "title", slot: "toast-title" },
+                  { name: "description", slot: "toast-description" },
+                  {
+                    name: "action",
+                    slot: "toast-action",
+                    note: "When the toast has actionProps.",
+                  },
+                  {
+                    name: "close",
+                    slot: "toast-close",
+                    note: "The Dismiss button.",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a toast to confirm something people just did, or to report something that happened in the background.",
+    "Keep it short: a title of a few words and at most one line of description.",
+    "Anything people must read or act on belongs on the page or in a dialog, not a toast that disappears.",
+    "Offer one action at most, and only a quick one like Undo. Give toasts with an action a longer timeout.",
+    "Use a type only when it means something. Most confirmations are plain.",
+  ]}
+/>
+
+<Tip>
+  `toast.promise(promise, { loading, success, error })` shows a loading toast
+  and swaps it for the result when the promise settles.
+</Tip>
+
+## Examples
+
+### Types
+
+`type` adds an icon in the matching status colour.
+
+<Canvas of={Stories.Types} />
+
+### With action
+
+`actionProps` adds a button. Here, Undo closes the toast with the id that
+`toast.add` returned.
+
+<Canvas of={Stories.WithAction} />
+
+### Promise
+
+A loading toast that becomes a success after two seconds.
+
+<Canvas of={Stories.Pending} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-64 items-center gap-3 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <div className="flex flex-1 flex-col gap-1">
+              <span className="font-medium">Changes saved</span>
+              <span className="text-muted-foreground">
+                Your profile is up to date.
+              </span>
+            </div>
+          </div>
+        ),
+        description: "Confirm what just happened, in a few words.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-64 items-center gap-3 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <div className="flex flex-1 flex-col gap-1">
+              <span className="font-medium">Delete your account?</span>
+              <span className="text-muted-foreground">
+                This removes all 14 projects and can't be undone. Confirm within
+                5 seconds.
+              </span>
+            </div>
+          </div>
+        ),
+        description:
+          "Don't ask for a decision in a toast. It disappears; use a dialog.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Toaster takes Base UI's `Toast.Provider` props, including `timeout` (5000
+ms by default, 0 to keep toasts until dismissed) and `limit` (3). `toast.add`
+takes `title`, `description`, `type`, `timeout`, `priority` and
+`actionProps`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="toast-viewport"',
+      element: "The viewport",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="toast-portal"',
+      element: "The portal",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="toast"',
+      element: "Each toast",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="toast-content"',
+      element: "A toast's content",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="toast-icon"',
+      element: "The type icon",
+      when: "The toast has a type.",
+    },
+    {
+      attribute: 'data-slot="toast-title"',
+      element: "The title",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="toast-description"',
+      element: "The description",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="toast-action"',
+      element: "The action button",
+      when: (
+        <>
+          The toast was added with <code>actionProps</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="toast-close"',
+      element: "The Dismiss button",
+      when: "Always.",
+    },
+    {
+      attribute: "data-type",
+      element: "Each toast",
+      when: "It was added with a type.",
+    },
+    {
+      attribute: "data-expanded",
+      element: "Each toast",
+      when: "The stack is fanned out by hover or focus.",
+    },
+    {
+      attribute: "data-limited",
+      element: "Each toast",
+      when: "It's past the limit and hidden.",
+    },
+    {
+      attribute: "data-swipe-direction",
+      element: "Each toast",
+      when: "It's being swiped away.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "Each toast is announced through a live region as it appears. A high-priority toast interrupts; the rest wait for a pause.",
+    "F6 moves focus to the Notifications region, and Tab reaches each toast. Escape closes the focused toast.",
+    "A toast doesn't time out while the pointer is over the stack or focus is inside it.",
+    "The Dismiss button stays hidden from screen readers until the stack is expanded, so it isn't announced with every message.",
+    "Type icons are decorative. Put the meaning in the title: “Upload failed”, not just a red icon.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Progress", "Button"]} />
+
+## References
+
+- [Base UI Toast](https://base-ui.com/react/components/toast)
+- [WAI-ARIA live regions](https://developer.mozilla.org/docs/Web/Accessibility/ARIA/Guides/Live_regions)
