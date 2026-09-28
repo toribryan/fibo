@@ -1,0 +1,383 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/select.stories"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../../packages/ui/src/components/select"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Select
+
+A select picks one option from a list that opens on demand. It keeps a long
+list of choices down to one line until someone needs it.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Built on Base UI's Select, so it's announced as a combobox with a
+  listbox, not as a button.
+- The list opens over the trigger with the chosen option lined up on it, as
+  native menus do.
+- Groups with labels and separators for longer lists.
+- Typeahead: with the list open, typing a letter jumps to the next option
+  that starts with it.
+
+## Installation
+
+<Install
+  name="select"
+  exports={[
+    "Select",
+    "SelectTrigger",
+    "SelectValue",
+    "SelectContent",
+    "SelectItem",
+  ]}
+/>
+
+`SelectGroup`, `SelectLabel` and `SelectSeparator` are exported too, for
+grouped lists.
+
+## Usage
+
+```tsx
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+const fruits = [
+  { value: "apple", label: "Apple" },
+  { value: "banana", label: "Banana" },
+]
+
+export function FruitPicker() {
+  return (
+    <Select items={fruits}>
+      <SelectTrigger aria-label="Fruit" className="w-48">
+        <SelectValue placeholder="Pick a fruit" />
+      </SelectTrigger>
+      <SelectContent>
+        {fruits.map((fruit) => (
+          <SelectItem key={fruit.value} value={fruit.value}>
+            {fruit.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
+}
+```
+
+Pass `items` to the Select so the trigger shows an option's label, not its
+raw value, before the list has ever opened.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Select",
+    note: "Holds the state. Renders no element of its own.",
+    children: [
+      {
+        name: "SelectTrigger",
+        slot: "select-trigger",
+        note: "The field people click. Carries data-size.",
+        children: [
+          {
+            name: "SelectValue",
+            slot: "select-value",
+            note: "The chosen option, or the placeholder.",
+          },
+        ],
+      },
+      {
+        name: "SelectContent",
+        slot: "select-content",
+        note: "The list, in a portal on the body while it's open.",
+        children: [
+          {
+            name: "SelectScrollUpButton",
+            slot: "select-scroll-up-button",
+            note: "Shows while there are options above the fold.",
+          },
+          {
+            name: "SelectGroup",
+            slot: "select-group",
+            note: "Optional. Wraps a labelled run of options.",
+            children: [
+              {
+                name: "SelectLabel",
+                slot: "select-label",
+                note: "The group's heading.",
+              },
+            ],
+          },
+          {
+            name: "SelectItem",
+            slot: "select-item",
+            note: "One per option, with a check while it's chosen.",
+          },
+          {
+            name: "SelectSeparator",
+            slot: "select-separator",
+            note: "Optional. A rule between groups.",
+          },
+          {
+            name: "SelectScrollDownButton",
+            slot: "select-scroll-down-button",
+            note: "Shows while there are options below the fold.",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a select for one choice from about six or more options, or when space is tight.",
+    "For fewer options that people should compare, show them all with a radio group.",
+    "Write a placeholder that says what to pick, like “Pick a timezone”, or start with a sensible option chosen.",
+    "Group long lists under short labels, and sort options within each group.",
+    "If people need to search or type their own value, a select is the wrong part.",
+  ]}
+/>
+
+<Tip>
+  Set `alignItemWithTrigger={false}` on SelectContent to drop the list below the
+  trigger instead of over it, as a menu would.
+</Tip>
+
+## Examples
+
+### With label
+
+A visible Label, connected to the trigger with `htmlFor` and `id`.
+
+<Canvas of={Stories.WithLabel} />
+
+### Groups
+
+SelectGroup, SelectLabel and SelectSeparator break a list into sections.
+
+<Canvas of={Stories.Groups} />
+
+### Small
+
+`size="sm"` on the trigger matches dense forms.
+
+<Canvas of={Stories.Small} />
+
+### Invalid
+
+`aria-invalid` on the trigger turns its border destructive.
+
+<Canvas of={Stories.Invalid} />
+
+### Disabled
+
+`disabled` on the Select dims the trigger and stops it opening.
+
+<Canvas of={Stories.Disabled} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Select
+            defaultValue="london"
+            items={[
+              { value: "berlin", label: "Berlin" },
+              { value: "lisbon", label: "Lisbon" },
+              { value: "london", label: "London" },
+              { value: "new-york", label: "New York" },
+              { value: "tokyo", label: "Tokyo" },
+              { value: "sydney", label: "Sydney" },
+            ]}
+          >
+            <SelectTrigger aria-label="Timezone" className="w-44">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[
+                "Berlin",
+                "Lisbon",
+                "London",
+                "New York",
+                "Tokyo",
+                "Sydney",
+              ].map((city) => (
+                <SelectItem
+                  key={city}
+                  value={city.toLowerCase().replace(" ", "-")}
+                >
+                  {city}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ),
+        description:
+          "Use a select for a longer list, starting on a sensible choice.",
+      },
+      negative: {
+        component: (
+          <Select
+            items={[
+              { value: "yes", label: "Yes" },
+              { value: "no", label: "No" },
+            ]}
+          >
+            <SelectTrigger aria-label="Subscribe" className="w-44">
+              <SelectValue placeholder="Subscribe?" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="yes">Yes</SelectItem>
+              <SelectItem value="no">No</SelectItem>
+            </SelectContent>
+          </Select>
+        ),
+        description:
+          "Don't hide two options behind a click. Show them with a radio group, or use a checkbox.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Select takes every prop of Base UI's `Select.Root`, including `value`,
+`defaultValue`, `onValueChange`, `items`, `name` and `disabled`. SelectContent
+also takes the positioning props `side`, `sideOffset`, `align`,
+`alignOffset` and `alignItemWithTrigger`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="select-trigger"',
+      element: "The trigger",
+      when: "Always.",
+    },
+    {
+      attribute: "data-size",
+      element: "The trigger",
+      when: (
+        <>
+          Always. <code>default</code> or <code>sm</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-placeholder",
+      element: "The trigger and the value",
+      when: "Nothing is chosen yet.",
+    },
+    {
+      attribute: "data-popup-open",
+      element: "The trigger",
+      when: "The list is open.",
+    },
+    {
+      attribute: 'data-slot="select-value"',
+      element: "The value",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="select-content"',
+      element: "The list",
+      when: "While it's open.",
+    },
+    {
+      attribute: 'data-slot="select-group"',
+      element: "A group",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="select-label"',
+      element: "A group's label",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="select-item"',
+      element: "Each item",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="select-separator"',
+      element: "A separator",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="select-scroll-up-button"',
+      element: "The scroll arrow above the list",
+      when: "There are options above the fold.",
+    },
+    {
+      attribute: 'data-slot="select-scroll-down-button"',
+      element: "The scroll arrow below the list",
+      when: "There are options below the fold.",
+    },
+    {
+      attribute: "data-highlighted",
+      element: "An item",
+      when: "The pointer or keyboard is on it.",
+    },
+    {
+      attribute: "data-selected",
+      element: "An item",
+      when: "It's the chosen option.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "The trigger or an item",
+      when: "It's disabled.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Name the trigger with a Label connected by <code>htmlFor</code>, or with{" "}
+      <code>aria-label</code> when there's no visible label.
+    </>,
+    "Enter or Space opens the list. Arrow keys move through the options, Enter chooses, and Escape closes it. Focus returns to the trigger either way.",
+    "While the list is open, typing a letter jumps to the next option that starts with it.",
+    "The chosen option shows a check as well as the highlight, so it doesn't depend on colour alone.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Radio group", "Input", "Label"]} />
+
+## References
+
+- [Base UI Select](https://base-ui.com/react/components/select)
+- [WAI-ARIA select-only combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/)

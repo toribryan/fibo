@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { ArrowUpRightIcon, PlusIcon } from "lucide-react"
+import { ArrowUpRightIcon, ChevronDownIcon, PlusIcon } from "lucide-react"
 
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -68,6 +68,60 @@ const PREVIEWS: Record<string, ReactNode> = {
     </div>
   ),
   textarea: <Textarea placeholder="Leave a note" className="w-52" />,
+  switch: (
+    <div className="flex items-center gap-3">
+      {[true, false].map((on) => (
+        <span
+          key={String(on)}
+          className={cn(
+            "flex h-[18px] w-8 items-center rounded-full p-px",
+            on ? "justify-end bg-primary" : "bg-input"
+          )}
+        >
+          <span
+            className={cn(
+              "size-4 rounded-full shadow-sm",
+              on ? "bg-primary-foreground" : "bg-background"
+            )}
+          />
+        </span>
+      ))}
+    </div>
+  ),
+  "radio-group": (
+    <div className="flex flex-col gap-2">
+      {["Monthly", "Yearly"].map((label, index) => (
+        <span key={label} className="flex items-center gap-2 text-sm">
+          <span
+            className={cn(
+              "flex size-4 items-center justify-center rounded-full border",
+              index === 0
+                ? "border-primary bg-primary"
+                : "border-input bg-input-subtle"
+            )}
+          >
+            {index === 0 ? (
+              <span className="size-2 rounded-full bg-primary-foreground" />
+            ) : null}
+          </span>
+          {label}
+        </span>
+      ))}
+    </div>
+  ),
+  select: (
+    <span className="flex h-9 w-44 items-center justify-between rounded-sm border border-input bg-input-subtle px-3 text-sm">
+      Blueberry
+      <ChevronDownIcon className="size-4 text-muted-foreground" />
+    </span>
+  ),
+  slider: (
+    <span className="relative flex h-4 w-44 items-center">
+      <span className="h-1.5 w-full rounded-full bg-input" />
+      <span className="absolute left-0 h-1.5 w-[60%] rounded-full bg-primary" />
+      <span className="absolute left-[calc(60%-8px)] size-4 rounded-full border border-primary bg-background shadow-sm" />
+    </span>
+  ),
   "token-flow": (
     <div className="flex items-center gap-1.5 font-mono text-[10px]">
       {["oklch(0.205 0 0)", "neutral-900", "bg-primary"].map((label, index) => (

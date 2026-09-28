@@ -1,0 +1,236 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/radio-group.stories"
+import { Label } from "../../../../packages/ui/src/components/label"
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "../../../../packages/ui/src/components/radio-group"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Radio group
+
+A radio group picks exactly one option from a short list, with every option
+visible at once.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- One choice at a time, built on Base UI's Radio group.
+- Arrow keys move the selection through the options; Tab enters and leaves
+  the group as one stop.
+- Each item's hit area reaches past the 16px circle to the 24px minimum.
+- Disable the whole group, or a single option.
+
+## Installation
+
+<Install name="radio-group" exports={["RadioGroup", "RadioGroupItem"]} />
+
+## Usage
+
+```tsx
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+
+export function PlanPicker() {
+  return (
+    <RadioGroup defaultValue="pro" aria-label="Plan">
+      <div className="flex items-center gap-2">
+        <RadioGroupItem value="hobby" id="hobby" />
+        <Label htmlFor="hobby">Hobby</Label>
+      </div>
+      <div className="flex items-center gap-2">
+        <RadioGroupItem value="pro" id="pro" />
+        <Label htmlFor="pro">Pro</Label>
+      </div>
+    </RadioGroup>
+  )
+}
+```
+
+Give every item a unique `value`. The group reports the chosen one through
+`onValueChange`.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "RadioGroup",
+    slot: "radio-group",
+    note: "Holds the options and their shared value.",
+    children: [
+      {
+        name: "RadioGroupItem",
+        slot: "radio-group-item",
+        note: "One per option. The circle people click.",
+        children: [
+          {
+            name: "indicator",
+            slot: "radio-group-indicator",
+            note: "The dot. Renders while the item is chosen.",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a radio group for two to about six options when people should compare them side by side.",
+    "For longer lists, or when space is tight, use a select.",
+    "Start with a sensible option chosen. A radio group can't be cleared back to nothing once someone picks.",
+    "Order options logically: smallest to largest, most to least common, or alphabetically.",
+    "Stack options in a column. Use a row only for two or three short labels.",
+  ]}
+/>
+
+## Examples
+
+### With descriptions
+
+A line under each label explains the option, linked with
+`aria-describedby`.
+
+<Canvas of={Stories.WithDescriptions} />
+
+### Horizontal
+
+A row, for two or three short options.
+
+<Canvas of={Stories.Horizontal} />
+
+### Disabled
+
+`disabled` on the group dims every option.
+
+<Canvas of={Stories.Disabled} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <RadioGroup defaultValue="monthly" aria-label="Billing">
+            {["Monthly", "Yearly"].map((label) => (
+              <div key={label} className="flex items-center gap-2">
+                <RadioGroupItem
+                  value={label.toLowerCase()}
+                  id={`rule-yes-${label}`}
+                />
+                <Label htmlFor={`rule-yes-${label}`}>{label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        ),
+        description: "Show a short list with a sensible default chosen.",
+      },
+      negative: {
+        component: (
+          <RadioGroup aria-label="Country" className="grid-cols-3 gap-2">
+            {[
+              "Austria",
+              "Belgium",
+              "Croatia",
+              "Denmark",
+              "Estonia",
+              "Finland",
+              "France",
+              "Germany",
+              "Greece",
+            ].map((label) => (
+              <div key={label} className="flex items-center gap-2">
+                <RadioGroupItem value={label} id={`rule-no-${label}`} />
+                <Label htmlFor={`rule-no-${label}`}>{label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        ),
+        description:
+          "Don't lay out a long list as radios. Use a select, and keep the page short.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+RadioGroup takes every prop of Base UI's `RadioGroup`, including `value`,
+`defaultValue`, `onValueChange`, `name` and `disabled`. RadioGroupItem takes
+`Radio.Root`'s, including `value` and `disabled`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="radio-group"',
+      element: "The group",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="radio-group-item"',
+      element: "Each item",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="radio-group-indicator"',
+      element: "The dot",
+      when: "The item is chosen.",
+    },
+    {
+      attribute: "data-checked",
+      element: "An item and its indicator",
+      when: "That option is chosen.",
+    },
+    {
+      attribute: "data-unchecked",
+      element: "An item",
+      when: "That option isn't chosen.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "The group and each item",
+      when: "The group or that item is disabled.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Name the group with <code>aria-label</code>, or wrap it in a fieldset with
+      a legend, so screen readers announce what the options are for.
+    </>,
+    "Tab moves into the group onto the chosen option, and out again in one step. Arrow keys move between options and choose as they go.",
+    <>
+      Connect each Label with <code>htmlFor</code> and <code>id</code>. The
+      label is part of the hit area.
+    </>,
+    "The dot shows the chosen option as well as the fill, so it doesn't depend on colour alone.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Select", "Checkbox", "Label"]} />
+
+## References
+
+- [Base UI Radio group](https://base-ui.com/react/components/radio-group)
+- [WAI-ARIA radio group pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/)
