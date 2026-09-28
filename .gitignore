@@ -60,3 +60,9 @@ apps/registry/public/llms.txt
 
 # personal Claude Code settings
 .claude/settings.local.json
+
+# test output
+coverage
+__screenshots__
+.vitest-attachments
+build-storybook.log

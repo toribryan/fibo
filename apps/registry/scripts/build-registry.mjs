@@ -36,7 +36,7 @@ await rm(transformedDir, { recursive: true, force: true })
 await mkdir(transformedDir, { recursive: true })
 
 const files = (await readdir(componentsDir))
-  .filter((f) => f.endsWith(".tsx") && !f.endsWith(".stories.tsx"))
+  .filter((f) => f.endsWith(".tsx") && !/\.(stories|test)\.tsx$/.test(f))
   .sort()
 
 const items = []

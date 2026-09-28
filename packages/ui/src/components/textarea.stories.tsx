@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { expect } from "storybook/test"
 
 import { Textarea } from "./textarea.js"
 
@@ -13,7 +14,17 @@ const meta: Meta<typeof Textarea> = {
 export default meta
 type Story = StoryObj<typeof Textarea>
 
-export const Default: Story = {}
+export const Default: Story = {
+  play: async ({ canvas, userEvent }) => {
+    const textarea = canvas.getByPlaceholderText("Type your message here...")
+    const start = textarea.getBoundingClientRect().height
+    await userEvent.type(
+      textarea,
+      "One{Enter}Two{Enter}Three{Enter}Four{Enter}Five"
+    )
+    await expect(textarea.getBoundingClientRect().height).toBeGreaterThan(start)
+  },
+}
 
 export const Disabled: Story = {
   args: {

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { expect } from "storybook/test"
 
 import { Input } from "./input.js"
 import { Label } from "./label.js"
@@ -23,4 +24,8 @@ export const WithInput: Story = {
       <Input id="email" type="email" placeholder="you@example.com" />
     </div>
   ),
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByText("Email"))
+    await expect(canvas.getByLabelText("Email")).toHaveFocus()
+  },
 }

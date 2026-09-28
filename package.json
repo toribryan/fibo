@@ -29,6 +29,7 @@
     "storybook": "turbo run dev --filter=storybook",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
+    "test": "turbo test",
     "format:check": "prettier --check . --cache",
     "format:write": "prettier --write . --cache",
     "registry:build": "pnpm --filter registry build",

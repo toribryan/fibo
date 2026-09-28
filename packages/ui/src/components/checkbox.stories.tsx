@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { expect } from "storybook/test"
 
 import { Checkbox } from "./checkbox.js"
 import { Label } from "./label.js"
@@ -6,6 +7,10 @@ import { Label } from "./label.js"
 const meta: Meta<typeof Checkbox> = {
   title: "Components/Checkbox",
   component: Checkbox,
+  // The bare stories have no visible Label, so they name the box directly.
+  args: {
+    "aria-label": "Accept terms and conditions",
+  },
 }
 
 export default meta
@@ -32,4 +37,14 @@ export const WithLabel: Story = {
       <Label htmlFor="terms">Accept terms and conditions</Label>
     </div>
   ),
+  play: async ({ canvas, userEvent }) => {
+    const box = canvas.getByRole("checkbox", {
+      name: "Accept terms and conditions",
+    })
+    await expect(box).not.toBeChecked()
+    await userEvent.click(canvas.getByText("Accept terms and conditions"))
+    await expect(box).toBeChecked()
+    await userEvent.keyboard(" ")
+    await expect(box).not.toBeChecked()
+  },
 }

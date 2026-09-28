@@ -20,7 +20,7 @@ Node 24 (pinned in `.nvmrc`).
 | `apps/storybook/.storybook/`       | Storybook config: sidebar, theme toggle, docs container              |
 | `apps/storybook/src/pages/`        | Welcome, Getting started, Catalog, Changelog, Contributing           |
 | `apps/storybook/src/components/`   | One `.mdx` docs page per component                                   |
-| `apps/storybook/src/blocks/`       | Docs blocks: playground, guidelines, do's and don'ts, catalog, hero  |
+| `apps/storybook/src/blocks/`       | Docs blocks: anatomy, data attributes, guidelines, catalog, hero     |
 | `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                 |
 | `packages/eslint-config/`          | Shared ESLint flat configs                                           |
 | `packages/typescript-config/`      | Shared tsconfigs                                                     |
@@ -39,6 +39,7 @@ pnpm build:site       # build, then assemble the deployable site in dist/
 pnpm registry:build   # registry only
 pnpm lint             # ESLint in every workspace, zero warnings allowed
 pnpm typecheck        # tsc in every workspace; run build first on a clean tree
+pnpm test             # unit and story tests in Chromium, with axe checks
 pnpm format:check     # Prettier
 pnpm format:write
 ```
@@ -46,9 +47,31 @@ pnpm format:write
 ## Definition of done
 
 A change is ready when all of these pass from the repo root:
-`pnpm format:check`, `pnpm lint`, `pnpm build`, `pnpm typecheck`. CI runs the
-same four on every pull request. For a component change, also open it in
-Storybook in both themes and check the keyboard path.
+`pnpm format:check`, `pnpm lint`, `pnpm build`, `pnpm typecheck`, `pnpm test`.
+CI runs the same five on every pull request. For a component change, also open
+it in Storybook in both themes and check the keyboard path.
+
+## Testing
+
+Four layers, all run by `pnpm test` except visual regression:
+
+- **Story tests.** `@storybook/addon-vitest` renders every story in Chromium.
+  A story fails if it throws, if its `play` function fails, or if axe finds a
+  violation (`parameters.a11y.test` is `"error"`). Config:
+  `apps/storybook/vitest.config.ts`.
+- **Interaction tests.** `play` functions on stories, using `storybook/test`.
+  Every interactive part has one on its `Default` story that drives it by
+  pointer and keyboard. Never import from `vitest` in a story file; stories
+  also run in Storybook.
+- **Unit tests.** `packages/ui/src/**/*.test.{ts,tsx}`, run in Chromium with
+  `vitest-browser-react`. Use them for logic and contracts a story does not
+  show: formatting, limits, controlled callbacks, variant classes.
+- **Visual regression.** Chromatic snapshots every story on pull requests
+  (`.github/workflows/chromatic.yml`). Changes are reviewed and approved in
+  Chromatic, not in the repo.
+
+A story that shows a part without a visible label must name it with
+`aria-label` in its args, or the axe check fails.
 
 ## Adding a component
 

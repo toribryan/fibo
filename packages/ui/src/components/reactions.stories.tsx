@@ -1,4 +1,5 @@
 import type { Decorator, Meta, StoryObj } from "@storybook/react-vite"
+import { expect, waitFor } from "storybook/test"
 import { useState } from "react"
 
 import { Reactions, type Reaction } from "./reactions.js"
@@ -72,7 +73,31 @@ const meta: Meta<typeof Reactions> = {
 export default meta
 type Story = StoryObj<typeof Reactions>
 
-export const Default: Story = {}
+export const Default: Story = {
+  play: async ({ canvas, userEvent }) => {
+    const thumbs = canvas.getByRole("button", { name: /^Thumbs up/ })
+    await expect(thumbs).toHaveAttribute("aria-pressed", "false")
+    await userEvent.click(thumbs)
+    await expect(thumbs).toHaveAttribute("aria-pressed", "true")
+    await expect(thumbs).toHaveAccessibleName(/6 reactions/)
+    await userEvent.click(thumbs)
+    await expect(thumbs).toHaveAccessibleName(/5 reactions/)
+
+    const trigger = canvas.getByRole("button", { name: "Add reaction" })
+    await userEvent.click(trigger)
+    await expect(trigger).toHaveAttribute("aria-expanded", "true")
+    await waitFor(() =>
+      expect(
+        canvas.getByRole("group", { name: "Pick a reaction" })
+      ).toBeVisible()
+    )
+    await userEvent.keyboard("{Escape}")
+    await waitFor(() =>
+      expect(trigger).toHaveAttribute("aria-expanded", "false")
+    )
+    await expect(trigger).toHaveFocus()
+  },
+}
 
 export const Empty: Story = {
   name: "No reactions yet",
