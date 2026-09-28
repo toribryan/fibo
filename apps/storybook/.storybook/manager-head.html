@@ -103,11 +103,13 @@
     color: var(--fibo-fg);
   }
 
-  /* Storybook 10's item menu fades in over the label with a hard-coded blue
-     backdrop and glow. Match them to the hover fill so the fade is neutral. */
-  #storybook-explorer-menu [data-testid="context-menu"] {
-    background: var(--fibo-hover) !important;
-    box-shadow: 0 0 5px 5px var(--fibo-hover) !important;
+  /* Storybook 10 backs the item menu and status buttons with a fill and a
+     blurred glow to fade out the label beneath. Labels here are short enough
+     not to reach them, and the glow reads as a smudge on the selected row. */
+  #storybook-explorer-menu [data-testid="context-menu"],
+  #storybook-explorer-menu [data-testid="tree-change-status-button"] {
+    background: none !important;
+    box-shadow: none !important;
   }
 
   /* Hairlines between sidebar, toolbar and page instead of shadows. */
