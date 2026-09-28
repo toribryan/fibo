@@ -9,6 +9,8 @@ import { Label } from "@workspace/ui/components/label"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 
+import componentsMeta from "@workspace/ui/components.meta.json" with { type: "json" }
+
 import { DocLink } from "./doc-link.js"
 
 type Tier = "components" | "niche"
@@ -33,204 +35,148 @@ const GROUPS: Record<Tier, string[]> = {
 const SCRUBBER_WAVE = [14, 14, 16, 24, 40, 56, 40, 24, 16, 14, 14, 14]
 
 // Previews are inert: a catalog card is one link, so nothing inside it can
-// take focus or swallow the click.
-const ENTRIES: Entry[] = [
-  {
-    name: "Button",
-    id: "components-button--docs",
-    description: "Triggers an action or event with a single click.",
-    tier: "components",
-    group: "Actions",
-    preview: (
-      <div className="flex gap-2">
-        <Button size="sm">Save</Button>
-        <Button size="sm" variant="outline">
-          Cancel
-        </Button>
-      </div>
-    ),
-  },
-  {
-    name: "Badge",
-    id: "components-badge--docs",
-    description: "A short label for status, category or count.",
-    tier: "components",
-    group: "Display",
-    preview: (
-      <div className="flex gap-2">
-        <Badge>Live</Badge>
-        <Badge variant="secondary">Draft</Badge>
-        <Badge variant="outline">v2</Badge>
-      </div>
-    ),
-  },
-  {
-    name: "Checkbox",
-    id: "components-checkbox--docs",
-    description: "Turns a single option on or off, or picks many from a list.",
-    tier: "components",
-    group: "Forms",
-    preview: (
-      <div className="flex items-center gap-2">
-        <Checkbox defaultChecked />
-        <span className="text-sm">Remember me</span>
-      </div>
-    ),
-  },
-  {
-    name: "Input",
-    id: "components-input--docs",
-    description: "A single line of free text.",
-    tier: "components",
-    group: "Forms",
-    preview: <Input placeholder="you@example.com" className="w-48" />,
-  },
-  {
-    name: "Label",
-    id: "components-label--docs",
-    description: "Names a form control and widens its hit area.",
-    tier: "components",
-    group: "Forms",
-    preview: (
-      <div className="flex w-48 flex-col gap-1.5">
-        <Label>Email</Label>
-        <div className="h-8 rounded-lg border border-input" />
-      </div>
-    ),
-  },
-  {
-    name: "Textarea",
-    id: "components-textarea--docs",
-    description: "Several lines of free text that grow with the content.",
-    tier: "components",
-    group: "Forms",
-    preview: <Textarea placeholder="Leave a note" className="w-52" />,
-  },
-  {
-    name: "Token flow",
-    id: "niche-token-flow--docs",
-    description:
-      "Walks a colour token from raw value to primitive to semantic role.",
-    tier: "niche",
-    group: "Diagrams",
-    status: "new",
-    preview: (
-      <div className="flex items-center gap-1.5 font-mono text-[10px]">
-        {["oklch(0.205 0 0)", "neutral-900", "bg-primary"].map(
-          (label, index) => (
-            <span key={label} className="flex items-center gap-1.5">
-              {index > 0 ? <span className="h-px w-4 bg-border" /> : null}
-              <span className="inline-flex h-5 items-center gap-1 rounded-full border border-border bg-card px-1.5 whitespace-nowrap">
-                <span className="size-2 rounded-full bg-primary" />
-                {label}
-              </span>
-            </span>
-          )
-        )}
-      </div>
-    ),
-  },
-  {
-    name: "Reactions",
-    id: "niche-reactions--docs",
-    description: "Lets people respond to content with an emoji in one tap.",
-    tier: "niche",
-    group: "Feedback",
-    status: "new",
-    preview: (
-      <div className="flex gap-1.5">
-        {[
-          ["\u{1F44D}", 5],
-          ["❤️", 3],
-        ].map(([emoji, count]) => (
-          <span
-            key={emoji}
-            className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-sm"
-          >
-            {emoji}
-            <span className="font-mono text-xs tabular-nums">{count}</span>
+// take focus or swallow the click. Everything else about an entry comes from
+// packages/ui/components.meta.json, the same file the registry build reads.
+const PREVIEWS: Record<string, ReactNode> = {
+  button: (
+    <div className="flex gap-2">
+      <Button size="sm">Save</Button>
+      <Button size="sm" variant="outline">
+        Cancel
+      </Button>
+    </div>
+  ),
+  badge: (
+    <div className="flex gap-2">
+      <Badge>Live</Badge>
+      <Badge variant="secondary">Draft</Badge>
+      <Badge variant="outline">v2</Badge>
+    </div>
+  ),
+  checkbox: (
+    <div className="flex items-center gap-2">
+      <Checkbox defaultChecked />
+      <span className="text-sm">Remember me</span>
+    </div>
+  ),
+  input: <Input placeholder="you@example.com" className="w-48" />,
+  label: (
+    <div className="flex w-48 flex-col gap-1.5">
+      <Label>Email</Label>
+      <div className="h-8 rounded-lg border border-input" />
+    </div>
+  ),
+  textarea: <Textarea placeholder="Leave a note" className="w-52" />,
+  "token-flow": (
+    <div className="flex items-center gap-1.5 font-mono text-[10px]">
+      {["oklch(0.205 0 0)", "neutral-900", "bg-primary"].map((label, index) => (
+        <span key={label} className="flex items-center gap-1.5">
+          {index > 0 ? <span className="h-px w-4 bg-border" /> : null}
+          <span className="inline-flex h-5 items-center gap-1 rounded-full border border-border bg-card px-1.5 whitespace-nowrap">
+            <span className="size-2 rounded-full bg-primary" />
+            {label}
           </span>
-        ))}
-        <span className="inline-flex size-8 items-center justify-center rounded-full border border-dashed border-border text-muted-foreground">
-          <PlusIcon className="size-3.5" />
         </span>
-      </div>
-    ),
-  },
-  {
-    name: "Integration visual",
-    id: "niche-integration-visual--docs",
-    description:
-      "A hub and the tools wired into it, with pulses on the routes.",
-    tier: "niche",
-    group: "Diagrams",
-    status: "new",
-    preview: (
-      <svg
-        viewBox="0 0 160 100"
-        className="w-44"
-        fill="none"
-        aria-hidden="true"
-      >
-        <g className="stroke-border">
-          <path d="M74 50V34Q74 24 64 24H30" />
-          <path d="M86 50V34Q86 24 96 24H130" />
-          <path d="M74 50V66Q74 76 64 76H30" />
-          <path d="M86 50V66Q86 76 96 76H130" />
-        </g>
-        {[
-          [30, 24],
-          [130, 24],
-          [30, 76],
-          [130, 76],
-        ].map(([x, y]) => (
-          <rect
-            key={`${x}-${y}`}
-            x={x! - 9}
-            y={y! - 9}
-            width={18}
-            height={18}
-            rx={4}
-            className="fill-card stroke-border"
+      ))}
+    </div>
+  ),
+  reactions: (
+    <div className="flex gap-1.5">
+      {[
+        ["\u{1F44D}", 5],
+        ["❤️", 3],
+      ].map(([emoji, count]) => (
+        <span
+          key={emoji}
+          className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 text-sm"
+        >
+          {emoji}
+          <span className="font-mono text-xs tabular-nums">{count}</span>
+        </span>
+      ))}
+      <span className="inline-flex size-8 items-center justify-center rounded-full border border-dashed border-border text-muted-foreground">
+        <PlusIcon className="size-3.5" />
+      </span>
+    </div>
+  ),
+  "integration-visual": (
+    <svg viewBox="0 0 160 100" className="w-44" fill="none" aria-hidden="true">
+      <g className="stroke-border">
+        <path d="M74 50V34Q74 24 64 24H30" />
+        <path d="M86 50V34Q86 24 96 24H130" />
+        <path d="M74 50V66Q74 76 64 76H30" />
+        <path d="M86 50V66Q86 76 96 76H130" />
+      </g>
+      {[
+        [30, 24],
+        [130, 24],
+        [30, 76],
+        [130, 76],
+      ].map(([x, y]) => (
+        <rect
+          key={`${x}-${y}`}
+          x={x! - 9}
+          y={y! - 9}
+          width={18}
+          height={18}
+          rx={4}
+          className="fill-card stroke-border"
+        />
+      ))}
+      <rect
+        x={66}
+        y={36}
+        width={28}
+        height={28}
+        rx={7}
+        className="fill-background stroke-ring"
+      />
+      <circle cx={80} cy={50} r={3} className="fill-foreground" />
+    </svg>
+  ),
+  "chapter-scrubber": (
+    <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-2">
+        {SCRUBBER_WAVE.map((width, i) => (
+          <span
+            key={i}
+            className="block h-0.5 rounded-full bg-foreground"
+            style={{ width, opacity: 0.25 + ((width - 14) / 42) * 0.75 }}
           />
         ))}
-        <rect
-          x={66}
-          y={36}
-          width={28}
-          height={28}
-          rx={7}
-          className="fill-background stroke-ring"
-        />
-        <circle cx={80} cy={50} r={3} className="fill-foreground" />
-      </svg>
-    ),
-  },
-  {
-    name: "Chapter scrubber",
-    id: "niche-chapter-scrubber--docs",
-    description: "A rail of marks that swell under the pointer like the Dock.",
-    tier: "niche",
-    group: "Navigation",
-    status: "new",
-    preview: (
-      <div className="flex items-center gap-4">
-        <div className="flex flex-col gap-2">
-          {SCRUBBER_WAVE.map((width, i) => (
-            <span
-              key={i}
-              className="block h-0.5 rounded-full bg-foreground"
-              style={{ width, opacity: 0.25 + ((width - 14) / 42) * 0.75 }}
-            />
-          ))}
-        </div>
-        <span className="rounded-lg border border-border bg-popover px-2.5 py-1.5 text-xs font-medium shadow-sm">
-          Semantic roles
-        </span>
       </div>
-    ),
-  },
-]
+      <span className="rounded-lg border border-border bg-popover px-2.5 py-1.5 text-xs font-medium shadow-sm">
+        Semantic roles
+      </span>
+    </div>
+  ),
+}
+
+type Meta = {
+  title: string
+  description: string
+  tier: Tier
+  group: string
+  status?: "new" | "beta"
+}
+
+const META = Object.entries(componentsMeta).filter(
+  (entry): entry is [string, Meta] => entry[0] !== "$comment"
+)
+
+const ENTRIES: Entry[] = META.map(([key, info]) => ({
+  name: info.title,
+  id: `${info.tier}-${key}--docs`,
+  description: info.description,
+  tier: info.tier,
+  group: info.group,
+  status: info.status,
+  preview: PREVIEWS[key] ?? (
+    <span className="text-sm font-medium text-muted-foreground">
+      {info.title}
+    </span>
+  ),
+}))
 
 function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
   return (

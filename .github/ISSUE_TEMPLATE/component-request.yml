@@ -1,0 +1,29 @@
+name: Component request
+description: Suggest a new part for fibo.
+labels: [component request]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Name
+      placeholder: Tooltip
+    validations:
+      required: true
+  - type: dropdown
+    id: shelf
+    attributes:
+      label: Shelf
+      description: Components are the standard set; Niche parts are playful and built for one moment.
+      options:
+        - Components
+        - Niche
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you use it for
+      description: The situation it solves, and any prior art you like.
+    validations:
+      required: true

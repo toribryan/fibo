@@ -1,103 +1,104 @@
 # fibo
 
-A design system for experimental projects. Components are built on shadcn/ui
-and Base UI, documented in Storybook, and published as a shadcn registry so
-any project can install them with one command.
+An achromatic design system for experimental projects. Components are built on
+shadcn/ui and Base UI, documented in Storybook, and published as a shadcn
+registry, so any project installs them with `pnpm dlx shadcn@latest add
+@fibo/<name>`.
 
-pnpm workspaces, Turborepo, Next.js 16, React 19, Tailwind CSS 4, Storybook 10.
+pnpm workspaces, Turborepo, React 19, Tailwind CSS 4, Storybook 10.
+Node 24 (pinned in `.nvmrc`).
 
 ## Layout
 
-| Path                             | Holds                                                            |
-| -------------------------------- | ---------------------------------------------------------------- |
-| `packages/ui/src/components/`    | The components. One `.tsx` plus one `.stories.tsx` per component |
-| `packages/ui/src/foundations/`   | Color and typography stories                                     |
-| `packages/ui/src/styles/`        | `globals.css`: primitive and semantic tokens, theme              |
-| `packages/ui/src/lib/`           | `cn` and other helpers                                           |
-| `apps/storybook/`                | Storybook, reads stories out of `packages/ui`                    |
-| `apps/storybook/src/pages/`      | Welcome, Getting started, Catalog, Changelog, Contributing       |
-| `apps/storybook/src/components/` | One `.mdx` docs page per component                               |
-| `apps/storybook/src/blocks/`     | Docs blocks: guidelines, do's and don'ts, catalog, install       |
-| `apps/web/`                      | Registry site. Lists components and their install commands       |
-| `apps/web/scripts/`              | `build-registry.mjs`, see below                                  |
-| `packages/eslint-config/`        | Shared ESLint configs                                            |
-| `packages/typescript-config/`    | Shared tsconfigs                                                 |
-| `plans/`                         | Numbered design docs, see `plans/README.md`                      |
-
-Inside `packages/ui`, import through the workspace alias
-(`@workspace/ui/lib/utils`, `@workspace/ui/components/button`), never a
-relative path. The registry build depends on those exact prefixes.
-
-## Registry
-
-`pnpm registry:build` copies every component in `packages/ui/src/components`
-into `apps/web/registry/ui` with workspace imports rewritten to `@/lib/utils`
-and `@/components/ui/*`, writes `apps/web/registry.json`, then runs
-`shadcn build` to produce `apps/web/public/r/<name>.json`. The web build runs
-it first, so the deployed site serves the registry at `/r/<name>.json`.
-
-The web app is a static export (`output: "export"`), and `vercel.json` at the
-repo root builds only the web workspace and serves `apps/web/out`. Anything
-that needs a server at request time will not work on this site.
-
-Package dependencies are read from each component's imports. A component that
-imports another component through `@workspace/ui/components/*` gets it as a
-registry dependency automatically.
-
-Never edit `apps/web/registry`, `apps/web/registry.json`, or
-`apps/web/public/r`. They are generated and gitignored.
-
-## Adding a component
-
-1. Create `packages/ui/src/components/<name>.tsx` in kebab-case.
-2. Create `<name>.stories.tsx` next to it with at least a default story. No
-   `autodocs` tag: the docs page is the MDX file below.
-3. Write `apps/storybook/src/components/<name>.mdx` using an existing page as
-   the template, and add an entry to `ENTRIES` in
-   `apps/storybook/src/blocks/catalog.tsx`.
-4. Run `pnpm storybook` to check it.
-5. Run `pnpm registry:build` and confirm `apps/web/public/r/<name>.json` exists.
+| Path                               | Holds                                                                |
+| ---------------------------------- | -------------------------------------------------------------------- |
+| `packages/ui/src/components/`      | The components. One `.tsx` plus one `.stories.tsx` each              |
+| `packages/ui/components.meta.json` | Title, description, shelf and group for every component              |
+| `packages/ui/src/foundations/`     | Colour and typography stories                                        |
+| `packages/ui/src/styles/`          | `globals.css`: semantic tokens over Tailwind's ramps, light and dark |
+| `packages/ui/src/lib/`             | `cn` and other helpers                                               |
+| `apps/storybook/.storybook/`       | Storybook config: sidebar, theme toggle, docs container              |
+| `apps/storybook/src/pages/`        | Welcome, Getting started, Catalog, Changelog, Contributing           |
+| `apps/storybook/src/components/`   | One `.mdx` docs page per component                                   |
+| `apps/storybook/src/blocks/`       | Docs blocks: playground, guidelines, do's and don'ts, catalog, hero  |
+| `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                 |
+| `packages/eslint-config/`          | Shared ESLint flat configs                                           |
+| `packages/typescript-config/`      | Shared tsconfigs                                                     |
+| `.agents/skills/`                  | Agent skills; `.claude/skills/` links here                           |
+| `.claude/agents/`                  | Claude Code subagents                                                |
+| `plans/`                           | Numbered design docs, see `plans/README.md`                          |
 
 ## Commands
 
 ```
-pnpm dev              # every app in dev mode through turbo
-pnpm storybook        # storybook only, on :6006
-pnpm build            # turbo build (web build runs the registry build first)
+pnpm install
+pnpm storybook        # Storybook on :6006
+pnpm dev              # every app in dev mode
+pnpm build            # the registry and Storybook
+pnpm build:site       # build, then assemble the deployable site in dist/
 pnpm registry:build   # registry only
-pnpm lint             # eslint in every workspace
-pnpm typecheck        # tsc in every workspace
-pnpm format:check     # prettier --check
-pnpm format:write     # prettier --write
+pnpm lint             # ESLint in every workspace, zero warnings allowed
+pnpm typecheck        # tsc in every workspace; run build first on a clean tree
+pnpm format:check     # Prettier
+pnpm format:write
 ```
 
-Node is pinned in `.nvmrc`. Run `build` before `typecheck` on a clean tree:
-the web app reads `registry.json`, which only exists after a build.
+## Definition of done
+
+A change is ready when all of these pass from the repo root:
+`pnpm format:check`, `pnpm lint`, `pnpm build`, `pnpm typecheck`. CI runs the
+same four on every pull request. For a component change, also open it in
+Storybook in both themes and check the keyboard path.
+
+## Adding a component
+
+Use the `add-component` skill (`.agents/skills/add-component/SKILL.md`). It
+covers the source file, stories, docs page, metadata and checks, and porting
+from another codebase. The `component-reviewer` subagent reviews the result
+against the conventions below.
 
 ## Conventions
 
-- kebab-case file names. Components export a PascalCase name and a
-  `<name>Variants` cva object when they have variants.
-- Every component sets `data-slot` on its root element.
-- Two shelves. Standard parts are titled `Components/<Name>` and depend on
-  nothing beyond Base UI. Playful, specific parts are titled `Niche/<Name>`
-  and may use `motion`; the registry build lists it as a dependency.
-- Semantic tokens only in components (`bg-primary`, `text-muted-foreground`).
-  Primitive ramps (`neutral-*`, `red-*`, `green-*`, `amber-*`, `blue-*`) are
-  for `globals.css`. There is no brand hue: `primary` is a neutral.
-- No opacity modifiers on token colours (`bg-destructive/10`). Figma cannot
-  bind opacity to a variable, so those are named roles instead:
-  `-subtle`, `-hover`, `-ring`. Both sides then use the same name.
-- Comments explain why, never what. No comments about removed or changed code.
-- Sentence case for headings in markdown and UI copy.
-- No emojis in code, comments, or commit messages.
-- Prettier runs on staged files at commit through husky. If a commit is
-  rejected, fix the file rather than skipping the hook.
+- **Two shelves.** Standard parts are titled `Components/<Name>` and depend
+  on nothing beyond Base UI, `class-variance-authority` and `lucide-react`.
+  Playful, specific parts are titled `Niche/<Name>` and may use `motion`.
+- **Tokens.** Semantic tokens only in components (`bg-primary`,
+  `text-muted-foreground`). Primitive ramps (`neutral-*`, `red-*`, `green-*`,
+  `amber-*`, `blue-*`) belong in `globals.css`. There is no brand hue:
+  `primary` is a neutral, and colour only carries meaning.
+- **No opacity modifiers** on token colours (`bg-destructive/10`). Figma
+  cannot bind opacity to a variable, so those are named roles instead:
+  `-subtle`, `-hover`, `-ring`. Figma and code then use the same name.
+- **Imports.** Inside `packages/ui`, import through the workspace alias
+  (`@workspace/ui/lib/utils`, `@workspace/ui/components/button`), never a
+  relative path. The registry build rewrites those exact prefixes.
+- **Structure.** kebab-case files. A PascalCase component, plus a
+  `<name>Variants` cva object when it has variants. `data-slot` on the root.
+  A JSDoc line on every prop.
+- **Stories.** No `autodocs` tag: each component has an MDX docs page. New
+  parts take `tags: ["new"]`.
+- **Writing.** Sentence case for headings and UI copy. Comments explain why,
+  never what, and never describe removed code. No emojis in code, comments or
+  commit messages.
 
-<!-- BEGIN:nextjs-agent-rules -->
+## Registry and site
 
-# This is NOT the Next.js you know
+`pnpm registry:build` copies every component into `apps/registry/registry/ui` with
+workspace imports rewritten to `@/lib/utils` and `@/components/ui/*`, writes
+`apps/registry/registry.json` from the source and `components.meta.json`, runs
+`shadcn build` to produce `apps/registry/public/r/<name>.json`, and writes
+`apps/registry/public/llms.txt`. Package and registry dependencies are read from
+each component's imports.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+The site is static. `vercel.json` runs `pnpm build:site`, which puts the
+built Storybook at the root of `dist/` with the registry at `dist/r/` and
+`llms.txt` beside it. So fibo.toribryan.com opens on Storybook, a component's
+docs live at `/?path=/docs/<tier>-<name>--docs`, and installs resolve
+`/r/<name>.json`. Nothing that needs a server at request time will work there.
 
-<!-- END:nextjs-agent-rules -->
+## Do not
+
+- Edit `apps/registry/registry`, `apps/registry/registry.json`,
+  `apps/registry/public` or `dist`. They are generated and gitignored.
+- Skip the husky pre-commit hook. If Prettier rejects a commit, fix the file.
+- Add a dependency to a Components-shelf part beyond the three listed above.

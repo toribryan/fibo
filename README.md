@@ -1,55 +1,98 @@
 # fibo
 
-A design system for experimental projects. Components are built on shadcn/ui
-and Base UI, documented in Storybook, and published as a shadcn registry so any
-project can install them with one command.
+A library of parts for experimental projects and special components.
 
-The name is short for Fibonacci, the sequence behind the golden ratio.
+fibo is an achromatic design system built on [shadcn/ui](https://ui.shadcn.com)
+and [Base UI](https://base-ui.com). Every part is documented in Storybook and
+installs from a shadcn registry, so it copies into your project as source,
+follows your tokens, and belongs to you.
 
-Live site: https://fibo.toribryan.com
+[![CI](https://github.com/toribryan/fibo/actions/workflows/ci.yml/badge.svg)](https://github.com/toribryan/fibo/actions/workflows/ci.yml)
+[![MIT license](https://img.shields.io/badge/license-MIT-black)](./LICENSE)
+[![shadcn registry](https://img.shields.io/badge/shadcn-%40fibo-black)](https://fibo.toribryan.com)
 
-## Overview
+[Docs](https://fibo.toribryan.com) ·
+[Figma library](https://www.figma.com/design/LJZ5Tt4Ba7NPPi8Xnq8i0e/Fibo-DS) ·
+[llms.txt](https://fibo.toribryan.com/llms.txt)
 
-The system has two layers. `globals.css` holds primitive token ramps (brand,
-neutral) and the semantic tokens that map onto them, so re-theming means
-editing one block. Components only ever reference the semantic layer.
+![The fibo Storybook welcome page: a golden-rectangle hero with the spiral drawn over a dotted grid](./.github/assets/storybook-welcome.jpg)
 
-Every component ships with a Storybook story, and the registry site lists each
-one with its install command.
+## Install
 
-### Stack
-
-- shadcn/ui on Base UI
-- Tailwind CSS 4
-- Storybook 10
-- Next.js 16 for the registry site
-- pnpm workspaces and Turborepo
-
-### Using a component in another project
-
-Add the namespace once, in the consuming project's `components.json`:
+Add the registry to your project's `components.json` once:
 
 ```json
-"registries": {
-  "@fibo": "https://fibo.toribryan.com/r/{name}.json"
+{
+  "registries": {
+    "@fibo": "https://fibo.toribryan.com/r/{name}.json"
+  }
 }
 ```
 
-Then install by name:
+Then add any part by name. Anything it depends on comes with it:
 
 ```bash
 pnpm dlx shadcn@latest add @fibo/button
 ```
 
-Without that entry, the full URL works anywhere:
+Without the registry entry, the full URL works in any shadcn project:
 
 ```bash
 pnpm dlx shadcn@latest add https://fibo.toribryan.com/r/button.json
 ```
 
-The full list is on the live site. Components install into your project's
-`components/ui` folder and use your `cn` helper, so they follow your local
-tokens once installed.
+To make the parts look the way they do in Storybook, copy the `:root` and
+`.dark` blocks from [`globals.css`](./packages/ui/src/styles/globals.css) into
+your own.
+
+## What's inside
+
+**Components** are the standard set. They depend on nothing beyond Base UI,
+`class-variance-authority` and `lucide-react`.
+
+| Part     | What it does                                                |
+| -------- | ----------------------------------------------------------- |
+| Badge    | A short label for status, category or count.                |
+| Button   | Triggers an action or event with a single click.            |
+| Checkbox | Turns a single option on or off, or picks many from a list. |
+| Input    | A single line of free text.                                 |
+| Label    | Names a form control and widens its hit area.               |
+| Textarea | Several lines of free text that grow with the content.      |
+
+**Niche** parts are playful and built for one kind of moment. They may bring
+`motion` with them.
+
+| Part               | What it does                                                           |
+| ------------------ | ---------------------------------------------------------------------- |
+| Chapter scrubber   | A rail of marks that swell under the pointer, previewing each chapter. |
+| Integration visual | A hub and the tools wired into it, with pulses along the routes.       |
+| Reactions          | Lets people respond to content with an emoji in one tap.               |
+| Token flow         | Walks a colour token from raw value to primitive to semantic role.     |
+
+Every part has a docs page with a live playground, usage and accessibility
+guidelines, do's and don'ts, and a props table in
+[Storybook](https://fibo.toribryan.com).
+
+## Principles
+
+- **Achromatic by default.** There is no brand hue. `primary` is a neutral and
+  colour only ever carries meaning: destructive, success, warning, info.
+- **One name on both sides.** Every token in `globals.css` matches a Figma
+  variable. Opacity steps are named roles (`-subtle`, `-hover`, `-ring`),
+  never modifiers, so a designer can bind them too.
+- **Copied, not depended on.** The registry copies source into your project.
+- **Contrast is measured.** Status tones sit on the 700 step so text clears
+  WCAG AA on solid fills and on their tints, in both themes.
+
+## Using fibo with coding agents
+
+- [`llms.txt`](https://fibo.toribryan.com/llms.txt) lists every part with its
+  install command, and says the list is complete.
+- With `@fibo` in your `components.json`, the
+  [shadcn MCP server](https://ui.shadcn.com/docs/mcp) can browse and install
+  fibo parts.
+- Working in this repo, agents read [`AGENTS.md`](./AGENTS.md) and can use the
+  `add-component` skill and the `component-reviewer` subagent that ship with it.
 
 ## Development
 
@@ -62,22 +105,25 @@ pnpm storybook
 
 Storybook runs at http://localhost:6006.
 
-| Script                | What it does                       |
-| --------------------- | ---------------------------------- |
-| `pnpm storybook`      | Storybook                          |
-| `pnpm dev`            | Every app in dev mode              |
-| `pnpm build`          | Build every app, registry included |
-| `pnpm registry:build` | Regenerate the registry JSON       |
-| `pnpm lint`           | ESLint                             |
-| `pnpm typecheck`      | `tsc --noEmit`                     |
-| `pnpm format:write`   | Prettier                           |
+| Script                | What it does                                        |
+| --------------------- | --------------------------------------------------- |
+| `pnpm storybook`      | Storybook                                           |
+| `pnpm dev`            | Every app in dev mode                               |
+| `pnpm build`          | Build the registry and Storybook                    |
+| `pnpm build:site`     | Build, then assemble the deployable site in `dist/` |
+| `pnpm registry:build` | Regenerate the registry JSON and `llms.txt`         |
+| `pnpm lint`           | ESLint, zero warnings allowed                       |
+| `pnpm typecheck`      | TypeScript in every workspace                       |
+| `pnpm format:write`   | Prettier                                            |
 
-CI runs lint, format check, build, and typecheck on every pull request.
-Prettier runs on staged files at commit time.
+CI runs format, lint, build and typecheck on every pull request. The repo
+layout and the registry build are described in [`AGENTS.md`](./AGENTS.md).
 
-Design decisions live in `plans/` as numbered docs. How the repo is laid out
-and how the registry build works is in `AGENTS.md`.
+## Contributing
+
+Issues and pull requests are welcome. Start with
+[CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
-[MIT](./LICENSE).
+[MIT](./LICENSE) © Tori Bryan

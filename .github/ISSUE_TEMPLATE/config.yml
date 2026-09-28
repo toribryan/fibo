@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://fibo.toribryan.com
+    about: Every component with live examples, usage rules and props.
+  - name: Security issue
+    url: https://github.com/toribryan/fibo/security/advisories/new
+    about: Report vulnerabilities privately, not as a public issue.
