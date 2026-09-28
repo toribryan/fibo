@@ -1,0 +1,51 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/label.stories"
+import { RelatedComponents } from "../blocks/catalog"
+import { UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Label
+
+A label names a form control. Clicking it focuses or toggles the control, so
+it also widens the hit area.
+
+<Canvas of={Stories.WithInput} />
+
+## Import
+
+<Install name="label" exports={["Label"]} />
+
+## Props
+
+Label takes every native `label` prop.
+
+<Controls of={Stories.Default} />
+
+## Usage
+
+<UsageGuidelines
+  guidelines={[
+    "Write labels as short nouns or questions, in sentence case, with no colon.",
+    "Place the label above inputs and textareas, and to the right of checkboxes.",
+    "Mark the optional fields, not the required ones, when most fields are required.",
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Always connect a label with <code>htmlFor</code> or by wrapping the
+      control.
+    </>,
+    "A label dims with its control when the control is disabled, so the pair reads as one unit.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Input", "Textarea", "Checkbox"]} />

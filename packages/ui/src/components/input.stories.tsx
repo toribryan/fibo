@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { Input } from "./input.js"
+import { Label } from "./label.js"
 
 const meta: Meta<typeof Input> = {
   title: "Components/Input",
   component: Input,
-  tags: ["autodocs"],
   args: {
     placeholder: "Enter text...",
   },
@@ -28,4 +28,20 @@ export const Disabled: Story = {
     disabled: true,
     defaultValue: "Can't edit this",
   },
+}
+
+export const Invalid: Story = {
+  args: {
+    "aria-invalid": true,
+    defaultValue: "not-an-email",
+  },
+}
+
+export const WithLabel: Story = {
+  render: (args) => (
+    <div className="flex max-w-xs flex-col gap-2">
+      <Label htmlFor="work-email">Work email</Label>
+      <Input id="work-email" type="email" {...args} />
+    </div>
+  ),
 }

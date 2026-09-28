@@ -8,18 +8,21 @@ pnpm workspaces, Turborepo, Next.js 16, React 19, Tailwind CSS 4, Storybook 10.
 
 ## Layout
 
-| Path                           | Holds                                                            |
-| ------------------------------ | ---------------------------------------------------------------- |
-| `packages/ui/src/components/`  | The components. One `.tsx` plus one `.stories.tsx` per component |
-| `packages/ui/src/foundations/` | Color and typography stories                                     |
-| `packages/ui/src/styles/`      | `globals.css`: primitive and semantic tokens, theme              |
-| `packages/ui/src/lib/`         | `cn` and other helpers                                           |
-| `apps/storybook/`              | Storybook, reads stories out of `packages/ui`                    |
-| `apps/web/`                    | Registry site. Lists components and their install commands       |
-| `apps/web/scripts/`            | `build-registry.mjs`, see below                                  |
-| `packages/eslint-config/`      | Shared ESLint configs                                            |
-| `packages/typescript-config/`  | Shared tsconfigs                                                 |
-| `plans/`                       | Numbered design docs, see `plans/README.md`                      |
+| Path                             | Holds                                                            |
+| -------------------------------- | ---------------------------------------------------------------- |
+| `packages/ui/src/components/`    | The components. One `.tsx` plus one `.stories.tsx` per component |
+| `packages/ui/src/foundations/`   | Color and typography stories                                     |
+| `packages/ui/src/styles/`        | `globals.css`: primitive and semantic tokens, theme              |
+| `packages/ui/src/lib/`           | `cn` and other helpers                                           |
+| `apps/storybook/`                | Storybook, reads stories out of `packages/ui`                    |
+| `apps/storybook/src/pages/`      | Welcome, Getting started, Catalog, Changelog, Contributing       |
+| `apps/storybook/src/components/` | One `.mdx` docs page per component                               |
+| `apps/storybook/src/blocks/`     | Docs blocks: guidelines, do's and don'ts, catalog, install       |
+| `apps/web/`                      | Registry site. Lists components and their install commands       |
+| `apps/web/scripts/`              | `build-registry.mjs`, see below                                  |
+| `packages/eslint-config/`        | Shared ESLint configs                                            |
+| `packages/typescript-config/`    | Shared tsconfigs                                                 |
+| `plans/`                         | Numbered design docs, see `plans/README.md`                      |
 
 Inside `packages/ui`, import through the workspace alias
 (`@workspace/ui/lib/utils`, `@workspace/ui/components/button`), never a
@@ -47,9 +50,13 @@ Never edit `apps/web/registry`, `apps/web/registry.json`, or
 ## Adding a component
 
 1. Create `packages/ui/src/components/<name>.tsx` in kebab-case.
-2. Create `<name>.stories.tsx` next to it with at least a default story.
-3. Run `pnpm storybook` to check it.
-4. Run `pnpm registry:build` and confirm `apps/web/public/r/<name>.json` exists.
+2. Create `<name>.stories.tsx` next to it with at least a default story. No
+   `autodocs` tag: the docs page is the MDX file below.
+3. Write `apps/storybook/src/components/<name>.mdx` using an existing page as
+   the template, and add an entry to `ENTRIES` in
+   `apps/storybook/src/blocks/catalog.tsx`.
+4. Run `pnpm storybook` to check it.
+5. Run `pnpm registry:build` and confirm `apps/web/public/r/<name>.json` exists.
 
 ## Commands
 

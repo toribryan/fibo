@@ -1,0 +1,84 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/badge.stories"
+import { Badge } from "../../../../packages/ui/src/components/badge"
+import { RelatedComponents } from "../blocks/catalog"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Badge
+
+A badge is a short, non-interactive label for a status, category or count. It
+sits next to the thing it describes.
+
+<Canvas of={Stories.Default} />
+
+## Import
+
+<Install name="badge" exports={["Badge", "badgeVariants"]} />
+
+## Props
+
+<Controls of={Stories.Default} />
+
+## Usage
+
+<UsageGuidelines
+  guidelines={[
+    "Keep it to one or two words. A badge is scanned, not read.",
+    "Use default for the one state that needs attention, secondary or outline for everything else.",
+    "Use destructive only for states that need action, such as Failed or Overdue.",
+    "Badges are not buttons. If it does something on click, use a Button.",
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      If the badge only makes sense next to its neighbour, give the pair
+      context, for example with <code>aria-describedby</code>.
+    </>,
+    "Never rely on the variant alone to carry meaning. The text has to say it too.",
+  ]}
+/>
+
+## Variants
+
+<Canvas of={Stories.AllVariants} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex items-center gap-2 text-sm">
+            Invoice #1042 <Badge variant="destructive">Overdue</Badge>
+          </div>
+        ),
+        description: "Say the state in the label, and let colour reinforce it.",
+      },
+      negative: {
+        component: (
+          <div className="flex items-center gap-2 text-sm">
+            Invoice #1042{" "}
+            <Badge variant="destructive">
+              This invoice is now 14 days overdue
+            </Badge>
+          </div>
+        ),
+        description:
+          "Don't write a sentence. Move longer copy into the row itself.",
+      },
+    },
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Button", "Label"]} />

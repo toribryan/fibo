@@ -1,0 +1,169 @@
+@import "@workspace/ui/globals.css";
+
+/* globals.css only scans packages/ui; the docs blocks and pages live here. */
+@source "./";
+
+/* Architect's hand lettering for the drafting notes on the welcome hero. */
+@theme {
+  --font-hand: "Architects Daughter", ui-rounded, "Comic Sans MS", cursive;
+}
+
+/*
+ * Storybook styles its docs chrome with emotion. These overrides are scoped
+ * to `.sbdocs` and swap its shadows and greys for fibo's hairlines and
+ * tokens, so a canvas looks like a fibo surface in both themes.
+ */
+.sbdocs.sbdocs-wrapper {
+  background: var(--background);
+  padding: 4.5rem 2rem 4rem;
+}
+
+.sbdocs.sbdocs-content {
+  max-width: 60rem;
+}
+
+.sbdocs .docs-story,
+.sbdocs .sb-story {
+  background: var(--background);
+}
+
+.sbdocs .docblock-argstable,
+.sbdocs .docblock-source,
+.sbdocs [class*="Preview"] {
+  box-shadow: none !important;
+}
+
+.sbdocs .docblock-source,
+.sbdocs .sb-unstyled .docs-story {
+  border-color: var(--border) !important;
+}
+
+.sbdocs .sb-unstyled div:has(> .docs-story) {
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+/* Storybook pulls the code actions up into its own canvas frame. The frame
+   here is the preview's border, so the actions sit just below it instead. */
+.sbdocs .sbdocs-preview-actions {
+  margin: -1rem 0 2.5rem;
+}
+
+.sbdocs .docblock-argstable {
+  margin: 1.5rem 0;
+  font-family: var(--font-sans);
+}
+
+.sbdocs .docblock-argstable-body {
+  box-shadow: none !important;
+  outline: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+/* Raw <code> written as JSX in MDX skips the markdown mapping. */
+.fibo-docs :not(pre) > code:not([class]) {
+  @apply rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-[0.8125rem] text-foreground;
+}
+
+/* The "On this page" rail. */
+.sbdocs.sbdocs-toc--custom nav {
+  font-family: var(--font-sans);
+}
+
+.sbdocs.sbdocs-toc--custom nav > h2,
+.sbdocs.sbdocs-toc--custom nav > div > h2 {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.sbdocs.sbdocs-toc--custom .toc-list-item > a {
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+}
+
+.sbdocs.sbdocs-toc--custom .toc-list-item.is-active-li > a {
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.sbdocs.sbdocs-toc--custom:not(:has(.toc-list-item)) {
+  display: none;
+}
+
+/* Welcome is a landing page: full width, no rail. */
+.sbdocs.sbdocs-wrapper:has(.fibo-welcome) .sbdocs-toc--custom {
+  display: none;
+}
+
+.sbdocs.sbdocs-wrapper:has(.fibo-welcome) {
+  overflow-x: clip;
+  padding-top: 0;
+}
+
+.sbdocs.sbdocs-wrapper:has(.fibo-welcome) .sbdocs-content {
+  max-width: 68rem;
+}
+
+/* The hero already ends on a hairline, so the first section needs less
+   than the usual 5rem above it. */
+.fibo-welcome header + h2 {
+  margin-top: 2.5rem;
+}
+
+/* A hairline that runs the full width of the page along the hero's bottom
+   edge, the way ncdai frames hero-01. The top edge meets the toolbar's own
+   border, so it needs no second line. */
+.fibo-screen-lines::after {
+  content: "";
+  position: absolute;
+  left: -100vw;
+  right: -100vw;
+  bottom: 0;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Golden tiling on the welcome hero. */
+.fibo-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: fibo-draw 1.1s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.fibo-draw--spiral {
+  animation-duration: 1.8s;
+  animation-delay: 0.7s;
+}
+
+.fibo-tile {
+  opacity: 0;
+  animation: fibo-fade 0.8s ease-out forwards;
+  animation-delay: 0.4s;
+}
+
+@keyframes fibo-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fibo-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fibo-draw,
+  .fibo-tile {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}

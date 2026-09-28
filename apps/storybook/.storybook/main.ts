@@ -13,7 +13,8 @@ function getAbsolutePath(value: string) {
 
 const config: StorybookConfig = {
   stories: [
-    "../../../packages/ui/src/**/*.mdx",
+    "../src/pages/*.mdx",
+    "../src/components/*.mdx",
     "../../../packages/ui/src/**/*.stories.@(ts|tsx)",
   ],
   addons: [
@@ -21,6 +22,10 @@ const config: StorybookConfig = {
     getAbsolutePath("@storybook/addon-docs"),
   ],
   framework: getAbsolutePath("@storybook/react-vite"),
+  staticDirs: ["../public"],
+  core: {
+    disableWhatsNewNotifications: true,
+  },
 }
 
 export default config

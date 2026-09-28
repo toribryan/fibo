@@ -1,0 +1,184 @@
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap"
+/>
+<style>
+  :root {
+    --fibo-bg: #ffffff;
+    --fibo-fg: #0a0a0a;
+    --fibo-muted: #737373;
+    --fibo-hover: #f5f5f5;
+    --fibo-border: #e5e5e5;
+  }
+  :root[data-fibo-theme="dark"] {
+    --fibo-bg: #0a0a0a;
+    --fibo-fg: #fafafa;
+    --fibo-muted: #a3a3a3;
+    --fibo-hover: #171717;
+    --fibo-border: #262626;
+  }
+
+  /*
+   * Sidebar modelled on Vibe's (mondaycom/vibe, docs/.storybook/manager-head):
+   * no panel fill, 16px section roots over 14px muted items, and no fill on
+   * the selected item, just darker text.
+   */
+  body {
+    background: var(--fibo-bg) !important;
+  }
+  .container.sidebar-container {
+    background: none !important;
+  }
+  .sidebar-container .sidebar-header {
+    margin-top: 2px !important;
+    margin-left: 12px !important;
+  }
+  .sidebar-container .search-field,
+  #storybook-explorer-searchfield {
+    border-radius: 20px;
+  }
+
+  #storybook-explorer-menu .sidebar-item {
+    margin-left: -6px;
+  }
+  #storybook-explorer-tree > div > div {
+    margin-top: 8px;
+  }
+  #storybook-explorer-menu [data-item-id="foundations"] {
+    margin-top: 24px;
+  }
+  [data-parent-id]:has(+ :not([data-parent-id])) {
+    margin-bottom: 16px !important;
+  }
+
+  #storybook-explorer-menu a,
+  #storybook-explorer-menu button {
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 500;
+    color: var(--fibo-muted);
+    padding-top: 6px;
+    padding-bottom: 6px;
+    align-items: center;
+  }
+  #storybook-explorer-menu .sidebar-item:not([data-parent-id]),
+  #storybook-explorer-menu .sidebar-item:not([data-parent-id]) a,
+  #storybook-explorer-menu .sidebar-item:not([data-parent-id]) button {
+    font-size: 16px;
+    line-height: 16px;
+    font-weight: 500;
+  }
+  #storybook-explorer-menu [data-item-id] {
+    border-radius: 8px;
+  }
+  #storybook-explorer-menu [data-item-id]:focus {
+    background: none;
+  }
+  #storybook-explorer-menu [data-item-id]:hover {
+    background-color: var(--fibo-hover);
+  }
+  #storybook-explorer-menu button[data-item-id] {
+    width: calc(100% - 16px);
+  }
+  #storybook-explorer-menu .sidebar-item [aria-expanded] {
+    margin-left: 6px;
+  }
+  #storybook-explorer-menu .sidebar-item button[aria-expanded] > div {
+    margin-top: 0;
+  }
+  #storybook-explorer-menu svg {
+    color: var(--fibo-muted);
+  }
+
+  #storybook-explorer-menu [data-selected="true"],
+  #storybook-explorer-menu [data-selected="true"]:hover {
+    background: none;
+  }
+  #storybook-explorer-menu [data-selected="true"] a,
+  #storybook-explorer-menu [data-selected="true"] a svg {
+    color: var(--fibo-fg);
+  }
+
+  /* Storybook 10's item menu fades in over the label with a hard-coded blue
+     backdrop and glow. Match them to the hover fill so the fade is neutral. */
+  #storybook-explorer-menu [data-testid="context-menu"] {
+    background: var(--fibo-hover) !important;
+    box-shadow: 0 0 5px 5px var(--fibo-hover) !important;
+  }
+
+  /* Hairlines between sidebar, toolbar and page instead of shadows. */
+  div[role="main"] > div {
+    box-shadow: none !important;
+    border-left: 1px solid var(--fibo-border);
+    border-radius: 0;
+  }
+  div[role="main"] > div > div > div > div {
+    border-bottom: 1px solid var(--fibo-border);
+    box-shadow: none !important;
+  }
+
+  /* Storybook's own type icons give way to the Lucide ones in the label. */
+  #storybook-explorer-menu svg[type] {
+    display: none;
+  }
+  .fibo-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .fibo-icon {
+    flex-shrink: 0;
+    color: var(--fibo-muted);
+  }
+  #storybook-explorer-menu [data-selected="true"] .fibo-icon {
+    color: var(--fibo-fg);
+  }
+  .fibo-status {
+    font:
+      500 10px/1 "Geist Mono",
+      ui-monospace,
+      monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 3px 6px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+  }
+  .fibo-status--new {
+    color: #15803d;
+  }
+  .fibo-status--beta {
+    color: #1d4ed8;
+  }
+  .fibo-status--deprecated {
+    color: #b91c1c;
+  }
+  [data-fibo-theme="dark"] .fibo-status--new {
+    color: #4ade80;
+  }
+  [data-fibo-theme="dark"] .fibo-status--beta {
+    color: #60a5fa;
+  }
+  [data-fibo-theme="dark"] .fibo-status--deprecated {
+    color: #f87171;
+  }
+</style>
+
+<script>
+  // Vibe widens the nav to 244px so long story names fit. Only raises a
+  // narrower saved width; a wider one the reader dragged to is kept.
+  ;(function () {
+    var MIN = 244
+    try {
+      var layout = JSON.parse(localStorage.getItem("storybook-layout"))
+      if (layout && layout.resizerNav && layout.resizerNav.x >= MIN) return
+      layout = layout || {}
+      layout.resizerNav = { x: MIN, y: (layout.resizerNav || {}).y || 0 }
+      localStorage.setItem("storybook-layout", JSON.stringify(layout))
+    } catch (e) {}
+  })()
+</script>

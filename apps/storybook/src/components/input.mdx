@@ -1,0 +1,94 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/input.stories"
+import { Input } from "../../../../packages/ui/src/components/input"
+import { Label } from "../../../../packages/ui/src/components/label"
+import { RelatedComponents } from "../blocks/catalog"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Input
+
+An input takes a single line of free text: a name, an email, a search term.
+It fills the width of its container.
+
+<Canvas of={Stories.WithLabel} />
+
+## Import
+
+<Install name="input" exports={["Input"]} />
+
+## Props
+
+Input takes every native `input` prop.
+
+<Controls of={Stories.Default} />
+
+## Usage
+
+<UsageGuidelines
+  guidelines={[
+    "Give every input a visible Label above it. Placeholder text disappears on the first keystroke.",
+    "Size the container to the expected answer. A postcode field shouldn't span the page.",
+    "Set the right type (email, tel, url, search) so phones show the right keyboard.",
+    "For more than one line, use a Textarea.",
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Connect the label with <code>htmlFor</code> and <code>id</code>.
+    </>,
+    <>
+      Mark errors with <code>aria-invalid</code> and point to the message with{" "}
+      <code>aria-describedby</code>.
+    </>,
+    <>
+      Add <code>autoComplete</code> for personal details so browsers and
+      password managers can fill them.
+    </>,
+  ]}
+/>
+
+## Variants
+
+### Invalid
+
+<Canvas of={Stories.Invalid} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 flex-col gap-2">
+            <Label htmlFor="rule-email">Email</Label>
+            <Input id="rule-email" placeholder="you@example.com" />
+          </div>
+        ),
+        description:
+          "Use a label for the question and a placeholder for an example.",
+      },
+      negative: {
+        component: <Input className="w-56" placeholder="Email" />,
+        description:
+          "Don't use the placeholder as the label. It vanishes as soon as people type.",
+      },
+    },
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Label", "Textarea", "Checkbox"]} />
