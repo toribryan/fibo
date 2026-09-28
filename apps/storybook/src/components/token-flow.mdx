@@ -1,9 +1,10 @@
-import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 
 import * as Stories from "../../../../packages/ui/src/components/token-flow.stories"
 import { RelatedComponents } from "../blocks/catalog"
 import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
+import { Playground } from "../blocks/playground"
 import { TokenFlow } from "../../../../packages/ui/src/components/token-flow"
 
 <Meta of={Stories} />
@@ -14,7 +15,7 @@ Token flow shows how a colour travels through the token tiers: the raw value,
 the primitive that names it, and the semantic role that uses it. A pulse runs
 along each wire, so the plate reads as a flow rather than a table.
 
-<Canvas of={Stories.WithUse} />
+<Playground of={Stories.WithUse} />
 
 Switch the theme in the toolbar: rows with a dark pair scramble to their dark
 values while the semantic name stays put.
@@ -22,14 +23,6 @@ values while the semantic name stays put.
 ## Import
 
 <Install name="token-flow" exports={["TokenFlow", "type TokenRow"]} />
-
-## Props
-
-Each row takes a `base` value, a `primitive` name and a `semantic` role, plus
-an optional `use` and a `dark` pair for roles that resolve differently in the
-dark theme.
-
-<Controls of={Stories.Default} />
 
 ## Usage
 
@@ -121,3 +114,11 @@ dark theme.
 ## Related components
 
 <RelatedComponents names={["Badge", "Reactions"]} />
+
+## Props
+
+Each row takes a `base` value, a `primitive` name and a `semantic` role, plus
+an optional `use` and a `dark` pair for roles that resolve differently in the
+dark theme.
+
+<ArgTypes of={Stories.Default} />

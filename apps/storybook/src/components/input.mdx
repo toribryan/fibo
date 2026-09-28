@@ -1,4 +1,4 @@
-import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 
 import * as Stories from "../../../../packages/ui/src/components/input.stories"
 import { Input } from "../../../../packages/ui/src/components/input"
@@ -6,6 +6,7 @@ import { Label } from "../../../../packages/ui/src/components/label"
 import { RelatedComponents } from "../blocks/catalog"
 import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
+import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -14,17 +15,11 @@ import { Install } from "../blocks/install"
 An input takes a single line of free text: a name, an email, a search term.
 It fills the width of its container.
 
-<Canvas of={Stories.WithLabel} />
+<Playground of={Stories.WithLabel} />
 
 ## Import
 
 <Install name="input" exports={["Input"]} />
-
-## Props
-
-Input takes every native `input` prop.
-
-<Controls of={Stories.Default} />
 
 ## Usage
 
@@ -92,3 +87,9 @@ Input takes every native `input` prop.
 ## Related components
 
 <RelatedComponents names={["Label", "Textarea", "Checkbox"]} />
+
+## Props
+
+Input takes every native `input` prop.
+
+<ArgTypes of={Stories.Default} />
