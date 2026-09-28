@@ -136,7 +136,7 @@ type FilterMenuProps = {
   onValueChange?: (value: FilterValue) => void
   /** What the trigger button says. */
   triggerLabel?: React.ReactNode
-  /** Hint in the search box while the field menu is showing. */
+  /** Hint in the inline search box while the field menu is showing. */
   placeholder?: string
   /** Shown when a search matches nothing. */
   emptyText?: React.ReactNode
@@ -146,6 +146,12 @@ type FilterMenuProps = {
   searchLabel?: string
   /** Which edge of the trigger the popup lines up with. */
   align?: "start" | "center" | "end"
+  /**
+   * How search starts. `inline` keeps a search box at the top, and typing
+   * turns the menu into results. `button` shows a Search filters button
+   * instead, and the menu slides over to its search state when it's used.
+   */
+  search?: "inline" | "button"
   /** Classes for the trigger button. */
   className?: string
 }
@@ -166,6 +172,7 @@ function FilterMenu({
   label = "Filters",
   searchLabel = "Search filters",
   align = "start",
+  search = "inline",
   className,
 }: FilterMenuProps) {
   const [selected, setSelected] = useControllable(
@@ -177,6 +184,9 @@ function FilterMenu({
   const [query, setQuery] = React.useState("")
   const [fieldId, setFieldId] = React.useState<string | null>(null)
   const [highlight, setHighlight] = React.useState(0)
+  // Only the button style has a search state of its own; inline, any text
+  // is a search.
+  const [searching, setSearching] = React.useState(false)
   // Which way the next view slides: in from the right going deeper, from
   // the left coming back, and not at all into or out of a search.
   const [direction, setDirection] = React.useState<1 | -1 | 0>(1)
@@ -187,7 +197,12 @@ function FilterMenu({
 
   const field = fields.find((f) => f.id === fieldId) ?? null
   const term = query.trim()
-  const view: View = term ? "search" : field ? "values" : "fields"
+  const inSearch = search === "button" ? searching : Boolean(term)
+  const view: View = inSearch ? "search" : field ? "values" : "fields"
+  // Where focus lives: the search box whenever there is one, otherwise the
+  // list itself, which then carries aria-activedescendant.
+  const usesInput = search === "inline" || inSearch
+  const home = usesInput ? inputRef : listRef
   // Row ids come from positions, not from app data that may hold spaces,
   // and carry the view so an outgoing view never shares an id with the
   // incoming one.
@@ -245,6 +260,11 @@ function FilterMenu({
     transition
   )
 
+  // Views mount and unmount the search box, so focus follows each change.
+  React.useEffect(() => {
+    if (open) home.current?.focus({ preventScroll: true })
+  }, [open, view, home])
+
   React.useEffect(() => {
     if (!active) return
     listRef.current
@@ -255,6 +275,22 @@ function FilterMenu({
   const reset = () => {
     setQuery("")
     setFieldId(null)
+    setSearching(false)
+    setHighlight(0)
+  }
+
+  const enterSearch = (initial = "") => {
+    setDirection(1)
+    setSearching(true)
+    setFieldId(null)
+    setQuery(initial)
+    setHighlight(0)
+  }
+
+  const exitSearch = () => {
+    setDirection(-1)
+    setSearching(false)
+    setQuery("")
     setHighlight(0)
   }
 
@@ -286,11 +322,25 @@ function FilterMenu({
   const activate = (row: Row) => {
     if (row.kind === "field") openField(row.field)
     else toggle(row.field, row.option)
-    inputRef.current?.focus()
+    home.current?.focus()
   }
 
-  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     const count = rows.length
+    // With the button style, typing on the list starts a search with that
+    // letter, so the keyboard path doesn't need the button.
+    if (
+      !usesInput &&
+      event.key.length === 1 &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.altKey &&
+      event.key !== " "
+    ) {
+      event.preventDefault()
+      enterSearch(event.key)
+      return
+    }
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault()
@@ -323,9 +373,13 @@ function FilterMenu({
         break
       case "ArrowLeft":
       case "Backspace":
-        if (!query && field) {
+        if (query) break
+        if (field) {
           event.preventDefault()
           back()
+        } else if (search === "button" && searching) {
+          event.preventDefault()
+          exitSearch()
         }
         break
     }
@@ -334,20 +388,90 @@ function FilterMenu({
   const slide = reduceMotion ? 0 : 16
   const count = rows.length
 
+  const slides = {
+    custom: direction,
+    variants: {
+      enter: (d: number) => ({ opacity: 0, x: d * slide }),
+      center: { opacity: 1, x: 0 },
+      // The old view leaves faster than the new one arrives, so two lists
+      // never blur into each other.
+      exit: (d: number) => ({
+        opacity: 0,
+        x: d * -slide,
+        transition: { ...transition, duration: reduceMotion ? 0 : 0.1 },
+      }),
+    },
+    initial: "enter",
+    animate: "center",
+    exit: "exit",
+    transition,
+  }
+
+  const backButton = (onBack: () => void, name: string) => (
+    <button
+      type="button"
+      aria-label={name}
+      onClick={() => {
+        onBack()
+        home.current?.focus()
+      }}
+      className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+    >
+      <ChevronLeftIcon className="size-4" />
+    </button>
+  )
+
+  const searchInput = (
+    <input
+      ref={inputRef}
+      role="combobox"
+      aria-label={searchLabel}
+      aria-expanded="true"
+      aria-controls={`${id}-list`}
+      aria-autocomplete="list"
+      aria-activedescendant={active ? rowId(active) : undefined}
+      autoComplete="off"
+      spellCheck={false}
+      value={query}
+      placeholder={
+        field
+          ? field.label
+          : search === "button"
+            ? `${searchLabel}…`
+            : placeholder
+      }
+      onChange={(event) => {
+        // Inline, text is what makes a search, so the views crossfade;
+        // the button style is already in its search state.
+        if (search === "inline") setDirection(0)
+        setQuery(event.target.value)
+        setHighlight(0)
+      }}
+      onKeyDown={onKeyDown}
+      className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+    />
+  )
+
   return (
     <PopoverPrimitive.Root
       open={open}
       onOpenChange={(next, details) => {
         // Escape steps back before it closes: first it clears the search,
         // then it leaves the open field.
-        if (!next && details.reason === "escape-key" && (query || field)) {
+        const buttonSearch = search === "button" && searching
+        if (
+          !next &&
+          details.reason === "escape-key" &&
+          (query || field || buttonSearch)
+        ) {
           details.cancel()
           if (query) {
-            setDirection(0)
+            if (search === "inline") setDirection(0)
             setQuery("")
             setHighlight(0)
-          } else back()
-          inputRef.current?.focus()
+          } else if (buttonSearch) exitSearch()
+          else back()
+          home.current?.focus()
           return
         }
         setOpen(next)
@@ -374,75 +498,104 @@ function FilterMenu({
             data-slot="filter-menu"
             data-view={view}
             aria-label={label}
-            initialFocus={inputRef}
+            data-search={search}
+            initialFocus={home}
             className="w-64 origin-(--transform-origin) overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg outline-none motion-reduce:animate-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
           >
             <motion.div style={{ height }}>
               <div ref={contentRef}>
                 <div
                   data-slot="filter-menu-search"
-                  className="flex items-center gap-2 border-b border-border px-2"
+                  className="relative flex h-10 items-center overflow-hidden border-b border-border"
                 >
-                  <AnimatePresence initial={false} mode="popLayout">
-                    {view === "values" ? (
-                      <motion.button
-                        key="back"
-                        type="button"
-                        aria-label="Back to fields"
-                        onClick={() => {
-                          back()
-                          inputRef.current?.focus()
-                        }}
-                        initial={{ opacity: 0, x: slide }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: slide }}
-                        transition={transition}
-                        className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
-                      >
-                        <ChevronLeftIcon className="size-4" />
-                      </motion.button>
-                    ) : (
-                      <motion.span
-                        key={view === "search" ? "search" : "filter"}
-                        aria-hidden="true"
-                        initial={{ opacity: 0, scale: 0.6 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.6 }}
-                        transition={transition}
-                        className="flex size-6 shrink-0 items-center justify-center text-muted-foreground"
-                      >
-                        {view === "search" ? (
-                          <SearchIcon className="size-4" />
+                  {search === "inline" ? (
+                    <div className="flex w-full items-center gap-2 px-2">
+                      <AnimatePresence initial={false} mode="popLayout">
+                        {view === "values" ? (
+                          <motion.span
+                            key="back"
+                            initial={{ opacity: 0, x: slide }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: slide }}
+                            transition={transition}
+                          >
+                            {backButton(back, "Back to fields")}
+                          </motion.span>
                         ) : (
-                          <ListFilterIcon className="size-4" />
+                          <motion.span
+                            key={view === "search" ? "search" : "filter"}
+                            aria-hidden="true"
+                            initial={{ opacity: 0, scale: 0.6 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.6 }}
+                            transition={transition}
+                            className="flex size-6 shrink-0 items-center justify-center text-muted-foreground"
+                          >
+                            {view === "search" ? (
+                              <SearchIcon className="size-4" />
+                            ) : (
+                              <ListFilterIcon className="size-4" />
+                            )}
+                          </motion.span>
                         )}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                  <input
-                    ref={inputRef}
-                    role="combobox"
-                    aria-label={searchLabel}
-                    aria-expanded="true"
-                    aria-controls={`${id}-list`}
-                    aria-autocomplete="list"
-                    aria-activedescendant={active ? rowId(active) : undefined}
-                    autoComplete="off"
-                    spellCheck={false}
-                    value={query}
-                    placeholder={field ? field.label : placeholder}
-                    onChange={(event) => {
-                      setDirection(0)
-                      setQuery(event.target.value)
-                      setHighlight(0)
-                    }}
-                    onKeyDown={onKeyDown}
-                    className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                  />
+                      </AnimatePresence>
+                      {searchInput}
+                    </div>
+                  ) : (
+                    // The header slides with the body: the Search filters
+                    // button, a field's name, or the search box.
+                    <AnimatePresence
+                      initial={false}
+                      mode="popLayout"
+                      custom={direction}
+                    >
+                      <View
+                        key={view}
+                        {...slides}
+                        className="flex w-full items-center gap-2 px-2"
+                      >
+                        {view === "fields" ? (
+                          <button
+                            type="button"
+                            data-slot="filter-menu-search-button"
+                            onClick={() => enterSearch()}
+                            className="-mx-1 flex h-8 flex-1 items-center gap-2 rounded-md px-1 text-sm text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+                          >
+                            <span className="flex size-6 shrink-0 items-center justify-center">
+                              <SearchIcon
+                                aria-hidden="true"
+                                className="size-4"
+                              />
+                            </span>
+                            {searchLabel}
+                          </button>
+                        ) : view === "values" ? (
+                          <>
+                            {backButton(back, "Back to fields")}
+                            <span className="truncate text-sm font-medium">
+                              {field?.label}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            {backButton(exitSearch, "Back to filters")}
+                            {searchInput}
+                          </>
+                        )}
+                      </View>
+                    </AnimatePresence>
+                  )}
                 </div>
                 <div
                   ref={listRef}
                   id={`${id}-list`}
+                  // Without a search box, the list itself takes focus and
+                  // points at the highlighted row.
+                  tabIndex={usesInput ? undefined : 0}
+                  aria-activedescendant={
+                    !usesInput && active ? rowId(active) : undefined
+                  }
+                  onKeyDown={usesInput ? undefined : onKeyDown}
                   // An empty search leaves no options, and a listbox without
                   // any is invalid, so the empty message stands on its own.
                   role={count ? "listbox" : undefined}
@@ -452,35 +605,14 @@ function FilterMenu({
                   aria-multiselectable={
                     (count && view !== "fields") || undefined
                   }
-                  className="relative max-h-72 overflow-x-hidden overflow-y-auto p-1"
+                  className="relative max-h-72 overflow-x-hidden overflow-y-auto p-1 outline-none"
                 >
                   <AnimatePresence
                     initial={false}
                     mode="popLayout"
                     custom={direction}
                   >
-                    <View
-                      key={viewKey}
-                      custom={direction}
-                      variants={{
-                        enter: (d: number) => ({ opacity: 0, x: d * slide }),
-                        center: { opacity: 1, x: 0 },
-                        // The old view leaves faster than the new one
-                        // arrives, so two lists never blur into each other.
-                        exit: (d: number) => ({
-                          opacity: 0,
-                          x: d * -slide,
-                          transition: {
-                            ...transition,
-                            duration: reduceMotion ? 0 : 0.1,
-                          },
-                        }),
-                      }}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={transition}
-                    >
+                    <View key={viewKey} {...slides}>
                       {count === 0 ? (
                         <p className="px-2 py-6 text-center text-sm text-muted-foreground">
                           {emptyText}
