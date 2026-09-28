@@ -5,6 +5,7 @@ import {
   useSyncExternalStore,
   type ComponentType,
   type CSSProperties,
+  type MouseEvent,
   type PointerEvent,
   type ReactNode,
 } from "react"
@@ -287,6 +288,84 @@ const FIBO_GLANCE = 1.5
 // gap between the two sides keeps him from flipping back and forth.
 const FIBO_TURN = 4
 
+// What he says depends on where he is clicked: on him, or above his eyes,
+// where a pointer only goes if it is looking for trouble.
+const FIBO_LINES = {
+  poke: "do you just go around poking people? ...",
+  rage: "i can see those rage clicks. go poke around fibo instead?",
+}
+type FiboLine = keyof typeof FIBO_LINES
+const FIBO_TYPE_MS = 35
+const FIBO_LINGER_MS = 2800
+
+/*
+ * Chiptune-ish sounds, synthesised so there is nothing to load: a square
+ * wave sliding between two pitches and fading out.
+ */
+function chirp(
+  audio: AudioContext,
+  from: number,
+  to: number,
+  ms: number,
+  volume: number
+) {
+  const start = audio.currentTime
+  const end = start + ms / 1000
+  const tone = audio.createOscillator()
+  const gain = audio.createGain()
+  tone.type = "square"
+  tone.frequency.setValueAtTime(from, start)
+  tone.frequency.exponentialRampToValueAtTime(to, end)
+  gain.gain.setValueAtTime(volume, start)
+  gain.gain.exponentialRampToValueAtTime(0.0001, end)
+  tone.connect(gain).connect(audio.destination)
+  tone.start(start)
+  tone.stop(end)
+}
+
+/*
+ * A poke sets fibo talking: a speech bubble types his line out with a blip
+ * every other letter, then clears. Poking again starts him over.
+ */
+function useSpeech(reduced: boolean) {
+  const audio = useRef<AudioContext | null>(null)
+  const [poke, setPoke] = useState(0)
+  const [line, setLine] = useState<FiboLine>("poke")
+  const [typed, setTyped] = useState(0)
+  const text = FIBO_LINES[line]
+
+  useEffect(() => {
+    if (poke === 0) return
+    let count = reduced ? text.length : 0
+    let linger = 0
+    const typing = window.setInterval(() => {
+      if (count >= text.length) {
+        window.clearInterval(typing)
+        linger = window.setTimeout(() => setPoke(0), FIBO_LINGER_MS)
+        return
+      }
+      count += 1
+      setTyped(count)
+      if (audio.current && count % 2 === 0 && text[count - 1] !== " ")
+        chirp(audio.current, 440 + Math.random() * 160, 400, 40, 0.02)
+    }, FIBO_TYPE_MS)
+    return () => {
+      window.clearInterval(typing)
+      window.clearTimeout(linger)
+    }
+  }, [poke, text, reduced])
+
+  const speak = (next: FiboLine) => {
+    audio.current ??= new AudioContext()
+    chirp(audio.current, 880, 220, 90, 0.04)
+    setLine(next)
+    setTyped(reduced ? FIBO_LINES[next].length : 0)
+    setPoke((p) => p + 1)
+  }
+
+  return { speaking: poke > 0, text, typed, speak }
+}
+
 function glance(offset: number): -1 | 0 | 1 {
   if (offset < -FIBO_GLANCE) return -1
   return offset > FIBO_GLANCE ? 1 : 0
@@ -295,24 +374,33 @@ function glance(offset: number): -1 | 0 | 1 {
 /*
  * fibo builds up from coarse blocks once the spiral has drawn, then dances.
  * With the pointer near him he stops and turns to it: eyes, head and neck
- * follow, and he turns round when it goes behind him. His hit area is padded
- * so a pointer beside him still counts.
+ * follow, and he turns round when it goes behind him. Clicking him earns a
+ * remark. His hit area is padded so a pointer beside him still counts.
  */
 function Fibo({ geometry }: { geometry: Geometry }) {
   const [look, setLook] = useState<PixelSnailLook | null>(null)
+  const { speaking, text, typed, speak } = useSpeech(usePrefersReducedMotion())
   const pixel = geometry.stroke * FIBO_SCALE
   const { x, y } = geometry.fibo
+  const [, , width = 1, height = 1] = geometry.viewBox.split(" ").map(Number)
   const pad = 8 * pixel
 
-  const follow = (event: PointerEvent<SVGRectElement>) => {
-    const svg = event.currentTarget.ownerSVGElement
-    const matrix = svg?.getScreenCTM()?.inverse()
-    if (!svg || !matrix) return
+  // The pointer in art pixels from his origin, under the middle of his foot.
+  const offset = (event: MouseEvent<SVGRectElement>) => {
+    const matrix = event.currentTarget.ownerSVGElement
+      ?.getScreenCTM()
+      ?.inverse()
+    if (!matrix) return null
     const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(
       matrix
     )
-    const dx = (point.x - x) / pixel
-    const dy = (point.y - y) / pixel
+    return { dx: (point.x - x) / pixel, dy: (point.y - y) / pixel }
+  }
+
+  const follow = (event: PointerEvent<SVGRectElement>) => {
+    const at = offset(event)
+    if (!at) return
+    const { dx, dy } = at
     setLook((current) => {
       const turned = current?.facing ?? 1
       const facing = dx < -FIBO_TURN ? -1 : dx > FIBO_TURN ? 1 : turned
@@ -325,30 +413,54 @@ function Fibo({ geometry }: { geometry: Geometry }) {
   }
 
   return (
-    <svg
-      className="pointer-events-none absolute inset-0 size-full overflow-visible"
-      viewBox={geometry.viewBox}
-      aria-hidden="true"
-    >
-      <PixelSnailSprite
-        className="text-foreground"
-        transform={`translate(${x} ${y})`}
-        pixel={pixel}
-        mode="dance"
-        look={look}
-        assembleDelay={FIBO_ASSEMBLE_MS}
-      />
-      <rect
-        x={x - 11 * pixel - pad}
-        y={y - 16 * pixel - pad}
-        width={24 * pixel + pad * 2}
-        height={16 * pixel + pad * 2}
-        fill="transparent"
-        pointerEvents="all"
-        onPointerMove={follow}
-        onPointerLeave={() => setLook(null)}
-      />
-    </svg>
+    <>
+      <svg
+        className="pointer-events-none absolute inset-0 size-full overflow-visible"
+        viewBox={geometry.viewBox}
+        aria-hidden="true"
+      >
+        <PixelSnailSprite
+          className="text-foreground"
+          transform={`translate(${x} ${y})`}
+          pixel={pixel}
+          mode="dance"
+          look={look}
+          assembleDelay={FIBO_ASSEMBLE_MS}
+        />
+        <rect
+          x={x - 11 * pixel - pad}
+          y={y - 16 * pixel - pad}
+          width={24 * pixel + pad * 2}
+          height={16 * pixel + pad * 2}
+          fill="transparent"
+          pointerEvents="all"
+          className="cursor-pointer"
+          onPointerMove={follow}
+          onPointerLeave={() => setLook(null)}
+          onClick={(event) => {
+            const at = offset(event)
+            speak(at && at.dy < FIBO_EYES.y - FIBO_GLANCE ? "rage" : "poke")
+          }}
+        />
+      </svg>
+      {speaking ? (
+        // Anchored by its right edge over his head, so it opens back across
+        // the frame instead of off the side of it. The untyped rest of the
+        // line holds its place, so the bubble keeps its size as it fills.
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute z-10 w-max max-w-[15rem] rounded-lg border border-border bg-popover px-2.5 py-1.5 font-mono text-xs leading-snug text-popover-foreground shadow-sm"
+          style={{
+            right: `${(1 - (x + 12 * pixel) / width) * 100}%`,
+            bottom: `${(1 - (y - 18 * pixel) / height) * 100}%`,
+          }}
+        >
+          {text.slice(0, typed)}
+          <span className="text-transparent">{text.slice(typed)}</span>
+          <span className="absolute right-6 -bottom-[5px] size-2 rotate-45 border-r border-b border-border bg-popover" />
+        </div>
+      ) : null}
+    </>
   )
 }
 
