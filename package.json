@@ -1,23 +1,42 @@
 {
   "name": "fibo",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
+  "description": "An achromatic design system built on shadcn/ui and Base UI, documented in Storybook and installed from a shadcn registry.",
+  "homepage": "https://fibo.toribryan.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toribryan/fibo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/toribryan/fibo/issues"
+  },
+  "license": "MIT",
+  "author": "Tori Bryan (https://toribryan.com)",
+  "keywords": [
+    "design-system",
+    "shadcn",
+    "shadcn-registry",
+    "base-ui",
+    "tailwindcss",
+    "storybook",
+    "react"
+  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
+    "build:site": "pnpm build && rm -rf dist && cp -R apps/storybook/storybook-static dist && cp -R apps/registry/public/r dist/r && cp apps/registry/public/llms.txt dist/llms.txt",
     "storybook": "turbo run dev --filter=storybook",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "check-types": "turbo typecheck",
     "format:check": "prettier --check . --cache",
     "format:write": "prettier --write . --cache",
-    "registry:build": "pnpm --filter web registry:build",
+    "registry:build": "pnpm --filter registry build",
     "prepare": "husky"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "eslint-plugin-storybook": "10.5.9",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "turbo": "^2.9.18",
@@ -27,6 +46,6 @@
   },
   "packageManager": "pnpm@10.33.4",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }

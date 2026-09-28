@@ -1,0 +1,67 @@
+{
+  "$comment": "One entry per file in src/components. The registry build, the Storybook catalog and llms.txt all read this; the build fails if a component is missing.",
+  "badge": {
+    "title": "Badge",
+    "description": "A short label for status, category or count.",
+    "tier": "components",
+    "group": "Display"
+  },
+  "button": {
+    "title": "Button",
+    "description": "Triggers an action or event with a single click.",
+    "tier": "components",
+    "group": "Actions"
+  },
+  "chapter-scrubber": {
+    "title": "Chapter scrubber",
+    "description": "A rail of marks that swell under the pointer like the Dock, previewing the chapter at the crest.",
+    "tier": "niche",
+    "group": "Navigation",
+    "status": "new"
+  },
+  "checkbox": {
+    "title": "Checkbox",
+    "description": "Turns a single option on or off, or picks many from a list.",
+    "tier": "components",
+    "group": "Forms"
+  },
+  "input": {
+    "title": "Input",
+    "description": "A single line of free text.",
+    "tier": "components",
+    "group": "Forms"
+  },
+  "integration-visual": {
+    "title": "Integration visual",
+    "description": "A hub and the tools wired into it, with pulses along the routes.",
+    "tier": "niche",
+    "group": "Diagrams",
+    "status": "new"
+  },
+  "label": {
+    "title": "Label",
+    "description": "Names a form control and widens its hit area.",
+    "tier": "components",
+    "group": "Forms"
+  },
+  "reactions": {
+    "title": "Reactions",
+    "description": "Lets people respond to content with an emoji in one tap.",
+    "tier": "niche",
+    "group": "Feedback",
+    "status": "new"
+  },
+  "textarea": {
+    "title": "Textarea",
+    "description": "Several lines of free text that grow with the content.",
+    "tier": "components",
+    "group": "Forms"
+  },
+  "token-flow": {
+    "title": "Token flow",
+    "description": "Walks a colour token from raw value to primitive to semantic role.",
+    "tier": "niche",
+    "group": "Diagrams",
+    "status": "new"
+  }
+}

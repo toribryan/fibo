@@ -2,6 +2,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type ComponentType,
   type ReactNode,
 } from "react"
@@ -83,16 +84,16 @@ const WIDE: Geometry = {
   sketch: {
     dimensions: [
       {
-        d: "M0 219H96M114 219H210M0 215V223M210 215V223",
+        d: "M0 220H96M114 220H210M0 216V224M210 216V224",
         label: "1",
         x: 105,
-        y: 220.2,
+        y: 221.2,
       },
       {
-        d: "M210 219H262M288 219H340M340 215V223",
+        d: "M210 220H262M288 220H340M340 216V224",
         label: "0.618",
         x: 275,
-        y: 220.2,
+        y: 221.2,
       },
     ],
     notes: [
@@ -149,16 +150,20 @@ const TALL: Geometry = {
   open: { x: -400, y: 210, width: 1000, height: 600 },
 }
 
+const REDUCED_MOTION = "(prefers-reduced-motion: reduce)"
+
+function subscribeToReducedMotion(onChange: () => void) {
+  const query = window.matchMedia(REDUCED_MOTION)
+  query.addEventListener("change", onChange)
+  return () => query.removeEventListener("change", onChange)
+}
+
 function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(false)
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)")
-    setReduced(query.matches)
-    const onChange = () => setReduced(query.matches)
-    query.addEventListener("change", onChange)
-    return () => query.removeEventListener("change", onChange)
-  }, [])
-  return reduced
+  return useSyncExternalStore(
+    subscribeToReducedMotion,
+    () => window.matchMedia(REDUCED_MOTION).matches,
+    () => false
+  )
 }
 
 type Rect = Geometry["rects"][number]
@@ -473,7 +478,7 @@ function Pitch({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex flex-col justify-center overflow-hidden p-[4cqw]",
+        "flex flex-col justify-center overflow-hidden px-[calc(100cqw*20/340)] py-[4cqw]",
         className
       )}
     >
@@ -545,6 +550,70 @@ function Pitch({ className }: { className?: string }) {
   )
 }
 
+/*
+ * hero-01's frame is built on a 10-unit lattice: 340 by 210, with every cut
+ * at a multiple of ten. The dots sit on that same lattice, anchored to the
+ * frame's corner, so each line runs through a row or column of them. The
+ * plate runs well past the frame and the header clips it at the page edges.
+ */
+const LATTICE = 10
+
+function Plate({ id, geometry }: { id: string; geometry: Geometry }) {
+  const [, , w = 0, h = 0] = geometry.viewBox.split(" ").map(Number)
+  const dots = `${id}-dots`
+  const fade = `${id}-fade`
+  const mask = `${id}-mask`
+  const bounds = { x: -w, y: -LATTICE, width: w * 3, height: h + LATTICE * 5 }
+  return (
+    <svg
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 size-full overflow-visible"
+      viewBox={geometry.viewBox}
+    >
+      <defs>
+        <pattern
+          id={dots}
+          patternUnits="userSpaceOnUse"
+          x={-LATTICE / 2}
+          y={-LATTICE / 2}
+          width={LATTICE}
+          height={LATTICE}
+        >
+          <circle
+            cx={LATTICE / 2}
+            cy={LATTICE / 2}
+            r={0.4}
+            className="fill-foreground"
+          />
+        </pattern>
+        {/* Fades in below the toolbar and out under the dimension lines. */}
+        <linearGradient
+          id={fade}
+          gradientUnits="userSpaceOnUse"
+          x1={0}
+          y1={0}
+          x2={0}
+          y2={h + LATTICE * 3}
+        >
+          <stop offset={0} stopColor="white" stopOpacity={0} />
+          <stop offset={0.1} stopColor="white" />
+          <stop offset={0.85} stopColor="white" />
+          <stop offset={1} stopColor="white" stopOpacity={0} />
+        </linearGradient>
+        <mask id={mask} maskUnits="userSpaceOnUse" {...bounds}>
+          <rect {...bounds} fill={`url(#${fade})`} />
+        </mask>
+      </defs>
+      <rect
+        {...bounds}
+        fill={`url(#${dots})`}
+        mask={`url(#${mask})`}
+        opacity={0.25}
+      />
+    </svg>
+  )
+}
+
 function Frame({
   geometry,
   id,
@@ -558,6 +627,7 @@ function Frame({
 }) {
   return (
     <div className="fibo-screen-lines relative border-x border-border">
+      <Plate id={id} geometry={geometry} />
       <Spiral id={id} geometry={geometry} />
       <div className={cn("relative grid", className)}>{children}</div>
       <Interactive id={id} geometry={geometry} />
@@ -568,17 +638,6 @@ function Frame({
 function Hero() {
   return (
     <header className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden px-8 pb-12">
-      {/* Token flow's dotted plate, faded out toward the top and bottom
-          edges so the grid never stops on a hard line. */}
-      <div
-        className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)] opacity-20"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle, var(--foreground) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-        aria-hidden="true"
-      />
       <div className="@container relative mx-auto w-full max-w-[68rem]">
         <div className="hidden @3xl:block">
           <Frame
@@ -595,7 +654,7 @@ function Hero() {
             id="fibo-hero-spiral-tall"
             className="aspect-[1/1.618] grid-cols-[1.618fr_minmax(0,1fr)] grid-rows-[1.618fr_1fr]"
           >
-            <Pitch className="col-[1/span_2] row-1 p-[6cqw]" />
+            <Pitch className="col-[1/span_2] row-1 px-[calc(100cqw*20/210)] py-[6cqw]" />
           </Frame>
         </div>
       </div>

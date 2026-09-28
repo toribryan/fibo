@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm build)",
+      "Bash(pnpm build:site)",
+      "Bash(pnpm registry:build)",
+      "Bash(pnpm format:check)",
+      "Bash(pnpm format:write)",
+      "Bash(pnpm storybook)",
+      "Bash(pnpm --filter * lint)",
+      "Bash(pnpm --filter * typecheck)",
+      "Bash(pnpm --filter * build)"
+    ],
+    "deny": ["Read(./.env)", "Read(./.env.*)"]
+  }
+}

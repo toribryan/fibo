@@ -61,6 +61,14 @@ Every colour is a semantic role that aliases a primitive ramp. Retheming means
 editing `:root` and `.dark` in `globals.css` and nothing else. The toolbar's
 theme switch at the top of this page flips the same `.dark` class.
 
+## With coding agents
+
+- [`llms.txt`](https://fibo.toribryan.com/llms.txt) lists every part with its
+  install command, so an agent can pick parts without guessing names.
+- With `@fibo` in `components.json`, the
+  [shadcn MCP server](https://ui.shadcn.com/docs/mcp) can browse and install
+  fibo parts. Add it with `pnpm dlx shadcn@latest mcp init`.
+
 ## Run it locally
 
 ```bash

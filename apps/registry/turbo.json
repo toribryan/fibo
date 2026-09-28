@@ -1,0 +1,14 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["FIBO_SITE_URL"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/packages/ui/src/components/**",
+        "$TURBO_ROOT$/packages/ui/components.meta.json"
+      ]
+    }
+  }
+}

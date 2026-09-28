@@ -6,13 +6,16 @@ import { UsageGuidelines } from "../blocks/guidelines"
 
 # Contributing
 
-A new part needs a component file, a stories file, a docs page, and a matching
-Figma component.
+A new part needs a component file, a stories file, a docs page, a metadata
+entry and a matching Figma component. The full checklist lives in the repo's
+`add-component` skill (`.agents/skills/add-component/SKILL.md`), which people
+and coding agents both follow. This page is the short version.
 
 ## Components or Niche
 
 fibo has two shelves. **Components** are the standard parts most interfaces
-need: they depend on nothing beyond Base UI and stay quiet. **Niche** parts
+need: they depend on nothing beyond Base UI, `class-variance-authority` and
+`lucide-react`, and stay quiet. **Niche** parts
 are built for one kind of moment, such as a diagram, a reading rail or a
 reaction, and may use `motion`. Give a Niche part a `Niche/` title and it
 lands in its own section of the sidebar and the catalog.
@@ -20,12 +23,15 @@ lands in its own section of the sidebar and the catalog.
 ## Add a component
 
 1. Create `packages/ui/src/components/<name>.tsx` in kebab-case.
-2. Add `<name>.stories.tsx` next to it with at least a `Default` story.
+2. Add `<name>.stories.tsx` next to it with an args-driven `Default` story and
+   no `autodocs` tag.
 3. Write its docs page at `apps/storybook/src/components/<name>.mdx`, using an
    existing page as the template.
-4. Add it to the catalog in `apps/storybook/src/blocks/catalog.tsx`, with its
-   tier and group.
-5. Run `pnpm registry:build` and confirm `apps/web/public/r/<name>.json` exists.
+4. Describe it in `packages/ui/components.meta.json`: title, description,
+   tier and group. The registry, the catalog and `llms.txt` all read it.
+5. Add a small preview for the catalog card in
+   `apps/storybook/src/blocks/catalog.tsx`.
+6. Run `pnpm format:write`, `pnpm lint`, `pnpm build` and `pnpm typecheck`.
 
 ## Conventions
 
