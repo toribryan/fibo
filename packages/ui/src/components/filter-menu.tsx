@@ -147,9 +147,10 @@ type FilterMenuProps = {
   /** Which edge of the trigger the popup lines up with. */
   align?: "start" | "center" | "end"
   /**
-   * How search starts. `inline` keeps a search box at the top, and typing
-   * turns the menu into results. `button` shows a Search filters button
-   * instead, and the menu slides over to its search state when it's used.
+   * How search starts. `button`, the default, shows a Search filters button
+   * at the top, and the menu slides over to its search state when it's
+   * used. `inline` keeps a search box there instead, and typing turns the
+   * menu into results.
    */
   search?: "inline" | "button"
   /** Classes for the trigger button. */
@@ -172,7 +173,7 @@ function FilterMenu({
   label = "Filters",
   searchLabel = "Search filters",
   align = "start",
-  search = "inline",
+  search = "button",
   className,
 }: FilterMenuProps) {
   const [selected, setSelected] = useControllable(
@@ -279,10 +280,11 @@ function FilterMenu({
     setHighlight(0)
   }
 
+  // A search started inside a field stays within it, as it does inline,
+  // and leaving the search goes back to that field.
   const enterSearch = (initial = "") => {
     setDirection(1)
     setSearching(true)
-    setFieldId(null)
     setQuery(initial)
     setHighlight(0)
   }
@@ -578,7 +580,12 @@ function FilterMenu({
                           </>
                         ) : (
                           <>
-                            {backButton(exitSearch, "Back to filters")}
+                            {backButton(
+                              exitSearch,
+                              field
+                                ? `Back to ${field.label}`
+                                : "Back to filters"
+                            )}
                             {searchInput}
                           </>
                         )}
