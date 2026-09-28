@@ -3,15 +3,6 @@ import { useState } from "react"
 
 import { Reactions, ReactionsMenuItem, type Reaction } from "./reactions.js"
 
-const palette: Reaction[] = [
-  { emoji: "👍", label: "Thumbs up" },
-  { emoji: "❤️", label: "Heart" },
-  { emoji: "😂", label: "Laughing" },
-  { emoji: "🔥", label: "Fire" },
-  { emoji: "🎉", label: "Celebrate" },
-  { emoji: "😮", label: "Surprised" },
-]
-
 const seeded: Reaction[] = [
   { emoji: "👍", label: "Thumbs up", count: 5 },
   { emoji: "❤️", label: "Heart", count: 3, active: true },
@@ -36,15 +27,21 @@ const pinned = {
 }
 
 const meta: Meta<typeof Reactions> = {
-  title: "Components/Reactions",
+  title: "Niche/Reactions",
   component: Reactions,
   tags: ["new"],
   parameters: {
-    docs: {
-      description: {
-        component:
-          "A reaction control in three shapes. Inline sits with the content it belongs to and shows a pill per reaction; floating pins a translucent bar to a corner of the viewport with the running total beside its trigger; menu starts as a single button and rolls an emoji rail out along the x axis with a menu above it. All three share the choices, the pill motion and the particle burst.",
-      },
+    // Data and callbacks stay in the props table; the playground shows the
+    // choices a person can actually toggle.
+    controls: {
+      exclude: [
+        "reactions",
+        "defaultReactions",
+        "choices",
+        "menu",
+        "onReactionsChange",
+        "onReact",
+      ],
     },
   },
   argTypes: {
@@ -59,11 +56,18 @@ const meta: Meta<typeof Reactions> = {
     },
     showCounts: { control: "boolean" },
     particles: { control: { type: "range", min: 0, max: 20, step: 1 } },
+    triggerLabel: { control: "text", table: { category: "Labels" } },
+    closeLabel: { control: "text", table: { category: "Labels" } },
+    panelLabel: { control: "text", table: { category: "Labels" } },
+    menuLabel: { control: "text", table: { category: "Labels" } },
+    reactions: { control: false },
+    defaultReactions: { control: false },
+    choices: { control: false },
+    menu: { control: false },
   },
   args: {
     variant: "inline",
     defaultReactions: seeded,
-    choices: palette,
     showCounts: true,
     particles: 7,
   },
@@ -78,6 +82,18 @@ export const Empty: Story = {
   name: "No reactions yet",
   args: {
     defaultReactions: [],
+  },
+}
+
+export const BusyPost: Story = {
+  name: "Busy post",
+  args: {
+    defaultReactions: [
+      { emoji: "👍", label: "Thumbs up", count: 12_847 },
+      { emoji: "❤️", label: "Heart", count: 3_420, active: true },
+      { emoji: "😂", label: "Laughing", count: 961 },
+      { emoji: "🎉", label: "Celebrate", count: 1_205 },
+    ],
   },
 }
 
@@ -202,7 +218,8 @@ export const Controlled: Story = {
             onReactionsChange={setReactions}
           />
           <p className="text-xs font-medium text-muted-foreground tabular-nums">
-            {total} reactions across {reactions.length} kinds
+            {total} {total === 1 ? "reaction" : "reactions"} across{" "}
+            {reactions.length} {reactions.length === 1 ? "kind" : "kinds"}
           </p>
         </div>
       )
