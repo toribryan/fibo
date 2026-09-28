@@ -19,6 +19,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   BaseUIIcon,
+  FigmaIcon,
   GithubIcon,
   ReactIcon,
   ShadcnIcon,
@@ -278,10 +279,13 @@ function Spiral({ geometry }: { geometry: Geometry }) {
  */
 const FIBO_SCALE = 2
 const FIBO_ASSEMBLE_MS = 1200
-// Sprite units from his origin to his eyes, and how far the pointer must be
-// from them, in art pixels, before he looks that way.
-const FIBO_EYES = { x: 6, y: -10 }
+// Art pixels from his origin to his eyes, and how far the pointer must be
+// from them before he looks that way.
+const FIBO_EYES = { x: 6, y: -11 }
 const FIBO_GLANCE = 1.5
+// How far past his middle the pointer must go before he turns round. The
+// gap between the two sides keeps him from flipping back and forth.
+const FIBO_TURN = 4
 
 function glance(offset: number): -1 | 0 | 1 {
   if (offset < -FIBO_GLANCE) return -1
@@ -290,14 +294,15 @@ function glance(offset: number): -1 | 0 | 1 {
 
 /*
  * fibo builds up from coarse blocks once the spiral has drawn, then dances.
- * With the pointer over him he stops and follows it with his eyes. His hit
- * area is padded so a pointer beside him still counts.
+ * With the pointer near him he stops and turns to it: eyes, head and neck
+ * follow, and he turns round when it goes behind him. His hit area is padded
+ * so a pointer beside him still counts.
  */
 function Fibo({ geometry }: { geometry: Geometry }) {
   const [look, setLook] = useState<PixelSnailLook | null>(null)
   const pixel = geometry.stroke * FIBO_SCALE
   const { x, y } = geometry.fibo
-  const pad = 6 * pixel
+  const pad = 8 * pixel
 
   const follow = (event: PointerEvent<SVGRectElement>) => {
     const svg = event.currentTarget.ownerSVGElement
@@ -306,9 +311,16 @@ function Fibo({ geometry }: { geometry: Geometry }) {
     const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(
       matrix
     )
-    setLook({
-      x: glance((point.x - x) / pixel - FIBO_EYES.x),
-      y: glance((point.y - y) / pixel - FIBO_EYES.y),
+    const dx = (point.x - x) / pixel
+    const dy = (point.y - y) / pixel
+    setLook((current) => {
+      const turned = current?.facing ?? 1
+      const facing = dx < -FIBO_TURN ? -1 : dx > FIBO_TURN ? 1 : turned
+      return {
+        facing,
+        x: glance((dx - facing * FIBO_EYES.x) * facing),
+        y: glance(dy - FIBO_EYES.y),
+      }
     })
   }
 
@@ -327,10 +339,10 @@ function Fibo({ geometry }: { geometry: Geometry }) {
         assembleDelay={FIBO_ASSEMBLE_MS}
       />
       <rect
-        x={x - 10 * pixel - pad}
-        y={y - 14 * pixel - pad}
-        width={20 * pixel + pad * 2}
-        height={14 * pixel + pad * 2}
+        x={x - 11 * pixel - pad}
+        y={y - 16 * pixel - pad}
+        width={24 * pixel + pad * 2}
+        height={16 * pixel + pad * 2}
         fill="transparent"
         pointerEvents="all"
         onPointerMove={follow}
@@ -573,6 +585,16 @@ function Pitch({ width, className }: { width: number; className?: string }) {
         >
           Get started
           <ArrowRightIcon data-icon="inline-end" />
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          nativeButton={false}
+          className="h-[round(up,1.5rem,var(--u))] w-[round(up,6rem,var(--u))] bg-background hover:bg-accent"
+          render={<a href={LINKS.figma} target="_blank" rel="noreferrer" />}
+        >
+          <FigmaIcon data-icon="inline-start" />
+          Figma
         </Button>
         <Button
           size="lg"
