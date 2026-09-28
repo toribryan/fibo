@@ -73,7 +73,11 @@ the web app reads `registry.json`, which only exists after a build.
   `<name>Variants` cva object when they have variants.
 - Every component sets `data-slot` on its root element.
 - Semantic tokens only in components (`bg-primary`, `text-muted-foreground`).
-  Primitive ramps (`brand-*`, `neutral-*`) are for `globals.css`.
+  Primitive ramps (`neutral-*`, `red-*`, `green-*`, `amber-*`, `blue-*`) are
+  for `globals.css`. There is no brand hue: `primary` is a neutral.
+- No opacity modifiers on token colours (`bg-destructive/10`). Figma cannot
+  bind opacity to a variable, so those are named roles instead:
+  `-subtle`, `-hover`, `-ring`. Both sides then use the same name.
 - Comments explain why, never what. No comments about removed or changed code.
 - Sentence case for headings in markdown and UI copy.
 - No emojis in code, comments, or commit messages.
