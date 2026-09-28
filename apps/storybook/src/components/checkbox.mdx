@@ -1,4 +1,4 @@
-import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 
 import * as Stories from "../../../../packages/ui/src/components/checkbox.stories"
 import { Checkbox } from "../../../../packages/ui/src/components/checkbox"
@@ -6,6 +6,7 @@ import { Label } from "../../../../packages/ui/src/components/label"
 import { RelatedComponents } from "../blocks/catalog"
 import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
+import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -14,18 +15,11 @@ import { Install } from "../blocks/install"
 A checkbox turns one option on or off, or picks any number of options from a
 list. The change applies on submit, not the moment it is ticked.
 
-<Canvas of={Stories.WithLabel} />
+<Playground of={Stories.Default} />
 
 ## Import
 
 <Install name="checkbox" exports={["Checkbox"]} />
-
-## Props
-
-Checkbox takes every prop of Base UI's `Checkbox.Root`, including
-`checked`, `defaultChecked`, `onCheckedChange` and `indeterminate`.
-
-<Controls of={Stories.Default} />
 
 ## Usage
 
@@ -95,3 +89,10 @@ Checkbox takes every prop of Base UI's `Checkbox.Root`, including
 ## Related components
 
 <RelatedComponents names={["Label", "Input", "Button"]} />
+
+## Props
+
+Checkbox takes every prop of Base UI's `Checkbox.Root`, including
+`checked`, `defaultChecked`, `onCheckedChange` and `indeterminate`.
+
+<ArgTypes of={Stories.Default} />

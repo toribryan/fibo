@@ -1,9 +1,10 @@
-import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 
 import * as Stories from "../../../../packages/ui/src/components/textarea.stories"
 import { RelatedComponents } from "../blocks/catalog"
 import { UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
+import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -12,17 +13,11 @@ import { Install } from "../blocks/install"
 A textarea takes several lines of free text. It grows with its content through
 `field-sizing: content`, so it never needs its own scrollbar.
 
-<Canvas of={Stories.Default} />
+<Playground of={Stories.Default} />
 
 ## Import
 
 <Install name="textarea" exports={["Textarea"]} />
-
-## Props
-
-Textarea takes every native `textarea` prop.
-
-<Controls of={Stories.Default} />
 
 ## Usage
 
@@ -59,3 +54,9 @@ Textarea takes every native `textarea` prop.
 ## Related components
 
 <RelatedComponents names={["Input", "Label"]} />
+
+## Props
+
+Textarea takes every native `textarea` prop.
+
+<ArgTypes of={Stories.Default} />

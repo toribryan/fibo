@@ -1,9 +1,10 @@
-import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+import { ArgTypes, Meta } from "@storybook/addon-docs/blocks"
 
 import * as Stories from "../../../../packages/ui/src/components/label.stories"
 import { RelatedComponents } from "../blocks/catalog"
 import { UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
+import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -12,17 +13,11 @@ import { Install } from "../blocks/install"
 A label names a form control. Clicking it focuses or toggles the control, so
 it also widens the hit area.
 
-<Canvas of={Stories.WithInput} />
+<Playground of={Stories.Default} />
 
 ## Import
 
 <Install name="label" exports={["Label"]} />
-
-## Props
-
-Label takes every native `label` prop.
-
-<Controls of={Stories.Default} />
 
 ## Usage
 
@@ -49,3 +44,9 @@ Label takes every native `label` prop.
 ## Related components
 
 <RelatedComponents names={["Input", "Textarea", "Checkbox"]} />
+
+## Props
+
+Label takes every native `label` prop.
+
+<ArgTypes of={Stories.Default} />

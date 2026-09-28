@@ -1,4 +1,4 @@
-import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 import { ArrowRightIcon } from "lucide-react"
 
 import * as Stories from "../../../../packages/ui/src/components/button.stories"
@@ -6,6 +6,7 @@ import { Button } from "../../../../packages/ui/src/components/button"
 import { RelatedComponents } from "../blocks/catalog"
 import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
+import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -14,18 +15,11 @@ import { Install } from "../blocks/install"
 Buttons trigger an action with a single click: submitting a form, opening a
 dialog, confirming or cancelling a step. The label says what will happen.
 
-<Canvas of={Stories.Default} />
+<Playground of={Stories.Default} />
 
 ## Import
 
 <Install name="button" exports={["Button", "buttonVariants"]} />
-
-## Props
-
-Button takes every prop of Base UI's `Button`, including `render` for
-rendering as a link.
-
-<Controls of={Stories.Default} />
 
 ## Usage
 
@@ -154,3 +148,10 @@ not a solid red, so it never outshouts the primary action.
 ## Related components
 
 <RelatedComponents names={["Badge", "Reactions", "Checkbox"]} />
+
+## Props
+
+Button takes every prop of Base UI's `Button`, including `render` for
+rendering as a link.
+
+<ArgTypes of={Stories.Default} />
