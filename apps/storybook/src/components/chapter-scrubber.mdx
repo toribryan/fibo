@@ -1,0 +1,175 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/chapter-scrubber.stories"
+import { ChapterScrubber } from "../../../../packages/ui/src/components/chapter-scrubber"
+import { RelatedComponents } from "../blocks/catalog"
+import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+import { Playground } from "../blocks/playground"
+
+<Meta of={Stories} />
+
+# Chapter scrubber
+
+A rail of quiet marks, one per chapter, that swell under the pointer the way
+the macOS Dock does. The chapter at the crest shows beside it, so people see
+the whole shape of a long piece and can jump anywhere without a table of
+contents taking up the margin.
+
+<Playground of={Stories.Default} />
+
+## Import
+
+<Install
+  name="chapter-scrubber"
+  exports={["ChapterScrubber", "type Chapter"]}
+/>
+
+## Usage
+
+<UsageGuidelines
+  guidelines={[
+    "Use it for content with a real sequence: a talk, a long read, a case study, a recording.",
+    "Keep between six and thirty chapters. Fewer reads as a list; more stops the wave from reaching the neighbours.",
+    <>
+      Pick <code>card</code> when chapters have descriptions, <code>label</code>{" "}
+      when the title says enough, and <code>none</code> when the page already
+      names the section.
+    </>,
+    <>
+      Leave <code>side</code> unset in most layouts. It prefers right or top and
+      flips on its own near the viewport edge.
+    </>,
+    <>
+      Set <code>currentIndex</code> from your scroll or playback position so the
+      marker follows the reader, not just their clicks.
+    </>,
+  ]}
+/>
+
+<Tip>
+  The rail is only as wide as the crest, so it fits in a gutter. Put it in a{" "}
+  <code>sticky</code> column beside the content, as in the article example
+  below.
+</Tip>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The rail is a listbox and every mark an option named by its title and
+      description. The current chapter is <code>aria-selected</code>.
+    </>,
+    "Only one mark is in the tab order. Arrow keys, Home and End move along the rail; Enter or Space makes a chapter current.",
+    "Focus raises the wave exactly as hover does, so keyboard users get the same preview.",
+    "Under reduced motion the springs switch off. The wave keeps its shape but appears and follows instantly.",
+  ]}
+/>
+
+## Variants
+
+### Horizontal
+
+A rail along the top of a player or a slide deck. Ticks stand up from the
+baseline and the preview opens above.
+
+<Canvas of={Stories.Horizontal} />
+
+### Dots
+
+Dots instead of ticks, for a softer rail that sits well beside imagery.
+
+<Canvas of={Stories.Dots} />
+
+### Centred ticks
+
+Ticks grow out from the middle line, which balances a rail placed on its own.
+
+<Canvas of={Stories.Centered} />
+
+### Sizes
+
+<Canvas of={Stories.Sizes} />
+
+## Use cases and examples
+
+### Controlled
+
+Buttons elsewhere on the page drive the same marker the rail sets.
+
+<Canvas of={Stories.Controlled} />
+
+### In an article
+
+<Canvas of={Stories.InAnArticle} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <ChapterScrubber
+            preview="none"
+            size="sm"
+            defaultCurrentIndex={2}
+            chapters={Array.from({ length: 14 }, (_, i) => ({
+              id: String(i),
+              title: `Chapter ${i + 1}`,
+            }))}
+          />
+        ),
+        description:
+          "Give it enough chapters for the wave to have neighbours to lift.",
+      },
+      negative: {
+        component: (
+          <ChapterScrubber
+            preview="none"
+            size="sm"
+            chapters={Array.from({ length: 3 }, (_, i) => ({
+              id: String(i),
+              title: `Chapter ${i + 1}`,
+            }))}
+          />
+        ),
+        description:
+          "Don't use it for three items. Plain links say more in less space.",
+      },
+    },
+    {
+      positive: {
+        component: (
+          <span className="rounded-lg border border-border bg-popover px-3 py-2 text-sm font-medium shadow-sm">
+            Semantic roles
+          </span>
+        ),
+        description:
+          "Keep titles short enough to read in the moment the crest passes.",
+      },
+      negative: {
+        component: (
+          <span className="max-w-60 rounded-lg border border-border bg-popover px-3 py-2 text-sm font-medium shadow-sm">
+            In which we finally discuss how semantic roles came to be named
+          </span>
+        ),
+        description:
+          "Don't put the chapter's argument in its title. That belongs in the description.",
+      },
+    },
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Integration visual", "Token flow", "Reactions"]} />
+
+## Props
+
+Every visual choice is a prop: orientation, mark style, density, which side
+the preview opens toward, and what the preview shows. The numeric props
+override the `size` preset when you need an exact rhythm.
+
+<ArgTypes of={Stories.Default} />
