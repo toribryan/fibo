@@ -3,9 +3,10 @@
 ## What is changing
 
 A Theme creator page in the Storybook sidebar, beside Colour and Typography.
-Controls on one side, real fibo components previewed live in light and dark on
-the other, a live contrast report, and three ways out: CSS to paste, Figma
-variables JSON, and a link that reopens the theme.
+It is visual first, after shadcn's theme builder and Radix's colour page: a
+narrow rail of settings beside a large scene of real fibo parts that takes the
+theme on as it changes. It also has a live contrast report and three ways
+out: CSS to paste, Figma variables JSON, and a link that reopens the theme.
 
 ## Why now
 
@@ -35,6 +36,24 @@ page. The site is static, so everything runs in the browser.
   browser map them, while contrast checks and Figma hex values fit them into
   sRGB first, the way an sRGB screen shows them.
 - Fonts: sans and mono from a short list of Google Fonts, loaded on demand.
+
+**Layout.** A first version stacked form controls above a small preview,
+which read as a settings page. The shipped layout leads with the result:
+
+- The rail is a column of tiles, one per setting, each showing its name, its
+  current value and a small picture of it. Pressing a tile opens the control
+  beside the rail. The rail stays in fibo's dark scheme whatever the site's
+  theme, so it reads as a control surface and never takes on the theme being
+  made.
+- The scene is a grey canvas of cards, laid out in columns: the ramps across
+  the top, as Radix shows a scale, then tokens, type, controls, a chart,
+  forms, notifications, a team list and tasks. It shows one mode at a time,
+  with a switch.
+- The contrast report and the code export open in dialogs from the foot of
+  the rail, next to Shuffle and Copy link.
+
+The page drops the docs column's width and its "On this page" rail, as the
+Welcome page does.
 
 **How the preview works.** The semantic tokens are CSS custom properties read
 through `@theme inline`, so setting them on a container restyles everything
