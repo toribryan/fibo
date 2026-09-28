@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180" fill="none">
+  <!--
+    The snail is Lucide's, drawn at 2x, so its 1.5 stroke is 3 wide and its
+    foot runs along y = 76 + 21 * 2 = 118, with its rear 4 past the group's
+    origin. The trail sits on that line and ends at the rear.
+
+    One 11s loop at a steady crawl: the rear travels from x = -44, just off
+    the left edge, to x = 488, far enough past the right edge that the faded
+    end of the trail has left the frame too, so the restart is never seen.
+  -->
+  <defs>
+    <!-- Solid for 24 behind the snail, fading out over the 86 before that,
+         so the fade shows as soon as the snail is in view. -->
+    <linearGradient id="trail" gradientUnits="userSpaceOnUse" x1="-154" y1="0" x2="-68" y2="0">
+      <stop offset="0" stop-color="#171717" stop-opacity="0"/>
+      <stop offset="1" stop-color="#171717"/>
+      <animate attributeName="x1" values="-154;378" dur="11s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="-68;464" dur="11s" repeatCount="indefinite"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="320" height="180" fill="#f5f5f5"/>
+
+  <path d="M4 118H316" stroke="#d4d4d4" stroke-width="2" stroke-linecap="round" stroke-dasharray="0 8"/>
+
+  <line x1="-44" y1="118" x2="-44" y2="118" stroke="url(#trail)" stroke-width="3" stroke-linecap="round">
+    <animate attributeName="x2" values="-44;488" dur="11s" repeatCount="indefinite"/>
+  </line>
+
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="-48 76;484 76" dur="11s" repeatCount="indefinite"/>
+    <g transform="scale(2)" stroke="#171717" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 13a6 6 0 1 0 12 0 4 4 0 1 0-8 0 2 2 0 0 0 4 0"/>
+      <circle cx="10" cy="13" r="8"/>
+      <path d="M2 21h12c4.4 0 8-3.6 8-8V7a2 2 0 1 0-4 0v6"/>
+      <path d="M18 3 19.1 5.2"/>
+      <path d="M22 3 20.9 5.2"/>
+    </g>
+  </g>
+
+  <text x="160" y="150" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" fill="#737373">syncing… eventually</text>
+</svg>

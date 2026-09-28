@@ -1,0 +1,168 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+import {
+  DatabaseIcon,
+  GitBranchIcon,
+  MailIcon,
+  MessageSquareIcon,
+} from "lucide-react"
+
+import * as Stories from "../../../../packages/ui/src/components/integration-visual.stories"
+import { IntegrationVisual } from "../../../../packages/ui/src/components/integration-visual"
+import { RelatedComponents } from "../blocks/catalog"
+import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+import { Playground } from "../blocks/playground"
+
+<Meta of={Stories} />
+
+# Integration visual
+
+A hub and the tools wired into it, on a plate. The hub takes an icon or
+text, and defaults to a snail, for syncs that take their time. Pulses run along the routes of
+the tools that are live, quiet ones sit back, and a preview springs up over
+the hub on hover or focus. It explains a connection at a glance where a list
+of logos would not.
+
+<Playground of={Stories.Default} />
+
+## Import
+
+<Install
+  name="integration-visual"
+  exports={["IntegrationVisual", "type IntegrationItem"]}
+/>
+
+## Usage
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Choose the layout by count: <code>corners</code> for four,{" "}
+      <code>orbit</code> for five to eight, <code>sides</code> when data flows
+      in one side and out the other.
+    </>,
+    <>
+      Mark tools that aren't connected yet as <code>idle</code> rather than
+      leaving them out. The diagram then shows what's possible as well as what's
+      live.
+    </>,
+    <>
+      Use <code>pulse="inward"</code> for sources feeding the hub and{" "}
+      <code>"outward"</code> for the hub sending to them.
+    </>,
+    <>
+      Name the hub with the product, a count, or a mark in <code>center</code>.
+      Keep it to a word or a number.
+    </>,
+    "Put it at the top of a card and let the card's text carry the claim. The diagram illustrates it; it doesn't make it.",
+  ]}
+/>
+
+<Tip>
+  The preview is for looking at, not for acting in: nothing inside it can be
+  clicked. Link out from the card around the diagram instead. It opens above the
+  hub, so leave it off when the plate is small or sits in a card that would clip
+  it.
+</Tip>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The diagram is a labelled group, and each tool is a list item named by its
+      title, with ", idle" added for idle ones. Set <code>label</code> to say
+      what the diagram is.
+    </>,
+    "Routes, pulses and the halo are decorative and hidden from assistive tech.",
+    "When there's a preview the hub joins the tab order, and focusing it shows the preview the same way hovering does.",
+    "Under reduced motion the pulses, the halo and the spring all stop; the preview simply fades.",
+  ]}
+/>
+
+## Variants
+
+### Media preview
+
+`preview` takes `{ src, alt }` as well as any content: an image, an animated
+image, or a video that plays muted on a loop. Media is 16:9 by default; pass
+`aspectRatio` for other shapes. Hover or focus the snail.
+
+<Canvas of={Stories.MediaPreview} />
+
+### Orbit
+
+Any count up to eight, evenly spaced on an ellipse with straight spokes.
+
+<Canvas of={Stories.Orbit} />
+
+### Sides
+
+A pipeline: inputs on the left, outputs on the right, each route bending
+through a shared bus. Set `side` on an item to choose its column.
+
+<Canvas of={Stories.Sides} />
+
+### Idle items
+
+<Canvas of={Stories.IdleItems} />
+
+### Plates
+
+<Canvas of={Stories.Plates} />
+
+## Use cases and examples
+
+### In a card
+
+<Canvas of={Stories.InACard} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="w-64 overflow-hidden rounded-lg border border-border">
+            <IntegrationVisual
+              size="sm"
+              items={[
+                { title: "Database", icon: <DatabaseIcon /> },
+                { title: "Repository", icon: <GitBranchIcon /> },
+                { title: "Chat", icon: <MessageSquareIcon />, status: "idle" },
+                { title: "Email", icon: <MailIcon />, status: "idle" },
+              ]}
+            />
+          </div>
+        ),
+        description:
+          "Let only the live routes pulse, so the motion means something.",
+      },
+      negative: {
+        component: (
+          <div className="w-64 overflow-hidden rounded-lg border border-border">
+            <IntegrationVisual
+              size="sm"
+              layout="corners"
+              items={[
+                { title: "Database", icon: <DatabaseIcon /> },
+                { title: "Repository", icon: <GitBranchIcon /> },
+              ]}
+            />
+          </div>
+        ),
+        description:
+          "Don't use corners for two tools; the diagram looks unfinished. Use sides.",
+      },
+    },
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Token flow", "Chapter scrubber", "Reactions"]} />
+
+## Props
+
+<ArgTypes of={Stories.Default} />
