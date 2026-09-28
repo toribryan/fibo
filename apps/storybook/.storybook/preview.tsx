@@ -58,7 +58,7 @@ const preview: Preview = {
           "Changelog",
           "Contributing",
           "Foundations",
-          ["Colors", "Typography"],
+          ["Colors", "Typography", "Theme creator"],
           "Components",
           "Niche",
         ],

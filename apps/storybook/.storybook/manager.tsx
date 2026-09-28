@@ -10,6 +10,7 @@ import {
   HouseIcon,
   LayoutGridIcon,
   MoonIcon,
+  PaintbrushIcon,
   PaletteIcon,
   RocketIcon,
   SnailIcon,
@@ -44,6 +45,7 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   "changelog--docs": HistoryIcon,
   "contributing--docs": GitPullRequestIcon,
   foundations: PaletteIcon,
+  "foundations-theme-creator--docs": PaintbrushIcon,
   components: BoxesIcon,
   niche: SnailIcon,
 }
