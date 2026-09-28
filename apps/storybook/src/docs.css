@@ -52,29 +52,6 @@
   margin: -1rem 0 2.5rem;
 }
 
-/* Inside a playground the frame is shared, so the canvas, its code actions
-   and the controls table drop their own borders and margins. */
-.sbdocs .sb-unstyled .fibo-playground div:has(> .docs-story) {
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-}
-
-.sbdocs .fibo-playground .sbdocs-preview-actions {
-  margin: 0;
-  padding: 0.25rem 0.75rem;
-  border-top: 1px solid var(--border);
-}
-
-.sbdocs .fibo-playground .docblock-argstable {
-  margin: 0;
-}
-
-.sbdocs .fibo-playground .docblock-argstable-body {
-  outline: 0;
-  border-radius: 0;
-}
-
 .sbdocs .docblock-argstable {
   margin: 1.5rem 0;
   font-family: var(--font-sans);

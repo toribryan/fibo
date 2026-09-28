@@ -2,10 +2,11 @@ import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 
 import * as Stories from "../../../../packages/ui/src/components/reactions.stories"
 import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { Anatomy } from "../blocks/anatomy"
 import { Reactions } from "../../../../packages/ui/src/components/reactions"
 import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
-import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -14,13 +15,105 @@ import { Playground } from "../blocks/playground"
 Reactions let people respond to content with an emoji in one tap. They sit
 inline under the content or float in a corner of the page.
 
-<Playground of={Stories.InMessage} />
+<Canvas of={Stories.InMessage} />
 
-## Import
+## Features
+
+- Inline pills under the content, or a floating bar pinned to a corner of the
+  viewport.
+- One tap to react or take it back, with a particle burst. Counts past a
+  thousand shorten to 1.2K.
+- A picker of six common reactions, plus any already on the item.
+- Controlled or uncontrolled. Particles and pill motion switch off under
+  reduced motion.
+
+## Installation
 
 <Install name="reactions" exports={["Reactions", "type Reaction"]} />
 
+No animation library: the burst and the pill motion use the Web Animations API.
+
 ## Usage
+
+```tsx
+import { Reactions } from "@/components/ui/reactions"
+
+export function MessageReactions() {
+  return (
+    <Reactions
+      defaultReactions={[
+        { emoji: "👍", label: "Thumbs up", count: 5 },
+        { emoji: "❤️", label: "Heart", count: 3, active: true },
+      ]}
+    />
+  )
+}
+```
+
+A reaction's `emoji` is its identity, so keep it unique. Its `label` is what
+screen readers hear.
+
+## Anatomy
+
+Every part the component renders, with the `data-slot` it carries. You pass
+the reactions; the component builds the rest.
+
+<Anatomy
+  root={{
+    name: "Reactions",
+    slot: "reactions",
+    note: "The root. Carries data-variant.",
+    children: [
+      {
+        name: "pill",
+        slot: "reactions-pill",
+        note: "Inline only. One toggle per reaction.",
+        children: [
+          { name: "emoji", slot: "reactions-pill-emoji" },
+          {
+            name: "count",
+            slot: "reactions-pill-count",
+            note: "While showCounts is on.",
+          },
+        ],
+      },
+      {
+        name: "picker",
+        slot: "reactions-picker",
+        note: "Holds the trigger and the panel.",
+        children: [
+          {
+            name: "panel",
+            slot: "reactions-panel",
+            note: "The choices, while the picker is open.",
+            children: [
+              {
+                name: "choice",
+                slot: "reactions-choice",
+                note: "One per choice.",
+              },
+            ],
+          },
+          {
+            name: "badge",
+            slot: "reactions-badge",
+            note: "Floating only. The total count.",
+          },
+          {
+            name: "trigger",
+            slot: "reactions-trigger",
+            note: "Opens and closes the panel.",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+The particles fly in one fixed layer, `reactions-particles`, added to
+`document.body` on the first burst so no container clips them.
+
+## Guidelines
 
 <UsageGuidelines
   guidelines={[
@@ -42,51 +135,41 @@ inline under the content or float in a corner of the page.
   seeded from <code>defaultReactions</code>.
 </Tip>
 
-## Accessibility
-
-<UsageGuidelines
-  guidelines={[
-    <>
-      Each pill is a toggle button named by the reaction's label and count, such
-      as "Heart, 3 reactions", with <code>aria-pressed</code> for whether you've
-      reacted. The emoji itself is hidden from screen readers.
-    </>,
-    'A polite live region announces each change: "Added Heart", "Removed Heart".',
-    "Choices you've already picked show as pressed in the picker too.",
-    "Arrow keys, Home and End move through the choices. Escape closes the picker and returns focus to its trigger; tabbing away closes it too.",
-    "Particles and pill motion switch off under prefers-reduced-motion.",
-    <>
-      Override <code>triggerLabel</code> and <code>panelLabel</code> when your
-      product speaks another language.
-    </>,
-  ]}
-/>
-
-## Variants
+## Examples
 
 ### Inline
+
+The default: pills under the content, with the picker's trigger at the end.
 
 <Canvas of={Stories.Default} />
 
 ### No reactions yet
 
+With nothing on the item, only the trigger shows.
+
 <Canvas of={Stories.Empty} />
 
 ### Busy post
+
+Counts past a thousand shorten, such as 1.2K, so the pills stay small.
 
 <Canvas of={Stories.BusyPost} />
 
 ### Without counts
 
+`showCounts={false}` hides the numbers.
+
 <Canvas of={Stories.WithoutCounts} />
 
 ### Floating
 
+`variant="floating"` pins a bar to a viewport corner, chosen with `position`.
+
 <Canvas of={Stories.Floating} />
 
-## Use cases and examples
-
 ### Controlled
+
+`reactions` and `onReactionsChange` hand the state to your data layer.
 
 <Canvas of={Stories.Controlled} />
 
@@ -131,10 +214,75 @@ inline under the content or float in a corner of the page.
   ]}
 />
 
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="reactions"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-variant",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>inline</code> or <code>floating</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-emoji",
+      element: "Each pill",
+      when: "Always. The pill's emoji.",
+    },
+    {
+      attribute: "data-active",
+      element: "Each pill and choice",
+      when: "The current person has reacted with it.",
+    },
+    {
+      attribute: "data-state",
+      element: "The trigger, the panel and each choice",
+      when: (
+        <>
+          Always. <code>open</code> or <code>closed</code>.
+        </>
+      ),
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Each pill is a toggle button named by the reaction's label and count, such
+      as "Heart, 3 reactions", with <code>aria-pressed</code> for whether you've
+      reacted. The emoji itself is hidden from screen readers.
+    </>,
+    'A polite live region announces each change: "Added Heart", "Removed Heart".',
+    "Choices you've already picked show as pressed in the picker too.",
+    "Arrow keys, Home and End move through the choices. Escape closes the picker and returns focus to its trigger; tabbing away closes it too.",
+    "Particles and pill motion switch off under prefers-reduced-motion.",
+    <>
+      Override <code>triggerLabel</code> and <code>panelLabel</code> when your
+      product speaks another language.
+    </>,
+  ]}
+/>
+
 ## Related components
 
 <RelatedComponents names={["Token flow", "Chapter scrubber", "Badge"]} />
 
-## Props
+## References
 
-<ArgTypes of={Stories.Default} />
+- [WAI-ARIA button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/), for the toggle pills
+- [Web Animations API](https://developer.mozilla.org/docs/Web/API/Web_Animations_API)

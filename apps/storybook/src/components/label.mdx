@@ -1,10 +1,10 @@
-import { ArgTypes, Meta } from "@storybook/addon-docs/blocks"
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 
 import * as Stories from "../../../../packages/ui/src/components/label.stories"
 import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
 import { UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
-import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -13,19 +13,61 @@ import { Playground } from "../blocks/playground"
 A label names a form control. Clicking it focuses or toggles the control, so
 it also widens the hit area.
 
-<Playground of={Stories.Default} />
+<Canvas of={Stories.Default} />
 
-## Import
+## Features
+
+- Names a form control. Clicking it focuses or toggles the control.
+- Dims with its control when the control is disabled.
+- Lays out as a row with a gap, so an icon can sit beside the text.
+
+## Installation
 
 <Install name="label" exports={["Label"]} />
 
 ## Usage
+
+```tsx
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
+export function NameField() {
+  return (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor="name">Full name</Label>
+      <Input id="name" autoComplete="name" />
+    </div>
+  )
+}
+```
+
+Match `htmlFor` to the control's `id`, or wrap the control in the label.
+
+## Guidelines
 
 <UsageGuidelines
   guidelines={[
     "Write labels as short nouns or questions, in sentence case, with no colon.",
     "Place the label above inputs and textareas, and to the right of checkboxes.",
     "Mark the optional fields, not the required ones, when most fields are required.",
+  ]}
+/>
+
+## API reference
+
+Label takes every native `label` prop.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="label"',
+      element: "The label",
+      when: "Always.",
+    },
   ]}
 />
 
@@ -45,8 +87,6 @@ it also widens the hit area.
 
 <RelatedComponents names={["Input", "Textarea", "Checkbox"]} />
 
-## Props
+## References
 
-Label takes every native `label` prop.
-
-<ArgTypes of={Stories.Default} />
+- [The `label` element](https://developer.mozilla.org/docs/Web/HTML/Element/label)

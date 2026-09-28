@@ -4,9 +4,9 @@ import { ArrowRightIcon } from "lucide-react"
 import * as Stories from "../../../../packages/ui/src/components/button.stories"
 import { Button } from "../../../../packages/ui/src/components/button"
 import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
 import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
-import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -15,13 +15,39 @@ import { Playground } from "../blocks/playground"
 Buttons trigger an action with a single click: submitting a form, opening a
 dialog, confirming or cancelling a step. The label says what will happen.
 
-<Playground of={Stories.Default} />
+<Canvas of={Stories.Default} />
 
-## Import
+## Features
+
+- Six variants, from the filled primary to a plain link, in four text sizes and
+  four icon sizes.
+- Icons marked with `data-icon` pull the padding in on their side.
+- Renders as a link, or any other element, through Base UI's `render` prop.
+- `destructive` is a red tint, so it never outshouts the primary action.
+
+## Installation
 
 <Install name="button" exports={["Button", "buttonVariants"]} />
 
 ## Usage
+
+```tsx
+import { Button } from "@/components/ui/button"
+
+export function Actions() {
+  return (
+    <div className="flex gap-2">
+      <Button variant="ghost">Cancel</Button>
+      <Button>Save changes</Button>
+    </div>
+  )
+}
+```
+
+Use one default button per view, and give every other action a quieter
+variant.
+
+## Guidelines
 
 <UsageGuidelines
   guidelines={[
@@ -43,25 +69,7 @@ dialog, confirming or cancelling a step. The label says what will happen.
   semantics.
 </Tip>
 
-## Accessibility
-
-<UsageGuidelines
-  guidelines={[
-    <>
-      Icon-only buttons need an <code>aria-label</code>. The icon is decorative.
-    </>,
-    <>
-      Only disable a button when the reason is obvious nearby. Otherwise keep it
-      enabled and explain what's missing on submit.
-    </>,
-    <>
-      The focus ring is a 3px <code>ring-subtle</code> halo over a{" "}
-      <code>ring</code> border, and it shows for keyboard focus only.
-    </>,
-  ]}
-/>
-
-## Variants
+## Examples
 
 ### Kinds
 
@@ -72,17 +80,25 @@ not a solid red, so it never outshouts the primary action.
 
 ### Sizes
 
+Four text sizes, `xs` to `lg`, and four square `icon` sizes to match.
+
 <Canvas of={Stories.AllSizes} />
 
 ### With an icon
+
+Mark the icon with `data-icon` and the padding on that side tightens.
 
 <Canvas of={Stories.WithIcon} />
 
 ### Icon only
 
+An `icon` size, named with `aria-label`.
+
 <Canvas of={Stories.IconOnly} />
 
 ### Disabled
+
+`disabled` dims the button and ignores the pointer.
 
 <Canvas of={Stories.Disabled} />
 
@@ -145,13 +161,62 @@ not a solid red, so it never outshouts the primary action.
   ]}
 />
 
-## Related components
-
-<RelatedComponents names={["Badge", "Reactions", "Checkbox"]} />
-
-## Props
+## API reference
 
 Button takes every prop of Base UI's `Button`, including `render` for
 rendering as a link.
 
 <ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="button"',
+      element: "The button",
+      when: "Always.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "The button",
+      when: "The button is disabled.",
+    },
+    {
+      attribute: "data-icon",
+      element: "An icon inside the button",
+      when: (
+        <>
+          You set it: <code>inline-start</code> or <code>inline-end</code>.
+        </>
+      ),
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Icon-only buttons need an <code>aria-label</code>. The icon is decorative.
+    </>,
+    <>
+      Only disable a button when the reason is obvious nearby. Otherwise keep it
+      enabled and explain what's missing on submit.
+    </>,
+    <>
+      The focus ring is a 3px <code>ring-subtle</code> halo over a{" "}
+      <code>ring</code> border, and it shows for keyboard focus only.
+    </>,
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Badge", "Reactions", "Checkbox"]} />
+
+## References
+
+- [Base UI Button](https://base-ui.com/react/components/button)
+- [WAI-ARIA button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/)

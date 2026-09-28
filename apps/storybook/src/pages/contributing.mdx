@@ -30,7 +30,8 @@ lands in its own section of the sidebar and the catalog.
    tier and group. The registry, the catalog and `llms.txt` all read it.
 5. Add a small preview for the catalog card in
    `apps/storybook/src/blocks/catalog.tsx`.
-6. Run `pnpm format:write`, `pnpm lint`, `pnpm build` and `pnpm typecheck`.
+6. Run `pnpm format:write`, `pnpm lint`, `pnpm build`, `pnpm typecheck` and
+   `pnpm test`.
 
 ## Conventions
 
@@ -59,14 +60,19 @@ lands in its own section of the sidebar and the catalog.
 
 Component pages follow the same order so readers always know where to look:
 
-1. Name and one-sentence description, then a playground: the live story and
-   its controls in one frame.
-2. **Import**: the install command and the import line.
-3. **Usage** and **Accessibility** as numbered guidelines.
-4. **Variants**, one canvas per story.
-5. **Do's and don'ts**, as paired live examples.
-6. **Related components**.
-7. **Props**, a read-only reference generated from the component's types.
+1. Name, a one or two sentence description, and the live default story.
+2. **Features**: three or four bullets on what it does.
+3. **Installation**: the install command and the import line, plus any
+   dependency it brings.
+4. **Usage**: a small, complete code example and the one rule to follow.
+5. **Anatomy**, for parts with more than one element: the rendered parts, each
+   with its `data-slot`.
+6. **Guidelines**: numbered usage rules.
+7. **Examples**: one canvas per story, each with a sentence saying what it
+   shows.
+8. **Do's and don'ts**, as paired live examples.
+9. **API reference**: the props table, then a data attributes table.
+10. **Accessibility**, **Related components** and **References**.
 
 ## Status tags
 
