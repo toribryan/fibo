@@ -10,6 +10,7 @@ import {
 import { ArrowRightIcon, Volume2Icon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -28,7 +29,8 @@ import { LINKS } from "./links.js"
  * large square holds the copy, a few hairlines marking the cuts, and a
  * spiral from the pole out past the frame. `wide` is the landscape frame;
  * `tall` turns it upright for narrow containers. fibo adds the motion: the
- * spiral draws outward from the pole and a dot rides it back in.
+ * spiral draws outward from the pole, and a pixel snail crawls in along it
+ * and settles on the cut through the pole.
  */
 type Geometry = {
   viewBox: string
@@ -41,8 +43,14 @@ type Geometry = {
     height: number
     transform?: string
   }[]
-  /** Pole to the frame's edge; the dot rides this. */
+  /** Pole to the frame's edge. */
   spiral: string
+  /**
+   * The snail's route: a short run from outside the frame, so it slides into
+   * view, then along the spiral until it meets the cut through the pole, and
+   * off along that cut to rest.
+   */
+  crawl: string
   /** The last quarter turn, which leaves the frame. */
   tail: string
   /** Stroke and dot size in viewBox units, about 2px and 7px at full size. */
@@ -58,8 +66,6 @@ type Geometry = {
 type Sketch = {
   /** Dimension lines below the frame, each with end ticks and a label. */
   dimensions: { d: string; label: string; x: number; y: number }[]
-  /** Rotated margin notes. */
-  notes: { text: string; x: number; y: number }[]
   /** Where the spiral converges: the crossing of the two diagonals. */
   pole: { x: number; y: number }
 }
@@ -78,6 +84,8 @@ const WIDE: Geometry = {
   ],
   spiral:
     "M239.897 60.3571C239.897 54.894 244.414 50.381 249.882 50.381C255.35 50.381 259.868 54.894 259.868 60.3571C259.868 71.2835 250.833 80.3095 239.897 80.3095C223.493 80.3095 209.941 66.7704 209.941 50.381C209.941 23.0652 232.527 0.499999 259.868 0.5C303.613 0.499995 339.75 36.6043 339.75 80.3095C339.75 151.33 281.027 210 209.941 210C95.1103 210 0.25 115.226 0.25 0.5",
+  crawl:
+    "M0.25 -40V0.5C0.25 115.226 95.1103 210 209.941 210C281.027 210 339.75 151.33 339.75 80.3095C339.75 36.6043 303.613 0.5 259.868 0.5C232.527 0.5 209.941 23.0652 209.941 50.381C209.941 66.7704 223.493 80.3095 239.897 80.3095H300",
   tail: "C0.250008 -185.69 154.06 -339.5 340.25 -339.5",
   stroke: 0.62,
   dot: 2.2,
@@ -96,11 +104,6 @@ const WIDE: Geometry = {
         x: 275,
         y: 221.2,
       },
-    ],
-    notes: [
-      { text: "golden ratio", x: 318, y: 132 },
-      { text: "fibonacci", x: 325, y: 132 },
-      { text: "\u03c6 = 1.618", x: 332, y: 132 },
     ],
     pole: { x: 246.5, y: 58.2 },
   },
@@ -145,6 +148,8 @@ const TALL: Geometry = {
   ],
   spiral:
     "M149.643 239.897C155.106 239.897 159.619 244.414 159.619 249.882C159.619 255.35 155.106 259.868 149.643 259.868C138.717 259.868 129.69 250.833 129.69 239.897C129.69 223.493 143.23 209.941 159.619 209.941C186.935 209.941 209.5 232.527 209.5 259.868C209.5 303.613 173.396 339.75 129.69 339.75C58.6695 339.75 0 281.027 0 209.941C0 95.1103 94.7738 0.24998 209.5 0.249985",
+  crawl:
+    "M250 0.249985H209.5C94.7738 0.24998 0 95.1103 0 209.941C0 281.027 58.6695 339.75 129.69 339.75C173.396 339.75 209.5 303.613 209.5 259.868C209.5 232.527 186.935 209.941 159.619 209.941C143.23 209.941 129.69 223.493 129.69 239.897V300",
   tail: "C395.69 0.250001 549.5 154.06 549.5 340.25",
   stroke: 0.9,
   dot: 3,
@@ -175,17 +180,8 @@ const LINE_OPACITY = 0.55
 
 function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
   const reduced = usePrefersReducedMotion()
-  const {
-    viewBox,
-    diagonals,
-    lines,
-    rects,
-    spiral,
-    tail,
-    stroke,
-    dot,
-    sketch,
-  } = geometry
+  const { viewBox, diagonals, lines, rects, spiral, tail, stroke, sketch } =
+    geometry
   return (
     <svg
       className="pointer-events-none absolute inset-0 size-full overflow-visible"
@@ -196,7 +192,7 @@ function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
       <g opacity={LINE_OPACITY}>
         <g
           className="fibo-tile stroke-border"
-          style={{ animationDelay: "0.9s" }}
+          style={{ animationDelay: "0.5s" }}
         >
           {diagonals.map((d) => (
             <path
@@ -235,7 +231,7 @@ function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
           <g opacity={LINE_OPACITY}>
             <g
               className="fibo-tile stroke-border"
-              style={{ animationDelay: "1.4s" }}
+              style={{ animationDelay: "0.8s" }}
             >
               <path
                 d={`M${sketch.pole.x - 6} ${sketch.pole.y}h12M${sketch.pole.x} ${sketch.pole.y - 6}v12`}
@@ -258,7 +254,7 @@ function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
           </g>
           <g
             className="fibo-tile font-hand fill-muted-foreground"
-            style={{ animationDelay: "1.6s" }}
+            style={{ animationDelay: "1s" }}
           >
             {sketch.dimensions.map((dimension) => (
               <text
@@ -272,41 +268,70 @@ function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
                 {dimension.label}
               </text>
             ))}
-            {sketch.notes.map((note) => (
-              <text
-                key={note.text}
-                x={note.x}
-                y={note.y}
-                fontSize={4.4}
-                opacity={0.8}
-                transform={`rotate(90 ${note.x} ${note.y})`}
-              >
-                {note.text}
-              </text>
-            ))}
           </g>
         </>
       ) : null}
 
-      <path id={id} d={spiral} className="hidden" />
-      {reduced ? null : (
-        <circle r={dot} opacity={0} className="fill-ring">
-          {/* Until its motion starts the dot would sit at the SVG origin. */}
-          <set attributeName="opacity" to="1" begin="2.4s" />
-          <animateMotion
-            dur="10s"
-            begin="2.4s"
-            repeatCount="indefinite"
-            keyPoints="1;0"
-            keyTimes="0;1"
-            calcMode="spline"
-            keySplines="0.3 0 0.2 1"
-          >
-            <mpath href={`#${id}`} />
-          </animateMotion>
-        </circle>
-      )}
+      <path id={id} d={geometry.crawl} className="hidden" />
+      {reduced ? null : <Snail href={`#${id}`} pixel={stroke} />}
     </svg>
+  )
+}
+
+/*
+ * Both frames' routes are the same length, and the entry and spiral are this
+ * share of it; the rest is the straight run along the cut.
+ */
+const SPIRAL_SHARE = 0.932
+const CRAWL_DELAY_S = 1.4
+const SPIRAL_S = 5
+const SETTLE_S = 2
+
+/*
+ * The snail crawls the spiral at a steady pace, turns onto the cut, and
+ * eases to a stop there, where it idles. The second spline's opening slope
+ * matches the first's closing speed, so it slows down rather than lurching.
+ */
+function Snail({ href, pixel }: { href: string; pixel: number }) {
+  const [phase, setPhase] = useState<"spiral" | "settle" | "rest">("spiral")
+
+  useEffect(() => {
+    const settle = window.setTimeout(
+      () => setPhase("settle"),
+      (CRAWL_DELAY_S + SPIRAL_S) * 1000
+    )
+    const rest = window.setTimeout(
+      () => setPhase("rest"),
+      (CRAWL_DELAY_S + SPIRAL_S + SETTLE_S) * 1000
+    )
+    return () => {
+      window.clearTimeout(settle)
+      window.clearTimeout(rest)
+    }
+  }, [])
+
+  return (
+    <g opacity={0} className="text-foreground">
+      {/* Until its motion starts the snail would sit at the SVG origin. */}
+      <set attributeName="opacity" to="1" begin={`${CRAWL_DELAY_S}s`} />
+      <animateMotion
+        dur={`${SPIRAL_S + SETTLE_S}s`}
+        begin={`${CRAWL_DELAY_S}s`}
+        fill="freeze"
+        rotate="auto"
+        keyPoints={`0;${SPIRAL_SHARE};1`}
+        keyTimes={`0;${SPIRAL_S / (SPIRAL_S + SETTLE_S)};1`}
+        calcMode="spline"
+        keySplines="0.3 0 0.7 0.7; 0.1 0.55 0.3 1"
+      >
+        <mpath href={href} />
+      </animateMotion>
+      <PixelSnailSprite
+        pixel={pixel}
+        pace={phase === "spiral" ? "default" : "slow"}
+        resting={phase === "rest"}
+      />
+    </g>
   )
 }
 

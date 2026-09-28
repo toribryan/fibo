@@ -44,6 +44,13 @@
     "tier": "components",
     "group": "Forms"
   },
+  "pixel-snail": {
+    "title": "Pixel snail",
+    "description": "A one-colour pixel snail that crawls on a loop while something loads.",
+    "tier": "niche",
+    "group": "Feedback",
+    "status": "new"
+  },
   "reactions": {
     "title": "Reactions",
     "description": "Lets people respond to content with an emoji in one tap.",
