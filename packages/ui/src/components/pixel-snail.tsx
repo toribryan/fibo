@@ -233,9 +233,12 @@ function useReducedMotion() {
   )
 }
 
+// Parts overlap where they meet, such as a ducked head sinking into the
+// neck, so a pixel can be listed twice; each is drawn once.
 function Pixels({ pixels }: { pixels: Pixel[] }) {
-  return pixels.map(([x, y]) => (
-    <rect key={`${x}:${y}`} x={x} y={y} width={1} height={1} />
+  const unique = new Map(pixels.map(([x, y]) => [`${x}:${y}`, [x, y]]))
+  return [...unique].map(([key, [x, y]]) => (
+    <rect key={key} x={x} y={y} width={1} height={1} />
   ))
 }
 
@@ -276,49 +279,44 @@ function useLoop(script: [frame: Frame, ms: number][], paused: boolean) {
 }
 
 const ASSEMBLE_TICK_MS = 40
-// Ticks spent at each stage: coarse blocks arriving, then holding, then
+// Time spent at each stage: coarse blocks arriving, then holding, then
 // halving, until the art is whole.
 const ASSEMBLE_STAGES = [
-  { block: 4, ticks: 10, reveal: true },
-  { block: 4, ticks: 3, reveal: false },
-  { block: 2, ticks: 4, reveal: false },
+  { block: 4, ms: 400, reveal: true },
+  { block: 4, ms: 120, reveal: false },
+  { block: 2, ms: 160, reveal: false },
 ] as const
-const ASSEMBLE_TICKS = ASSEMBLE_STAGES.reduce((sum, s) => sum + s.ticks, 0)
+const ASSEMBLE_MS = ASSEMBLE_STAGES.reduce((sum, s) => sum + s.ms, 0)
 
 type Assembly = { block: number; shown: number } | "hidden" | "whole"
 
+/*
+ * The stage comes from the time since mount rather than a count of ticks,
+ * so a throttled background tab skips ahead instead of dragging it out.
+ */
 function useAssemble(delay: number | undefined, skip: boolean): Assembly {
-  const [tick, setTick] = React.useState(-1)
+  const [elapsed, setElapsed] = React.useState(-1)
   const active = delay !== undefined && !skip
   React.useEffect(() => {
     if (!active) return
-    let id = 0
-    const start = window.setTimeout(() => {
-      setTick(0)
-      id = window.setInterval(
-        () =>
-          setTick((t) => {
-            if (t + 1 >= ASSEMBLE_TICKS) window.clearInterval(id)
-            return t + 1
-          }),
-        ASSEMBLE_TICK_MS
-      )
-    }, delay)
-    return () => {
-      window.clearTimeout(start)
-      window.clearInterval(id)
-    }
+    const start = performance.now() + delay
+    const id = window.setInterval(() => {
+      const since = performance.now() - start
+      setElapsed(since)
+      if (since >= ASSEMBLE_MS) window.clearInterval(id)
+    }, ASSEMBLE_TICK_MS)
+    return () => window.clearInterval(id)
   }, [active, delay])
-  if (!active || tick >= ASSEMBLE_TICKS) return "whole"
-  if (tick < 0) return "hidden"
-  let rest = tick
+  if (!active || elapsed >= ASSEMBLE_MS) return "whole"
+  if (elapsed < 0) return "hidden"
+  let rest = elapsed
   for (const stage of ASSEMBLE_STAGES) {
-    if (rest < stage.ticks)
+    if (rest < stage.ms)
       return {
         block: stage.block,
-        shown: stage.reveal ? (rest + 1) / stage.ticks : 1,
+        shown: stage.reveal ? rest / stage.ms : 1,
       }
-    rest -= stage.ticks
+    rest -= stage.ms
   }
   return "whole"
 }
