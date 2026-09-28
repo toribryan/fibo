@@ -4,6 +4,7 @@ import {
   useState,
   useSyncExternalStore,
   type ComponentType,
+  type CSSProperties,
   type ReactNode,
 } from "react"
 import { ArrowRightIcon, Volume2Icon } from "lucide-react"
@@ -168,6 +169,10 @@ function usePrefersReducedMotion() {
 
 type Rect = Geometry["rects"][number]
 
+// The construction sits behind the pitch, so it stays a step quieter than
+// a border.
+const LINE_OPACITY = 0.55
+
 function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
   const reduced = usePrefersReducedMotion()
   const {
@@ -188,58 +193,68 @@ function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
       fill="none"
       aria-hidden="true"
     >
-      <g className="fibo-tile stroke-border" style={{ animationDelay: "0.9s" }}>
-        {diagonals.map((d) => (
-          <path
-            key={d}
-            d={d}
-            strokeDasharray="4 2"
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
+      <g opacity={LINE_OPACITY}>
+        <g
+          className="fibo-tile stroke-border"
+          style={{ animationDelay: "0.9s" }}
+        >
+          {diagonals.map((d) => (
+            <path
+              key={d}
+              d={d}
+              strokeDasharray="4 2"
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+        </g>
+        <g
+          className="fibo-tile stroke-border"
+          style={{ animationDelay: "0.2s" }}
+        >
+          {lines.map((d) => (
+            <path key={d} d={d} vectorEffect="non-scaling-stroke" />
+          ))}
+          {rects.map((rect) => (
+            <rect
+              key={`${rect.x}-${rect.y}`}
+              {...rect}
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+        </g>
+        <path
+          d={spiral + tail}
+          pathLength={1}
+          strokeWidth={stroke}
+          className="fibo-draw fibo-draw--spiral stroke-border"
+        />
       </g>
-      <g className="fibo-tile stroke-border" style={{ animationDelay: "0.2s" }}>
-        {lines.map((d) => (
-          <path key={d} d={d} vectorEffect="non-scaling-stroke" />
-        ))}
-        {rects.map((rect) => (
-          <rect
-            key={`${rect.x}-${rect.y}`}
-            {...rect}
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-      </g>
-      <path
-        d={spiral + tail}
-        pathLength={1}
-        strokeWidth={stroke}
-        className="fibo-draw fibo-draw--spiral stroke-border"
-      />
 
       {sketch ? (
         <>
-          <g
-            className="fibo-tile stroke-border"
-            style={{ animationDelay: "1.4s" }}
-          >
-            <path
-              d={`M${sketch.pole.x - 6} ${sketch.pole.y}h12M${sketch.pole.x} ${sketch.pole.y - 6}v12`}
-              vectorEffect="non-scaling-stroke"
-            />
-            <circle
-              cx={sketch.pole.x}
-              cy={sketch.pole.y}
-              r={2.4}
-              vectorEffect="non-scaling-stroke"
-            />
-            {sketch.dimensions.map((dimension) => (
+          <g opacity={LINE_OPACITY}>
+            <g
+              className="fibo-tile stroke-border"
+              style={{ animationDelay: "1.4s" }}
+            >
               <path
-                key={dimension.d}
-                d={dimension.d}
+                d={`M${sketch.pole.x - 6} ${sketch.pole.y}h12M${sketch.pole.x} ${sketch.pole.y - 6}v12`}
                 vectorEffect="non-scaling-stroke"
               />
-            ))}
+              <circle
+                cx={sketch.pole.x}
+                cy={sketch.pole.y}
+                r={2.4}
+                vectorEffect="non-scaling-stroke"
+              />
+              {sketch.dimensions.map((dimension) => (
+                <path
+                  key={dimension.d}
+                  d={dimension.d}
+                  vectorEffect="non-scaling-stroke"
+                />
+              ))}
+            </g>
           </g>
           <g
             className="fibo-tile font-hand fill-muted-foreground"
@@ -474,48 +489,57 @@ const STACK: { icon: ComponentType<{ className?: string }>; title: string }[] =
     { icon: StorybookIcon, title: "Storybook" },
   ]
 
-function Pitch({ className }: { className?: string }) {
+/*
+ * The pitch is laid out in lattice cells (--u) so the buttons land on the dot
+ * grid: their row starts on a dot row and they are whole cells tall. The text
+ * above hangs off that row.
+ */
+function Pitch({ width, className }: { width: number; className?: string }) {
   return (
     <div
       className={cn(
-        "flex flex-col justify-center overflow-hidden px-[calc(100cqw*20/340)] py-[4cqw]",
+        "grid grid-rows-[max(calc(var(--u)*13),round(up,15rem,var(--u)))_auto_auto] content-start overflow-hidden px-[calc(var(--u)*2)]",
         className
       )}
+      style={{ "--u": `calc(100cqw * ${LATTICE} / ${width})` } as CSSProperties}
     >
-      <h1 className="fibo-tile m-0 mb-[max(0.75rem,1.2cqw)] text-[80px] leading-none font-semibold tracking-[-0.035em] text-foreground">
-        fibo
-      </h1>
-      <p
-        className="fibo-tile m-0 mb-[max(1rem,1.8cqw)] flex items-center gap-1 font-mono text-xl text-muted-foreground"
-        style={{ animationDelay: "0.1s" }}
-      >
-        <span>
-          <span className="sr-only">Pronounced </span>FEE-boh
-        </span>
-        <Pronounce />
-      </p>
-      <p
-        className="fibo-tile m-0 mb-[max(1.5rem,2.4cqw)] max-w-[36ch] text-[clamp(1rem,1.9cqw,1.25rem)] leading-normal text-pretty text-muted-foreground"
-        style={{ animationDelay: "0.2s" }}
-      >
-        A library of parts for{" "}
-        <strong className="font-normal text-foreground">
-          experimental projects
-        </strong>{" "}
-        and{" "}
-        <strong className="font-normal text-foreground">
-          special components
-        </strong>{" "}
-        that anyone can use.
-      </p>
+      <div className="flex flex-col justify-end">
+        <h1 className="fibo-tile m-0 mb-[max(0.75rem,1.2cqw)] text-[80px] leading-none font-semibold tracking-[-0.035em] text-foreground">
+          fibo
+        </h1>
+        <p
+          className="fibo-tile m-0 mb-[max(1rem,1.8cqw)] flex items-center gap-1 font-mono text-xl text-muted-foreground"
+          style={{ animationDelay: "0.1s" }}
+        >
+          <span>
+            <span className="sr-only">Pronounced </span>FEE-boh
+          </span>
+          <Pronounce />
+        </p>
+        <p
+          className="fibo-tile m-0 mb-[max(1.5rem,2.4cqw)] max-w-[36ch] text-[clamp(1rem,1.9cqw,1.25rem)] leading-normal text-pretty text-muted-foreground"
+          style={{ animationDelay: "0.2s" }}
+        >
+          A library of parts for{" "}
+          <strong className="font-normal text-foreground">
+            experimental projects
+          </strong>{" "}
+          and{" "}
+          <strong className="font-normal text-foreground">
+            special components
+          </strong>{" "}
+          that anyone can use.
+        </p>
+      </div>
       <div
-        className="fibo-tile mb-[max(1.5rem,2.4cqw)] flex flex-wrap items-center gap-2"
+        className="fibo-tile flex flex-wrap gap-2"
         style={{ animationDelay: "0.3s" }}
       >
         <Button
           size="lg"
           nativeButton={false}
           render={<DocLink to="getting-started--docs" />}
+          className="h-[round(up,1.5rem,var(--u))] w-[round(up,8rem,var(--u))]"
         >
           Get started
           <ArrowRightIcon data-icon="inline-end" />
@@ -524,6 +548,7 @@ function Pitch({ className }: { className?: string }) {
           size="lg"
           variant="outline"
           nativeButton={false}
+          className="h-[round(up,1.5rem,var(--u))] w-[round(up,6rem,var(--u))] bg-background hover:bg-accent"
           render={<a href={LINKS.github} target="_blank" rel="noreferrer" />}
         >
           <GithubIcon data-icon="inline-start" />
@@ -531,7 +556,7 @@ function Pitch({ className }: { className?: string }) {
         </Button>
       </div>
       <ul
-        className="fibo-tile m-0 flex list-none flex-wrap items-center gap-x-4 gap-y-2 p-0"
+        className="fibo-tile m-0 mt-[var(--u)] flex min-h-[var(--u)] list-none flex-wrap items-center gap-x-4 gap-y-2 p-0"
         style={{ animationDelay: "0.45s" }}
       >
         {STACK.map(({ icon: Icon, title }) => (
@@ -608,7 +633,7 @@ function Plate({ id, geometry }: { id: string; geometry: Geometry }) {
         {...bounds}
         fill={`url(#${dots})`}
         mask={`url(#${mask})`}
-        opacity={0.25}
+        opacity={0.16}
       />
     </svg>
   )
@@ -645,7 +670,7 @@ function Hero() {
             id="fibo-hero-spiral"
             className="aspect-[1.618/1] grid-cols-[1.618fr_minmax(0,1fr)] grid-rows-[1fr_1.618fr]"
           >
-            <Pitch className="col-1 row-[1/span_2]" />
+            <Pitch width={340} className="col-1 row-[1/span_2]" />
           </Frame>
         </div>
         <div className="@3xl:hidden">
@@ -654,7 +679,7 @@ function Hero() {
             id="fibo-hero-spiral-tall"
             className="aspect-[1/1.618] grid-cols-[1.618fr_minmax(0,1fr)] grid-rows-[1.618fr_1fr]"
           >
-            <Pitch className="col-[1/span_2] row-1 px-[calc(100cqw*20/210)] py-[6cqw]" />
+            <Pitch width={210} className="col-[1/span_2] row-1" />
           </Frame>
         </div>
       </div>
