@@ -78,9 +78,10 @@ guidelines, do's and don'ts, and a props table in
 - **Achromatic by default.** There is no brand hue. `primary` is a neutral and
   colour only ever carries meaning: destructive, success, warning, info.
 - **One name on both sides.** Every token in `globals.css` matches a Figma
-  variable. Opacity steps are named roles (`-subtle`, `-hover`, `-ring`),
-  never modifiers, so a designer can bind them too.
-- **Copied, not depended on.** The registry copies source into your project.
+  variable. Opacity steps get names too (`-subtle`, `-hover`, `-ring`), so a
+  designer can bind them.
+- **Yours once installed.** Installing a part copies its source into your
+  project, where you can change it like any other file.
 - **Contrast is measured.** Status tones sit on the 700 step so text clears
   WCAG AA on solid fills and on their tints, in both themes.
 
