@@ -26,6 +26,8 @@ type Frame = {
   bob?: number
   /** Where the eyes look: up on raised stalks, level, or down on lowered ones. */
   gaze?: -1 | 0 | 1
+  /** Stretches the neck up a row, or ducks the head down one. */
+  raise?: -1 | 0 | 1
 }
 
 const FRAMES: Frame[] = [
@@ -95,12 +97,16 @@ const SHELL = [
 // The shell's top row; it stands a row taller than the head.
 const SHELL_TOP = -1
 
-// The drawing spans columns -1 to 18 and rows -2 to 12, leaving the shell a
-// row to hop into; the ground is row 12.
+/*
+ * The drawing spans columns -1 to 21 and rows -4 to 12: room for the shell
+ * to hop a row and the eyes to rise on stretched stalks. The ground is row
+ * 12, and the foot's middle, where a sprite is anchored, is column 9.
+ */
 const MIN_X = -1
-const MIN_Y = SHELL_TOP - 1
-const COLS = 20
-const ROWS = 15
+const MIN_Y = -4
+const COLS = 23
+const ROWS = 17
+const FOOT_MIDDLE = 9
 const GROUND_ROW = 12
 const GROUND_PITCH = 4
 
@@ -111,47 +117,100 @@ function row(y: number, from: number, to: number): Pixel[] {
   return Array.from({ length: to - from + 1 }, (_, i) => [from + i, y])
 }
 
+type Drawing = { ink: Pixel[]; whites: Pixel[] }
+
+const EYE_RIM: Pixel[] = [
+  [1, 0],
+  [2, 0],
+  [0, 1],
+  [3, 1],
+  [0, 2],
+  [3, 2],
+  [1, 3],
+  [2, 3],
+]
+const EYE_WHITE: Pixel[] = [
+  [1, 1],
+  [2, 1],
+  [1, 2],
+  [2, 2],
+]
+
+/*
+ * A googly eye, four pixels square: a rim round a two-by-two white, with a
+ * one-pixel pupil in the corner it looks toward. Shut, it is a line along
+ * the bottom.
+ */
+function eyeball(
+  left: number,
+  top: number,
+  look: { x: number; y: number },
+  shut: boolean
+): Drawing {
+  const at = ([x, y]: Pixel): Pixel => [left + x, top + y]
+  if (shut) return { ink: row(top + 3, left, left + 3), whites: [] }
+  const pupil: Pixel = [look.x < 0 ? 1 : 2, look.y < 0 ? 1 : 2]
+  return {
+    ink: [...EYE_RIM, pupil].map(at),
+    whites: EYE_WHITE.filter(([x, y]) => x !== pupil[0] || y !== pupil[1]).map(
+      at
+    ),
+  }
+}
+
 function snailPixels({
   tail,
   head,
   lean,
-  blink,
+  blink = false,
   dx = 0,
   bob = 0,
   gaze = 0,
-}: Frame): Pixel[] {
+  raise = 0,
+}: Frame): Drawing {
   const shell = SHELL.flatMap((line, y) =>
     [...line].flatMap((cell, x): Pixel[] =>
       cell === "#" ? [[x + 1, y + SHELL_TOP - bob]] : []
     )
   )
   /*
-   * Two stalks splay into a V, and their tips nod forward as the head
-   * reaches. The eye is the top pixel; looking up raises it a row, looking
-   * down drops it, and a blink leaves it out.
+   * Two stalks splay into a V with an eye on each. The eyes nod forward as
+   * the head reaches, and ride higher on longer stalks to look up or sink
+   * onto the head to look down.
    */
-  const eye = 1 + gaze
-  const stalk = (x: number, splay: -1 | 1): Pixel[] => {
-    const tip = x + splay + lean
-    const tips = Array.from(
-      { length: 3 - eye },
-      (_, i): Pixel => [tip, eye + i]
-    )
-    return [...tips.slice(blink ? 1 : 0), [x, 3]]
+  const eyeTop = -2 + gaze
+  const side = (splay: -1 | 1): Drawing => {
+    const base = head + splay
+    const stalk: Pixel[] = [[base, 3]]
+    for (let y = 2; y > eyeTop + 3; y--)
+      stalk.push([base + splay + (y === eyeTop + 4 ? lean : 0), y])
+    const left = splay < 0 ? head - 4 + lean : head + 1 + lean
+    const eye = eyeball(left, eyeTop, { x: lean, y: gaze }, blink)
+    return { ink: [...stalk, ...eye.ink], whites: eye.whites }
   }
-  const pixels: Pixel[] = [
+  const back = side(-1)
+  const front = side(1)
+  // The head rides on the neck: raised, the neck fills in under it; ducked,
+  // it sinks into the neck.
+  const lift = ([x, y]: Pixel): Pixel => [x, y - raise]
+  const ink: Pixel[] = [
     ...shell,
-    ...stalk(head - 1, -1),
-    ...stalk(head + 1, 1),
-    ...row(4, head - 1, head + 1),
-    ...row(5, head - 2, head + 1),
-    ...row(6, head - 2, head + 1),
-    ...row(7, head - 2, head),
+    ...[
+      ...back.ink,
+      ...front.ink,
+      ...row(4, head - 1, head + 1),
+      ...row(5, head - 2, head + 1),
+      ...row(6, head - 2, head + 1),
+      ...row(7, head - 2, head),
+    ].map(lift),
+    ...(raise > 0 ? row(7, head - 2, head) : []),
     ...row(8, head - 3, head),
     ...row(9, tail + 1, head + 1),
     ...row(10, tail, head + 2),
   ]
-  return dx ? pixels.map(([x, y]) => [x + dx, y]) : pixels
+  const whites = [...back.whites, ...front.whites].map(lift)
+  const shift = ([x, y]: Pixel): Pixel => [x + dx, y]
+  return { ink: ink.map(shift), whites: whites.map(shift) }
 }
 
 function groundPixels(distance: number): Pixel[] {
@@ -178,6 +237,19 @@ function Pixels({ pixels }: { pixels: Pixel[] }) {
   return pixels.map(([x, y]) => (
     <rect key={`${x}:${y}`} x={x} y={y} width={1} height={1} />
   ))
+}
+
+// The whites of the eyes take the page colour, so the pupils read in either
+// theme.
+function Drawn({ ink, whites }: Drawing) {
+  return (
+    <>
+      <g className="fill-background">
+        <Pixels pixels={whites} />
+      </g>
+      <Pixels pixels={ink} />
+    </>
+  )
 }
 
 type Pace = keyof typeof FRAME_MS
@@ -294,7 +366,14 @@ function scatter(x: number, y: number) {
   return ((x * 73856093) ^ (y * 19349663)) % 97
 }
 
-type Look = { x: -1 | 0 | 1; y: -1 | 0 | 1 }
+type Look = {
+  /** Behind, level or ahead, from where the snail faces. */
+  x: -1 | 0 | 1
+  /** Up, level or down. */
+  y: -1 | 0 | 1
+  /** Which way the snail faces: `1` right, as drawn, or `-1` turned round. */
+  facing?: -1 | 1
+}
 
 type PixelSnailSpriteProps = Omit<React.ComponentProps<"g">, "children"> & {
   /** Size of one art pixel, in the parent SVG's user units. */
@@ -307,8 +386,9 @@ type PixelSnailSpriteProps = Omit<React.ComponentProps<"g">, "children"> & {
    */
   mode?: "crawl" | "rest" | "dance"
   /**
-   * Holds still and points the eyes: `x` back, ahead or level, `y` up,
-   * level or down. Pass `null` to let the mode play.
+   * Holds still and turns toward a point: the eyes lean, the head reaches or
+   * pulls back, the neck stretches up or ducks, and `facing` turns the whole
+   * snail round. Pass `null` to let the mode play.
    */
   look?: Look | null
   /**
@@ -340,12 +420,19 @@ function PixelSnailSprite({
   const assembly = useAssemble(assembleDelay, reduceMotion)
 
   const frame: Frame = look
-    ? { ...REST, lean: look.x, gaze: look.y }
+    ? {
+        ...REST,
+        head: REST.head + look.x,
+        lean: look.x,
+        gaze: look.y,
+        raise: look.y === 0 ? 0 : look.y === -1 ? 1 : -1,
+      }
     : reduceMotion
       ? REST
       : { crawl: FRAMES[step % FRAMES.length]!, rest: idle, dance }[mode]
-  const pixels = snailPixels(frame)
-  const origin = `scale(${pixel}) translate(${-(MIN_X + COLS / 2)} -11)`
+  const { ink, whites } = snailPixels(frame)
+  const flip = look?.facing === -1 ? -1 : 1
+  const origin = `scale(${pixel * flip} ${pixel}) translate(${-FOOT_MIDDLE} -11)`
   return (
     <g
       data-slot="pixel-snail-sprite"
@@ -355,9 +442,9 @@ function PixelSnailSprite({
       {...props}
     >
       {assembly === "hidden" ? null : assembly === "whole" ? (
-        <Pixels pixels={pixels} />
+        <Drawn ink={ink} whites={whites} />
       ) : (
-        <Mosaic pixels={pixels} {...assembly} />
+        <Mosaic pixels={ink} {...assembly} />
       )}
     </g>
   )
@@ -423,7 +510,7 @@ function PixelSnail({
       fill="currentColor"
       className="block shrink-0"
     >
-      <Pixels pixels={snailPixels(frame)} />
+      <Drawn {...snailPixels(frame)} />
       {ground && !travel ? <Pixels pixels={groundPixels(distance)} /> : null}
     </svg>
   )
