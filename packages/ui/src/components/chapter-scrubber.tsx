@@ -442,6 +442,7 @@ function ChapterScrubber({
               }}
               key={item.id}
               id={optionId(index)}
+              data-slot="chapter-scrubber-item"
               type="button"
               role="option"
               aria-selected={isCurrent}
