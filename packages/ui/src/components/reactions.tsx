@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
 import { SmilePlusIcon } from "lucide-react"
 
@@ -50,7 +49,6 @@ const reactionsVariants = cva("group/reactions", {
     variant: {
       inline: "relative flex flex-wrap items-center gap-1.5",
       floating: ANCHOR,
-      menu: ANCHOR,
     },
     position: {
       "bottom-right": "",
@@ -61,25 +59,25 @@ const reactionsVariants = cva("group/reactions", {
   },
   compoundVariants: [
     {
-      variant: ["floating", "menu"],
+      variant: "floating",
       position: "bottom-right",
       class:
         "right-[var(--edge)] bottom-[calc(var(--gap)+env(safe-area-inset-bottom,0px))]",
     },
     {
-      variant: ["floating", "menu"],
+      variant: "floating",
       position: "bottom-left",
       class:
         "bottom-[calc(var(--gap)+env(safe-area-inset-bottom,0px))] left-[var(--edge)]",
     },
     {
-      variant: ["floating", "menu"],
+      variant: "floating",
       position: "top-right",
       class:
         "top-[calc(var(--gap)+env(safe-area-inset-top,0px))] right-[var(--edge)]",
     },
     {
-      variant: ["floating", "menu"],
+      variant: "floating",
       position: "top-left",
       class:
         "top-[calc(var(--gap)+env(safe-area-inset-top,0px))] left-[var(--edge)]",
@@ -240,14 +238,6 @@ function animatePill(pill: HTMLElement) {
       ],
       { duration: 260, easing: RISE_EASING }
     )
-
-  pill.querySelector<HTMLElement>('[data-slot="reactions-ripple"]')?.animate(
-    [
-      { transform: "scale(0.9)", opacity: 0.6 },
-      { transform: "scale(1.4)", opacity: 0 },
-    ],
-    { duration: 500, easing: RISE_EASING }
-  )
 }
 
 function pop(element: HTMLElement) {
@@ -261,37 +251,6 @@ function pop(element: HTMLElement) {
     ],
     { duration: 380, easing: SPRING_EASING }
   )
-}
-
-type ReactionsMenuItemProps = useRender.ComponentProps<"button"> & {
-  active?: boolean
-}
-
-/*
- * A row in the menu panel. Defaults to a button so an item can run an action,
- * and takes Base UI's `render` so a consumer can swap in whatever their router
- * hands them. The component stays ignorant of what an item actually does.
- */
-function ReactionsMenuItem({
-  className,
-  active,
-  render,
-  ...props
-}: ReactionsMenuItemProps) {
-  return useRender({
-    render,
-    defaultTagName: "button",
-    props: {
-      "data-slot": "reactions-menu-item",
-      "data-active": active ? "" : undefined,
-      ...(render ? {} : { type: "button" }),
-      className: cn(
-        "flex w-full items-center gap-2 rounded-full px-3 py-1.5 text-left text-sm text-popover-foreground no-underline transition-colors outline-none select-none hover:bg-muted focus-visible:bg-muted data-active:bg-muted data-active:font-medium [&_svg]:size-4 [&_svg]:shrink-0",
-        className
-      ),
-      ...props,
-    },
-  })
 }
 
 type ReactionsProps = Omit<React.ComponentProps<"div">, "onChange"> &
@@ -315,14 +274,8 @@ type ReactionsProps = Omit<React.ComponentProps<"div">, "onChange"> &
     particles?: number
     /** Accessible name of the button that opens the picker. */
     triggerLabel?: string
-    /** Accessible name of the menu variant's trigger while it is open. */
-    closeLabel?: string
     /** Accessible name of the group of choices. */
     panelLabel?: string
-    /** The menu variant's items, usually `ReactionsMenuItem`s. */
-    menu?: React.ReactNode
-    /** Accessible name of the menu. */
-    menuLabel?: string
   }
 
 function Reactions({
@@ -337,10 +290,7 @@ function Reactions({
   showCounts = true,
   particles = 7,
   triggerLabel = "Add reaction",
-  closeLabel = "Close",
   panelLabel = "Pick a reaction",
-  menu,
-  menuLabel = "Menu",
   "aria-label": ariaLabel = "Reactions",
   onKeyDown,
   onBlur,
@@ -348,13 +298,11 @@ function Reactions({
 }: ReactionsProps) {
   const rootRef = React.useRef<HTMLDivElement>(null)
   const panelRef = React.useRef<HTMLDivElement>(null)
-  const railRef = React.useRef<HTMLDivElement>(null)
   const triggerRef = React.useRef<HTMLButtonElement>(null)
   const badgeRef = React.useRef<HTMLSpanElement>(null)
   const pulseNonce = React.useRef(0)
   const timerRef = React.useRef(0)
   const panelId = React.useId()
-  const railId = React.useId()
 
   const [uncontrolled, setUncontrolled] = React.useState(defaultReactions)
   const [pulse, setPulse] = React.useState<{ emoji: string; nonce: number }>()
@@ -399,11 +347,10 @@ function Reactions({
 
   React.useEffect(() => {
     if (!open) return
-    const choices = variant === "menu" ? railRef.current : panelRef.current
-    choices
+    panelRef.current
       ?.querySelector<HTMLButtonElement>('[data-slot="reactions-choice"]')
       ?.focus()
-  }, [open, variant])
+  }, [open])
 
   // The inline panel opens from the picker's start edge. Near the right of the
   // viewport that would run off screen, so it flips to open from the end.
@@ -476,23 +423,17 @@ function Reactions({
     if (nowActive) burst(reaction.emoji, origin, particles)
   }
 
-  function rove(
-    event: React.KeyboardEvent<HTMLDivElement>,
-    container: HTMLElement | null,
-    selector: string,
-    orientation: "horizontal" | "vertical"
-  ) {
+  function rove(event: React.KeyboardEvent<HTMLDivElement>) {
     const targets = Array.from(
-      container?.querySelectorAll<HTMLElement>(selector) ?? []
+      panelRef.current?.querySelectorAll<HTMLElement>(
+        '[data-slot="reactions-choice"]'
+      ) ?? []
     )
     if (targets.length === 0) return
 
-    const [back, forward] =
-      orientation === "horizontal"
-        ? ["ArrowLeft", "ArrowRight"]
-        : ["ArrowUp", "ArrowDown"]
     const current = targets.indexOf(document.activeElement as HTMLElement)
-    const step = event.key === forward ? 1 : event.key === back ? -1 : 0
+    const step =
+      event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0
 
     if (step !== 0) {
       event.preventDefault()
@@ -508,15 +449,11 @@ function Reactions({
     }
   }
 
-  const isMenu = variant === "menu"
-  const isBar = isMenu || variant === "floating"
+  const isBar = variant === "floating"
   const opensDown =
     isBar && (position === "top-right" || position === "top-left")
   const alignsEnd =
     isBar && (position === "bottom-right" || position === "top-right")
-  // The rail grows away from the edge the bar is pinned to, so it never runs
-  // off screen and the trigger stays where the thumb left it.
-  const railBefore = alignsEnd
 
   const totalChip = total > 0 && (
     <span
@@ -535,100 +472,22 @@ function Reactions({
       type="button"
       data-slot="reactions-trigger"
       data-state={open ? "open" : "closed"}
-      aria-label={isMenu && open ? closeLabel : triggerLabel}
+      aria-label={triggerLabel}
       aria-expanded={open}
-      aria-controls={isMenu ? railId : rendered ? panelId : undefined}
+      aria-controls={rendered ? panelId : undefined}
       onClick={() => (open ? closePanel() : openPanel())}
       className={cn(
         "group/trigger relative inline-flex shrink-0 items-center justify-center rounded-full transition-[background-color,color,transform,box-shadow] duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
         variant === "inline"
           ? "size-7 text-muted-foreground hover:bg-muted hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground [&_svg]:size-4"
-          : "size-8 touch-manipulation text-foreground hover:bg-muted data-[state=open]:bg-muted motion-safe:active:scale-95 [&_svg]:size-4",
-        isMenu && "flex-col gap-1"
+          : "size-8 touch-manipulation text-foreground hover:bg-muted data-[state=open]:bg-muted motion-safe:active:scale-95 [&_svg]:size-4"
       )}
     >
-      {isMenu ? (
-        <>
-          <span
-            aria-hidden="true"
-            className="h-0.5 w-4 rounded-[1px] bg-current transition-transform duration-300 ease-out group-data-[state=open]/trigger:translate-y-[3px] group-data-[state=open]/trigger:rotate-45"
-          />
-          <span
-            aria-hidden="true"
-            className="h-0.5 w-4 rounded-[1px] bg-current transition-transform duration-300 ease-out group-data-[state=open]/trigger:-translate-y-[3px] group-data-[state=open]/trigger:-rotate-45"
-          />
-        </>
-      ) : (
-        <SmilePlusIcon
-          aria-hidden="true"
-          className="transition-transform duration-300 ease-out motion-safe:group-data-[state=open]/trigger:rotate-90"
-        />
-      )}
+      <SmilePlusIcon
+        aria-hidden="true"
+        className="transition-transform duration-300 ease-out motion-safe:group-data-[state=open]/trigger:rotate-90"
+      />
     </button>
-  )
-
-  // A collapsed column of `0fr` gives the rail nothing to occupy, so opening
-  // it animates real width rather than a guessed pixel value, and the bar
-  // grows from the trigger outward however many choices there are.
-  const rail = (
-    <div
-      id={railId}
-      data-slot="reactions-rail"
-      data-state={open ? "open" : "closed"}
-      className="grid grid-cols-[1fr] transition-[grid-template-columns] duration-300 ease-out data-[state=closed]:grid-cols-[0fr]"
-    >
-      <div
-        ref={railRef}
-        role="group"
-        aria-label={panelLabel}
-        inert={!open}
-        onKeyDown={(event) =>
-          rove(
-            event,
-            railRef.current,
-            '[data-slot="reactions-choice"]',
-            "horizontal"
-          )
-        }
-        className={cn(
-          "flex min-w-0 items-center gap-0.5 overflow-hidden",
-          railBefore ? "justify-end pr-1" : "justify-start pl-1"
-        )}
-      >
-        {!railBefore && totalChip}
-
-        {palette.map((choice, index) => {
-          const item = items.find((entry) => entry.emoji === choice.emoji)
-          // Stagger from the end nearest the trigger so the rail unrolls out
-          // of the button rather than arriving all at once.
-          const distance = railBefore ? palette.length - 1 - index : index
-
-          return (
-            <button
-              key={choice.emoji}
-              type="button"
-              data-slot="reactions-choice"
-              data-state={open ? "open" : "closed"}
-              data-active={item?.active ? "" : undefined}
-              aria-pressed={Boolean(item?.active)}
-              aria-label={choice.label}
-              style={{
-                transitionDelay: `${open ? distance * 30 : (palette.length - 1 - distance) * 18}ms`,
-              }}
-              onClick={(event) => {
-                toggle(choice, event.currentTarget)
-                pop(event.currentTarget)
-              }}
-              className="inline-flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-full text-lg leading-none transition-[background-color,transform,opacity] duration-200 ease-out outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-[state=closed]:scale-50 data-[state=closed]:opacity-0 motion-safe:hover:scale-115 motion-safe:active:scale-95 data-active:bg-primary-subtle"
-            >
-              <span aria-hidden="true">{choice.emoji}</span>
-            </button>
-          )
-        })}
-
-        {railBefore && totalChip}
-      </div>
-    </div>
   )
 
   return (
@@ -686,11 +545,6 @@ function Reactions({
                 {formatCount(item.count ?? 0)}
               </span>
             )}
-            <span
-              data-slot="reactions-ripple"
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 rounded-full border border-primary opacity-0"
-            />
           </button>
         ))}
 
@@ -700,138 +554,79 @@ function Reactions({
           "relative inline-flex items-center",
           isBar &&
             cn(
-              "pointer-events-auto rounded-full bg-popover-overlay p-1.5",
-              !isMenu && "gap-1",
+              "pointer-events-auto gap-1 rounded-full bg-popover-overlay p-1.5",
               SURFACE
             )
         )}
       >
-        {isMenu ? (
-          <>
-            {railBefore && rail}
-
-            <span
-              data-slot="reactions-menu-anchor"
-              className="relative inline-flex"
-            >
-              {menu && rendered && (
-                <div
-                  ref={panelRef}
-                  id={panelId}
-                  data-slot="reactions-menu"
-                  data-state={open ? "open" : "closed"}
-                  role="group"
-                  aria-label={menuLabel}
-                  onKeyDown={(event) =>
-                    rove(
-                      event,
-                      panelRef.current,
-                      '[data-slot="reactions-menu-item"]',
-                      "vertical"
-                    )
-                  }
-                  className={cn(
-                    "absolute z-10 flex min-w-44 flex-col gap-0.5 rounded-2xl bg-popover-overlay p-1 transition-[opacity,transform] duration-200 ease-out",
-                    SURFACE,
-                    "data-[state=closed]:scale-95 data-[state=closed]:opacity-0 starting:scale-95 starting:opacity-0",
-                    opensDown
-                      ? "top-full mt-2 data-[state=closed]:-translate-y-2 starting:-translate-y-2"
-                      : "bottom-full mb-2 data-[state=closed]:translate-y-2 starting:translate-y-2",
-                    opensDown
-                      ? alignsEnd
-                        ? "right-0 origin-top-right"
-                        : "left-0 origin-top-left"
-                      : alignsEnd
-                        ? "right-0 origin-bottom-right"
-                        : "left-0 origin-bottom-left"
-                  )}
-                >
-                  {menu}
-                </div>
+        <>
+          {rendered && (
+            <div
+              ref={panelRef}
+              id={panelId}
+              data-slot="reactions-panel"
+              data-state={open ? "open" : "closed"}
+              role="group"
+              aria-label={panelLabel}
+              onKeyDown={rove}
+              className={cn(
+                "absolute z-10 flex items-center gap-0.5 rounded-full bg-popover-overlay p-1 transition-[opacity,transform] duration-200 ease-out",
+                SURFACE,
+                "data-[state=closed]:scale-90 data-[state=closed]:opacity-0 starting:scale-90 starting:opacity-0",
+                opensDown
+                  ? "top-full mt-2 data-[state=closed]:-translate-y-2 starting:-translate-y-2"
+                  : "bottom-full mb-2 data-[state=closed]:translate-y-2 starting:translate-y-2",
+                opensDown
+                  ? alignsEnd || alignEnd
+                    ? "right-0 origin-top-right"
+                    : "left-0 origin-top-left"
+                  : alignsEnd || alignEnd
+                    ? "right-0 origin-bottom-right"
+                    : "left-0 origin-bottom-left"
               )}
+            >
+              {palette.map((choice, index) => {
+                const picked = items.find(
+                  (entry) => entry.emoji === choice.emoji
+                )?.active
+                return (
+                  <button
+                    key={choice.emoji}
+                    type="button"
+                    data-slot="reactions-choice"
+                    data-state={open ? "open" : "closed"}
+                    data-active={picked ? "" : undefined}
+                    aria-pressed={Boolean(picked)}
+                    aria-label={choice.label}
+                    // Staggering the entrance and reversing it on exit makes
+                    // the panel unfurl and furl rather than pop as one block.
+                    style={{
+                      transitionDelay: `${open ? index * 28 : (palette.length - 1 - index) * 16}ms`,
+                    }}
+                    onClick={(event) => {
+                      toggle(
+                        choice,
+                        isBar ? triggerRef.current : event.currentTarget
+                      )
+                      closePanel()
+                      triggerRef.current?.focus()
+                    }}
+                    className="inline-flex size-9 touch-manipulation items-center justify-center rounded-full text-lg leading-none transition-[background-color,transform,opacity] duration-200 ease-out outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-[state=closed]:scale-50 data-[state=closed]:opacity-0 motion-safe:hover:scale-115 motion-safe:active:scale-95 starting:scale-50 starting:opacity-0 data-active:bg-primary-subtle"
+                  >
+                    <span aria-hidden="true">{choice.emoji}</span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
 
-              {trigger}
-            </span>
+          {variant === "floating" && totalChip}
 
-            {!railBefore && rail}
-          </>
-        ) : (
-          <>
-            {rendered && (
-              <div
-                ref={panelRef}
-                id={panelId}
-                data-slot="reactions-panel"
-                data-state={open ? "open" : "closed"}
-                role="group"
-                aria-label={panelLabel}
-                onKeyDown={(event) =>
-                  rove(
-                    event,
-                    panelRef.current,
-                    '[data-slot="reactions-choice"]',
-                    "horizontal"
-                  )
-                }
-                className={cn(
-                  "absolute z-10 flex items-center gap-0.5 rounded-full bg-popover-overlay p-1 transition-[opacity,transform] duration-200 ease-out",
-                  SURFACE,
-                  "data-[state=closed]:scale-90 data-[state=closed]:opacity-0 starting:scale-90 starting:opacity-0",
-                  opensDown
-                    ? "top-full mt-2 data-[state=closed]:-translate-y-2 starting:-translate-y-2"
-                    : "bottom-full mb-2 data-[state=closed]:translate-y-2 starting:translate-y-2",
-                  opensDown
-                    ? alignsEnd || alignEnd
-                      ? "right-0 origin-top-right"
-                      : "left-0 origin-top-left"
-                    : alignsEnd || alignEnd
-                      ? "right-0 origin-bottom-right"
-                      : "left-0 origin-bottom-left"
-                )}
-              >
-                {palette.map((choice, index) => {
-                  const picked = items.find(
-                    (entry) => entry.emoji === choice.emoji
-                  )?.active
-                  return (
-                    <button
-                      key={choice.emoji}
-                      type="button"
-                      data-slot="reactions-choice"
-                      data-state={open ? "open" : "closed"}
-                      data-active={picked ? "" : undefined}
-                      aria-pressed={Boolean(picked)}
-                      aria-label={choice.label}
-                      // Staggering the entrance and reversing it on exit makes
-                      // the panel unfurl and furl rather than pop as one block.
-                      style={{
-                        transitionDelay: `${open ? index * 28 : (palette.length - 1 - index) * 16}ms`,
-                      }}
-                      onClick={(event) => {
-                        toggle(
-                          choice,
-                          isBar ? triggerRef.current : event.currentTarget
-                        )
-                        closePanel()
-                        triggerRef.current?.focus()
-                      }}
-                      className="inline-flex size-9 touch-manipulation items-center justify-center rounded-full text-lg leading-none transition-[background-color,transform,opacity] duration-200 ease-out outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-[state=closed]:scale-50 data-[state=closed]:opacity-0 motion-safe:hover:scale-115 motion-safe:active:scale-95 starting:scale-50 starting:opacity-0 data-active:bg-primary-subtle"
-                    >
-                      <span aria-hidden="true">{choice.emoji}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            )}
-
-            {variant === "floating" && totalChip}
-
-            {trigger}
-          </>
-        )}
+          {trigger}
+        </>
       </span>
     </div>
   )
 }
 
-export { Reactions, ReactionsMenuItem, reactionsVariants, type Reaction }
+export { Reactions, reactionsVariants, type Reaction }

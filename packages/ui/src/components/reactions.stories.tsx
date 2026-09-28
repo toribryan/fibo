@@ -1,7 +1,7 @@
 import type { Decorator, Meta, StoryObj } from "@storybook/react-vite"
 import { useState } from "react"
 
-import { Reactions, ReactionsMenuItem, type Reaction } from "./reactions.js"
+import { Reactions, type Reaction } from "./reactions.js"
 
 const seeded: Reaction[] = [
   { emoji: "👍", label: "Thumbs up", count: 5 },
@@ -9,7 +9,7 @@ const seeded: Reaction[] = [
   { emoji: "😂", label: "Laughing", count: 1 },
 ]
 
-// Floating and menu bars are fixed to the viewport. On a docs page a
+// The floating bar is fixed to the viewport. On a docs page a
 // transformed wrapper becomes their containing block, so each bar pins to
 // its own canvas instead of the whole page.
 const containInDocs: Decorator = (Story, context) =>
@@ -38,7 +38,6 @@ const meta: Meta<typeof Reactions> = {
         "reactions",
         "defaultReactions",
         "choices",
-        "menu",
         "onReactionsChange",
         "onReact",
       ],
@@ -47,7 +46,7 @@ const meta: Meta<typeof Reactions> = {
   argTypes: {
     variant: {
       control: "inline-radio",
-      options: ["inline", "floating", "menu"],
+      options: ["inline", "floating"],
     },
     position: {
       control: "select",
@@ -57,13 +56,10 @@ const meta: Meta<typeof Reactions> = {
     showCounts: { control: "boolean" },
     particles: { control: { type: "range", min: 0, max: 20, step: 1 } },
     triggerLabel: { control: "text", table: { category: "Labels" } },
-    closeLabel: { control: "text", table: { category: "Labels" } },
     panelLabel: { control: "text", table: { category: "Labels" } },
-    menuLabel: { control: "text", table: { category: "Labels" } },
     reactions: { control: false },
     defaultReactions: { control: false },
     choices: { control: false },
-    menu: { control: false },
   },
   args: {
     variant: "inline",
@@ -116,62 +112,6 @@ export const Floating: Story = {
         uses, clears the safe area on a notched phone, and counts every reaction
         on the item beside its trigger. Particles rise from the bar itself
         rather than from the emoji that was picked.
-      </p>
-      <Reactions {...args} />
-    </div>
-  ),
-}
-
-export const Menu: Story = {
-  args: {
-    variant: "menu",
-    menu: (
-      <>
-        <ReactionsMenuItem active>Home</ReactionsMenuItem>
-        <ReactionsMenuItem>Work</ReactionsMenuItem>
-        <ReactionsMenuItem>Writing</ReactionsMenuItem>
-        <ReactionsMenuItem render={<a href="#about" />}>
-          About
-        </ReactionsMenuItem>
-      </>
-    ),
-  },
-  ...pinned,
-  render: (args) => (
-    <div className="min-h-[28rem] p-8">
-      <p className="max-w-prose text-base text-muted-foreground">
-        The menu variant starts as a single menu button. Opening it rolls the
-        emoji rail out along the x axis, away from the edge the bar is pinned
-        to, leaves the close control on the end nearest that edge, and puts the
-        menu above the trigger. Items come from the `menu` prop, so they can be
-        navigation, actions, or anything else. Picking an emoji does not close
-        the rail.
-      </p>
-      <Reactions {...args} />
-    </div>
-  ),
-}
-
-export const MenuOnTheLeft: Story = {
-  name: "Menu, left edge",
-  args: {
-    variant: "menu",
-    position: "bottom-left",
-    menu: (
-      <>
-        <ReactionsMenuItem active>Home</ReactionsMenuItem>
-        <ReactionsMenuItem>Work</ReactionsMenuItem>
-        <ReactionsMenuItem>Writing</ReactionsMenuItem>
-      </>
-    ),
-  },
-  ...pinned,
-  render: (args) => (
-    <div className="min-h-[28rem] p-8">
-      <p className="max-w-prose text-base text-muted-foreground">
-        Pinned to the left edge the rail runs the other way, so it still opens
-        into the page rather than off it. The close control and the menu stay
-        with the trigger.
       </p>
       <Reactions {...args} />
     </div>
