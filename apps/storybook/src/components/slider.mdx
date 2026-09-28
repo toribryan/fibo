@@ -1,0 +1,250 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/slider.stories"
+import { Slider } from "../../../../packages/ui/src/components/slider"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Slider
+
+A slider picks a number, or a range between two, by dragging a thumb along a
+track. It suits values where roughly right is right enough.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- One thumb for a value, or two for a range, built on Base UI's Slider.
+- Arrow keys step the value; Page Up and Page Down take bigger steps; Home
+  and End jump to the ends.
+- Horizontal or vertical, with a `step` to snap to.
+- The thumb lines up with the track's ends at the minimum and maximum
+  instead of hanging over them.
+
+## Installation
+
+<Install name="slider" exports={["Slider"]} />
+
+## Usage
+
+```tsx
+import { Slider } from "@/components/ui/slider"
+
+export function Volume() {
+  return <Slider defaultValue={[40]} aria-label="Volume" />
+}
+```
+
+Every thumb needs a name. For one thumb, `aria-label` on the Slider is passed
+to it. For a range, name each one with `thumbLabels`:
+
+```tsx
+<Slider
+  defaultValue={[20, 80]}
+  thumbLabels={["Minimum price", "Maximum price"]}
+/>
+```
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Slider",
+    slot: "slider",
+    note: "Holds the value. Carries data-orientation.",
+    children: [
+      {
+        name: "control",
+        slot: "slider-control",
+        note: "The area that takes pointer presses and drags.",
+        children: [
+          {
+            name: "track",
+            slot: "slider-track",
+            note: "The full length of possible values.",
+            children: [
+              {
+                name: "range",
+                slot: "slider-range",
+                note: "The filled part, from the start or between two thumbs.",
+              },
+            ],
+          },
+          {
+            name: "thumb",
+            slot: "slider-thumb",
+            note: "One per value. Holds the hidden range input that takes focus.",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a slider when the exact number matters less than its rough position, like volume, brightness or a price range.",
+    "When people need an exact number, use an input, or show the value beside the slider.",
+    "Show the value next to the label while it changes, so people know where they've landed.",
+    <>
+      Set a <code>step</code> that matches how precise the value can usefully
+      be. A price range rarely needs single cents.
+    </>,
+  ]}
+/>
+
+## Examples
+
+### Range
+
+Two thumbs pick a start and an end. Each has its own name.
+
+<Canvas of={Stories.Range} />
+
+### With label and value
+
+A controlled slider that shows its value beside the label.
+
+<Canvas of={Stories.WithLabelAndValue} />
+
+### Steps
+
+`step={10}` snaps to tens.
+
+<Canvas of={Stories.Steps} />
+
+### Vertical
+
+`orientation="vertical"` fills the height of its container.
+
+<Canvas of={Stories.Vertical} />
+
+### Disabled
+
+`disabled` dims the slider and blocks the pointer.
+
+<Canvas of={Stories.Disabled} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 flex-col gap-3">
+            <div className="flex justify-between text-sm">
+              <span className="font-medium">Brightness</span>
+              <span className="font-mono text-muted-foreground">60%</span>
+            </div>
+            <Slider defaultValue={[60]} aria-label="Brightness" />
+          </div>
+        ),
+        description: "Show the value while people drag, beside a clear label.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 flex-col gap-3">
+            <span className="text-sm font-medium">Quantity</span>
+            <Slider defaultValue={[3]} max={1000} aria-label="Quantity" />
+          </div>
+        ),
+        description:
+          "Don't use a slider for an exact number across a wide range. Hitting 3 out of 1,000 by dragging is fiddly; use an input.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Slider takes every prop of Base UI's `Slider.Root`, including `value`,
+`defaultValue`, `onValueChange`, `onValueCommitted`, `min`, `max`, `step`,
+`largeStep` and `orientation`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="slider"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-orientation",
+      element: "Every part",
+      when: (
+        <>
+          Always. <code>horizontal</code> or <code>vertical</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-dragging",
+      element: "Every part",
+      when: "A thumb is being dragged.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "Every part",
+      when: "The slider is disabled.",
+    },
+    {
+      attribute: 'data-slot="slider-control"',
+      element: "The control",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="slider-track"',
+      element: "The track",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="slider-range"',
+      element: "The filled range",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="slider-thumb"',
+      element: "Each thumb",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Each thumb is announced as a slider with its value. Name it with{" "}
+      <code>aria-label</code>, or with <code>thumbLabels</code> for a range.
+    </>,
+    "Arrow keys move one step, Page Up and Page Down move ten, and Home and End jump to the minimum and maximum.",
+    <>
+      When the bare number isn't meaningful, like a price, pass{" "}
+      <code>format</code> with <code>Intl.NumberFormatOptions</code> so the
+      value is formatted, such as a currency.
+    </>,
+    "The thumb shows a focus ring when it's reached by keyboard, and on hover as a cue that it can be dragged.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Input", "Radio group", "Label"]} />
+
+## References
+
+- [Base UI Slider](https://base-ui.com/react/components/slider)
+- [WAI-ARIA slider pattern](https://www.w3.org/WAI/ARIA/apg/patterns/slider/)

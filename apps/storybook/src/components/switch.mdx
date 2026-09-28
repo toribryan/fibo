@@ -1,0 +1,212 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/switch.stories"
+import { Label } from "../../../../packages/ui/src/components/label"
+import { Switch } from "../../../../packages/ui/src/components/switch"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Switch
+
+A switch turns a setting on or off, and the change takes effect straight
+away, with no save button.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- On and off states, built on Base UI's Switch, announced as a switch.
+- Two sizes: the default 32 by 18 pixel track, and a small one for dense rows.
+- The hit area reaches past the track to meet the 24px minimum target.
+- An invalid state through `aria-invalid` that keeps the focus ring.
+
+## Installation
+
+<Install name="switch" exports={["Switch"]} />
+
+## Usage
+
+```tsx
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+
+export function WifiSetting() {
+  return (
+    <div className="flex items-center gap-2">
+      <Switch id="wifi" defaultChecked />
+      <Label htmlFor="wifi">Wi-Fi</Label>
+    </div>
+  )
+}
+```
+
+Pass `checked` and `onCheckedChange` to control it, or `defaultChecked` to let
+it keep its own state. Save the change as soon as it fires.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Switch",
+    slot: "switch",
+    note: "The track people click. Carries data-size and the state attributes below.",
+    children: [
+      {
+        name: "thumb",
+        slot: "switch-thumb",
+        note: "The knob that slides across when it turns on.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a switch for a setting that applies the moment it changes, like turning on notifications.",
+    "If the change only applies when a form is submitted, use a checkbox instead.",
+    "Label the setting, not the action: “Wi-Fi”, not “Turn on Wi-Fi”. The switch shows the state.",
+    "In a settings list, put the label and any description on the left and the switch on the right, so the switches line up.",
+  ]}
+/>
+
+## Examples
+
+### Checked
+
+`defaultChecked` starts it on.
+
+<Canvas of={Stories.Checked} />
+
+### Small
+
+`size="sm"` for dense tables and toolbars.
+
+<Canvas of={Stories.Small} />
+
+### Disabled
+
+`disabled` dims the switch and blocks the pointer.
+
+<Canvas of={Stories.Disabled} />
+
+### With label
+
+A Label connected with `htmlFor` becomes part of the hit area.
+
+<Canvas of={Stories.WithLabel} />
+
+### Settings list
+
+Each row has a label and a description on the left, with the switch on the
+right.
+
+<Canvas of={Stories.SettingsList} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex items-center gap-2">
+            <Switch id="rule-yes" defaultChecked />
+            <Label htmlFor="rule-yes">Dark mode</Label>
+          </div>
+        ),
+        description: "Use a switch for a setting that applies at once.",
+      },
+      negative: {
+        component: (
+          <div className="flex items-center gap-2">
+            <Switch id="rule-no" />
+            <Label htmlFor="rule-no">I agree to the terms</Label>
+          </div>
+        ),
+        description:
+          "Don't use a switch for a consent or an answer on a form. That's a checkbox.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Switch takes every prop of Base UI's `Switch.Root`, including `checked`,
+`defaultChecked`, `onCheckedChange`, `name` and `value`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="switch"',
+      element: "The track",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="switch-thumb"',
+      element: "The thumb",
+      when: "Always.",
+    },
+    {
+      attribute: "data-size",
+      element: "The track",
+      when: (
+        <>
+          Always. <code>default</code> or <code>sm</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-checked",
+      element: "The track and the thumb",
+      when: "The switch is on.",
+    },
+    {
+      attribute: "data-unchecked",
+      element: "The track and the thumb",
+      when: "The switch is off.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "The track and the thumb",
+      when: "The switch is disabled.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      It's announced as a switch that's on or off, with{" "}
+      <code>aria-checked</code>. Space toggles it.
+    </>,
+    <>
+      Connect a Label with <code>htmlFor</code> and <code>id</code>. Without a
+      visible label, name it with <code>aria-label</code>.
+    </>,
+    "The hit area extends past the track on every side, so it meets the 24px minimum target.",
+    "The thumb's position shows the state as well as the track's colour, so it doesn't depend on colour alone.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Checkbox", "Radio group", "Label"]} />
+
+## References
+
+- [Base UI Switch](https://base-ui.com/react/components/switch)
+- [WAI-ARIA switch pattern](https://www.w3.org/WAI/ARIA/apg/patterns/switch/)
