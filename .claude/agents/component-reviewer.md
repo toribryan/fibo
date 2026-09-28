@@ -31,9 +31,16 @@ Check each item and report only the ones that fail, with file and line:
    Motion is skipped under `prefers-reduced-motion`.
 5. **Stories.** No `autodocs` tag. `Default` is driven by args. Data and
    callback props have `control: false`.
-6. **Docs page.** Sections in the order Playground, Import, Usage,
-   Accessibility, Variants, Do's and don'ts, Related components, Props.
-   Sentence case headings. Every story used exists.
-7. **Comments.** They explain why, not what, and none describe removed code.
+6. **Docs page.** Sections in the order Features, Installation, Usage,
+   Anatomy (multi-element parts only), Guidelines, Examples, Do's and don'ts,
+   API reference with data attributes, Accessibility, Related components,
+   References. Every example has a sentence, every `data-slot` in the source
+   appears in the data attributes table, and every story used exists.
+   Sentence case headings.
+7. **Tests.** Interactive parts have a `play` function on `Default` covering
+   pointer and keyboard. Bare stories name the part with `aria-label`. Logic
+   that stories cannot show has a `<name>.test.tsx`. No story imports from
+   `vitest`.
+8. **Comments.** They explain why, not what, and none describe removed code.
 
 End with a one-line verdict: ready, or the number of blocking issues.

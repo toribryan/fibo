@@ -58,20 +58,40 @@ If unsure, it is a Component.
   for numbers). Set `control: false` on data and callback props, and list them
   in `parameters.controls.exclude`.
 - One story per variant worth showing, plus one or two real compositions.
+- If the part is interactive, give `Default` a `play` function from
+  `storybook/test` that drives it by pointer and by keyboard and asserts the
+  result (`aria-pressed`, focus, callbacks through `fn()` args). Never import
+  from `vitest` in a story file.
+- A story without a visible label names the part with `aria-label` in its
+  args. Every story is checked with axe and fails on a violation.
+- Put logic a story cannot show (formatting, limits, controlled callbacks) in
+  `<name>.test.tsx` next to the component, using `vitest-browser-react`. Model:
+  `reactions.test.tsx`.
 
 ## 4. Write the docs page
 
-`apps/storybook/src/components/<name>.mdx`. Copy `button.mdx` and keep the
-section order:
+`apps/storybook/src/components/<name>.mdx`. Copy `button.mdx`, or
+`chapter-scrubber.mdx` for a part with several elements, and keep the section
+order:
 
-1. `# Name` and a one or two sentence description.
-2. `<Playground of={Stories.Default} />`
-3. `## Import` with `<Install name="<name>" exports={[...]} />`
-4. `## Usage` and `## Accessibility` as `<UsageGuidelines>`.
-5. `## Variants`, one `<Canvas>` per story.
-6. `## Do's and don'ts` with `<ComponentRules>` and live examples.
-7. `## Related components` with `<RelatedComponents names={[...]} />`
-8. `## Props` with `<ArgTypes of={Stories.Default} />`
+1. `# Name`, a one or two sentence description, and
+   `<Canvas of={Stories.Default} />`.
+2. `## Features`: three or four bullets.
+3. `## Installation` with `<Install name="<name>" exports={[...]} />`, plus a
+   line for any dependency it installs.
+4. `## Usage`: a small, complete code example and one sentence on the rule
+   that matters most. Show the shape of any array prop as a type.
+5. `## Anatomy` with `<Anatomy root={...} />`, only when the part renders more
+   than one element. List elements that exist in the DOM, never props.
+6. `## Guidelines` as `<UsageGuidelines>`.
+7. `## Examples`, one `<Canvas>` per story, each with a sentence on what it
+   shows.
+8. `## Do's and don'ts` with `<ComponentRules>` and live examples.
+9. `## API reference` with `<ArgTypes of={Stories.Default} />`, then
+   `### Data attributes` with `<DataAttributes rows={[...]} />`.
+10. `## Accessibility` as `<UsageGuidelines>`.
+11. `## Related components` with `<RelatedComponents names={[...]} />`, then
+    `## References` for the specs and sources it follows.
 
 Headings and copy in sentence case.
 
@@ -93,6 +113,7 @@ pnpm format:write
 pnpm lint
 pnpm build
 pnpm typecheck
+pnpm test
 ```
 
 Then open the part in `pnpm storybook` and check both themes, the playground

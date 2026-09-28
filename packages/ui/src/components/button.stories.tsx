@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { expect, fn } from "storybook/test"
 import type { ComponentProps } from "react"
 import { ArrowRightIcon, PlusIcon, Trash2Icon } from "lucide-react"
 
@@ -38,13 +39,22 @@ const meta: Meta<typeof Button> = {
     children: "Button",
     variant: "default",
     size: "default",
+    onClick: fn(),
   },
 }
 
 export default meta
 type Story = StoryObj<typeof Button>
 
-export const Default: Story = {}
+export const Default: Story = {
+  play: async ({ args, canvas, userEvent }) => {
+    const button = canvas.getByRole("button", { name: "Button" })
+    await userEvent.click(button)
+    await expect(args.onClick).toHaveBeenCalledTimes(1)
+    await userEvent.keyboard("{Enter}")
+    await expect(args.onClick).toHaveBeenCalledTimes(2)
+  },
+}
 
 export const AllVariants: Story = {
   render: (args: ComponentProps<typeof Button>) => (
@@ -82,6 +92,12 @@ export const AllSizes: Story = {
 export const Disabled: Story = {
   args: {
     disabled: true,
+  },
+  play: async ({ args, canvas }) => {
+    const button = canvas.getByRole("button", { name: "Button" })
+    await expect(button).toBeDisabled()
+    button.click()
+    await expect(args.onClick).not.toHaveBeenCalled()
   },
 }
 
