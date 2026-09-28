@@ -12,6 +12,7 @@ import {
   MoonIcon,
   PaletteIcon,
   RocketIcon,
+  SnailIcon,
   SunIcon,
   SwatchBookIcon,
   type LucideIcon,
@@ -44,6 +45,7 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   "contributing--docs": GitPullRequestIcon,
   foundations: PaletteIcon,
   components: BoxesIcon,
+  niche: SnailIcon,
 }
 
 // Foundations pages document tokens rather than components.

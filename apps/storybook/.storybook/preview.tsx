@@ -60,6 +60,7 @@ const preview: Preview = {
           "Foundations",
           ["Colors", "Typography"],
           "Components",
+          "Niche",
         ],
       },
     },

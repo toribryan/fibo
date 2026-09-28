@@ -20,7 +20,7 @@ const RESOURCES = [
     icon: BoxesIcon,
     title: "Components",
     description:
-      "Every part with live examples, props, usage rules and do's and don'ts.",
+      "The standard set, plus a Niche shelf of playful, one-moment parts.",
   },
   {
     to: "getting-started--docs",

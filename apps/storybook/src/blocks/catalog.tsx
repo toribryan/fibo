@@ -11,14 +11,26 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { DocLink } from "./doc-link.js"
 
+type Tier = "components" | "niche"
+
 type Entry = {
   name: string
   id: string
   description: string
-  group: "Actions" | "Forms" | "Display" | "Feedback"
+  tier: Tier
+  group: string
   status?: "new" | "beta"
   preview: ReactNode
 }
+
+// The order groups appear in on the Catalog page, per tier.
+const GROUPS: Record<Tier, string[]> = {
+  components: ["Actions", "Forms", "Display"],
+  niche: ["Diagrams", "Navigation", "Feedback"],
+}
+
+// The wave a Chapter scrubber makes under the pointer, frozen for a preview.
+const SCRUBBER_WAVE = [14, 14, 16, 24, 40, 56, 40, 24, 16, 14, 14, 14]
 
 // Previews are inert: a catalog card is one link, so nothing inside it can
 // take focus or swallow the click.
@@ -27,6 +39,7 @@ const ENTRIES: Entry[] = [
     name: "Button",
     id: "components-button--docs",
     description: "Triggers an action or event with a single click.",
+    tier: "components",
     group: "Actions",
     preview: (
       <div className="flex gap-2">
@@ -41,6 +54,7 @@ const ENTRIES: Entry[] = [
     name: "Badge",
     id: "components-badge--docs",
     description: "A short label for status, category or count.",
+    tier: "components",
     group: "Display",
     preview: (
       <div className="flex gap-2">
@@ -54,6 +68,7 @@ const ENTRIES: Entry[] = [
     name: "Checkbox",
     id: "components-checkbox--docs",
     description: "Turns a single option on or off, or picks many from a list.",
+    tier: "components",
     group: "Forms",
     preview: (
       <div className="flex items-center gap-2">
@@ -66,6 +81,7 @@ const ENTRIES: Entry[] = [
     name: "Input",
     id: "components-input--docs",
     description: "A single line of free text.",
+    tier: "components",
     group: "Forms",
     preview: <Input placeholder="you@example.com" className="w-48" />,
   },
@@ -73,6 +89,7 @@ const ENTRIES: Entry[] = [
     name: "Label",
     id: "components-label--docs",
     description: "Names a form control and widens its hit area.",
+    tier: "components",
     group: "Forms",
     preview: (
       <div className="flex w-48 flex-col gap-1.5">
@@ -85,15 +102,17 @@ const ENTRIES: Entry[] = [
     name: "Textarea",
     id: "components-textarea--docs",
     description: "Several lines of free text that grow with the content.",
+    tier: "components",
     group: "Forms",
     preview: <Textarea placeholder="Leave a note" className="w-52" />,
   },
   {
     name: "Token flow",
-    id: "components-token-flow--docs",
+    id: "niche-token-flow--docs",
     description:
       "Walks a colour token from raw value to primitive to semantic role.",
-    group: "Display",
+    tier: "niche",
+    group: "Diagrams",
     status: "new",
     preview: (
       <div className="flex items-center gap-1.5 font-mono text-[10px]">
@@ -101,7 +120,7 @@ const ENTRIES: Entry[] = [
           (label, index) => (
             <span key={label} className="flex items-center gap-1.5">
               {index > 0 ? <span className="h-px w-4 bg-border" /> : null}
-              <span className="inline-flex h-5 items-center gap-1 rounded-full border border-border bg-card px-1.5">
+              <span className="inline-flex h-5 items-center gap-1 rounded-full border border-border bg-card px-1.5 whitespace-nowrap">
                 <span className="size-2 rounded-full bg-primary" />
                 {label}
               </span>
@@ -113,8 +132,9 @@ const ENTRIES: Entry[] = [
   },
   {
     name: "Reactions",
-    id: "components-reactions--docs",
+    id: "niche-reactions--docs",
     description: "Lets people respond to content with an emoji in one tap.",
+    tier: "niche",
     group: "Feedback",
     status: "new",
     preview: (
@@ -133,6 +153,79 @@ const ENTRIES: Entry[] = [
         ))}
         <span className="inline-flex size-8 items-center justify-center rounded-full border border-dashed border-border text-muted-foreground">
           <PlusIcon className="size-3.5" />
+        </span>
+      </div>
+    ),
+  },
+  {
+    name: "Integration visual",
+    id: "niche-integration-visual--docs",
+    description:
+      "A hub and the tools wired into it, with pulses on the routes.",
+    tier: "niche",
+    group: "Diagrams",
+    status: "new",
+    preview: (
+      <svg
+        viewBox="0 0 160 100"
+        className="w-44"
+        fill="none"
+        aria-hidden="true"
+      >
+        <g className="stroke-border">
+          <path d="M74 50V34Q74 24 64 24H30" />
+          <path d="M86 50V34Q86 24 96 24H130" />
+          <path d="M74 50V66Q74 76 64 76H30" />
+          <path d="M86 50V66Q86 76 96 76H130" />
+        </g>
+        {[
+          [30, 24],
+          [130, 24],
+          [30, 76],
+          [130, 76],
+        ].map(([x, y]) => (
+          <rect
+            key={`${x}-${y}`}
+            x={x! - 9}
+            y={y! - 9}
+            width={18}
+            height={18}
+            rx={4}
+            className="fill-card stroke-border"
+          />
+        ))}
+        <rect
+          x={66}
+          y={36}
+          width={28}
+          height={28}
+          rx={7}
+          className="fill-background stroke-ring"
+        />
+        <circle cx={80} cy={50} r={3} className="fill-foreground" />
+      </svg>
+    ),
+  },
+  {
+    name: "Chapter scrubber",
+    id: "niche-chapter-scrubber--docs",
+    description: "A rail of marks that swell under the pointer like the Dock.",
+    tier: "niche",
+    group: "Navigation",
+    status: "new",
+    preview: (
+      <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-2">
+          {SCRUBBER_WAVE.map((width, i) => (
+            <span
+              key={i}
+              className="block h-0.5 rounded-full bg-foreground"
+              style={{ width, opacity: 0.25 + ((width - 14) / 42) * 0.75 }}
+            />
+          ))}
+        </div>
+        <span className="rounded-lg border border-border bg-popover px-2.5 py-1.5 text-xs font-medium shadow-sm">
+          Semantic roles
         </span>
       </div>
     ),
@@ -172,12 +265,14 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
   )
 }
 
-function Catalog() {
-  const groups = ["Actions", "Forms", "Display", "Feedback"] as const
+function Catalog({ tier }: { tier: Tier }) {
+  const groups = GROUPS[tier]
   return (
     <div className="my-8 flex flex-col gap-12">
       {groups.map((group) => {
-        const entries = ENTRIES.filter((entry) => entry.group === group)
+        const entries = ENTRIES.filter(
+          (entry) => entry.tier === tier && entry.group === group
+        )
         if (entries.length === 0) return null
         return (
           <section key={group} className="flex flex-col gap-4">

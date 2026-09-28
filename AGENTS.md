@@ -79,6 +79,9 @@ the web app reads `registry.json`, which only exists after a build.
 - kebab-case file names. Components export a PascalCase name and a
   `<name>Variants` cva object when they have variants.
 - Every component sets `data-slot` on its root element.
+- Two shelves. Standard parts are titled `Components/<Name>` and depend on
+  nothing beyond Base UI. Playful, specific parts are titled `Niche/<Name>`
+  and may use `motion`; the registry build lists it as a dependency.
 - Semantic tokens only in components (`bg-primary`, `text-muted-foreground`).
   Primitive ramps (`neutral-*`, `red-*`, `green-*`, `amber-*`, `blue-*`) are
   for `globals.css`. There is no brand hue: `primary` is a neutral.

@@ -9,13 +9,22 @@ import { UsageGuidelines } from "../blocks/guidelines"
 A new part needs a component file, a stories file, a docs page, and a matching
 Figma component.
 
+## Components or Niche
+
+fibo has two shelves. **Components** are the standard parts most interfaces
+need: they depend on nothing beyond Base UI and stay quiet. **Niche** parts
+are built for one kind of moment, such as a diagram, a reading rail or a
+reaction, and may use `motion`. Give a Niche part a `Niche/` title and it
+lands in its own section of the sidebar and the catalog.
+
 ## Add a component
 
 1. Create `packages/ui/src/components/<name>.tsx` in kebab-case.
 2. Add `<name>.stories.tsx` next to it with at least a `Default` story.
 3. Write its docs page at `apps/storybook/src/components/<name>.mdx`, using an
    existing page as the template.
-4. Add it to the catalog in `apps/storybook/src/blocks/catalog.tsx`.
+4. Add it to the catalog in `apps/storybook/src/blocks/catalog.tsx`, with its
+   tier and group.
 5. Run `pnpm registry:build` and confirm `apps/web/public/r/<name>.json` exists.
 
 ## Conventions
@@ -45,13 +54,14 @@ Figma component.
 
 Component pages follow the same order so readers always know where to look:
 
-1. Name and one-sentence description, then a live playground.
+1. Name and one-sentence description, then a playground: the live story and
+   its controls in one frame.
 2. **Import**: the install command and the import line.
-3. **Props**, generated from the component's types.
-4. **Usage** and **Accessibility** as numbered guidelines.
-5. **Variants**, one canvas per story.
-6. **Do's and don'ts**, as paired live examples.
-7. **Related components**.
+3. **Usage** and **Accessibility** as numbered guidelines.
+4. **Variants**, one canvas per story.
+5. **Do's and don'ts**, as paired live examples.
+6. **Related components**.
+7. **Props**, a read-only reference generated from the component's types.
 
 ## Status tags
 
