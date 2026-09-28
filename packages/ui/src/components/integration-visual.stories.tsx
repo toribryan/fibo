@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { expect, waitFor } from "storybook/test"
 import {
   BellIcon,
   CalendarIcon,
@@ -65,7 +66,11 @@ const meta: Meta<Args> = {
     background: { control: "inline-radio", options: ["dots", "grid", "none"] },
     routes: { control: "inline-radio", options: ["solid", "dashed"] },
     pulse: { control: "inline-radio", options: ["inward", "outward", "none"] },
-    size: { control: "inline-radio", options: ["sm", "default", "lg"] },
+    size: {
+      control: "inline-radio",
+      options: ["sm", "default", "lg"],
+      description: "Scales the tiles and the hub.",
+    },
     halo: { control: "boolean" },
     hub: {
       name: "center content",
@@ -119,6 +124,18 @@ type Story = StoryObj<Args>
 export const Default: Story = {
   args: {
     preview: <SyncPreview />,
+  },
+  play: async ({ canvasElement, userEvent }) => {
+    const preview = () =>
+      canvasElement.querySelector('[data-slot="integration-visual-preview"]')
+    await expect(preview()).toBeNull()
+    await userEvent.tab()
+    await expect(
+      canvasElement.querySelector('[data-slot="integration-visual-hub"]')
+    ).toHaveFocus()
+    await waitFor(() => expect(preview()).not.toBeNull())
+    await userEvent.tab()
+    await waitFor(() => expect(preview()).toBeNull())
   },
 }
 

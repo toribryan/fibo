@@ -4,9 +4,10 @@ import * as Stories from "../../../../packages/ui/src/components/checkbox.storie
 import { Checkbox } from "../../../../packages/ui/src/components/checkbox"
 import { Label } from "../../../../packages/ui/src/components/label"
 import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { Anatomy } from "../blocks/anatomy"
 import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
-import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -15,13 +16,58 @@ import { Playground } from "../blocks/playground"
 A checkbox turns one option on or off, or picks any number of options from a
 list. The change applies when the form is submitted.
 
-<Playground of={Stories.Default} />
+<Canvas of={Stories.Default} />
 
-## Import
+## Features
+
+- Checked, unchecked and indeterminate states, built on Base UI's Checkbox.
+- The hit area reaches past the 16px box to meet the 24px minimum target.
+- Works with a Label beside it or wrapped around it.
+- An invalid state through `aria-invalid` that keeps the focus ring.
+
+## Installation
 
 <Install name="checkbox" exports={["Checkbox"]} />
 
 ## Usage
+
+```tsx
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+
+export function Replies() {
+  return (
+    <div className="flex items-center gap-2">
+      <Checkbox id="replies" defaultChecked />
+      <Label htmlFor="replies">Email me when someone replies</Label>
+    </div>
+  )
+}
+```
+
+Pass `checked` and `onCheckedChange` to control it, or `defaultChecked` to let
+it keep its own state.
+
+## Anatomy
+
+Every part the component renders, with the `data-slot` it carries.
+
+<Anatomy
+  root={{
+    name: "Checkbox",
+    slot: "checkbox",
+    note: "The box people click. Carries the state attributes below.",
+    children: [
+      {
+        name: "indicator",
+        slot: "checkbox-indicator",
+        note: "The check icon. Renders while checked or indeterminate.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
 
 <UsageGuidelines
   guidelines={[
@@ -32,29 +78,17 @@ list. The change applies when the form is submitted.
   ]}
 />
 
-## Accessibility
-
-<UsageGuidelines
-  guidelines={[
-    <>
-      Connect the label with <code>htmlFor</code> and <code>id</code>, or wrap
-      the checkbox in the Label.
-    </>,
-    "The hit area extends past the 16px box on every side, so it meets the 24px minimum target.",
-    <>
-      Mark errors with <code>aria-invalid</code>. The box turns destructive and
-      keeps its focus ring.
-    </>,
-  ]}
-/>
-
-## Variants
+## Examples
 
 ### Checked
+
+`defaultChecked` starts it ticked.
 
 <Canvas of={Stories.Checked} />
 
 ### Disabled
+
+`disabled` dims the box and blocks the pointer.
 
 <Canvas of={Stories.Disabled} />
 
@@ -86,13 +120,71 @@ list. The change applies when the form is submitted.
   ]}
 />
 
-## Related components
-
-<RelatedComponents names={["Label", "Input", "Button"]} />
-
-## Props
+## API reference
 
 Checkbox takes every prop of Base UI's `Checkbox.Root`, including
 `checked`, `defaultChecked`, `onCheckedChange` and `indeterminate`.
 
 <ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="checkbox"',
+      element: "The box",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="checkbox-indicator"',
+      element: "The check icon",
+      when: "While checked or indeterminate.",
+    },
+    {
+      attribute: "data-checked",
+      element: "The box and the indicator",
+      when: "The checkbox is checked.",
+    },
+    {
+      attribute: "data-unchecked",
+      element: "The box and the indicator",
+      when: "The checkbox is not checked.",
+    },
+    {
+      attribute: "data-indeterminate",
+      element: "The box and the indicator",
+      when: "The checkbox is indeterminate.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "The box and the indicator",
+      when: "The checkbox is disabled.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Connect the label with <code>htmlFor</code> and <code>id</code>, or wrap
+      the checkbox in the Label.
+    </>,
+    "The hit area extends past the 16px box on every side, so it meets the 24px minimum target.",
+    <>
+      Mark errors with <code>aria-invalid</code>. The box turns destructive and
+      keeps its focus ring.
+    </>,
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Label", "Input", "Button"]} />
+
+## References
+
+- [Base UI Checkbox](https://base-ui.com/react/components/checkbox)
+- [WAI-ARIA checkbox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/)

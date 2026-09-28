@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { expect, fn, waitFor } from "storybook/test"
 import { useState } from "react"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
@@ -141,7 +142,34 @@ const meta: Meta<typeof ChapterScrubber> = {
 export default meta
 type Story = StoryObj<typeof ChapterScrubber>
 
-export const Default: Story = {}
+export const Default: Story = {
+  args: { onCurrentIndexChange: fn() },
+  play: async ({ args, canvas, canvasElement, userEvent }) => {
+    const options = canvas.getAllByRole("option")
+    await userEvent.tab()
+    await expect(options[3]).toHaveFocus()
+    await userEvent.keyboard("{ArrowDown}")
+    await expect(options[4]).toHaveFocus()
+    await userEvent.keyboard("{End}")
+    const last = options[options.length - 1]!
+    await expect(last).toHaveFocus()
+    await userEvent.keyboard("{Enter}")
+    await expect(last).toHaveAttribute("aria-selected", "true")
+    // End on the settled preview, so the axe check that follows measures the
+    // colours people see rather than a frame of the fade.
+    await waitFor(() =>
+      expect(
+        getComputedStyle(
+          canvasElement.querySelector('[data-slot="chapter-scrubber-preview"]')!
+        ).opacity
+      ).toBe("1")
+    )
+    await expect(args.onCurrentIndexChange).toHaveBeenCalledTimes(1)
+    await expect(
+      (args.onCurrentIndexChange as ReturnType<typeof fn>).mock.calls[0]?.[0]
+    ).toBe(options.length - 1)
+  },
+}
 
 export const Horizontal: Story = {
   args: {
@@ -167,9 +195,9 @@ export const Centered: Story = {
 
 export const Sizes: Story = {
   render: (args) => (
-    <div className="flex items-center gap-24">
+    <div className="flex items-end gap-24">
       {(["sm", "default", "lg"] as const).map((size) => (
-        <div key={size} className="flex flex-col items-center gap-4">
+        <div key={size} className="flex flex-col items-start gap-4">
           <ChapterScrubber {...args} size={size} preview="none" />
           <span className="font-mono text-xs text-muted-foreground">
             {size}

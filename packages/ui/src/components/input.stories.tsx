@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { expect } from "storybook/test"
 
 import { Input } from "./input.js"
 import { Label } from "./label.js"
@@ -44,4 +45,11 @@ export const WithLabel: Story = {
       <Input id="work-email" type="email" {...args} />
     </div>
   ),
+  play: async ({ canvas, userEvent }) => {
+    const input = canvas.getByLabelText("Work email")
+    await userEvent.click(canvas.getByText("Work email"))
+    await expect(input).toHaveFocus()
+    await userEvent.type(input, "tori@example.com")
+    await expect(input).toHaveValue("tori@example.com")
+  },
 }

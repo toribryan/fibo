@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "lint": "eslint --max-warnings 0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -25,12 +26,18 @@
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/browser": "^4.1.11",
+    "@vitest/browser-playwright": "^4.1.11",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "eslint": "^9",
+    "eslint-plugin-storybook": "10.5.9",
+    "storybook": "10.5.9",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "eslint-plugin-storybook": "10.5.9"
+    "vitest": "^4.1.11",
+    "vitest-browser-react": "^2.3.0"
   },
   "exports": {
     "./globals.css": "./src/styles/globals.css",

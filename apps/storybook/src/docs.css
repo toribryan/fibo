@@ -52,29 +52,6 @@
   margin: -1rem 0 2.5rem;
 }
 
-/* Inside a playground the frame is shared, so the canvas, its code actions
-   and the controls table drop their own borders and margins. */
-.sbdocs .sb-unstyled .fibo-playground div:has(> .docs-story) {
-  margin: 0;
-  border: 0;
-  border-radius: 0;
-}
-
-.sbdocs .fibo-playground .sbdocs-preview-actions {
-  margin: 0;
-  padding: 0.25rem 0.75rem;
-  border-top: 1px solid var(--border);
-}
-
-.sbdocs .fibo-playground .docblock-argstable {
-  margin: 0;
-}
-
-.sbdocs .fibo-playground .docblock-argstable-body {
-  outline: 0;
-  border-radius: 0;
-}
-
 .sbdocs .docblock-argstable {
   margin: 1.5rem 0;
   font-family: var(--font-sans);
@@ -156,18 +133,18 @@
 .fibo-draw {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: fibo-draw 1.1s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  animation: fibo-draw 0.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
 .fibo-draw--spiral {
-  animation-duration: 1.8s;
-  animation-delay: 0.7s;
+  animation-duration: 1.2s;
+  animation-delay: 0.4s;
 }
 
 .fibo-tile {
   opacity: 0;
-  animation: fibo-fade 0.8s ease-out forwards;
-  animation-delay: 0.4s;
+  animation: fibo-fade 0.6s ease-out forwards;
+  animation-delay: 0.3s;
 }
 
 @keyframes fibo-draw {

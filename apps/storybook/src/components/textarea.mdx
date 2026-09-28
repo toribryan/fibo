@@ -2,9 +2,9 @@ import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 
 import * as Stories from "../../../../packages/ui/src/components/textarea.stories"
 import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
 import { UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
-import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -13,19 +13,77 @@ import { Playground } from "../blocks/playground"
 A textarea takes several lines of free text. It grows with its content through
 `field-sizing: content`, so it never needs its own scrollbar.
 
-<Playground of={Stories.Default} />
+<Canvas of={Stories.Default} />
 
-## Import
+## Features
+
+- Grows with its content through `field-sizing: content`, so it never needs its
+  own scrollbar.
+- Starts at a 64px minimum height. Set a taller one through `className`.
+- Takes every native `textarea` prop, with the same invalid state as Input.
+
+## Installation
 
 <Install name="textarea" exports={["Textarea"]} />
 
 ## Usage
+
+```tsx
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+
+export function Notes() {
+  return (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor="notes">Notes</Label>
+      <Textarea id="notes" placeholder="Anything we should know?" />
+    </div>
+  )
+}
+```
+
+Pair it with a visible Label, and state any length limit before people reach
+it.
+
+## Guidelines
 
 <UsageGuidelines
   guidelines={[
     "Use it for answers that may run past one line: notes, descriptions, messages.",
     "Pair it with a visible Label, and state any length limit before people hit it.",
     "Set a sensible min height through className when the expected answer is long.",
+  ]}
+/>
+
+## Examples
+
+### Invalid
+
+`aria-invalid` turns the border and the focus ring destructive.
+
+<Canvas of={Stories.Invalid} />
+
+### Disabled
+
+`disabled` dims the textarea and blocks the pointer.
+
+<Canvas of={Stories.Disabled} />
+
+## API reference
+
+Textarea takes every native `textarea` prop.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="textarea"',
+      element: "The textarea",
+      when: "Always.",
+    },
   ]}
 />
 
@@ -41,22 +99,10 @@ A textarea takes several lines of free text. It grows with its content through
   ]}
 />
 
-## Variants
-
-### Invalid
-
-<Canvas of={Stories.Invalid} />
-
-### Disabled
-
-<Canvas of={Stories.Disabled} />
-
 ## Related components
 
 <RelatedComponents names={["Input", "Label"]} />
 
-## Props
+## References
 
-Textarea takes every native `textarea` prop.
-
-<ArgTypes of={Stories.Default} />
+- [`field-sizing`](https://developer.mozilla.org/docs/Web/CSS/field-sizing)

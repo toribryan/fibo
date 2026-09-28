@@ -42,7 +42,12 @@ pnpm format:write
 pnpm lint
 pnpm build
 pnpm typecheck
+pnpm test
 ```
+
+`pnpm test` renders every story in Chromium, runs its interaction test and
+checks it with axe, then runs the unit tests. The first run needs a browser:
+`pnpm --filter storybook exec playwright install chromium`.
 
 For a component change, also check it in Storybook in both themes, with the
 keyboard only, and with reduced motion turned on.
