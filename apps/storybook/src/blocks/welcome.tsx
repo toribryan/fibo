@@ -9,7 +9,7 @@ import { DocLink } from "./doc-link.js"
 
 const RESOURCES = [
   {
-    to: "foundations-colors--palette",
+    to: "foundations-colors--docs",
     icon: PaletteIcon,
     title: "Foundations",
     description:
