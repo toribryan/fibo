@@ -321,6 +321,38 @@ function useAssemble(delay: number | undefined, skip: boolean): Assembly {
   return "whole"
 }
 
+// How finely the build-up's progress is reported.
+const ASSEMBLE_STEPS = 10
+
+/*
+ * Reports each step of the build-up once: a new share of blocks, a split to
+ * smaller blocks, and the finish. A snail shown whole from the start reports
+ * nothing.
+ */
+function useAssembleSteps(
+  assembly: Assembly,
+  onAssemble: PixelSnailSpriteProps["onAssemble"]
+) {
+  const report = React.useRef(onAssemble)
+  React.useEffect(() => {
+    report.current = onAssemble
+  })
+  const built = React.useRef(false)
+  const building = typeof assembly === "object"
+  const block = building ? assembly.block : 0
+  const shown = building ? Math.round(assembly.shown * ASSEMBLE_STEPS) : 0
+  const whole = assembly === "whole"
+  React.useEffect(() => {
+    if (building) {
+      built.current = true
+      report.current?.({ block, shown: shown / ASSEMBLE_STEPS })
+    } else if (whole && built.current) {
+      built.current = false
+      report.current?.("whole")
+    }
+  }, [building, whole, block, shown])
+}
+
 /*
  * The art at a coarser grid: a block is filled when enough of its pixels
  * are. Blocks arrive in a scattered but fixed order, so the snail builds up
@@ -394,6 +426,12 @@ type PixelSnailSpriteProps = Omit<React.ComponentProps<"g">, "children"> & {
    * instead of showing it at once.
    */
   assembleDelay?: number
+  /**
+   * Called as the build-up moves on: with the block size and the share of
+   * blocks shown each time more arrive or the blocks split, then with
+   * `"whole"` once the art is complete. For syncing sound to the pixels.
+   */
+  onAssemble?: (step: { block: number; shown: number } | "whole") => void
 }
 
 /**
@@ -407,6 +445,7 @@ function PixelSnailSprite({
   mode = "crawl",
   look = null,
   assembleDelay,
+  onAssemble,
   transform,
   ...props
 }: PixelSnailSpriteProps) {
@@ -416,6 +455,7 @@ function PixelSnailSprite({
   const idle = useLoop(IDLE, still || mode !== "rest")
   const dance = useLoop(DANCE, still || mode !== "dance")
   const assembly = useAssemble(assembleDelay, reduceMotion)
+  useAssembleSteps(assembly, onAssemble)
 
   const frame: Frame = look
     ? {
