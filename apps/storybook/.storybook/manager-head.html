@@ -43,12 +43,26 @@
 
   #storybook-explorer-menu .sidebar-item {
     margin-left: -6px;
+    margin-bottom: 2px;
   }
   #storybook-explorer-tree > div > div {
     margin-top: 8px;
   }
+  /* A hairline between the pages and the component sections, centred in the
+     gap above Foundations. It sits outside the row, which Storybook clips. */
   #storybook-explorer-menu [data-item-id="foundations"] {
-    margin-top: 24px;
+    position: relative;
+    margin-top: 25px;
+    overflow: visible !important;
+  }
+  #storybook-explorer-menu [data-item-id="foundations"]::before {
+    content: "";
+    position: absolute;
+    top: -13px;
+    left: 6px;
+    right: 0;
+    height: 1px;
+    background: var(--fibo-border);
   }
   [data-parent-id]:has(+ :not([data-parent-id])) {
     margin-bottom: 16px !important;

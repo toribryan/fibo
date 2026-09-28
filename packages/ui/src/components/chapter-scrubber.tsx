@@ -510,7 +510,7 @@ function ChapterScrubber({
             }[resolvedSide],
             preview === "card"
               ? "w-[248px] rounded-xl border border-border bg-popover p-3 text-popover-foreground shadow-md"
-              : "w-max max-w-[220px]"
+              : "w-max max-w-[220px] rounded-md border border-border bg-popover px-2 py-1 text-popover-foreground shadow-sm"
           )}
         >
           {preview === "card" ? (
