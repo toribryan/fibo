@@ -27,8 +27,8 @@ hub opens a preview on hover.
 
 - Three layouts: `corners` for up to four tools, `orbit` for up to eight, and
   `sides` for a pipeline with inputs on one side and outputs on the other.
-- Pulses run inward or outward along live routes. Idle tools keep their route
-  and dim.
+- Pulses run inward, outward, or through the hub from left to right along
+  live routes. Idle tools keep their route and dim.
 - A preview opens over the hub on hover or focus. It takes any content, or an
   image or looping video.
 - Respects reduced motion: the pulses, halo and springs stop, and the preview
@@ -133,8 +133,9 @@ Every part the component renders, with the `data-slot` it carries. You pass
       live.
     </>,
     <>
-      Use <code>pulse="inward"</code> for sources feeding the hub and{" "}
-      <code>"outward"</code> for the hub sending to them.
+      Use <code>pulse="inward"</code> for sources feeding the hub,{" "}
+      <code>"outward"</code> for the hub sending to them, and{" "}
+      <code>"through"</code> for a pipeline that flows from left to right.
     </>,
     <>
       Name the hub with the product, a count, or a mark in <code>center</code>.
@@ -169,7 +170,8 @@ Up to eight tools, evenly spaced on an ellipse with straight spokes.
 ### Sides
 
 A pipeline. Set `side` on each item to put it in the input or output column,
-and `pulse="outward"` to run the pulses from inputs to outputs.
+and `pulse="through"` to run the pulses from inputs, through the hub, to
+outputs.
 
 <Canvas of={Stories.Sides} />
 

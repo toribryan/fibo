@@ -65,7 +65,10 @@ const meta: Meta<Args> = {
     layout: { control: "inline-radio", options: ["corners", "orbit", "sides"] },
     background: { control: "inline-radio", options: ["dots", "grid", "none"] },
     routes: { control: "inline-radio", options: ["solid", "dashed"] },
-    pulse: { control: "inline-radio", options: ["inward", "outward", "none"] },
+    pulse: {
+      control: "inline-radio",
+      options: ["inward", "outward", "through", "none"],
+    },
     size: {
       control: "inline-radio",
       options: ["sm", "default", "lg"],
@@ -168,7 +171,7 @@ export const Sides: Story = {
   name: "Sides (pipeline)",
   args: {
     layout: "sides",
-    pulse: "outward",
+    pulse: "through",
     count: pipeline.length,
   },
   render: ({ count, hub, hubText, ...args }) => (

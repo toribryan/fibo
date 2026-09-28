@@ -268,8 +268,12 @@ type IntegrationVisualProps = Omit<React.ComponentProps<"div">, "children"> &
     background?: "dots" | "grid" | "none"
     /** Route stroke. */
     routes?: "solid" | "dashed"
-    /** Which way the pulse travels along each active route. */
-    pulse?: "inward" | "outward" | "none"
+    /**
+     * Which way the pulse travels along each active route. `through` runs
+     * left to right, into the hub from the left and out of it on the right,
+     * so `sides` reads as a pipeline.
+     */
+    pulse?: "inward" | "outward" | "through" | "none"
     /** A slow ring breathing out from the hub. */
     halo?: boolean
     /** Accessible name for the diagram. */
@@ -391,7 +395,13 @@ function IntegrationVisual({
                 <Pulse
                   key={item.title}
                   d={slots[i]!.path}
-                  direction={effectivePulse}
+                  direction={
+                    effectivePulse === "through"
+                      ? slots[i]!.x < CX
+                        ? "inward"
+                        : "outward"
+                      : effectivePulse
+                  }
                   delay={i * 0.55}
                 />
               )
