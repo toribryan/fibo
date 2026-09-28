@@ -160,9 +160,9 @@ function HueSlider({
 }
 
 /*
- * One setting in the toolbar, as a pill in fibo's own style: a small
- * picture of the value, the setting's name and its current value. Pressing
- * it opens the control below.
+ * One setting in the panel, as a pill in fibo's own style: a small picture
+ * of the value, the setting's name and its current value. Pressing it opens
+ * the control beside the panel.
  */
 function Tile({
   label,
@@ -185,15 +185,19 @@ function Tile({
         if (open) onOpen?.()
       }}
     >
-      <PopoverPrimitive.Trigger className="inline-flex h-10 shrink-0 items-center gap-2.5 rounded-4xl border border-border bg-input-subtle pr-3.5 pl-2.5 text-sm whitespace-nowrap outline-none hover:bg-input-subtle-hover focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-popup-open:bg-muted">
+      <PopoverPrimitive.Trigger className="group/tile flex h-11 w-full items-center gap-2.5 rounded-4xl border border-border bg-input-subtle pr-4 pl-3 text-left text-sm outline-none hover:bg-input-subtle-hover focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-popup-open:bg-muted">
         <span
           className="flex size-5 shrink-0 items-center justify-center"
           aria-hidden="true"
         >
           {indicator}
         </span>
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium">{value}</span>
+        {/* The label darkens with the fill on hover, so it keeps its
+            contrast against it. */}
+        <span className="flex-1 text-muted-foreground group-hover/tile:text-foreground group-data-popup-open/tile:text-foreground">
+          {label}
+        </span>
+        <span className="max-w-28 truncate font-medium">{value}</span>
         {failing ? (
           <TriangleAlertIcon
             aria-label={`${failing} contrast ${failing === 1 ? "failure" : "failures"}`}
@@ -203,9 +207,9 @@ function Tile({
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Positioner
-          side="bottom"
+          side="right"
           align="start"
-          sideOffset={8}
+          sideOffset={12}
           collisionPadding={16}
           className="isolate z-50"
         >
@@ -415,12 +419,12 @@ function shuffle(theme: Theme): Theme {
 }
 
 /*
- * The editor runs across the top in fibo's own design language: a card
- * surface, hairlines and pill controls. It stays in the site's theme and
- * never takes on the one being made, and it sticks to the top of the page
- * while the scene scrolls under it.
+ * The editor is a panel docked beside the stage, in fibo's own design
+ * language: a card surface, hairlines and pill controls. It stays in the
+ * site's theme and never takes on the one being made, and it stays in view
+ * while the stage scrolls.
  */
-function Toolbar({
+function Panel({
   theme,
   setTheme,
   checks,
@@ -448,97 +452,54 @@ function Toolbar({
   }, [copied])
 
   return (
-    <header
+    <aside
       aria-label="Theme settings"
-      className="sticky top-2 z-30 flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 text-card-foreground shadow-sm"
+      className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 text-card-foreground lg:sticky lg:top-2 lg:max-h-[calc(100vh-1rem)] lg:overflow-y-auto"
     >
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="mr-auto flex flex-col px-1">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex flex-col gap-0.5">
           <h1 className="m-0 text-base font-semibold">Theme creator</h1>
           <p className="m-0 text-xs text-muted-foreground">
-            Every part below is a real fibo component, reading the theme&apos;s
-            tokens.
+            Every part on the stage is a real fibo component, reading the
+            theme&apos;s tokens.
           </p>
         </div>
-        <div
-          role="group"
-          aria-label="Preview mode"
-          className="flex rounded-4xl border border-border bg-input-subtle p-0.5"
-        >
-          {(
-            [
-              ["light", SunIcon, "Light"],
-              ["dark", MoonIcon, "Dark"],
-            ] as const
-          ).map(([value, Icon, label]) => (
-            <Button
-              key={value}
-              size="sm"
-              variant={mode === value ? "secondary" : "ghost"}
-              aria-pressed={mode === value}
-              onClick={() => setMode(value)}
-              className="h-7"
-            >
-              <Icon data-icon="inline-start" aria-hidden="true" />
-              {label}
-            </Button>
-          ))}
-        </div>
         <Button
-          size="icon"
+          size="icon-sm"
           variant="ghost"
           aria-label="Reset to fibo"
           onClick={() => setTheme(DEFAULT_THEME)}
         >
           <RotateCcwIcon />
         </Button>
-        <Modal
-          title="Contrast"
-          trigger={
-            <Button
-              variant="outline"
-              className={cn(failures && "text-destructive")}
-            >
-              {failures ? (
-                <TriangleAlertIcon
-                  data-icon="inline-start"
-                  aria-hidden="true"
-                />
-              ) : (
-                <CheckIcon data-icon="inline-start" aria-hidden="true" />
-              )}
-              {failures
-                ? `${failures} contrast ${failures === 1 ? "issue" : "issues"}`
-                : "Clears AA"}
-            </Button>
-          }
-        >
-          <Report checks={checks} />
-        </Modal>
-        <Button variant="outline" onClick={() => setTheme(shuffle(theme))}>
-          <ShuffleIcon data-icon="inline-start" aria-hidden="true" />
-          Shuffle
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => {
-            void navigator.clipboard.writeText(shareLink(theme))
-            setCopied(true)
-          }}
-        >
-          {copied ? (
-            <CheckIcon data-icon="inline-start" aria-hidden="true" />
-          ) : (
-            <LinkIcon data-icon="inline-start" aria-hidden="true" />
-          )}
-          {copied ? "Copied" : "Copy link"}
-        </Button>
-        <Modal title="Get code" trigger={<Button>Get code</Button>}>
-          <Export theme={theme} />
-        </Modal>
       </div>
 
-      <div className="flex flex-wrap gap-2 border-t border-border pt-3">
+      <div
+        role="group"
+        aria-label="Preview mode"
+        className="grid grid-cols-2 rounded-4xl border border-border bg-input-subtle p-0.5"
+      >
+        {(
+          [
+            ["light", SunIcon, "Light"],
+            ["dark", MoonIcon, "Dark"],
+          ] as const
+        ).map(([value, Icon, label]) => (
+          <Button
+            key={value}
+            size="sm"
+            variant={mode === value ? "secondary" : "ghost"}
+            aria-pressed={mode === value}
+            onClick={() => setMode(value)}
+            className="h-7"
+          >
+            <Icon data-icon="inline-start" aria-hidden="true" />
+            {label}
+          </Button>
+        ))}
+      </div>
+
+      <div className="flex flex-col gap-2">
         <Tile
           label="Base colour"
           value={
@@ -748,12 +709,64 @@ function Toolbar({
           )
         })}
       </div>
-    </header>
+
+      <div className="flex flex-col gap-2 border-t border-border pt-4">
+        <Modal
+          title="Contrast"
+          trigger={
+            <Button
+              variant="outline"
+              className={cn("w-full", failures && "text-destructive")}
+            >
+              {failures ? (
+                <TriangleAlertIcon
+                  data-icon="inline-start"
+                  aria-hidden="true"
+                />
+              ) : (
+                <CheckIcon data-icon="inline-start" aria-hidden="true" />
+              )}
+              {failures
+                ? `${failures} contrast ${failures === 1 ? "issue" : "issues"}`
+                : "Clears AA"}
+            </Button>
+          }
+        >
+          <Report checks={checks} />
+        </Modal>
+        <div className="grid grid-cols-2 gap-2">
+          <Button variant="outline" onClick={() => setTheme(shuffle(theme))}>
+            <ShuffleIcon data-icon="inline-start" aria-hidden="true" />
+            Shuffle
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              void navigator.clipboard.writeText(shareLink(theme))
+              setCopied(true)
+            }}
+          >
+            {copied ? (
+              <CheckIcon data-icon="inline-start" aria-hidden="true" />
+            ) : (
+              <LinkIcon data-icon="inline-start" aria-hidden="true" />
+            )}
+            {copied ? "Copied" : "Copy link"}
+          </Button>
+        </div>
+        <Modal
+          title="Get code"
+          trigger={<Button className="w-full">Get code</Button>}
+        >
+          <Export theme={theme} />
+        </Modal>
+      </div>
+    </aside>
   )
 }
 
 /**
- * Visual first: a toolbar of settings above a scene of real fibo parts that
+ * Visual first: a panel of settings beside a stage of real fibo parts that
  * takes the theme on as it changes, in either mode.
  */
 function ThemeCreator() {
@@ -769,8 +782,8 @@ function ThemeCreator() {
   }, [theme.fonts.sans, theme.fonts.mono])
 
   return (
-    <div className="fibo-studio flex flex-col gap-4">
-      <Toolbar
+    <div className="fibo-studio grid items-start gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
+      <Panel
         theme={theme}
         setTheme={setTheme}
         checks={checks}
