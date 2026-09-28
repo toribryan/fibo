@@ -2,7 +2,9 @@ import type { ReactNode } from "react"
 import {
   ArrowUpRightIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
   CircleCheckIcon,
+  ListFilterIcon,
   PlusIcon,
   XIcon,
 } from "lucide-react"
@@ -250,6 +252,28 @@ const PREVIEWS: Record<string, ReactNode> = {
     >
       <PixelSnailSprite mode="rest" />
     </svg>
+  ),
+  "filter-menu": (
+    <div className="flex w-44 flex-col gap-1.5">
+      <span className="inline-flex h-7 items-center gap-1.5 self-start rounded-full border border-border bg-input-subtle px-2.5 text-xs font-medium">
+        <ListFilterIcon className="size-3.5" />
+        Filter
+      </span>
+      <span className="flex flex-col rounded-lg border border-border bg-popover p-1 text-xs shadow-md">
+        {["Status", "Assignee", "Priority"].map((label, index) => (
+          <span
+            key={label}
+            className={cn(
+              "flex h-6 items-center justify-between rounded-sm px-1.5",
+              index === 0 && "bg-accent"
+            )}
+          >
+            {label}
+            <ChevronRightIcon className="size-3 text-muted-foreground" />
+          </span>
+        ))}
+      </span>
+    </div>
   ),
   "chapter-scrubber": (
     <div className="flex items-center gap-4">
