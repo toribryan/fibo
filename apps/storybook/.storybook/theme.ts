@@ -10,9 +10,8 @@ const fonts = {
 
 const mark = (color: string) =>
   `<span style="display:inline-flex;align-items:center;gap:10px;font:600 22px/1 ${fonts.fontBase};letter-spacing:-0.04em;color:${color}">` +
-  `<svg width="26" height="16" viewBox="0 0 21 13" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">` +
-  `<rect x="0.5" y="0.5" width="12" height="12"/><rect x="12.5" y="0.5" width="8" height="8"/><rect x="15.5" y="8.5" width="5" height="4"/>` +
-  `<path d="M0.5 12.5A12 12 0 0 1 12.5 0.5A8 8 0 0 1 20.5 8.5A5 4 0 0 1 15.5 12.5"/></svg>fibo</span>`
+  `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">` +
+  `<path d="M2 13a6 6 0 1 0 12 0 4 4 0 1 0-8 0 2 2 0 0 0 4 0"/><circle cx="10" cy="13" r="8"/><path d="M2 21h12c4.4 0 8-3.6 8-8V7a2 2 0 1 0-4 0v6"/><path d="M18 3 19.1 5.2"/><path d="M22 3 20.9 5.2"/></svg>fibo</span>`
 
 export const lightTheme = create({
   base: "light",
