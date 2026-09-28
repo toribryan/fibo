@@ -25,6 +25,13 @@
     "tier": "components",
     "group": "Forms"
   },
+  "filter-menu": {
+    "title": "Filter menu",
+    "description": "A filter menu of fields and values that turns into a search as you type.",
+    "tier": "niche",
+    "group": "Navigation",
+    "status": "new"
+  },
   "input": {
     "title": "Input",
     "description": "A single line of free text.",
