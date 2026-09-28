@@ -103,12 +103,18 @@ export const Default: Story = {
     )
     await waitFor(() => expect(page.queryByRole("listbox")).toBeNull())
 
-    // By keyboard: open, move down one, choose, and focus returns.
+    // By keyboard: open, move down one, choose, and focus returns. Each key
+    // waits for the highlight to land, since the list opens on the chosen
+    // option and keys sent before then are lost.
     trigger.focus()
     await userEvent.keyboard("{Enter}")
-    await page.findByRole("listbox")
-    await userEvent.keyboard("{ArrowDown}{Enter}")
-    await expect(trigger).toHaveTextContent("Blueberry")
+    const banana = await page.findByRole("option", { name: "Banana" })
+    await waitFor(() => expect(banana).toHaveAttribute("data-highlighted"))
+    await userEvent.keyboard("{ArrowDown}")
+    const blueberry = page.getByRole("option", { name: "Blueberry" })
+    await waitFor(() => expect(blueberry).toHaveAttribute("data-highlighted"))
+    await userEvent.keyboard("{Enter}")
+    await waitFor(() => expect(trigger).toHaveTextContent("Blueberry"))
     await waitFor(() => expect(trigger).toHaveFocus())
   },
 }

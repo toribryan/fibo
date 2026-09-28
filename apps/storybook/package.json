@@ -12,6 +12,7 @@
     "chromatic": "chromatic --exit-zero-on-changes"
   },
   "dependencies": {
+    "@base-ui/react": "^1.7.0",
     "@workspace/ui": "workspace:*",
     "lucide-react": "^1.33.0",
     "react": "19.2.4",
