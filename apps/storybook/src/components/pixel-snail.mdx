@@ -1,0 +1,416 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/pixel-snail.stories"
+import {
+  PixelSnail,
+  PixelSnailSprite,
+} from "../../../../packages/ui/src/components/pixel-snail"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { DocLink } from "../blocks/doc-link"
+import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+import { PixelGrid } from "../blocks/pixel-grid"
+import { FIBO_LINES } from "../blocks/lines"
+
+<Meta of={Stories} />
+
+# Pixel snail
+
+This is fibo, the snail the design system is named after. He's a one-colour
+pixel-art snail who crawls on a loop while something loads. As a sprite
+inside your own SVG, he can also build himself up, dance and turn to watch
+the pointer.
+
+<Canvas of={Stories.Default} />
+
+## Meet fibo
+
+The system is called fibo after the golden spiral that runs through it, from
+the proportions of the Welcome page to the shell on this snail's back. The
+snail took the name too. You'll find him on the <DocLink to="welcome--docs" className="text-foreground underline underline-offset-4">Welcome page</DocLink>,
+where he builds up once the spiral has drawn, dances on its edge and talks
+back when you click.
+
+He has one colour, a googly eye on each stalk and a slow sense of humour.
+Everything on this page is about how he moves and how he responds, because
+that's where his character comes from.
+
+Here he is on his grid, one cell per art pixel. Switch loops to watch each
+pose land on whole pixels, or replay the build-up to see the coarse blocks
+snap to the same grid.
+
+<PixelGrid />
+
+## Features
+
+- A four-frame crawl in which head, shell and tail move on different beats,
+  so his foot stretches and gathers instead of sliding.
+- Three modes for the sprite: `crawl`, `rest` and `dance`, each a hand-timed
+  loop.
+- A build-up that loads him in like an image, from coarse blocks to fine
+  pixels, with a callback on every step for syncing sound.
+- A `look` prop that stops him and turns his eyes, head and neck toward a
+  point, and turns his whole body round when it's behind him.
+
+## Installation
+
+<Install
+  name="pixel-snail"
+  exports={["PixelSnail", "PixelSnailSprite", "type PixelSnailLook"]}
+/>
+
+No animation library: every frame is state and a timer, drawn as SVG
+rectangles.
+
+## Usage
+
+```tsx
+import { PixelSnail } from "@/components/ui/pixel-snail"
+
+export function ProjectsLoading() {
+  return <PixelSnail label="Loading your projects" />
+}
+```
+
+`PixelSnail` is the loading indicator. `PixelSnailSprite` is fibo without a
+frame: a bare `<g>` for placing inside your own SVG. Its origin is under the
+middle of his foot, so a `transform` that moves him to a point stands him
+on it.
+
+```tsx
+import { PixelSnailSprite } from "@/components/ui/pixel-snail"
+
+export function SnailOnALine() {
+  return (
+    <svg viewBox="0 0 200 40" className="text-foreground">
+      <line x1={0} y1={30} x2={200} y2={30} stroke="currentColor" />
+      <PixelSnailSprite
+        transform="translate(100 30)"
+        pixel={1.5}
+        mode="dance"
+      />
+    </svg>
+  )
+}
+```
+
+## How he moves
+
+Everything fibo does follows three rules.
+
+1. **He lives on a grid.** He's drawn in whole art pixels, with
+   `shape-rendering: crispEdges`, and he only ever moves by whole art
+   pixels. Even when he travels across a container he steps one pixel at a
+   time, so he never blurs between two.
+2. **He's timed by hand.** Each loop is a script of frames and holds rather
+   than an easing curve. The holds are deliberately uneven, because an even
+   beat reads as a machine and a snail shouldn't feel like one.
+3. **He has one colour.** He draws in `currentColor`, so a text class
+   recolours him. The whites of his eyes take the page background, which
+   keeps his pupils readable in either theme.
+
+### The crawl
+
+A crawl cycle has four frames. The head reaches forward first while the eye
+stalks tip ahead. Then the shell slides up while the tail holds back, and the
+head settles as the stalks straighten. Each part moves on its own frame, so
+the body stretches out and gathers in like a real foot. A cycle moves him
+forward two art pixels.
+
+When he crawls in place, a dotted ground slides underneath him so he still
+reads as moving. With `travel` he crosses the container instead, entering
+past the left edge and leaving past the right one.
+
+`pace` sets how long each frame holds: 110 ms fast, 180 ms by default and
+260 ms slow.
+
+<Canvas of={Stories.Travel} />
+
+### Resting and dancing
+
+The sprite has two more loops, each a script of poses and how long to hold
+them.
+
+- **Rest** runs about eleven seconds, with holds anywhere from 140 ms to
+  1.8 seconds. He looks about, reaches, blinks and shuffles a pixel forward
+  and back, so he never ends a gesture where it began.
+- **Dance** is a beat you could count. His stalks sway every 280 ms while his
+  shell hops a row, three times over. Then he shuffles a step aside and back
+  and takes a 1.6-second breather, so the dance never turns frantic.
+
+<Canvas of={Stories.Modes} />
+
+### The build-up
+
+With `assembleDelay`, he loads in like an image over a slow connection rather
+than fading in. The timeline runs like this:
+
+- **0 to 400 ms:** 4-pixel blocks arrive in a scattered but fixed order. A
+  block is filled when enough of the pixels it covers are.
+- **400 to 520 ms:** the full coarse silhouette holds.
+- **520 to 680 ms:** the blocks halve to 2 pixels.
+- **680 ms:** the real art appears, eyes and all.
+
+The stage comes from time since the delay ended, not from a count of timer
+ticks, so a throttled background tab skips ahead instead of dragging the
+build-up out. `onAssemble` reports each step once: the block size and the
+share shown, in tenths, then `"whole"` at the end. The Welcome page uses it to
+play a crunchy blip that climbs in pitch as more of him arrives, a brighter
+one as the blocks split, and a chord when he's complete.
+
+<Canvas of={Stories.BuildUp} />
+
+## How he responds
+
+### Looking at things
+
+Passing `look` stops whatever loop is playing and poses him toward a point.
+Each axis takes one of three values, `-1`, `0` or `1`, because pixel art
+can't show a finer angle.
+
+- **`x`** is behind, level or ahead. His pupils move to that side of each
+  eye, his stalks lean and his head reaches forward or pulls back a pixel.
+- **`y`** is up, level or down. His eyes rise on longer stalks and his neck
+  stretches a row, or his eyes sink and his head ducks.
+- **`facing`** turns him round. At `-1` the whole sprite mirrors, so he
+  faces left.
+
+Pass `null` and he goes back to his mode.
+
+The sprite doesn't read the pointer itself. You decide what he looks at and
+when, which keeps him usable for things like following a caret or watching a
+drop target. To make him follow the pointer, map it into his art pixels and
+leave a little slack:
+
+- **A dead zone around his eyes.** He only glances once the pointer is more
+  than 1.5 art pixels off his eye line. Without it, his pupils flicker as
+  the pointer crosses the middle.
+- **A wider gap before he turns.** He turns round only when the pointer is
+  more than 4 art pixels past his middle, and he keeps his current facing
+  inside that gap. That stops him flipping back and forth when you hover
+  near him.
+
+<Canvas of={Stories.FollowsThePointer} />
+
+```tsx
+const EYES = { x: 6, y: -11 } // his eyes, from the sprite's origin
+const GLANCE = 1.5
+const TURN = 4
+
+const glance = (offset: number) =>
+  offset < -GLANCE ? -1 : offset > GLANCE ? 1 : 0
+
+// dx and dy: the pointer in art pixels from the sprite's origin
+const facing = dx < -TURN ? -1 : dx > TURN ? 1 : previous.facing
+const look = {
+  facing,
+  x: glance((dx - facing * EYES.x) * facing),
+  y: glance(dy - EYES.y),
+}
+```
+
+### On the Welcome page
+
+The Welcome page's hero builds a few more behaviours on top of `look` and
+`onAssemble`. They belong to the site rather than the component, but they
+show how far the sprite can go:
+
+- **He watches the whole hero.** He follows the pointer anywhere in it,
+  with a soft rising blip each time he turns round. When the pointer leaves
+  he faces forward again, so each visit starts the same way.
+- **He says hello.** A pointer that rests in the hero for a second without
+  clicking gets "{FIBO_LINES.hello}", once per visit.
+- **He talks back.** Clicks on him, inside a padded area so a near miss
+  still counts, work through one set of lines. Clicks anywhere else in the
+  hero work through another. Links and buttons keep their own jobs.
+- **He notices rage clicks.** Three clicks within 700 ms each, or a line he's
+  about to repeat, skip straight to calling it out. After a 4-second pause
+  he starts over.
+- **He types.** His bubble types each line at 35 ms a letter with a blip on
+  every other one, then lingers for 2.8 seconds. The untyped rest of the
+  line is laid out but invisible, so the bubble is full size from the first
+  letter. It opens toward the middle of the frame, never off its edge.
+- **He sounds like a game.** Every sound is synthesised with the Web Audio
+  API, so there's nothing to download. Each line opens with its own tone of
+  voice. Audio waits for the visitor's first click or key press, as browsers
+  require.
+
+His lines:
+
+- Poked: "{FIBO_LINES.poke}"
+- Poked again: "{FIBO_LINES.bruise}"
+- Clicking empty space: "{FIBO_LINES.button}"
+- Still clicking empty space: "{FIBO_LINES.miss}"
+- Rage clicks: "{FIBO_LINES.rage}"
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "PixelSnail",
+    slot: "pixel-snail",
+    note: "The root, a status region. Carries data-travel while travelling.",
+    children: [
+      {
+        name: "ground",
+        slot: "pixel-snail-ground",
+        note: "Travel with ground only. A dotted line the width of the container.",
+      },
+      {
+        name: "svg",
+        note: "Hidden from assistive technology. Holds the art and, in place, the ground.",
+      },
+    ],
+  }}
+/>
+
+`PixelSnailSprite` is a single `<g>` with `data-slot="pixel-snail-sprite"`,
+holding one rectangle per pixel.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use PixelSnail for waits long enough to notice, where a little character helps: an empty panel filling, an import, a first load.",
+    <>
+      Give each use a <code>label</code> that says what's loading, such as
+      "Loading your projects". It's what screen readers announce.
+    </>,
+    "Keep him to one per view. He's a character, and a crowd of him stops being charming.",
+    <>
+      Use <code>PixelSnailSprite</code> when he's part of a drawing, such as
+      standing on a line or riding a path with <code>animateMotion</code>.
+    </>,
+    <>
+      Hold <code>look</code> while something has his attention, and go back to{" "}
+      <code>null</code> when it's gone.
+    </>,
+  ]}
+/>
+
+<Tip>
+  Keep sound optional and quiet. `onAssemble` is there for syncing it, but on
+  most pages the snail should be seen and not heard.
+</Tip>
+
+## Examples
+
+### Sizes
+
+`size` sets one art pixel to 2, 3 or 4 screen pixels.
+
+<Canvas of={Stories.Sizes} />
+
+### Loading panel
+
+In an empty panel with a line saying what's happening and a way out.
+
+<Canvas of={Stories.LoadingPanel} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex flex-col items-center gap-2">
+            <PixelSnail label="Loading your projects" />
+            <span className="text-sm text-muted-foreground">
+              Fetching your projects
+            </span>
+          </div>
+        ),
+        description:
+          "Say what's loading, next to him and in his label, and give him room.",
+      },
+      negative: {
+        component: (
+          <div className="flex gap-2">
+            {[0, 1, 2, 3].map((i) => (
+              <PixelSnail key={i} size="sm" ground={false} />
+            ))}
+          </div>
+        ),
+        description:
+          "Don't use a row of snails for a list of loading items. Use one, or a plainer indicator.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+### PixelSnail
+
+<ArgTypes of={Stories.Default} />
+
+### PixelSnailSprite
+
+<ArgTypes of={PixelSnailSprite} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="pixel-snail"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-travel",
+      element: "The root",
+      when: (
+        <>
+          <code>travel</code> is on.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="pixel-snail-ground"',
+      element: "The ground",
+      when: (
+        <>
+          <code>travel</code> and <code>ground</code> are both on.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="pixel-snail-sprite"',
+      element: "The sprite's group",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      <code>PixelSnail</code> is a <code>status</code> region named by{" "}
+      <code>label</code>. The drawing itself is hidden from assistive
+      technology.
+    </>,
+    <>
+      <code>PixelSnailSprite</code> is decoration. Hide the SVG it sits in with{" "}
+      <code>aria-hidden</code>, and put anything he says or means somewhere a
+      screen reader can reach it.
+    </>,
+    "Under prefers-reduced-motion he holds still on his resting pose. There's no crawl, travel, rest or dance loop, and he appears whole with no build-up. He still turns to look, because that only happens in response to the visitor.",
+    "He isn't focusable and never needs to be. On the Welcome page his remarks are a joke, not information, so they're hidden from screen readers.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Reactions", "Token flow"]} />
+
+## References
+
+- [WAI-ARIA status role](https://www.w3.org/TR/wai-aria-1.2/#status)
+- [SVG shape-rendering](https://developer.mozilla.org/docs/Web/SVG/Attribute/shape-rendering)
+- [Web Audio API](https://developer.mozilla.org/docs/Web/API/Web_Audio_API), for the Welcome page's sounds
