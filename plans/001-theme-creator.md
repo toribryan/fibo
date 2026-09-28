@@ -39,17 +39,18 @@ page. The site is static, so everything runs in the browser.
 
 **Layout.** A first version stacked form controls above a small preview,
 which read as a settings page. A second led with the result, after shadcn's
-theme builder and Radix's colour page: a dark rail of setting tiles beside a
-scene of generic example cards. The shipped layout keeps the result first
-but speaks fibo's own language:
+theme builder and Radix's colour page: a dark floating rail of setting
+tiles beside a scene of generic example cards. A third moved the settings
+into a toolbar across the top, which crowded the settings into one line. The
+shipped layout keeps the result first but speaks fibo's own language:
 
-- A toolbar runs across the top on a card surface with hairlines and pill
-  controls, the way fibo's own parts look, and sticks while the scene
-  scrolls. Its first row holds the title, the light and dark switch, reset,
-  the contrast count, Shuffle, Copy link and Get code. Its second row holds
-  one pill per setting, each showing a small picture of its value, and
-  pressing one opens its control below. The toolbar stays in the site's
-  theme and never takes on the one being made.
+- A light panel docks beside the stage on a card surface with hairlines and
+  pill controls, the way fibo's own parts look, and stays in view while the
+  stage scrolls. It holds the title and reset, the light and dark switch,
+  one pill per setting, each showing a small picture of its value and
+  opening its control beside the panel, and at its foot the contrast count,
+  Shuffle, Copy link and Get code. The panel stays in the site's theme and
+  never takes on the one being made.
 - The scene is a stage of real fibo parts, each labelled with its name and
   shelf as the catalog labels it: the ramps, type, Button, Badge and Kbd,
   the form controls, Filter menu, Integration visual, Reactions, Chapter
