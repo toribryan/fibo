@@ -9,7 +9,6 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import {
   CheckIcon,
-  ChevronRightIcon,
   DownloadIcon,
   LinkIcon,
   MoonIcon,
@@ -161,9 +160,9 @@ function HueSlider({
 }
 
 /*
- * One setting in the rail: its name, its current value and a small picture
- * of it. Pressing it opens the control beside the rail, in the rail's own
- * dark scheme.
+ * One setting in the toolbar, as a pill in fibo's own style: a small
+ * picture of the value, the setting's name and its current value. Pressing
+ * it opens the control below.
  */
 function Tile({
   label,
@@ -186,32 +185,33 @@ function Tile({
         if (open) onOpen?.()
       }}
     >
-      <PopoverPrimitive.Trigger className="group flex w-full items-center gap-3 rounded-lg border border-border bg-secondary px-3 py-2.5 text-left outline-none hover:bg-secondary-hover focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-popup-open:bg-secondary-hover">
-        <span className="flex min-w-0 flex-1 flex-col">
-          <span className="text-xs text-muted-foreground">{label}</span>
-          <span className="truncate text-sm font-medium">{value}</span>
+      <PopoverPrimitive.Trigger className="inline-flex h-10 shrink-0 items-center gap-2.5 rounded-4xl border border-border bg-input-subtle pr-3.5 pl-2.5 text-sm whitespace-nowrap outline-none hover:bg-input-subtle-hover focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-popup-open:bg-muted">
+        <span
+          className="flex size-5 shrink-0 items-center justify-center"
+          aria-hidden="true"
+        >
+          {indicator}
         </span>
+        <span className="text-muted-foreground">{label}</span>
+        <span className="font-medium">{value}</span>
         {failing ? (
           <TriangleAlertIcon
             aria-label={`${failing} contrast ${failing === 1 ? "failure" : "failures"}`}
             className="size-4 shrink-0 text-destructive"
           />
         ) : null}
-        <span className="flex shrink-0 items-center" aria-hidden="true">
-          {indicator}
-        </span>
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Positioner
-          side="right"
+          side="bottom"
           align="start"
-          sideOffset={12}
+          sideOffset={8}
           collisionPadding={16}
           className="isolate z-50"
         >
           <PopoverPrimitive.Popup
             aria-label={label}
-            className="dark flex w-72 origin-(--transform-origin) flex-col gap-4 rounded-xl border border-border bg-popover p-4 text-popover-foreground shadow-lg outline-none motion-reduce:animate-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            className="flex w-72 origin-(--transform-origin) flex-col gap-4 rounded-xl border border-border bg-popover p-4 text-popover-foreground shadow-lg outline-none motion-reduce:animate-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
           >
             <PopoverPrimitive.Title className="m-0 text-sm font-medium">
               {label}
@@ -415,17 +415,23 @@ function shuffle(theme: Theme): Theme {
 }
 
 /*
- * The rail sits in fibo's own dark scheme whatever the site's theme, like
- * a control surface, and never takes on the theme being made.
+ * The editor runs across the top in fibo's own design language: a card
+ * surface, hairlines and pill controls. It stays in the site's theme and
+ * never takes on the one being made, and it sticks to the top of the page
+ * while the scene scrolls under it.
  */
-function Rail({
+function Toolbar({
   theme,
   setTheme,
   checks,
+  mode,
+  setMode,
 }: {
   theme: Theme
   setTheme: (theme: Theme) => void
   checks: Check[]
+  mode: Mode
+  setMode: (mode: Mode) => void
 }) {
   const [copied, setCopied] = useState(false)
   const set = (patch: Partial<Theme>) => setTheme({ ...theme, ...patch })
@@ -442,291 +448,312 @@ function Rail({
   }, [copied])
 
   return (
-    <aside
+    <header
       aria-label="Theme settings"
-      className="dark flex flex-col gap-2 rounded-2xl border border-border bg-card p-3 text-card-foreground lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto"
+      className="sticky top-2 z-30 flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 text-card-foreground shadow-sm"
     >
-      <div className="flex items-center justify-between px-1 py-1.5">
-        <h1 className="m-0 text-base font-semibold">Theme creator</h1>
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="mr-auto flex flex-col px-1">
+          <h1 className="m-0 text-base font-semibold">Theme creator</h1>
+          <p className="m-0 text-xs text-muted-foreground">
+            Every part below is a real fibo component, reading the theme&apos;s
+            tokens.
+          </p>
+        </div>
+        <div
+          role="group"
+          aria-label="Preview mode"
+          className="flex rounded-4xl border border-border bg-input-subtle p-0.5"
+        >
+          {(
+            [
+              ["light", SunIcon, "Light"],
+              ["dark", MoonIcon, "Dark"],
+            ] as const
+          ).map(([value, Icon, label]) => (
+            <Button
+              key={value}
+              size="sm"
+              variant={mode === value ? "secondary" : "ghost"}
+              aria-pressed={mode === value}
+              onClick={() => setMode(value)}
+              className="h-7"
+            >
+              <Icon data-icon="inline-start" aria-hidden="true" />
+              {label}
+            </Button>
+          ))}
+        </div>
         <Button
-          size="icon-sm"
+          size="icon"
           variant="ghost"
           aria-label="Reset to fibo"
           onClick={() => setTheme(DEFAULT_THEME)}
         >
           <RotateCcwIcon />
         </Button>
-      </div>
-
-      <Tile
-        label="Base colour"
-        value={
-          n.preset === "custom"
-            ? `Custom, ${Math.round(n.hue)}°`
-            : `${n.preset[0]!.toUpperCase()}${n.preset.slice(1)}`
-        }
-        indicator={
-          <Swatch color={toCss(neutralRamp(n)[500])} className="size-5" />
-        }
-        failing={failing("neutral")}
-      >
-        <RadioGroup
-          aria-label="Base colour"
-          value={n.preset}
-          onValueChange={(preset) =>
-            set({
-              neutral:
-                preset === "custom"
-                  ? { preset: "custom", hue: 250, amount: 0.5 }
-                  : { preset: preset as (typeof NEUTRAL_PRESETS)[number] },
-            })
-          }
-          className="grid grid-cols-2 gap-2"
-        >
-          {[...NEUTRAL_PRESETS, "custom" as const].map((preset) => (
-            <Label
-              key={preset}
-              className="gap-2 rounded-md border border-border px-2.5 py-2 font-normal capitalize has-data-checked:border-ring"
-            >
-              <RadioGroupItem value={preset} />
-              <Swatch
-                color={
-                  preset === "custom"
-                    ? "conic-gradient(oklch(0.6 0.06 0), oklch(0.6 0.06 120), oklch(0.6 0.06 240), oklch(0.6 0.06 360))"
-                    : toCss(neutralRamp({ preset })[500])
-                }
-                className="size-3.5"
-              />
-              {preset}
-            </Label>
-          ))}
-        </RadioGroup>
-        {n.preset === "custom" ? (
-          <div className="flex flex-col gap-2">
-            <HueSlider
-              label="Tint hue"
-              value={n.hue}
-              onChange={(hue) => set({ neutral: { ...n, hue } })}
-              c={0.08}
-            />
-            <div className="flex items-center gap-3">
-              <Slider
-                min={0}
-                max={100}
-                value={Math.round(n.amount * 100)}
-                onValueChange={(amount) =>
-                  set({ neutral: { ...n, amount: (amount as number) / 100 } })
-                }
-                aria-label="Tint amount"
-              />
-              <Readout>{Math.round(n.amount * 100)}%</Readout>
-            </div>
-          </div>
-        ) : null}
-      </Tile>
-
-      <Tile
-        label="Accent"
-        value={theme.accent.on ? `${Math.round(theme.accent.hue)}°` : "None"}
-        indicator={
-          <Swatch
-            color={
-              theme.accent.on ? toCss(light.primary!.color) : "transparent"
-            }
-            className={cn("size-5", !theme.accent.on && "border-dashed")}
-          />
-        }
-        failing={failing("accent")}
-      >
-        <Label className="font-normal">
-          <Switch
-            checked={theme.accent.on}
-            onCheckedChange={(on) => set({ accent: { ...theme.accent, on } })}
-          />
-          Give primary a hue
-        </Label>
-        {theme.accent.on ? (
-          <HueSlider
-            label="Accent hue"
-            value={theme.accent.hue}
-            onChange={(hue) => set({ accent: { on: true, hue } })}
-            l={0.5}
-            c={0.2}
-          />
-        ) : (
-          <p className="m-0 text-xs text-muted-foreground">
-            fibo has no brand hue: primary is a neutral, and colour only carries
-            meaning.
-          </p>
-        )}
-      </Tile>
-
-      <Tile
-        label="Status colours"
-        value="Destructive, success, warning, info"
-        indicator={
-          <span className="flex -space-x-1.5">
-            {STATUS_ROLES.map((role) => (
-              <Swatch
-                key={role}
-                color={toCss(light[role]!.color)}
-                className="size-4 ring-2 ring-card"
-              />
-            ))}
-          </span>
-        }
-        failing={STATUS_ROLES.reduce((sum, role) => sum + failing(role), 0)}
-      >
-        {STATUS_ROLES.map((role) => (
-          <div key={role} className="flex flex-col gap-1.5">
-            <span className="flex items-center justify-between text-xs">
-              {STATUS_NAMES[role]}
-              {failing(role) ? (
-                <span className="text-destructive">
-                  {failing(role)} contrast{" "}
-                  {failing(role) === 1 ? "failure" : "failures"}
-                </span>
-              ) : null}
-            </span>
-            <HueSlider
-              label={`${STATUS_NAMES[role]} hue`}
-              value={theme.status[role]}
-              onChange={(hue) =>
-                set({ status: { ...theme.status, [role]: hue } })
-              }
-              l={0.55}
-              c={0.17}
-            />
-          </div>
-        ))}
-      </Tile>
-
-      <Tile
-        label="Radius"
-        value={`${theme.radius}px`}
-        indicator={
-          <span
-            className="size-5 border-t-2 border-r-2 border-foreground"
-            style={{ borderTopRightRadius: Math.max(2, theme.radius) }}
-          />
-        }
-      >
-        <div className="flex items-center gap-3">
-          <Slider
-            min={0}
-            max={20}
-            value={theme.radius}
-            onValueChange={(radius) => set({ radius: radius as number })}
-            aria-label="Radius"
-          />
-          <Readout>{theme.radius}px</Readout>
-        </div>
-      </Tile>
-
-      {(["sans", "mono"] as const).map((kind) => {
-        const options = kind === "sans" ? SANS_FONTS : MONO_FONTS
-        return (
-          <Tile
-            key={kind}
-            label={kind === "sans" ? "Font" : "Mono font"}
-            value={theme.fonts[kind]}
-            indicator={
-              <span
-                className="text-lg leading-none"
-                style={{ fontFamily: fontFamily(theme.fonts[kind], kind) }}
-              >
-                Aa
-              </span>
-            }
-            onOpen={() => options.forEach(loadFont)}
-          >
-            <RadioGroup
-              aria-label={kind === "sans" ? "Font" : "Mono font"}
-              value={theme.fonts[kind]}
-              onValueChange={(font) =>
-                set({ fonts: { ...theme.fonts, [kind]: font } })
-              }
-              className="gap-1"
-            >
-              {options.map((font) => (
-                <Label
-                  key={font}
-                  className="gap-2.5 rounded-md px-2 py-1.5 font-normal hover:bg-muted"
-                >
-                  <RadioGroupItem value={font} />
-                  <span
-                    className="flex-1 text-base"
-                    style={{ fontFamily: fontFamily(font, kind) }}
-                  >
-                    {font}
-                  </span>
-                </Label>
-              ))}
-            </RadioGroup>
-          </Tile>
-        )
-      })}
-
-      <div className="mt-auto flex flex-col gap-2 border-t border-border pt-3">
         <Modal
           title="Contrast"
           trigger={
             <Button
               variant="outline"
-              className={cn(
-                "w-full justify-between",
-                failures && "text-destructive"
-              )}
+              className={cn(failures && "text-destructive")}
             >
-              <span className="inline-flex items-center gap-2">
-                {failures ? (
-                  <TriangleAlertIcon aria-hidden="true" />
-                ) : (
-                  <CheckIcon aria-hidden="true" />
-                )}
-                {failures
-                  ? `${failures} contrast ${failures === 1 ? "issue" : "issues"}`
-                  : "Contrast clears AA"}
-              </span>
-              <ChevronRightIcon aria-hidden="true" />
+              {failures ? (
+                <TriangleAlertIcon
+                  data-icon="inline-start"
+                  aria-hidden="true"
+                />
+              ) : (
+                <CheckIcon data-icon="inline-start" aria-hidden="true" />
+              )}
+              {failures
+                ? `${failures} contrast ${failures === 1 ? "issue" : "issues"}`
+                : "Clears AA"}
             </Button>
           }
         >
           <Report checks={checks} />
         </Modal>
-        <div className="grid grid-cols-2 gap-2">
-          <Button variant="outline" onClick={() => setTheme(shuffle(theme))}>
-            <ShuffleIcon data-icon="inline-start" aria-hidden="true" />
-            Shuffle
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => {
-              void navigator.clipboard.writeText(shareLink(theme))
-              setCopied(true)
-            }}
-          >
-            {copied ? (
-              <CheckIcon data-icon="inline-start" aria-hidden="true" />
-            ) : (
-              <LinkIcon data-icon="inline-start" aria-hidden="true" />
-            )}
-            {copied ? "Copied" : "Copy link"}
-          </Button>
-        </div>
-        <Modal
-          title="Get code"
-          trigger={<Button className="w-full">Get code</Button>}
+        <Button variant="outline" onClick={() => setTheme(shuffle(theme))}>
+          <ShuffleIcon data-icon="inline-start" aria-hidden="true" />
+          Shuffle
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void navigator.clipboard.writeText(shareLink(theme))
+            setCopied(true)
+          }}
         >
+          {copied ? (
+            <CheckIcon data-icon="inline-start" aria-hidden="true" />
+          ) : (
+            <LinkIcon data-icon="inline-start" aria-hidden="true" />
+          )}
+          {copied ? "Copied" : "Copy link"}
+        </Button>
+        <Modal title="Get code" trigger={<Button>Get code</Button>}>
           <Export theme={theme} />
         </Modal>
       </div>
-    </aside>
+
+      <div className="flex flex-wrap gap-2 border-t border-border pt-3">
+        <Tile
+          label="Base colour"
+          value={
+            n.preset === "custom"
+              ? `Custom, ${Math.round(n.hue)}°`
+              : `${n.preset[0]!.toUpperCase()}${n.preset.slice(1)}`
+          }
+          indicator={
+            <Swatch color={toCss(neutralRamp(n)[500])} className="size-5" />
+          }
+          failing={failing("neutral")}
+        >
+          <RadioGroup
+            aria-label="Base colour"
+            value={n.preset}
+            onValueChange={(preset) =>
+              set({
+                neutral:
+                  preset === "custom"
+                    ? { preset: "custom", hue: 250, amount: 0.5 }
+                    : { preset: preset as (typeof NEUTRAL_PRESETS)[number] },
+              })
+            }
+            className="grid grid-cols-2 gap-2"
+          >
+            {[...NEUTRAL_PRESETS, "custom" as const].map((preset) => (
+              <Label
+                key={preset}
+                className="gap-2 rounded-md border border-border px-2.5 py-2 font-normal capitalize has-data-checked:border-ring"
+              >
+                <RadioGroupItem value={preset} />
+                <Swatch
+                  color={
+                    preset === "custom"
+                      ? "conic-gradient(oklch(0.6 0.06 0), oklch(0.6 0.06 120), oklch(0.6 0.06 240), oklch(0.6 0.06 360))"
+                      : toCss(neutralRamp({ preset })[500])
+                  }
+                  className="size-3.5"
+                />
+                {preset}
+              </Label>
+            ))}
+          </RadioGroup>
+          {n.preset === "custom" ? (
+            <div className="flex flex-col gap-2">
+              <HueSlider
+                label="Tint hue"
+                value={n.hue}
+                onChange={(hue) => set({ neutral: { ...n, hue } })}
+                c={0.08}
+              />
+              <div className="flex items-center gap-3">
+                <Slider
+                  min={0}
+                  max={100}
+                  value={Math.round(n.amount * 100)}
+                  onValueChange={(amount) =>
+                    set({ neutral: { ...n, amount: (amount as number) / 100 } })
+                  }
+                  aria-label="Tint amount"
+                />
+                <Readout>{Math.round(n.amount * 100)}%</Readout>
+              </div>
+            </div>
+          ) : null}
+        </Tile>
+
+        <Tile
+          label="Accent"
+          value={theme.accent.on ? `${Math.round(theme.accent.hue)}°` : "None"}
+          indicator={
+            <Swatch
+              color={
+                theme.accent.on ? toCss(light.primary!.color) : "transparent"
+              }
+              className={cn("size-5", !theme.accent.on && "border-dashed")}
+            />
+          }
+          failing={failing("accent")}
+        >
+          <Label className="font-normal">
+            <Switch
+              checked={theme.accent.on}
+              onCheckedChange={(on) => set({ accent: { ...theme.accent, on } })}
+            />
+            Give primary a hue
+          </Label>
+          {theme.accent.on ? (
+            <HueSlider
+              label="Accent hue"
+              value={theme.accent.hue}
+              onChange={(hue) => set({ accent: { on: true, hue } })}
+              l={0.5}
+              c={0.2}
+            />
+          ) : (
+            <p className="m-0 text-xs text-muted-foreground">
+              fibo has no brand hue: primary is a neutral, and colour only
+              carries meaning.
+            </p>
+          )}
+        </Tile>
+
+        <Tile
+          label="Status colours"
+          value="4 hues"
+          indicator={
+            <span className="flex -space-x-1.5">
+              {STATUS_ROLES.map((role) => (
+                <Swatch
+                  key={role}
+                  color={toCss(light[role]!.color)}
+                  className="size-3.5 ring-2 ring-card"
+                />
+              ))}
+            </span>
+          }
+          failing={STATUS_ROLES.reduce((sum, role) => sum + failing(role), 0)}
+        >
+          {STATUS_ROLES.map((role) => (
+            <div key={role} className="flex flex-col gap-1.5">
+              <span className="flex items-center justify-between text-xs">
+                {STATUS_NAMES[role]}
+                {failing(role) ? (
+                  <span className="text-destructive">
+                    {failing(role)} contrast{" "}
+                    {failing(role) === 1 ? "failure" : "failures"}
+                  </span>
+                ) : null}
+              </span>
+              <HueSlider
+                label={`${STATUS_NAMES[role]} hue`}
+                value={theme.status[role]}
+                onChange={(hue) =>
+                  set({ status: { ...theme.status, [role]: hue } })
+                }
+                l={0.55}
+                c={0.17}
+              />
+            </div>
+          ))}
+        </Tile>
+
+        <Tile
+          label="Radius"
+          value={`${theme.radius}px`}
+          indicator={
+            <span
+              className="size-5 border-t-2 border-r-2 border-foreground"
+              style={{ borderTopRightRadius: Math.max(2, theme.radius) }}
+            />
+          }
+        >
+          <div className="flex items-center gap-3">
+            <Slider
+              min={0}
+              max={20}
+              value={theme.radius}
+              onValueChange={(radius) => set({ radius: radius as number })}
+              aria-label="Radius"
+            />
+            <Readout>{theme.radius}px</Readout>
+          </div>
+        </Tile>
+
+        {(["sans", "mono"] as const).map((kind) => {
+          const options = kind === "sans" ? SANS_FONTS : MONO_FONTS
+          return (
+            <Tile
+              key={kind}
+              label={kind === "sans" ? "Font" : "Mono font"}
+              value={theme.fonts[kind]}
+              indicator={
+                <span
+                  className="text-lg leading-none"
+                  style={{ fontFamily: fontFamily(theme.fonts[kind], kind) }}
+                >
+                  Aa
+                </span>
+              }
+              onOpen={() => options.forEach(loadFont)}
+            >
+              <RadioGroup
+                aria-label={kind === "sans" ? "Font" : "Mono font"}
+                value={theme.fonts[kind]}
+                onValueChange={(font) =>
+                  set({ fonts: { ...theme.fonts, [kind]: font } })
+                }
+                className="gap-1"
+              >
+                {options.map((font) => (
+                  <Label
+                    key={font}
+                    className="gap-2.5 rounded-md px-2 py-1.5 font-normal hover:bg-muted"
+                  >
+                    <RadioGroupItem value={font} />
+                    <span
+                      className="flex-1 text-base"
+                      style={{ fontFamily: fontFamily(font, kind) }}
+                    >
+                      {font}
+                    </span>
+                  </Label>
+                ))}
+              </RadioGroup>
+            </Tile>
+          )
+        })}
+      </div>
+    </header>
   )
 }
 
 /**
- * Visual first: a rail of settings beside a scene of real fibo parts that
+ * Visual first: a toolbar of settings above a scene of real fibo parts that
  * takes the theme on as it changes, in either mode.
  */
 function ThemeCreator() {
@@ -742,33 +769,15 @@ function ThemeCreator() {
   }, [theme.fonts.sans, theme.fonts.mono])
 
   return (
-    <div className="fibo-studio grid items-start gap-4 lg:grid-cols-[17rem_minmax(0,1fr)]">
-      <Rail theme={theme} setTheme={setTheme} checks={checks} />
-      <section aria-label="Preview" className="flex min-w-0 flex-col gap-3">
-        <div className="flex items-center justify-between gap-3">
-          <p className="m-0 text-sm text-muted-foreground">
-            Every card is a real fibo part, reading the theme&apos;s tokens.
-          </p>
-          <div role="group" aria-label="Preview mode" className="flex gap-1">
-            {(
-              [
-                ["light", SunIcon, "Light"],
-                ["dark", MoonIcon, "Dark"],
-              ] as const
-            ).map(([value, Icon, label]) => (
-              <Button
-                key={value}
-                size="sm"
-                variant={mode === value ? "secondary" : "ghost"}
-                aria-pressed={mode === value}
-                onClick={() => setMode(value)}
-              >
-                <Icon data-icon="inline-start" aria-hidden="true" />
-                {label}
-              </Button>
-            ))}
-          </div>
-        </div>
+    <div className="fibo-studio flex flex-col gap-4">
+      <Toolbar
+        theme={theme}
+        setTheme={setTheme}
+        checks={checks}
+        mode={mode}
+        setMode={setMode}
+      />
+      <section aria-label="Preview" className="min-w-0">
         <ThemeScene theme={theme} mode={mode} />
       </section>
     </div>
