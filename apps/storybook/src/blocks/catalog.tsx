@@ -3,16 +3,20 @@ import {
   ArrowUpRightIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  CircleCheckIcon,
   ListFilterIcon,
   PlusIcon,
+  XIcon,
 } from "lucide-react"
 
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Input } from "@workspace/ui/components/input"
+import { Kbd, KbdGroup } from "@workspace/ui/components/kbd"
 import { Label } from "@workspace/ui/components/label"
 import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -34,7 +38,7 @@ type Entry = {
 
 // The order groups appear in on the Catalog page, per tier.
 const GROUPS: Record<Tier, string[]> = {
-  components: ["Actions", "Forms", "Display"],
+  components: ["Actions", "Forms", "Display", "Feedback"],
   niche: ["Diagrams", "Navigation", "Feedback"],
 }
 
@@ -126,6 +130,51 @@ const PREVIEWS: Record<string, ReactNode> = {
       <span className="h-1.5 w-full rounded-full bg-input" />
       <span className="absolute left-0 h-1.5 w-[60%] rounded-full bg-primary" />
       <span className="absolute left-[calc(60%-8px)] size-4 rounded-full border border-primary bg-background shadow-sm" />
+    </span>
+  ),
+  avatar: (
+    <div className="flex -space-x-2">
+      {["AL", "GH", "KJ"].map((initials) => (
+        <span
+          key={initials}
+          className="flex size-10 items-center justify-center rounded-full bg-muted text-xs ring-2 ring-background"
+        >
+          {initials}
+        </span>
+      ))}
+    </div>
+  ),
+  kbd: (
+    <KbdGroup>
+      <Kbd>Ctrl</Kbd>
+      <Kbd>K</Kbd>
+    </KbdGroup>
+  ),
+  progress: (
+    <div className="flex w-48 flex-col gap-2 text-sm">
+      <div className="flex justify-between">
+        <span className="font-medium">Uploading</span>
+        <span className="font-mono text-muted-foreground">60%</span>
+      </div>
+      <span className="h-1.5 w-full rounded-full bg-input">
+        <span className="block h-full w-[60%] rounded-full bg-primary" />
+      </span>
+    </div>
+  ),
+  skeleton: (
+    <div className="flex items-center gap-3">
+      <Skeleton className="size-10 rounded-full" />
+      <div className="flex flex-col gap-2">
+        <Skeleton className="h-3.5 w-32" />
+        <Skeleton className="h-3 w-20" />
+      </div>
+    </div>
+  ),
+  toast: (
+    <span className="flex w-56 items-center gap-2.5 rounded-xl border border-border bg-popover p-3 text-sm shadow-md">
+      <CircleCheckIcon className="size-4 text-success" />
+      <span className="flex-1 font-medium">Changes saved</span>
+      <XIcon className="size-3.5 text-muted-foreground" />
     </span>
   ),
   "token-flow": (

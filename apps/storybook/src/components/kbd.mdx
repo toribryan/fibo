@@ -1,0 +1,152 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/kbd.stories"
+import { Kbd, KbdGroup } from "../../../../packages/ui/src/components/kbd"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Kbd
+
+Kbd shows a key, or a keyboard shortcut, in running text or next to the
+command it triggers.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- A `<kbd>` element, so the key is marked up as keyboard input.
+- KbdGroup joins keys into a combination, the way HTML nests `<kbd>` for a
+  shortcut.
+- Takes an icon for symbol keys such as Command or the arrows.
+- Sits on the text line without changing its height.
+
+## Installation
+
+<Install name="kbd" exports={["Kbd", "KbdGroup"]} />
+
+## Usage
+
+```tsx
+import { Kbd, KbdGroup } from "@/components/ui/kbd"
+
+export function SearchHint() {
+  return (
+    <p>
+      Press{" "}
+      <KbdGroup>
+        <Kbd>Ctrl</Kbd>
+        <span>+</span>
+        <Kbd>K</Kbd>
+      </KbdGroup>{" "}
+      to search.
+    </p>
+  )
+}
+```
+
+Nest keys in a KbdGroup for a combination, and show Cmd on a Mac and Ctrl
+elsewhere.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Write keys the way they're printed on the keyboard: Esc, Enter, Tab.",
+    "Show the shortcut for the platform people are on: Cmd on a Mac, Ctrl elsewhere.",
+    "Put shortcuts next to the command they trigger, such as in a menu item or a tooltip.",
+    "Don't use Kbd for code or for text people should type. Use code for those.",
+  ]}
+/>
+
+## Examples
+
+### Shortcut
+
+A combination in a KbdGroup, with the Command key drawn as an icon.
+
+<Canvas of={Stories.Shortcut} />
+
+### In text
+
+Keys and a combination inside a sentence.
+
+<Canvas of={Stories.InText} />
+
+### Keys
+
+Named keys, and a symbol key drawn with an icon.
+
+<Canvas of={Stories.Keys} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <p className="text-sm">
+            Press <Kbd>Esc</Kbd> to close.
+          </p>
+        ),
+        description: "Use the key's name as it's printed on the keyboard.",
+      },
+      negative: {
+        component: (
+          <p className="text-sm">
+            Type <Kbd>npm install</Kbd> to begin.
+          </p>
+        ),
+        description:
+          "Don't use Kbd for commands or code people type. That's a code element.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Kbd and KbdGroup take every prop of a `kbd` element.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="kbd"',
+      element: "A key",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="kbd-group"',
+      element: "A combination",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "Screen readers read the key's text. For an icon key, add visually hidden text with the key's name, such as “Command”.",
+    <>
+      Mark the icon itself <code>aria-hidden</code>, so only the name is read.
+    </>,
+    "Kbd isn't interactive. It never takes focus or responds to clicks.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Badge", "Button"]} />
+
+## References
+
+- [MDN: the kbd element](https://developer.mozilla.org/docs/Web/HTML/Element/kbd)
