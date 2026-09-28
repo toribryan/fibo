@@ -155,7 +155,7 @@
   --input: var(--color-neutral-200);
   --input-subtle: color-mix(
     in oklch,
-    var(--color-neutral-200) 30%,
+    var(--color-neutral-200) 20%,
     transparent
   );
   --input-subtle-hover: color-mix(
