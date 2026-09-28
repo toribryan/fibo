@@ -31,7 +31,7 @@
     "@vitest/browser-playwright": "^4.1.11",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "eslint": "^9",
+    "eslint": "^10",
     "eslint-plugin-storybook": "10.5.9",
     "storybook": "10.5.9",
     "tailwindcss": "^4",
