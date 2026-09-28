@@ -6,6 +6,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
+import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -132,6 +133,15 @@ const PREVIEWS: Record<string, ReactNode> = {
         className="fill-background stroke-ring"
       />
       <circle cx={80} cy={50} r={3} className="fill-foreground" />
+    </svg>
+  ),
+  "pixel-snail": (
+    <svg
+      viewBox="-13 -16 27 18"
+      className="h-15 w-22 overflow-visible text-foreground"
+      aria-hidden="true"
+    >
+      <PixelSnailSprite mode="rest" />
     </svg>
   ),
   "chapter-scrubber": (
