@@ -61,9 +61,9 @@ const FIELDS: FilterField[] = [
   },
 ]
 
-// Views slide and fade for about 220ms. The accessibility check runs as
-// soon as a play function ends, so each one waits for the last transition
-// to finish rather than being checked against text halfway faded in.
+// Views slide and fade for about 220ms. Visibility checks wait for a view
+// to finish fading in, and the accessibility check, which runs as soon as
+// a play function ends, waits for the last transition too.
 const settle = () => new Promise((resolve) => setTimeout(resolve, 400))
 
 const meta: Meta<typeof FilterMenu> = {
@@ -129,16 +129,16 @@ export const Default: Story = {
 
     // Escape steps back to the fields before it closes anything.
     await userEvent.keyboard("{Escape}")
-    await expect(
-      await page.findByRole("option", { name: /^Priority/ })
-    ).toBeVisible()
+    const priority = await page.findByRole("option", { name: /^Priority/ })
+    await waitFor(() => expect(priority).toBeVisible())
 
     // Keyboard: typing turns the menu into a search across every field.
     await userEvent.keyboard("urg")
-    await expect(
-      await page.findByRole("group", { name: "Priority" })
-    ).toBeVisible()
-    await expect(page.getByRole("group", { name: "Label" })).toBeVisible()
+    const group = await page.findByRole("group", { name: "Priority" })
+    await waitFor(() => expect(group).toBeVisible())
+    await waitFor(() =>
+      expect(page.getByRole("group", { name: "Label" })).toBeVisible()
+    )
     await userEvent.keyboard("{Enter}")
     await expect(args.onValueChange).toHaveBeenLastCalledWith({
       status: ["todo"],
@@ -186,7 +186,8 @@ export const NoMatches: Story = {
     await userEvent.click(canvas.getByRole("button", { name: "Filter" }))
     await page.findByRole("combobox")
     await userEvent.keyboard("zzz")
-    await expect(await page.findByText("No matching filters")).toBeVisible()
+    const empty = await page.findByText("No matching filters")
+    await waitFor(() => expect(empty).toBeVisible())
     await settle()
   },
 }
@@ -208,7 +209,9 @@ export const SearchButton: Story = {
     await userEvent.click(page.getByRole("button", { name: "Search filters" }))
     const search = await page.findByRole("combobox", { name: "Search filters" })
     await waitFor(() => expect(search).toHaveFocus())
-    await expect(page.getByRole("group", { name: "Status" })).toBeVisible()
+    await waitFor(() =>
+      expect(page.getByRole("group", { name: "Status" })).toBeVisible()
+    )
     await userEvent.keyboard("urg{Enter}")
     await expect(args.onValueChange).toHaveBeenLastCalledWith({
       priority: ["urgent"],
@@ -218,9 +221,9 @@ export const SearchButton: Story = {
     await userEvent.keyboard("{Escape}")
     await waitFor(() => expect(search).toHaveValue(""))
     await userEvent.keyboard("{Escape}")
-    await expect(
-      await page.findByRole("button", { name: "Search filters" })
-    ).toBeVisible()
+    // The button fades in as the menu slides home.
+    const button = await page.findByRole("button", { name: "Search filters" })
+    await waitFor(() => expect(button).toBeVisible())
     await waitFor(() => expect(page.queryByRole("combobox")).toBeNull())
 
     // Typing on the list starts a search with that letter.
