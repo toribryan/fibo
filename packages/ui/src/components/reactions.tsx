@@ -309,6 +309,7 @@ function Reactions({
   const [panel, setPanel] = React.useState<PanelState>("closed")
   const [announcement, setAnnouncement] = React.useState("")
   const [alignEnd, setAlignEnd] = React.useState(false)
+  const [dropDown, setDropDown] = React.useState(false)
 
   const isControlled = reactionsProp !== undefined
   const items = isControlled ? reactionsProp : uncontrolled
@@ -352,16 +353,22 @@ function Reactions({
       ?.focus()
   }, [open])
 
-  // The inline panel opens from the picker's start edge. Near the right of the
-  // viewport that would run off screen, so it flips to open from the end.
+  // The inline panel opens above the picker, from its start edge. Near the top
+  // of the viewport it drops below instead, and near the right it opens from
+  // the end. Both are decided from the picker's position and the panel's
+  // layout size, which the flip itself never changes, so it settles at once.
   React.useLayoutEffect(() => {
     if (!open || variant !== "inline") return
     const node = panelRef.current
-    if (!node) return
-    const rect = node.getBoundingClientRect()
-    if (!alignEnd && rect.right > window.innerWidth - 8) setAlignEnd(true)
-    if (alignEnd && rect.left < 8) setAlignEnd(false)
-  }, [open, variant, alignEnd])
+    const anchor = node?.parentElement
+    if (!node || !anchor) return
+    const box = anchor.getBoundingClientRect()
+    const width = node.offsetWidth
+    const fitsStart = box.left + width <= window.innerWidth - 8
+    const fitsEnd = box.right - width >= 8
+    setAlignEnd(!fitsStart && fitsEnd)
+    setDropDown(box.top - node.offsetHeight - 16 < 0)
+  }, [open, variant])
 
   React.useEffect(() => {
     if (!open) return
@@ -450,8 +457,9 @@ function Reactions({
   }
 
   const isBar = variant === "floating"
-  const opensDown =
-    isBar && (position === "top-right" || position === "top-left")
+  const opensDown = isBar
+    ? position === "top-right" || position === "top-left"
+    : dropDown
   const alignsEnd =
     isBar && (position === "bottom-right" || position === "top-right")
 
