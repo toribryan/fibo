@@ -13,7 +13,7 @@ import { TokenFlow } from "../../../../packages/ui/src/components/token-flow"
 
 Token flow shows how a colour travels through the token tiers: the raw value,
 the primitive that names it, and the semantic role that uses it. A pulse runs
-along each wire, so the plate reads as a flow rather than a table.
+along each wire from the value to the role.
 
 <Playground of={Stories.WithUse} />
 
@@ -29,7 +29,7 @@ values while the semantic name stays put.
 <UsageGuidelines
   guidelines={[
     "Use it in docs, case studies and onboarding, where the point is how a token is built, not what it looks like.",
-    "Keep it to three to five rows. Each row is one story about one role.",
+    "Keep it to three to five rows, one per role.",
     <>
       Pick rows with a <code>dark</code> pair to show why semantic roles exist:
       the name stays put while the value underneath changes.

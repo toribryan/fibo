@@ -13,14 +13,14 @@ const RESOURCES = [
     icon: PaletteIcon,
     title: "Foundations",
     description:
-      "Colour, type and radius tokens. The same names as the Figma variables.",
+      "Colour and type tokens, named the same as the Figma variables.",
   },
   {
     to: "catalog--docs",
     icon: BoxesIcon,
     title: "Components",
     description:
-      "The standard set, plus a Niche shelf of playful, one-moment parts.",
+      "The standard set, plus a Niche shelf of playful parts built for one moment.",
   },
   {
     to: "getting-started--docs",
@@ -65,11 +65,11 @@ const PRINCIPLES = [
   },
   {
     title: "One name on both sides",
-    body: "Every token in globals.css has a Figma variable with the same name. Opacity steps are named roles, not modifiers.",
+    body: "Every token in globals.css has a Figma variable with the same name. Opacity steps get names too, such as -subtle and -hover, so Figma can bind them.",
   },
   {
-    title: "Copied, not depended on",
-    body: "The registry copies source into your project. You own the file, and it follows your tokens once it lands.",
+    title: "Yours once installed",
+    body: "Installing a part copies its source into your project. The file uses your tokens, and you can change it however you like.",
   },
   {
     title: "Contrast is measured",
