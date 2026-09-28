@@ -8,10 +8,38 @@ import { SmilePlusIcon } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
 type Reaction = {
+  /** The emoji itself. Also the reaction's identity, so keep it unique. */
   emoji: string
+  /** Its accessible name, such as "Heart". Screen readers hear this, not the emoji. */
   label: string
+  /** How many people reacted with it. */
   count?: number
+  /** Whether the current person is one of them. */
   active?: boolean
+}
+
+// Used when neither `choices` nor any existing reaction gives the picker
+// something to offer. Escaped so the source stays plain ASCII.
+const DEFAULT_CHOICES: Reaction[] = [
+  { emoji: "\u{1F44D}", label: "Thumbs up" },
+  { emoji: "\u2764\uFE0F", label: "Heart" },
+  { emoji: "\u{1F602}", label: "Laughing" },
+  { emoji: "\u{1F389}", label: "Celebrate" },
+  { emoji: "\u{1F62E}", label: "Surprised" },
+  { emoji: "\u{1F525}", label: "Fire" },
+]
+
+const compact = new Intl.NumberFormat(undefined, {
+  notation: "compact",
+  maximumFractionDigits: 1,
+})
+
+function formatCount(count: number) {
+  return count < 1000 ? String(count) : compact.format(count)
+}
+
+function describeCount(count: number) {
+  return `${count} ${count === 1 ? "reaction" : "reactions"}`
 }
 
 const ANCHOR =
@@ -268,17 +296,32 @@ function ReactionsMenuItem({
 
 type ReactionsProps = Omit<React.ComponentProps<"div">, "onChange"> &
   VariantProps<typeof reactionsVariants> & {
+    /** The reactions on the item. Pass it to control the state yourself. */
     reactions?: Reaction[]
+    /** The starting reactions when uncontrolled. */
     defaultReactions?: Reaction[]
+    /**
+     * What the picker offers. Defaults to six common reactions plus any
+     * already on the item.
+     */
     choices?: Reaction[]
+    /** Fires with the whole new list after every change. */
     onReactionsChange?: (reactions: Reaction[]) => void
+    /** Fires with the reaction that changed and whether it is now on. */
     onReact?: (reaction: Reaction, active: boolean) => void
+    /** Show the count on each pill. */
     showCounts?: boolean
+    /** Emoji thrown up on each new reaction. `0` turns the burst off. */
     particles?: number
+    /** Accessible name of the button that opens the picker. */
     triggerLabel?: string
+    /** Accessible name of the menu variant's trigger while it is open. */
     closeLabel?: string
+    /** Accessible name of the group of choices. */
     panelLabel?: string
+    /** The menu variant's items, usually `ReactionsMenuItem`s. */
     menu?: React.ReactNode
+    /** Accessible name of the menu. */
     menuLabel?: string
   }
 
@@ -299,6 +342,8 @@ function Reactions({
   menu,
   menuLabel = "Menu",
   "aria-label": ariaLabel = "Reactions",
+  onKeyDown,
+  onBlur,
   ...props
 }: ReactionsProps) {
   const rootRef = React.useRef<HTMLDivElement>(null)
@@ -314,10 +359,20 @@ function Reactions({
   const [uncontrolled, setUncontrolled] = React.useState(defaultReactions)
   const [pulse, setPulse] = React.useState<{ emoji: string; nonce: number }>()
   const [panel, setPanel] = React.useState<PanelState>("closed")
+  const [announcement, setAnnouncement] = React.useState("")
+  const [alignEnd, setAlignEnd] = React.useState(false)
 
   const isControlled = reactionsProp !== undefined
   const items = isControlled ? reactionsProp : uncontrolled
-  const palette = choices ?? items
+  // Without `choices`, the picker offers the defaults plus anything already
+  // reacted with that isn't among them.
+  const palette =
+    choices ??
+    DEFAULT_CHOICES.concat(
+      items.filter(
+        (item) => !DEFAULT_CHOICES.some((choice) => choice.emoji === item.emoji)
+      )
+    )
   const total = items.reduce((sum, item) => sum + (item.count ?? 0), 0)
 
   const open = panel === "open"
@@ -334,6 +389,7 @@ function Reactions({
   }
 
   function closePanel() {
+    window.clearTimeout(timerRef.current)
     setPanel("exiting")
     timerRef.current = window.setTimeout(
       () => setPanel("closed"),
@@ -348,6 +404,17 @@ function Reactions({
       ?.querySelector<HTMLButtonElement>('[data-slot="reactions-choice"]')
       ?.focus()
   }, [open, variant])
+
+  // The inline panel opens from the picker's start edge. Near the right of the
+  // viewport that would run off screen, so it flips to open from the end.
+  React.useLayoutEffect(() => {
+    if (!open || variant !== "inline") return
+    const node = panelRef.current
+    if (!node) return
+    const rect = node.getBoundingClientRect()
+    if (!alignEnd && rect.right > window.innerWidth - 8) setAlignEnd(true)
+    if (alignEnd && rect.left < 8) setAlignEnd(false)
+  }, [open, variant, alignEnd])
 
   React.useEffect(() => {
     if (!open) return
@@ -378,17 +445,24 @@ function Reactions({
     const existing = items.find((item) => item.emoji === reaction.emoji)
     const nowActive = !existing?.active
 
+    // A reaction nobody holds any more leaves the list instead of lingering
+    // as a zero.
     commit(
       existing
-        ? items.map((item) =>
-            item.emoji === reaction.emoji
-              ? {
-                  ...item,
-                  active: nowActive,
-                  count: Math.max(0, (item.count ?? 0) + (nowActive ? 1 : -1)),
-                }
-              : item
-          )
+        ? items
+            .map((item) =>
+              item.emoji === reaction.emoji
+                ? {
+                    ...item,
+                    active: nowActive,
+                    count: Math.max(
+                      0,
+                      (item.count ?? 0) + (nowActive ? 1 : -1)
+                    ),
+                  }
+                : item
+            )
+            .filter((item) => item.active || (item.count ?? 0) > 0)
         : [
             ...items,
             { ...reaction, active: true, count: (reaction.count ?? 0) + 1 },
@@ -396,6 +470,7 @@ function Reactions({
     )
 
     onReact?.(reaction, nowActive)
+    setAnnouncement(`${nowActive ? "Added" : "Removed"} ${reaction.label}`)
     pulseNonce.current += 1
     setPulse({ emoji: reaction.emoji, nonce: pulseNonce.current })
     if (nowActive) burst(reaction.emoji, origin, particles)
@@ -450,7 +525,7 @@ function Reactions({
       aria-hidden="true"
       className="inline-flex h-8 min-w-6 shrink-0 items-center justify-center px-1.5 text-xs font-medium text-muted-foreground tabular-nums"
     >
-      {total}
+      {formatCount(total)}
     </span>
   )
 
@@ -461,7 +536,6 @@ function Reactions({
       data-slot="reactions-trigger"
       data-state={open ? "open" : "closed"}
       aria-label={isMenu && open ? closeLabel : triggerLabel}
-      aria-haspopup="true"
       aria-expanded={open}
       aria-controls={isMenu ? railId : rendered ? panelId : undefined}
       onClick={() => (open ? closePanel() : openPanel())}
@@ -565,14 +639,24 @@ function Reactions({
       role="group"
       aria-label={ariaLabel}
       className={cn(reactionsVariants({ variant, position, className }))}
+      {...props}
       onKeyDown={(event) => {
-        if (event.key !== "Escape" || !open) return
+        onKeyDown?.(event)
+        if (event.defaultPrevented || event.key !== "Escape" || !open) return
         event.stopPropagation()
         closePanel()
         triggerRef.current?.focus()
       }}
-      {...props}
+      onBlur={(event) => {
+        onBlur?.(event)
+        // Tabbing out of an open picker closes it, the way a click outside does.
+        const next = event.relatedTarget as Node | null
+        if (open && next && !event.currentTarget.contains(next)) closePanel()
+      }}
     >
+      <span role="status" aria-live="polite" className="sr-only">
+        {announcement}
+      </span>
       {variant === "inline" &&
         items.map((item) => (
           <button
@@ -582,9 +666,9 @@ function Reactions({
             data-emoji={item.emoji}
             data-active={item.active ? "" : undefined}
             aria-pressed={Boolean(item.active)}
-            aria-label={`${item.label}, ${item.count ?? 0}`}
+            aria-label={`${item.label}, ${describeCount(item.count ?? 0)}`}
             onClick={(event) => toggle(item, event.currentTarget)}
-            className="group/pill relative inline-flex h-7 items-center gap-1.5 rounded-full border border-transparent bg-muted px-2.5 text-xs transition-[background-color,border-color,transform] duration-150 outline-none hover:bg-accent focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring-subtle active:translate-y-0 motion-safe:hover:-translate-y-px data-active:border-primary data-active:bg-primary-subtle"
+            className="group/pill relative inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-card px-2.5 text-xs transition-[background-color,border-color,transform] duration-150 outline-none hover:bg-muted focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring-subtle active:translate-y-0 motion-safe:hover:-translate-y-px data-active:border-primary data-active:bg-primary-subtle"
           >
             <span
               data-slot="reactions-pill-emoji"
@@ -599,7 +683,7 @@ function Reactions({
                 aria-hidden="true"
                 className="font-medium text-muted-foreground tabular-nums group-data-active/pill:text-primary"
               >
-                {item.count ?? 0}
+                {formatCount(item.count ?? 0)}
               </span>
             )}
             <span
@@ -697,39 +781,46 @@ function Reactions({
                     ? "top-full mt-2 data-[state=closed]:-translate-y-2 starting:-translate-y-2"
                     : "bottom-full mb-2 data-[state=closed]:translate-y-2 starting:translate-y-2",
                   opensDown
-                    ? alignsEnd
+                    ? alignsEnd || alignEnd
                       ? "right-0 origin-top-right"
                       : "left-0 origin-top-left"
-                    : alignsEnd
+                    : alignsEnd || alignEnd
                       ? "right-0 origin-bottom-right"
                       : "left-0 origin-bottom-left"
                 )}
               >
-                {palette.map((choice, index) => (
-                  <button
-                    key={choice.emoji}
-                    type="button"
-                    data-slot="reactions-choice"
-                    data-state={open ? "open" : "closed"}
-                    aria-label={choice.label}
-                    // Staggering the entrance and reversing it on exit makes
-                    // the panel unfurl and furl rather than pop as one block.
-                    style={{
-                      transitionDelay: `${open ? index * 28 : (palette.length - 1 - index) * 16}ms`,
-                    }}
-                    onClick={(event) => {
-                      toggle(
-                        choice,
-                        isBar ? triggerRef.current : event.currentTarget
-                      )
-                      closePanel()
-                      triggerRef.current?.focus()
-                    }}
-                    className="inline-flex size-9 touch-manipulation items-center justify-center rounded-full text-lg leading-none transition-[background-color,transform,opacity] duration-200 ease-out outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-[state=closed]:scale-50 data-[state=closed]:opacity-0 motion-safe:hover:scale-115 motion-safe:active:scale-95 starting:scale-50 starting:opacity-0"
-                  >
-                    <span aria-hidden="true">{choice.emoji}</span>
-                  </button>
-                ))}
+                {palette.map((choice, index) => {
+                  const picked = items.find(
+                    (entry) => entry.emoji === choice.emoji
+                  )?.active
+                  return (
+                    <button
+                      key={choice.emoji}
+                      type="button"
+                      data-slot="reactions-choice"
+                      data-state={open ? "open" : "closed"}
+                      data-active={picked ? "" : undefined}
+                      aria-pressed={Boolean(picked)}
+                      aria-label={choice.label}
+                      // Staggering the entrance and reversing it on exit makes
+                      // the panel unfurl and furl rather than pop as one block.
+                      style={{
+                        transitionDelay: `${open ? index * 28 : (palette.length - 1 - index) * 16}ms`,
+                      }}
+                      onClick={(event) => {
+                        toggle(
+                          choice,
+                          isBar ? triggerRef.current : event.currentTarget
+                        )
+                        closePanel()
+                        triggerRef.current?.focus()
+                      }}
+                      className="inline-flex size-9 touch-manipulation items-center justify-center rounded-full text-lg leading-none transition-[background-color,transform,opacity] duration-200 ease-out outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-[state=closed]:scale-50 data-[state=closed]:opacity-0 motion-safe:hover:scale-115 motion-safe:active:scale-95 starting:scale-50 starting:opacity-0 data-active:bg-primary-subtle"
+                    >
+                      <span aria-hidden="true">{choice.emoji}</span>
+                    </button>
+                  )
+                })}
               </div>
             )}
 
