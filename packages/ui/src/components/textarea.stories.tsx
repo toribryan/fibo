@@ -5,7 +5,6 @@ import { Textarea } from "./textarea.js"
 const meta: Meta<typeof Textarea> = {
   title: "Components/Textarea",
   component: Textarea,
-  tags: ["autodocs"],
   args: {
     placeholder: "Type your message here...",
   },
@@ -20,5 +19,12 @@ export const Disabled: Story = {
   args: {
     disabled: true,
     defaultValue: "Can't edit this",
+  },
+}
+
+export const Invalid: Story = {
+  args: {
+    "aria-invalid": true,
+    defaultValue: "Too short",
   },
 }

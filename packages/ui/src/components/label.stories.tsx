@@ -6,7 +6,6 @@ import { Label } from "./label.js"
 const meta: Meta<typeof Label> = {
   title: "Components/Label",
   component: Label,
-  tags: ["autodocs"],
   args: {
     children: "Email",
   },

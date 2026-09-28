@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { ComponentProps } from "react"
+import { ArrowRightIcon, PlusIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "./button.js"
 
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
   component: Button,
-  tags: ["autodocs"],
   argTypes: {
     variant: {
       control: "select",
@@ -83,4 +83,37 @@ export const Disabled: Story = {
   args: {
     disabled: true,
   },
+}
+
+export const WithIcon: Story = {
+  render: (args: ComponentProps<typeof Button>) => (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button {...args}>
+        <PlusIcon data-icon="inline-start" />
+        New project
+      </Button>
+      <Button {...args} variant="outline">
+        Continue
+        <ArrowRightIcon data-icon="inline-end" />
+      </Button>
+    </div>
+  ),
+}
+
+export const IconOnly: Story = {
+  render: (args: ComponentProps<typeof Button>) => (
+    <div className="flex flex-wrap items-center gap-3">
+      {(["icon-xs", "icon-sm", "icon", "icon-lg"] as const).map((size) => (
+        <Button
+          key={size}
+          {...args}
+          variant="outline"
+          size={size}
+          aria-label="Delete"
+        >
+          <Trash2Icon />
+        </Button>
+      ))}
+    </div>
+  ),
 }

@@ -1,0 +1,72 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+import { Tip } from "../blocks/guidelines"
+
+<Meta title="Getting started" />
+
+# Getting started
+
+fibo is a shadcn registry. Installing a part copies its source into your
+project, where it follows your tokens and belongs to you.
+
+## Add the registry
+
+Point shadcn at the `@fibo` namespace once, in your project's `components.json`:
+
+```json
+{
+  "registries": {
+    "@fibo": "https://fibo.toribryan.com/r/{name}.json"
+  }
+}
+```
+
+Projects started from `toribryan/design-project-template` already have this entry.
+
+## Install a component
+
+Add parts by name. Anything a part imports from another fibo part comes with it.
+
+```bash
+pnpm dlx shadcn@latest add @fibo/button
+```
+
+Without the namespace, the full URL works in any shadcn project:
+
+```bash
+pnpm dlx shadcn@latest add https://fibo.toribryan.com/r/button.json
+```
+
+## Use it
+
+Components land in `components/ui` and import your own `cn` helper.
+
+```tsx
+import { Button } from "@/components/ui/button"
+
+export function Save() {
+  return <Button>Save changes</Button>
+}
+```
+
+<Tip>
+  The installed file uses semantic tokens such as `bg-primary` and
+  `text-muted-foreground`. Copy the `:root` and `.dark` blocks from fibo's
+  `globals.css` if you want the parts to look the way they do here.
+</Tip>
+
+## Theming
+
+Every colour is a semantic role that aliases a primitive ramp. Retheming means
+editing `:root` and `.dark` in `globals.css` and nothing else. The toolbar's
+theme switch at the top of this page flips the same `.dark` class.
+
+## Run it locally
+
+```bash
+pnpm install
+pnpm storybook
+```
+
+Storybook runs at `localhost:6006`. The repo layout and the registry build are
+documented in `AGENTS.md`.

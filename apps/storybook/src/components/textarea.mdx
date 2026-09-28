@@ -1,0 +1,61 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/textarea.stories"
+import { RelatedComponents } from "../blocks/catalog"
+import { UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Textarea
+
+A textarea takes several lines of free text. It grows with its content through
+`field-sizing: content`, so it never needs its own scrollbar.
+
+<Canvas of={Stories.Default} />
+
+## Import
+
+<Install name="textarea" exports={["Textarea"]} />
+
+## Props
+
+Textarea takes every native `textarea` prop.
+
+<Controls of={Stories.Default} />
+
+## Usage
+
+<UsageGuidelines
+  guidelines={[
+    "Use it for answers that may run past one line: notes, descriptions, messages.",
+    "Pair it with a visible Label, and state any length limit before people hit it.",
+    "Set a sensible min height through className when the expected answer is long.",
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Mark errors with <code>aria-invalid</code> and link the message with{" "}
+      <code>aria-describedby</code>.
+    </>,
+    "Don't disable resizing and auto-grow at the same time on a fixed-height container. Content gets clipped.",
+  ]}
+/>
+
+## Variants
+
+### Invalid
+
+<Canvas of={Stories.Invalid} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+## Related components
+
+<RelatedComponents names={["Input", "Label"]} />

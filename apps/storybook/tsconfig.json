@@ -6,6 +6,11 @@
       "@workspace/ui/*": ["../../packages/ui/src/*"]
     }
   },
-  "include": [".storybook/**/*.ts", ".storybook/**/*.tsx"],
+  "include": [
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
   "exclude": ["node_modules"]
 }

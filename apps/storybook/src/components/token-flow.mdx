@@ -1,0 +1,123 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/token-flow.stories"
+import { RelatedComponents } from "../blocks/catalog"
+import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+import { TokenFlow } from "../../../../packages/ui/src/components/token-flow"
+
+<Meta of={Stories} />
+
+# Token flow
+
+Token flow shows how a colour travels through the token tiers: the raw value,
+the primitive that names it, and the semantic role that uses it. A pulse runs
+along each wire, so the plate reads as a flow rather than a table.
+
+<Canvas of={Stories.WithUse} />
+
+Switch the theme in the toolbar: rows with a dark pair scramble to their dark
+values while the semantic name stays put.
+
+## Import
+
+<Install name="token-flow" exports={["TokenFlow", "type TokenRow"]} />
+
+## Props
+
+Each row takes a `base` value, a `primitive` name and a `semantic` role, plus
+an optional `use` and a `dark` pair for roles that resolve differently in the
+dark theme.
+
+<Controls of={Stories.Default} />
+
+## Usage
+
+<UsageGuidelines
+  guidelines={[
+    "Use it in docs, case studies and onboarding, where the point is how a token is built, not what it looks like.",
+    "Keep it to three to five rows. Each row is one story about one role.",
+    <>
+      Pick rows with a <code>dark</code> pair to show why semantic roles exist:
+      the name stays put while the value underneath changes.
+    </>,
+    <>
+      Turn on <code>showUse</code> when the reader doesn't know the role names
+      yet.
+    </>,
+  ]}
+/>
+
+<Tip>
+  By default the plate follows the document's <code>dark</code> class. A host
+  that owns its own theme, such as a preview frame, can pin it with{" "}
+  <code>theme</code>, and scope a <code>dark</code> class to a wrapper so the
+  surfaces follow too.
+</Tip>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Every chip carries its tier in screen-reader text, so it reads as
+      "Primitive neutral-900" rather than a bare value.
+    </>,
+    "The scrambled text is hidden from assistive tech. Only the settled value is announced.",
+    "The pulse only runs while the plate is on screen, and neither the pulse nor the scramble plays under prefers-reduced-motion.",
+  ]}
+/>
+
+## Variants
+
+### Without use
+
+<Canvas of={Stories.Default} />
+
+### Single row
+
+<Canvas of={Stories.SingleRow} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <TokenFlow
+            className="w-full"
+            rows={[
+              {
+                base: "oklch(0.205 0 0)",
+                primitive: "neutral-900",
+                semantic: "bg-primary",
+              },
+            ]}
+          />
+        ),
+        description: "Name the semantic role the way people write it in code.",
+      },
+      negative: {
+        component: (
+          <TokenFlow
+            className="w-full"
+            rows={[
+              {
+                base: "oklch(0.205 0 0)",
+                primitive: "neutral-900",
+                semantic: "dark grey",
+              },
+            ]}
+          />
+        ),
+        description:
+          "Don't describe the colour in the last column. That's what the swatch is for.",
+      },
+    },
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Badge", "Reactions"]} />

@@ -1,0 +1,59 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+import { UsageGuidelines } from "../blocks/guidelines"
+
+<Meta title="Contributing" />
+
+# Contributing
+
+A new part needs a component file, a stories file, a docs page, and a matching
+Figma component.
+
+## Add a component
+
+1. Create `packages/ui/src/components/<name>.tsx` in kebab-case.
+2. Add `<name>.stories.tsx` next to it with at least a `Default` story.
+3. Write its docs page at `apps/storybook/src/components/<name>.mdx`, using an
+   existing page as the template.
+4. Add it to the catalog in `apps/storybook/src/blocks/catalog.tsx`.
+5. Run `pnpm registry:build` and confirm `apps/web/public/r/<name>.json` exists.
+
+## Conventions
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Every component sets <code>data-slot</code> on its root element.
+    </>,
+    <>
+      Use semantic tokens only: <code>bg-primary</code>, not{" "}
+      <code>bg-neutral-900</code>.
+    </>,
+    <>
+      No opacity modifiers on token colours. Use the named <code>-subtle</code>,{" "}
+      <code>-hover</code> and <code>-ring</code> roles so Figma can bind them.
+    </>,
+    <>
+      Import through <code>@workspace/ui/*</code>, never a relative path. The
+      registry build rewrites those prefixes.
+    </>,
+    <>Sentence case for headings and UI copy.</>,
+  ]}
+/>
+
+## Docs page template
+
+Component pages follow the same order so readers always know where to look:
+
+1. Name and one-sentence description, then a live playground.
+2. **Import**: the install command and the import line.
+3. **Props**, generated from the component's types.
+4. **Usage** and **Accessibility** as numbered guidelines.
+5. **Variants**, one canvas per story.
+6. **Do's and don'ts**, as paired live examples.
+7. **Related components**.
+
+## Status tags
+
+Add `new`, `beta` or `deprecated` to the `tags` array in a component's stories
+meta and the sidebar renders it as a pill beside the name.

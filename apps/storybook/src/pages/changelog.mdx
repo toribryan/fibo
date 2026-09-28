@@ -1,0 +1,29 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+<Meta title="Changelog" />
+
+# Changelog
+
+Notable changes, newest first.
+
+## September 2026
+
+- New docs site, modelled on monday.com's Vibe: a welcome page, a catalog,
+  and component pages with usage rules, do's and don'ts, and related parts.
+- Renamed the system from golden-design-system to **fibo**. The registry
+  namespace is now `@fibo`.
+- Added the shadcn registry build. Every component is installable from
+  `fibo.toribryan.com/r/<name>.json`.
+- Rebuilt the Figma library on shadcn and Base UI with Geist, one to one with
+  the code tokens.
+- Status tones moved to the 700 step so they clear WCAG AA on solid fills and
+  on their tints.
+- Added **Reactions**.
+- Added **Token flow**, ported from the portfolio without its `motion`
+  dependency.
+
+## August 2026
+
+- Split the token layer into primitive ramps and semantic roles.
+- Added Badge, Input, Label, Textarea and Checkbox.
+- Moved from a Vite scaffold to a shadcn and Base UI monorepo with Storybook.

@@ -1,0 +1,89 @@
+import { Canvas, Controls, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/reactions.stories"
+import { RelatedComponents } from "../blocks/catalog"
+import { Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Reactions
+
+Reactions let people respond to a piece of content with an emoji in one tap.
+They come in three shapes that share the same choices, pill motion and
+particle burst.
+
+<Canvas of={Stories.InMessage} />
+
+## Import
+
+<Install
+  name="reactions"
+  exports={["Reactions", "ReactionsMenuItem", "type Reaction"]}
+/>
+
+## Props
+
+<Controls of={Stories.Default} />
+
+## Usage
+
+<UsageGuidelines
+  guidelines={[
+    "Use inline beside the content it belongs to, such as a message, comment or post.",
+    "Use floating for a page-level reaction, such as the end of an article. It pins to a viewport corner.",
+    "Use menu when the corner button also carries navigation. The menu slot takes any items.",
+    "Offer five or six choices at most. More turns a quick tap into a decision.",
+  ]}
+/>
+
+<Tip>
+  Pass <code>reactions</code> and <code>onReactionsChange</code> to control the
+  state from your data layer. Without them the component keeps its own state,
+  seeded from <code>defaultReactions</code>.
+</Tip>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "Each pill is a toggle button with an accessible name from the reaction's label, not the emoji.",
+    "Particles and pill motion switch off under prefers-reduced-motion.",
+    <>
+      Override <code>triggerLabel</code>, <code>panelLabel</code> and{" "}
+      <code>closeLabel</code> when your product speaks another language.
+    </>,
+  ]}
+/>
+
+## Variants
+
+### Inline
+
+<Canvas of={Stories.Default} />
+
+### No reactions yet
+
+<Canvas of={Stories.Empty} />
+
+### Without counts
+
+<Canvas of={Stories.WithoutCounts} />
+
+### Floating
+
+<Canvas of={Stories.Floating} />
+
+### Menu
+
+<Canvas of={Stories.Menu} />
+
+## Use cases and examples
+
+### Controlled
+
+<Canvas of={Stories.Controlled} />
+
+## Related components
+
+<RelatedComponents names={["Button", "Badge"]} />
