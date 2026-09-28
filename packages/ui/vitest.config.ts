@@ -12,6 +12,7 @@ export default defineConfig({
   test: {
     name: "unit",
     include: ["src/**/*.test.{ts,tsx}"],
+    setupFiles: ["src/test/setup.ts"],
     browser: {
       enabled: true,
       headless: true,

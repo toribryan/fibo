@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { expect, fn } from "storybook/test"
+import { expect, fn, waitFor } from "storybook/test"
 import { useState } from "react"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
@@ -144,7 +144,7 @@ type Story = StoryObj<typeof ChapterScrubber>
 
 export const Default: Story = {
   args: { onCurrentIndexChange: fn() },
-  play: async ({ args, canvas, userEvent }) => {
+  play: async ({ args, canvas, canvasElement, userEvent }) => {
     const options = canvas.getAllByRole("option")
     await userEvent.tab()
     await expect(options[3]).toHaveFocus()
@@ -155,6 +155,15 @@ export const Default: Story = {
     await expect(last).toHaveFocus()
     await userEvent.keyboard("{Enter}")
     await expect(last).toHaveAttribute("aria-selected", "true")
+    // End on the settled preview, so the axe check that follows measures the
+    // colours people see rather than a frame of the fade.
+    await waitFor(() =>
+      expect(
+        getComputedStyle(
+          canvasElement.querySelector('[data-slot="chapter-scrubber-preview"]')!
+        ).opacity
+      ).toBe("1")
+    )
     await expect(args.onCurrentIndexChange).toHaveBeenCalledTimes(1)
     await expect(
       (args.onCurrentIndexChange as ReturnType<typeof fn>).mock.calls[0]?.[0]

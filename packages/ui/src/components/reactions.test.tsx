@@ -31,6 +31,19 @@ describe("Reactions", () => {
       .not.toBeInTheDocument()
   })
 
+  it("opens the picker below when there is no room above", async () => {
+    const screen = await render(<Reactions particles={0} />)
+    await screen.getByRole("button", { name: "Add reaction" }).click()
+    const panel = screen.getByRole("group", { name: "Pick a reaction" })
+    await expect.element(panel).toBeVisible()
+    const trigger = screen
+      .getByRole("button", { name: "Add reaction" })
+      .element()
+      .getBoundingClientRect()
+    const box = panel.element().getBoundingClientRect()
+    expect(box.top).toBeGreaterThanOrEqual(trigger.bottom)
+  })
+
   it("reports the whole list when controlled", async () => {
     const onReactionsChange = vi.fn()
     const screen = await render(
