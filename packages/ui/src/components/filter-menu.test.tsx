@@ -89,7 +89,9 @@ describe("FilterMenu", () => {
   })
 
   it("points aria-activedescendant at a real row when values hold spaces", async () => {
-    const screen = await openMenu(<FilterMenu fields={fields} />)
+    const screen = await openMenu(
+      <FilterMenu fields={fields} search="inline" />
+    )
     await userEvent.keyboard("{Enter}")
     const search = screen.getByRole("combobox").element()
     const target = search.getAttribute("aria-activedescendant")
@@ -115,6 +117,20 @@ describe("FilterMenu", () => {
       await expect
         .element(screen.getByRole("button", { name: "Search filters" }))
         .toBeVisible()
+    })
+
+    it("returns to the open field when a search inside it ends", async () => {
+      const screen = await openMenu(<FilterMenu fields={fields} />)
+      await userEvent.click(screen.getByRole("option", { name: /^Status/ }))
+      await userEvent.keyboard("d")
+      await expect.element(screen.getByRole("combobox")).toHaveValue("d")
+      await userEvent.click(
+        screen.getByRole("button", { name: "Back to Status" })
+      )
+      await expect
+        .element(screen.getByRole("listbox", { name: "Status" }))
+        .toBeVisible()
+      expect(screen.getByRole("combobox").query()).toBeNull()
     })
 
     it("starts a search from a letter typed on the list", async () => {
