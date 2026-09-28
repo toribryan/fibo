@@ -12,17 +12,14 @@ import { Playground } from "../blocks/playground"
 # Reactions
 
 Reactions let people respond to a piece of content with an emoji in one tap.
-They come in three shapes that share the same choices, pill motion and
-particle burst.
+They sit inline under the content, or float in a corner of the page, and
+both share the same choices, pill motion and particle burst.
 
 <Playground of={Stories.InMessage} />
 
 ## Import
 
-<Install
-  name="reactions"
-  exports={["Reactions", "ReactionsMenuItem", "type Reaction"]}
-/>
+<Install name="reactions" exports={["Reactions", "type Reaction"]} />
 
 ## Usage
 
@@ -30,7 +27,6 @@ particle burst.
   guidelines={[
     "Use inline beside the content it belongs to, such as a message, comment or post.",
     "Use floating for a page-level reaction, such as the end of an article. It pins to a viewport corner.",
-    "Use menu when the corner button also carries navigation. The menu slot takes any items.",
     "Offer five or six choices at most. More turns a quick tap into a decision.",
     <>
       Leave <code>choices</code> unset to get six common reactions. Anything
@@ -61,8 +57,8 @@ particle burst.
     "Arrow keys, Home and End move through the choices. Escape closes the picker and returns focus to its trigger; tabbing away closes it too.",
     "Particles and pill motion switch off under prefers-reduced-motion.",
     <>
-      Override <code>triggerLabel</code>, <code>panelLabel</code> and{" "}
-      <code>closeLabel</code> when your product speaks another language.
+      Override <code>triggerLabel</code> and <code>panelLabel</code> when your
+      product speaks another language.
     </>,
   ]}
 />
@@ -88,17 +84,6 @@ particle burst.
 ### Floating
 
 <Canvas of={Stories.Floating} />
-
-### Menu
-
-<Canvas of={Stories.Menu} />
-
-### Menu, left edge
-
-Pinned to the left, the rail runs the other way so it still opens into the
-page.
-
-<Canvas of={Stories.MenuOnTheLeft} />
 
 ## Use cases and examples
 
