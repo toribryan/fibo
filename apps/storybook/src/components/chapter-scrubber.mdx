@@ -3,9 +3,10 @@ import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 import * as Stories from "../../../../packages/ui/src/components/chapter-scrubber.stories"
 import { ChapterScrubber } from "../../../../packages/ui/src/components/chapter-scrubber"
 import { RelatedComponents } from "../blocks/catalog"
-import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { DataAttributes } from "../blocks/data-attributes"
+import { Anatomy } from "../blocks/anatomy"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
-import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -15,16 +16,95 @@ A rail of marks, one per chapter, that swell under the pointer like the macOS
 Dock. The tallest mark, the crest, previews its chapter, so people can jump
 around a long piece without a table of contents.
 
-<Playground of={Stories.Default} />
+<Canvas of={Stories.Default} />
 
-## Import
+## Features
+
+- Marks swell in a wave around the pointer or keyboard focus, and the crest
+  previews its chapter as a card, a label, or nothing.
+- Runs vertically in a gutter or horizontally along a player, with ticks or
+  dots in three densities.
+- Works controlled or uncontrolled, so the marker can follow scroll or playback.
+- Respects reduced motion: the springs switch off, and the wave keeps its shape
+  but appears and follows instantly.
+
+## Installation
 
 <Install
   name="chapter-scrubber"
   exports={["ChapterScrubber", "type Chapter"]}
 />
 
+It installs `motion` with it, for the springs.
+
 ## Usage
+
+```tsx
+import { ChapterScrubber } from "@/components/ui/chapter-scrubber"
+
+const chapters = [
+  { id: "intro", title: "Introduction" },
+  { id: "tokens", title: "Token tiers", description: "Ramps, then roles." },
+  { id: "figma", title: "Figma variables", meta: "12:40" },
+]
+
+export function Contents() {
+  return <ChapterScrubber chapters={chapters} />
+}
+```
+
+Chapters sit on the rail in array order, one mark each. The `title` and
+`description` name each mark for screen readers.
+
+Each chapter takes:
+
+```ts
+type Chapter = {
+  id: string
+  title: string
+  description?: React.ReactNode // clamped to three lines
+  meta?: React.ReactNode // a small label beside the title, such as a timestamp
+}
+```
+
+## Anatomy
+
+Every part the component renders, with the `data-slot` it carries. You pass
+`chapters`; the component builds the rest.
+
+<Anatomy
+  root={{
+    name: "ChapterScrubber",
+    slot: "chapter-scrubber",
+    note: "The root. Carries data-orientation and data-variant.",
+    children: [
+      {
+        name: "rail",
+        note: "The listbox that holds the items.",
+        children: [
+          {
+            name: "item",
+            slot: "chapter-scrubber-item",
+            note: "One per chapter, in array order. The option people focus and click.",
+            children: [
+              {
+                name: "mark",
+                note: "The tick or dot. Carries data-current on the current chapter.",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "preview",
+        slot: "chapter-scrubber-preview",
+        note: "Beside the crest. Shows the chapter's meta, title and description.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
 
 <UsageGuidelines
   guidelines={[
@@ -46,27 +126,7 @@ around a long piece without a table of contents.
   ]}
 />
 
-<Tip>
-  The rail is only as wide as the crest, so it fits in a gutter. Put it in a{" "}
-  <code>sticky</code> column beside the content, as in the article example
-  below.
-</Tip>
-
-## Accessibility
-
-<UsageGuidelines
-  guidelines={[
-    <>
-      The rail is a listbox and every mark an option named by its title and
-      description. The current chapter is <code>aria-selected</code>.
-    </>,
-    "Only one mark is in the tab order. Arrow keys, Home and End move along the rail; Enter or Space makes a chapter current.",
-    "Focus raises the wave exactly as hover does, so keyboard users get the same preview.",
-    "Under reduced motion the springs switch off. The wave keeps its shape but appears and follows instantly.",
-  ]}
-/>
-
-## Variants
+## Examples
 
 ### Horizontal
 
@@ -77,29 +137,35 @@ baseline and the preview opens above.
 
 ### Dots
 
-Dots instead of ticks, for a softer rail that sits well beside imagery.
+`variant="dot"` swaps ticks for dots, for a softer rail that sits well beside
+imagery.
 
 <Canvas of={Stories.Dots} />
 
 ### Centred ticks
 
-Ticks grow out from the middle line, which balances a rail placed on its own.
+`align="center"` grows ticks out from the middle line, which balances a rail
+placed on its own.
 
 <Canvas of={Stories.Centered} />
 
 ### Sizes
 
-<Canvas of={Stories.Sizes} />
+`size` sets the density: `sm`, `default` and `lg`. `rowSize`, `restLength` and
+`peakLength` override it when you need an exact rhythm.
 
-## Use cases and examples
+<Canvas of={Stories.Sizes} />
 
 ### Controlled
 
-Buttons elsewhere on the page drive the same marker the rail sets.
+Buttons elsewhere on the page drive the same marker the rail sets, through
+`currentIndex` and `onCurrentIndexChange`.
 
 <Canvas of={Stories.Controlled} />
 
 ### In an article
+
+The rail in a sticky column beside a long read.
 
 <Canvas of={Stories.InAnArticle} />
 
@@ -161,14 +227,82 @@ Buttons elsewhere on the page drive the same marker the rail sets.
   ]}
 />
 
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+Style parts by slot or state, for example with
+`[&_[data-slot=chapter-scrubber-preview]]:shadow-none`.
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="chapter-scrubber"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="chapter-scrubber-item"',
+      element: "Each chapter's row on the rail",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="chapter-scrubber-preview"',
+      element: "The card or label beside the crest",
+      when: (
+        <>
+          Unless <code>preview</code> is <code>none</code>. It fades in while a
+          chapter is hovered or focused.
+        </>
+      ),
+    },
+    {
+      attribute: "data-orientation",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>vertical</code> or <code>horizontal</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-variant",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>tick</code> or <code>dot</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-current",
+      element: "The mark of the current chapter",
+      when: "The chapter is current.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The rail is a listbox and every mark an option named by its title and
+      description. The current chapter is <code>aria-selected</code>.
+    </>,
+    "Only one mark is in the tab order. Arrow keys, Home and End move along the rail; Enter or Space makes a chapter current.",
+    "Focus raises the wave exactly as hover does, so keyboard users get the same preview.",
+  ]}
+/>
+
 ## Related components
 
 <RelatedComponents names={["Integration visual", "Token flow", "Reactions"]} />
 
-## Props
+## References
 
-Every visual choice is a prop: orientation, mark style, density, which side
-the preview opens toward, and what the preview shows. The numeric props
-override the `size` preset when you need an exact rhythm.
-
-<ArgTypes of={Stories.Default} />
+- The macOS Dock, whose magnification the wave borrows
+- [WAI-ARIA listbox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/), for the keyboard model
+- [Motion](https://motion.dev), for the springs

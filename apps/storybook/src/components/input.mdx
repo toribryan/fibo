@@ -4,9 +4,9 @@ import * as Stories from "../../../../packages/ui/src/components/input.stories"
 import { Input } from "../../../../packages/ui/src/components/input"
 import { Label } from "../../../../packages/ui/src/components/label"
 import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
 import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
-import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -15,13 +15,44 @@ import { Playground } from "../blocks/playground"
 An input takes a single line of free text: a name, an email, a search term.
 It fills the width of its container.
 
-<Playground of={Stories.WithLabel} />
+<Canvas of={Stories.WithLabel} />
 
-## Import
+## Features
+
+- One line of text that fills the width of its container.
+- Takes every native `input` prop and type, built on Base UI's Input.
+- An invalid state through `aria-invalid`, with a destructive border and ring.
+- State attributes for focus, filled and edited, for styling beyond the defaults.
+
+## Installation
 
 <Install name="input" exports={["Input"]} />
 
 ## Usage
+
+```tsx
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
+export function EmailField() {
+  return (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor="email">Email</Label>
+      <Input
+        id="email"
+        type="email"
+        autoComplete="email"
+        placeholder="you@example.com"
+      />
+    </div>
+  )
+}
+```
+
+Give it a visible Label, the right `type`, and an `autoComplete` hint for
+personal details.
+
+## Guidelines
 
 <UsageGuidelines
   guidelines={[
@@ -32,31 +63,17 @@ It fills the width of its container.
   ]}
 />
 
-## Accessibility
-
-<UsageGuidelines
-  guidelines={[
-    <>
-      Connect the label with <code>htmlFor</code> and <code>id</code>.
-    </>,
-    <>
-      Mark errors with <code>aria-invalid</code> and point to the message with{" "}
-      <code>aria-describedby</code>.
-    </>,
-    <>
-      Add <code>autoComplete</code> for personal details so browsers and
-      password managers can fill them.
-    </>,
-  ]}
-/>
-
-## Variants
+## Examples
 
 ### Invalid
+
+`aria-invalid` turns the border and the focus ring destructive.
 
 <Canvas of={Stories.Invalid} />
 
 ### Disabled
+
+`disabled` dims the input and blocks the pointer.
 
 <Canvas of={Stories.Disabled} />
 
@@ -84,12 +101,72 @@ It fills the width of its container.
   ]}
 />
 
-## Related components
-
-<RelatedComponents names={["Label", "Textarea", "Checkbox"]} />
-
-## Props
+## API reference
 
 Input takes every native `input` prop.
 
 <ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="input"',
+      element: "The input",
+      when: "Always.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "The input",
+      when: "The input is disabled.",
+    },
+    {
+      attribute: "data-focused",
+      element: "The input",
+      when: "The input has focus.",
+    },
+    {
+      attribute: "data-filled",
+      element: "The input",
+      when: "The input has a value.",
+    },
+    {
+      attribute: "data-dirty",
+      element: "The input",
+      when: "The value has changed since it mounted.",
+    },
+    {
+      attribute: "data-touched",
+      element: "The input",
+      when: "The input has been focused and then left.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Connect the label with <code>htmlFor</code> and <code>id</code>.
+    </>,
+    <>
+      Mark errors with <code>aria-invalid</code> and point to the message with{" "}
+      <code>aria-describedby</code>.
+    </>,
+    <>
+      Add <code>autoComplete</code> for personal details so browsers and
+      password managers can fill them.
+    </>,
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Label", "Textarea", "Checkbox"]} />
+
+## References
+
+- [Base UI Input](https://base-ui.com/react/components/input)
+- [`autocomplete` values](https://developer.mozilla.org/docs/Web/HTML/Attributes/autocomplete)

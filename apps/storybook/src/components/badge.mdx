@@ -3,9 +3,9 @@ import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 import * as Stories from "../../../../packages/ui/src/components/badge.stories"
 import { Badge } from "../../../../packages/ui/src/components/badge"
 import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
 import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
-import { Playground } from "../blocks/playground"
 
 <Meta of={Stories} />
 
@@ -14,13 +14,36 @@ import { Playground } from "../blocks/playground"
 A badge is a short, non-interactive label for a status, category or count. It
 sits next to the thing it describes.
 
-<Playground of={Stories.Default} />
+<Canvas of={Stories.Default} />
 
-## Import
+## Features
+
+- Four variants: `default`, `secondary`, `outline`, and `destructive`, a red
+  tint for states that need action.
+- Sized for one or two words, next to the thing it describes.
+- Not interactive, so it adds nothing to the tab order.
+
+## Installation
 
 <Install name="badge" exports={["Badge", "badgeVariants"]} />
 
 ## Usage
+
+```tsx
+import { Badge } from "@/components/ui/badge"
+
+export function InvoiceStatus() {
+  return (
+    <div className="flex items-center gap-2">
+      Invoice #1042 <Badge variant="destructive">Overdue</Badge>
+    </div>
+  )
+}
+```
+
+Say the state in the label. The variant only reinforces it.
+
+## Guidelines
 
 <UsageGuidelines
   guidelines={[
@@ -31,19 +54,9 @@ sits next to the thing it describes.
   ]}
 />
 
-## Accessibility
+## Examples
 
-<UsageGuidelines
-  guidelines={[
-    <>
-      If the badge only makes sense next to its neighbour, give the pair
-      context, for example with <code>aria-describedby</code>.
-    </>,
-    "Never rely on the variant alone to carry meaning. The text has to say it too.",
-  ]}
-/>
-
-## Variants
+All four variants side by side.
 
 <Canvas of={Stories.AllVariants} />
 
@@ -76,10 +89,34 @@ sits next to the thing it describes.
   ]}
 />
 
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="badge"',
+      element: "The badge",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      If the badge only makes sense next to its neighbour, give the pair
+      context, for example with <code>aria-describedby</code>.
+    </>,
+    "Never rely on the variant alone to carry meaning. The text has to say it too.",
+  ]}
+/>
+
 ## Related components
 
 <RelatedComponents names={["Button", "Label"]} />
-
-## Props
-
-<ArgTypes of={Stories.Default} />

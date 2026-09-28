@@ -1,3 +1,4 @@
+import * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 /*
@@ -79,6 +80,41 @@ const BLUE_BG: Record<string, string> = {
 
 const STEPS = Object.keys(NEUTRAL_BG)
 
+// The swatch colours are oklch, so measure each one on a canvas and label it
+// in whichever of black or white contrasts more, rather than guessing by step.
+function luminance(color: string) {
+  const ctx = document.createElement("canvas").getContext("2d")
+  if (!ctx) return 1
+  ctx.fillStyle = color
+  ctx.fillRect(0, 0, 1, 1)
+  const [r = 0, g = 0, b = 0] = ctx.getImageData(0, 0, 1, 1).data
+  const lin = (c: number) => {
+    const v = c / 255
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+}
+
+function Swatch({ step, className }: { step: string; className?: string }) {
+  const ref = React.useRef<HTMLDivElement>(null)
+  const [ink, setInk] = React.useState<"black" | "white">("black")
+  React.useLayoutEffect(() => {
+    if (!ref.current) return
+    const l = luminance(getComputedStyle(ref.current).backgroundColor)
+    setInk((l + 0.05) / 0.05 >= 1.05 / (l + 0.05) ? "black" : "white")
+  }, [])
+  return (
+    <div
+      ref={ref}
+      className={`flex h-16 flex-1 items-end justify-center pb-1 ${className}`}
+    >
+      <span className="text-xs font-medium" style={{ color: ink }}>
+        {step}
+      </span>
+    </div>
+  )
+}
+
 function Ramp({
   name,
   classes,
@@ -91,20 +127,7 @@ function Ramp({
       <p className="text-sm font-medium text-muted-foreground">{name}</p>
       <div className="flex overflow-hidden rounded-lg border border-border">
         {STEPS.map((step) => (
-          <div
-            key={step}
-            className={`flex h-16 flex-1 items-end justify-center pb-1 ${classes[step]}`}
-          >
-            <span
-              className="text-xs font-medium"
-              style={{
-                color: Number(step) >= 500 ? "white" : "black",
-                opacity: 0.7,
-              }}
-            >
-              {step}
-            </span>
-          </div>
+          <Swatch key={step} step={step} className={classes[step]} />
         ))}
       </div>
     </div>

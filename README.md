@@ -69,9 +69,9 @@ your own.
 | Reactions          | Lets people respond to content with an emoji in one tap.               |
 | Token flow         | Walks a colour token from raw value to primitive to semantic role.     |
 
-Every part has a docs page with a live playground, usage and accessibility
-guidelines, do's and don'ts, and a props table in
-[Storybook](https://fibo.toribryan.com).
+Every part has a docs page in [Storybook](https://fibo.toribryan.com) with
+its features, a usage example, the parts it renders, guidelines, do's and
+don'ts, a props and data attributes reference, and accessibility notes.
 
 ## Principles
 
@@ -106,18 +106,20 @@ pnpm storybook
 
 Storybook runs at http://localhost:6006.
 
-| Script                | What it does                                        |
-| --------------------- | --------------------------------------------------- |
-| `pnpm storybook`      | Storybook                                           |
-| `pnpm dev`            | Every app in dev mode                               |
-| `pnpm build`          | Build the registry and Storybook                    |
-| `pnpm build:site`     | Build, then assemble the deployable site in `dist/` |
-| `pnpm registry:build` | Regenerate the registry JSON and `llms.txt`         |
-| `pnpm lint`           | ESLint, zero warnings allowed                       |
-| `pnpm typecheck`      | TypeScript in every workspace                       |
-| `pnpm format:write`   | Prettier                                            |
+| Script                | What it does                                          |
+| --------------------- | ----------------------------------------------------- |
+| `pnpm storybook`      | Storybook                                             |
+| `pnpm dev`            | Every app in dev mode                                 |
+| `pnpm build`          | Build the registry and Storybook                      |
+| `pnpm build:site`     | Build, then assemble the deployable site in `dist/`   |
+| `pnpm registry:build` | Regenerate the registry JSON and `llms.txt`           |
+| `pnpm lint`           | ESLint, zero warnings allowed                         |
+| `pnpm typecheck`      | TypeScript in every workspace                         |
+| `pnpm test`           | Unit, interaction and accessibility tests in Chromium |
+| `pnpm format:write`   | Prettier                                              |
 
-CI runs format, lint, build and typecheck on every pull request. The repo
+CI runs format, lint, build, typecheck and tests on every pull request, and
+Chromatic checks every story for visual changes. The repo
 layout and the registry build are described in [`AGENTS.md`](./AGENTS.md).
 
 ## Contributing

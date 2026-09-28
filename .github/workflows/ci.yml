@@ -34,10 +34,17 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
-      # Build runs before typecheck: the web app reads registry.json, which the
-      # build generates, and `tsc` needs the route types from `next build`.
+      # Build runs before typecheck so the generated registry files exist.
       - name: Build
         run: pnpm build
 
       - name: Typecheck
         run: pnpm typecheck
+
+      # Unit tests and story tests (render, play functions and axe checks)
+      # all run in a real Chromium.
+      - name: Install Chromium
+        run: pnpm --filter storybook exec playwright install --with-deps chromium
+
+      - name: Test
+        run: pnpm test

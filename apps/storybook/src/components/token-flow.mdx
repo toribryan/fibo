@@ -2,9 +2,10 @@ import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 
 import * as Stories from "../../../../packages/ui/src/components/token-flow.stories"
 import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { Anatomy } from "../blocks/anatomy"
 import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
-import { Playground } from "../blocks/playground"
 import { TokenFlow } from "../../../../packages/ui/src/components/token-flow"
 
 <Meta of={Stories} />
@@ -14,16 +15,86 @@ import { TokenFlow } from "../../../../packages/ui/src/components/token-flow"
 Token flow shows a colour moving through the token tiers, from raw value to
 primitive to semantic role.
 
-<Playground of={Stories.WithUse} />
+<Canvas of={Stories.WithUse} />
 
 Switch the theme in the toolbar: rows with a dark pair scramble to their dark
 values while the semantic name stays put.
 
-## Import
+## Features
+
+- One row per role: the raw value, the primitive and the semantic role, joined
+  by wires.
+- A pulse runs along each wire while the plate is on screen.
+- Rows with a `dark` pair scramble to their dark values when the theme changes,
+  while the role's name stays put.
+- `showUse` prints what each role is for under its chip.
+
+## Installation
 
 <Install name="token-flow" exports={["TokenFlow", "type TokenRow"]} />
 
+No animation library: the pulse and the scramble use the Web Animations API and
+`requestAnimationFrame`.
+
 ## Usage
+
+```tsx
+import { TokenFlow } from "@/components/ui/token-flow"
+
+export function PrimaryToken() {
+  return (
+    <TokenFlow
+      rows={[
+        {
+          base: "oklch(0.205 0 0)",
+          primitive: "neutral-900",
+          semantic: "bg-primary",
+          dark: { base: "oklch(0.985 0 0)", primitive: "neutral-50" },
+        },
+      ]}
+    />
+  )
+}
+```
+
+Name the role the way people write it in code, and add a `dark` pair when the
+role resolves differently in the dark theme.
+
+## Anatomy
+
+Every part the component renders, with the `data-slot` it carries. You pass
+`rows`; the component builds the rest.
+
+<Anatomy
+  root={{
+    name: "TokenFlow",
+    slot: "token-flow",
+    note: "The plate.",
+    children: [
+      {
+        name: "tier labels",
+        note: "Base, Primitive and Semantic above the columns. Decorative.",
+      },
+      {
+        name: "row",
+        note: "One per entry in rows.",
+        children: [
+          {
+            name: "chip",
+            slot: "token-flow-chip",
+            note: "The value, the primitive and the role, three per row.",
+          },
+          {
+            name: "wire",
+            note: "Between chips, carrying the pulse. Decorative.",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
 
 <UsageGuidelines
   guidelines={[
@@ -47,26 +118,17 @@ values while the semantic name stays put.
   surfaces follow too.
 </Tip>
 
-## Accessibility
-
-<UsageGuidelines
-  guidelines={[
-    <>
-      Every chip carries its tier in screen-reader text, so it reads as
-      "Primitive neutral-900" rather than a bare value.
-    </>,
-    "The scrambled text is hidden from assistive tech. Only the settled value is announced.",
-    "The pulse only runs while the plate is on screen, and neither the pulse nor the scramble plays under prefers-reduced-motion.",
-  ]}
-/>
-
-## Variants
+## Examples
 
 ### Without use
+
+The default: three chips per row, with no `use` line.
 
 <Canvas of={Stories.Default} />
 
 ### Single row
+
+One role on its own, with `showUse` on.
 
 <Canvas of={Stories.SingleRow} />
 
@@ -110,14 +172,49 @@ values while the semantic name stays put.
   ]}
 />
 
-## Related components
-
-<RelatedComponents names={["Badge", "Reactions"]} />
-
-## Props
+## API reference
 
 Each row takes a `base` value, a `primitive` name and a `semantic` role, plus
 an optional `use` and a `dark` pair for roles that resolve differently in the
 dark theme.
 
 <ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="token-flow"',
+      element: "The plate",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="token-flow-chip"',
+      element: "Each chip",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Every chip carries its tier in screen-reader text, so it reads as
+      "Primitive neutral-900" rather than a bare value.
+    </>,
+    "The scrambled text is hidden from assistive tech. Only the settled value is announced.",
+    "The pulse only runs while the plate is on screen, and neither the pulse nor the scramble plays under prefers-reduced-motion.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Badge", "Reactions"]} />
+
+## References
+
+- [Web Animations API](https://developer.mozilla.org/docs/Web/API/Web_Animations_API)
+- [Intersection Observer](https://developer.mozilla.org/docs/Web/API/Intersection_Observer_API), which starts the pulse on screen

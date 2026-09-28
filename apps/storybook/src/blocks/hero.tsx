@@ -5,15 +5,22 @@ import {
   useSyncExternalStore,
   type ComponentType,
   type CSSProperties,
+  type MouseEvent,
+  type PointerEvent,
   type ReactNode,
 } from "react"
 import { ArrowRightIcon, Volume2Icon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import {
+  PixelSnailSprite,
+  type PixelSnailLook,
+} from "@workspace/ui/components/pixel-snail"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
   BaseUIIcon,
+  FigmaIcon,
   GithubIcon,
   ReactIcon,
   ShadcnIcon,
@@ -28,7 +35,8 @@ import { LINKS } from "./links.js"
  * large square holds the copy, a few hairlines marking the cuts, and a
  * spiral from the pole out past the frame. `wide` is the landscape frame;
  * `tall` turns it upright for narrow containers. fibo adds the motion: the
- * spiral draws outward from the pole and a dot rides it back in.
+ * spiral draws outward from the pole, and fibo, a pixel snail, builds up on
+ * the cut beside it and dances there.
  */
 type Geometry = {
   viewBox: string
@@ -41,8 +49,10 @@ type Geometry = {
     height: number
     transform?: string
   }[]
-  /** Pole to the frame's edge; the dot rides this. */
+  /** Pole to the frame's edge. */
   spiral: string
+  /** Where fibo stands: a point on one of the cuts, under his foot. */
+  fibo: { x: number; y: number }
   /** The last quarter turn, which leaves the frame. */
   tail: string
   /** Stroke and dot size in viewBox units, about 2px and 7px at full size. */
@@ -58,8 +68,6 @@ type Geometry = {
 type Sketch = {
   /** Dimension lines below the frame, each with end ticks and a label. */
   dimensions: { d: string; label: string; x: number; y: number }[]
-  /** Rotated margin notes. */
-  notes: { text: string; x: number; y: number }[]
   /** Where the spiral converges: the crossing of the two diagonals. */
   pole: { x: number; y: number }
 }
@@ -78,6 +86,7 @@ const WIDE: Geometry = {
   ],
   spiral:
     "M239.897 60.3571C239.897 54.894 244.414 50.381 249.882 50.381C255.35 50.381 259.868 54.894 259.868 60.3571C259.868 71.2835 250.833 80.3095 239.897 80.3095C223.493 80.3095 209.941 66.7704 209.941 50.381C209.941 23.0652 232.527 0.499999 259.868 0.5C303.613 0.499995 339.75 36.6043 339.75 80.3095C339.75 151.33 281.027 210 209.941 210C95.1103 210 0.25 115.226 0.25 0.5",
+  fibo: { x: 300, y: 80.5 },
   tail: "C0.250008 -185.69 154.06 -339.5 340.25 -339.5",
   stroke: 0.62,
   dot: 2.2,
@@ -96,11 +105,6 @@ const WIDE: Geometry = {
         x: 275,
         y: 221.2,
       },
-    ],
-    notes: [
-      { text: "golden ratio", x: 318, y: 132 },
-      { text: "fibonacci", x: 325, y: 132 },
-      { text: "\u03c6 = 1.618", x: 332, y: 132 },
     ],
     pole: { x: 246.5, y: 58.2 },
   },
@@ -145,6 +149,7 @@ const TALL: Geometry = {
   ],
   spiral:
     "M149.643 239.897C155.106 239.897 159.619 244.414 159.619 249.882C159.619 255.35 155.106 259.868 149.643 259.868C138.717 259.868 129.69 250.833 129.69 239.897C129.69 223.493 143.23 209.941 159.619 209.941C186.935 209.941 209.5 232.527 209.5 259.868C209.5 303.613 173.396 339.75 129.69 339.75C58.6695 339.75 0 281.027 0 209.941C0 95.1103 94.7738 0.24998 209.5 0.249985",
+  fibo: { x: 185, y: 260 },
   tail: "C395.69 0.250001 549.5 154.06 549.5 340.25",
   stroke: 0.9,
   dot: 3,
@@ -173,19 +178,9 @@ type Rect = Geometry["rects"][number]
 // a border.
 const LINE_OPACITY = 0.55
 
-function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
-  const reduced = usePrefersReducedMotion()
-  const {
-    viewBox,
-    diagonals,
-    lines,
-    rects,
-    spiral,
-    tail,
-    stroke,
-    dot,
-    sketch,
-  } = geometry
+function Spiral({ geometry }: { geometry: Geometry }) {
+  const { viewBox, diagonals, lines, rects, spiral, tail, stroke, sketch } =
+    geometry
   return (
     <svg
       className="pointer-events-none absolute inset-0 size-full overflow-visible"
@@ -196,7 +191,7 @@ function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
       <g opacity={LINE_OPACITY}>
         <g
           className="fibo-tile stroke-border"
-          style={{ animationDelay: "0.9s" }}
+          style={{ animationDelay: "0.5s" }}
         >
           {diagonals.map((d) => (
             <path
@@ -235,7 +230,7 @@ function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
           <g opacity={LINE_OPACITY}>
             <g
               className="fibo-tile stroke-border"
-              style={{ animationDelay: "1.4s" }}
+              style={{ animationDelay: "0.8s" }}
             >
               <path
                 d={`M${sketch.pole.x - 6} ${sketch.pole.y}h12M${sketch.pole.x} ${sketch.pole.y - 6}v12`}
@@ -258,7 +253,7 @@ function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
           </g>
           <g
             className="fibo-tile font-hand fill-muted-foreground"
-            style={{ animationDelay: "1.6s" }}
+            style={{ animationDelay: "1s" }}
           >
             {sketch.dimensions.map((dimension) => (
               <text
@@ -272,41 +267,200 @@ function Spiral({ id, geometry }: { id: string; geometry: Geometry }) {
                 {dimension.label}
               </text>
             ))}
-            {sketch.notes.map((note) => (
-              <text
-                key={note.text}
-                x={note.x}
-                y={note.y}
-                fontSize={4.4}
-                opacity={0.8}
-                transform={`rotate(90 ${note.x} ${note.y})`}
-              >
-                {note.text}
-              </text>
-            ))}
           </g>
         </>
       ) : null}
-
-      <path id={id} d={spiral} className="hidden" />
-      {reduced ? null : (
-        <circle r={dot} opacity={0} className="fill-ring">
-          {/* Until its motion starts the dot would sit at the SVG origin. */}
-          <set attributeName="opacity" to="1" begin="2.4s" />
-          <animateMotion
-            dur="10s"
-            begin="2.4s"
-            repeatCount="indefinite"
-            keyPoints="1;0"
-            keyTimes="0;1"
-            calcMode="spline"
-            keySplines="0.3 0 0.2 1"
-          >
-            <mpath href={`#${id}`} />
-          </animateMotion>
-        </circle>
-      )}
     </svg>
+  )
+}
+
+/*
+ * fibo stands at twice the spiral's weight per pixel, so he reads as the
+ * logo rather than a mark on the drawing.
+ */
+const FIBO_SCALE = 2
+const FIBO_ASSEMBLE_MS = 1200
+// Art pixels from his origin to his eyes, and how far the pointer must be
+// from them before he looks that way.
+const FIBO_EYES = { x: 6, y: -11 }
+const FIBO_GLANCE = 1.5
+// How far past his middle the pointer must go before he turns round. The
+// gap between the two sides keeps him from flipping back and forth.
+const FIBO_TURN = 4
+
+// What he says depends on where he is clicked: on him, or above his eyes,
+// where a pointer only goes if it is looking for trouble.
+const FIBO_LINES = {
+  poke: "do you just go around poking people? ...",
+  rage: "i can see those rage clicks. go poke around fibo instead?",
+}
+type FiboLine = keyof typeof FIBO_LINES
+const FIBO_TYPE_MS = 35
+const FIBO_LINGER_MS = 2800
+
+/*
+ * Chiptune-ish sounds, synthesised so there is nothing to load: a square
+ * wave sliding between two pitches and fading out.
+ */
+function chirp(
+  audio: AudioContext,
+  from: number,
+  to: number,
+  ms: number,
+  volume: number
+) {
+  const start = audio.currentTime
+  const end = start + ms / 1000
+  const tone = audio.createOscillator()
+  const gain = audio.createGain()
+  tone.type = "square"
+  tone.frequency.setValueAtTime(from, start)
+  tone.frequency.exponentialRampToValueAtTime(to, end)
+  gain.gain.setValueAtTime(volume, start)
+  gain.gain.exponentialRampToValueAtTime(0.0001, end)
+  tone.connect(gain).connect(audio.destination)
+  tone.start(start)
+  tone.stop(end)
+}
+
+/*
+ * A poke sets fibo talking: a speech bubble types his line out with a blip
+ * every other letter, then clears. Poking again starts him over.
+ */
+function useSpeech(reduced: boolean) {
+  const audio = useRef<AudioContext | null>(null)
+  const [poke, setPoke] = useState(0)
+  const [line, setLine] = useState<FiboLine>("poke")
+  const [typed, setTyped] = useState(0)
+  const text = FIBO_LINES[line]
+
+  useEffect(() => {
+    if (poke === 0) return
+    let count = reduced ? text.length : 0
+    let linger = 0
+    const typing = window.setInterval(() => {
+      if (count >= text.length) {
+        window.clearInterval(typing)
+        linger = window.setTimeout(() => setPoke(0), FIBO_LINGER_MS)
+        return
+      }
+      count += 1
+      setTyped(count)
+      if (audio.current && count % 2 === 0 && text[count - 1] !== " ")
+        chirp(audio.current, 440 + Math.random() * 160, 400, 40, 0.02)
+    }, FIBO_TYPE_MS)
+    return () => {
+      window.clearInterval(typing)
+      window.clearTimeout(linger)
+    }
+  }, [poke, text, reduced])
+
+  const speak = (next: FiboLine) => {
+    audio.current ??= new AudioContext()
+    chirp(audio.current, 880, 220, 90, 0.04)
+    setLine(next)
+    setTyped(reduced ? FIBO_LINES[next].length : 0)
+    setPoke((p) => p + 1)
+  }
+
+  return { speaking: poke > 0, text, typed, speak }
+}
+
+function glance(offset: number): -1 | 0 | 1 {
+  if (offset < -FIBO_GLANCE) return -1
+  return offset > FIBO_GLANCE ? 1 : 0
+}
+
+/*
+ * fibo builds up from coarse blocks once the spiral has drawn, then dances.
+ * With the pointer near him he stops and turns to it: eyes, head and neck
+ * follow, and he turns round when it goes behind him. Clicking him earns a
+ * remark. His hit area is padded so a pointer beside him still counts.
+ */
+function Fibo({ geometry }: { geometry: Geometry }) {
+  const [look, setLook] = useState<PixelSnailLook | null>(null)
+  const { speaking, text, typed, speak } = useSpeech(usePrefersReducedMotion())
+  const pixel = geometry.stroke * FIBO_SCALE
+  const { x, y } = geometry.fibo
+  const [, , width = 1, height = 1] = geometry.viewBox.split(" ").map(Number)
+  const pad = 8 * pixel
+
+  // The pointer in art pixels from his origin, under the middle of his foot.
+  const offset = (event: MouseEvent<SVGRectElement>) => {
+    const matrix = event.currentTarget.ownerSVGElement
+      ?.getScreenCTM()
+      ?.inverse()
+    if (!matrix) return null
+    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(
+      matrix
+    )
+    return { dx: (point.x - x) / pixel, dy: (point.y - y) / pixel }
+  }
+
+  const follow = (event: PointerEvent<SVGRectElement>) => {
+    const at = offset(event)
+    if (!at) return
+    const { dx, dy } = at
+    setLook((current) => {
+      const turned = current?.facing ?? 1
+      const facing = dx < -FIBO_TURN ? -1 : dx > FIBO_TURN ? 1 : turned
+      return {
+        facing,
+        x: glance((dx - facing * FIBO_EYES.x) * facing),
+        y: glance(dy - FIBO_EYES.y),
+      }
+    })
+  }
+
+  return (
+    <>
+      <svg
+        className="pointer-events-none absolute inset-0 size-full overflow-visible"
+        viewBox={geometry.viewBox}
+        aria-hidden="true"
+      >
+        <PixelSnailSprite
+          className="text-foreground"
+          transform={`translate(${x} ${y})`}
+          pixel={pixel}
+          mode="dance"
+          look={look}
+          assembleDelay={FIBO_ASSEMBLE_MS}
+        />
+        <rect
+          x={x - 11 * pixel - pad}
+          y={y - 16 * pixel - pad}
+          width={24 * pixel + pad * 2}
+          height={16 * pixel + pad * 2}
+          fill="transparent"
+          pointerEvents="all"
+          className="cursor-pointer"
+          onPointerMove={follow}
+          onPointerLeave={() => setLook(null)}
+          onClick={(event) => {
+            const at = offset(event)
+            speak(at && at.dy < FIBO_EYES.y - FIBO_GLANCE ? "rage" : "poke")
+          }}
+        />
+      </svg>
+      {speaking ? (
+        // Anchored by its right edge over his head, so it opens back across
+        // the frame instead of off the side of it. The untyped rest of the
+        // line holds its place, so the bubble keeps its size as it fills.
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute z-10 w-max max-w-[15rem] rounded-lg border border-border bg-popover px-2.5 py-1.5 font-mono text-xs leading-snug text-popover-foreground shadow-sm"
+          style={{
+            right: `${(1 - (x + 12 * pixel) / width) * 100}%`,
+            bottom: `${(1 - (y - 18 * pixel) / height) * 100}%`,
+          }}
+        >
+          {text.slice(0, typed)}
+          <span className="text-transparent">{text.slice(typed)}</span>
+          <span className="absolute right-6 -bottom-[5px] size-2 rotate-45 border-r border-b border-border bg-popover" />
+        </div>
+      ) : null}
+    </>
   )
 }
 
@@ -549,6 +703,16 @@ function Pitch({ width, className }: { width: number; className?: string }) {
           variant="outline"
           nativeButton={false}
           className="h-[round(up,1.5rem,var(--u))] w-[round(up,6rem,var(--u))] bg-background hover:bg-accent"
+          render={<a href={LINKS.figma} target="_blank" rel="noreferrer" />}
+        >
+          <FigmaIcon data-icon="inline-start" />
+          Figma
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          nativeButton={false}
+          className="h-[round(up,1.5rem,var(--u))] w-[round(up,6rem,var(--u))] bg-background hover:bg-accent"
           render={<a href={LINKS.github} target="_blank" rel="noreferrer" />}
         >
           <GithubIcon data-icon="inline-start" />
@@ -653,9 +817,10 @@ function Frame({
   return (
     <div className="fibo-screen-lines relative border-x border-border">
       <Plate id={id} geometry={geometry} />
-      <Spiral id={id} geometry={geometry} />
+      <Spiral geometry={geometry} />
       <div className={cn("relative grid", className)}>{children}</div>
       <Interactive id={id} geometry={geometry} />
+      <Fibo geometry={geometry} />
     </div>
   )
 }

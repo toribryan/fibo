@@ -19,7 +19,7 @@ type Chapter = {
   title: string
   /** Supporting copy under the title, clamped to three lines. */
   description?: React.ReactNode
-  /** Small muted label above the title, such as a timestamp or step number. */
+  /** Small muted label beside the title, such as a timestamp or step number. */
   meta?: React.ReactNode
 }
 
@@ -442,6 +442,7 @@ function ChapterScrubber({
               }}
               key={item.id}
               id={optionId(index)}
+              data-slot="chapter-scrubber-item"
               type="button"
               role="option"
               aria-selected={isCurrent}
@@ -509,22 +510,26 @@ function ChapterScrubber({
               top: "origin-bottom",
             }[resolvedSide],
             preview === "card"
-              ? "w-[260px] rounded-2xl border border-border bg-popover px-4 py-3.5 text-popover-foreground shadow-lg"
-              : "w-max max-w-[220px]"
+              ? "w-[248px] rounded-xl border border-border bg-popover p-3 text-popover-foreground shadow-md"
+              : "w-max max-w-[220px] rounded-md border border-border bg-popover px-2 py-1 text-popover-foreground shadow-sm"
           )}
         >
           {preview === "card" ? (
             <>
-              {chapter.meta ? (
-                <div className="mb-1 text-xs font-medium text-muted-foreground tabular-nums">
-                  {chapter.meta}
+              {/* Title and time share a row, like a chapter list, so the
+                  card leads with what the chapter is. */}
+              <div className="flex items-baseline gap-3">
+                <div className="min-w-0 flex-1 truncate text-sm leading-5 font-medium tracking-[-0.01em]">
+                  {chapter.title}
                 </div>
-              ) : null}
-              <div className="truncate text-sm leading-snug font-semibold tracking-[-0.01em]">
-                {chapter.title}
+                {chapter.meta ? (
+                  <span className="shrink-0 font-mono text-xs text-muted-foreground tabular-nums">
+                    {chapter.meta}
+                  </span>
+                ) : null}
               </div>
               {chapter.description ? (
-                <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-1 line-clamp-3 text-[13px] leading-[18px] text-pretty text-muted-foreground">
                   {chapter.description}
                 </p>
               ) : null}
