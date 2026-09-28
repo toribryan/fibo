@@ -1,0 +1,241 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/progress.stories"
+import {
+  Progress,
+  ProgressLabel,
+  ProgressValue,
+} from "../../../../packages/ui/src/components/progress"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Progress
+
+A progress bar shows how far a task has got, such as an upload or an export.
+With no value, it shows that the task is under way.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Determinate, from 0 to 100, or indeterminate while the total isn't known,
+  built on Base UI's Progress.
+- A label and a formatted value sit on one row above the bar.
+- Announced as a progress bar with its name and value.
+- The fill glides between values, and jumps instead under reduced motion.
+
+## Installation
+
+<Install
+  name="progress"
+  exports={["Progress", "ProgressLabel", "ProgressValue"]}
+/>
+
+## Usage
+
+```tsx
+import {
+  Progress,
+  ProgressLabel,
+  ProgressValue,
+} from "@/components/ui/progress"
+
+export function Upload({ percent }: { percent: number }) {
+  return (
+    <Progress value={percent}>
+      <ProgressLabel>Uploading photos</ProgressLabel>
+      <ProgressValue />
+    </Progress>
+  )
+}
+```
+
+Pass `value={null}` while you don't know how long the task will take.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Progress",
+    slot: "progress",
+    note: "The progress bar. Carries data-progressing, data-complete or data-indeterminate.",
+    children: [
+      {
+        name: "ProgressLabel",
+        slot: "progress-label",
+        note: "Optional. What's in progress. Names the bar.",
+      },
+      {
+        name: "ProgressValue",
+        slot: "progress-value",
+        note: "Optional. The value as a percentage.",
+      },
+      {
+        name: "track",
+        slot: "progress-track",
+        note: "The full bar.",
+        children: [
+          {
+            name: "indicator",
+            slot: "progress-indicator",
+            note: "The filled part.",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a progress bar for a task that takes more than a couple of seconds, so people know it's working.",
+    "Say what's happening in the label, like “Exporting report”, and change it when the task finishes.",
+    "Move to a determinate bar as soon as you know the total.",
+    "For content that's loading into a layout, use a skeleton instead.",
+  ]}
+/>
+
+## Examples
+
+### Indeterminate
+
+`value={null}` for a task with no known length. A segment sweeps across the
+track; under reduced motion the bar fills in the muted text colour instead.
+
+<Canvas of={Stories.Indeterminate} />
+
+### Complete
+
+At 100 the bar is full and the root carries `data-complete`.
+
+<Canvas of={Stories.Complete} />
+
+### Without label
+
+With no visible label, name the bar with `aria-label`.
+
+<Canvas of={Stories.WithoutLabel} />
+
+### Live
+
+A controlled bar that fills as a task runs, with a label that changes when
+it finishes.
+
+<Canvas of={Stories.Live} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Progress value={45} className="w-56">
+            <ProgressLabel>Exporting report</ProgressLabel>
+            <ProgressValue />
+          </Progress>
+        ),
+        description: "Say what's in progress and how far it has got.",
+      },
+      negative: {
+        component: (
+          <Progress value={45} aria-label="Progress" className="w-56">
+            <ProgressLabel>Please wait…</ProgressLabel>
+          </Progress>
+        ),
+        description:
+          "Don't just ask people to wait. They can't tell what's happening or whether it's stuck.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Progress takes every prop of Base UI's `Progress.Root`, including `value`,
+`min`, `max`, `format` and `getAriaValueText`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="progress"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-progressing",
+      element: "Every part",
+      when: "The value is below the maximum.",
+    },
+    {
+      attribute: "data-complete",
+      element: "Every part",
+      when: "The value has reached the maximum.",
+    },
+    {
+      attribute: "data-indeterminate",
+      element: "Every part",
+      when: (
+        <>
+          The value is <code>null</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="progress-label"',
+      element: "The label",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="progress-value"',
+      element: "The value",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="progress-track"',
+      element: "The track",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="progress-indicator"',
+      element: "The fill",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The root is a <code>progressbar</code> with <code>aria-valuenow</code>.
+      ProgressLabel names it; without one, pass <code>aria-label</code>.
+    </>,
+    "Most screen readers don't announce each change on their own. When the task finishes, say so in the label or with a toast.",
+    <>
+      Pass <code>getAriaValueText</code> when a percentage isn't the clearest
+      reading, such as “3 of 12 files”.
+    </>,
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Skeleton", "Toast", "Slider"]} />
+
+## References
+
+- [Base UI Progress](https://base-ui.com/react/components/progress)
+- [WAI-ARIA progressbar role](https://www.w3.org/TR/wai-aria-1.2/#progressbar)

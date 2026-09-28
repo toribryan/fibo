@@ -81,6 +81,19 @@
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+
+  /* Progress with no value: a segment that sweeps across the track. */
+  --animate-progress-indeterminate: progress-indeterminate 1.4s ease-in-out
+    infinite;
+
+  @keyframes progress-indeterminate {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(300%);
+    }
+  }
 }
 
 /*

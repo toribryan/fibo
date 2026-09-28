@@ -1,5 +1,12 @@
 {
   "$comment": "One entry per file in src/components. The registry build, the Storybook catalog and llms.txt all read this; the build fails if a component is missing.",
+  "avatar": {
+    "title": "Avatar",
+    "description": "A person's photo, or their initials when there's no photo.",
+    "tier": "components",
+    "group": "Display",
+    "status": "new"
+  },
   "badge": {
     "title": "Badge",
     "description": "A short label for status, category or count.",
@@ -38,6 +45,13 @@
     "group": "Diagrams",
     "status": "new"
   },
+  "kbd": {
+    "title": "Kbd",
+    "description": "Shows a key or a keyboard shortcut in text.",
+    "tier": "components",
+    "group": "Display",
+    "status": "new"
+  },
   "label": {
     "title": "Label",
     "description": "Names a form control and widens its hit area.",
@@ -48,6 +62,13 @@
     "title": "Pixel snail",
     "description": "A one-colour pixel snail that crawls on a loop while something loads.",
     "tier": "niche",
+    "group": "Feedback",
+    "status": "new"
+  },
+  "progress": {
+    "title": "Progress",
+    "description": "Shows how far a task has got, or that it's under way.",
+    "tier": "components",
     "group": "Feedback",
     "status": "new"
   },
@@ -72,6 +93,13 @@
     "group": "Forms",
     "status": "new"
   },
+  "skeleton": {
+    "title": "Skeleton",
+    "description": "A placeholder in the shape of content that's still loading.",
+    "tier": "components",
+    "group": "Feedback",
+    "status": "new"
+  },
   "slider": {
     "title": "Slider",
     "description": "Picks a number, or a range, by dragging along a track.",
@@ -91,6 +119,13 @@
     "description": "Several lines of free text that grow with the content.",
     "tier": "components",
     "group": "Forms"
+  },
+  "toast": {
+    "title": "Toast",
+    "description": "A brief message in the corner about something that just happened.",
+    "tier": "components",
+    "group": "Feedback",
+    "status": "new"
   },
   "token-flow": {
     "title": "Token flow",

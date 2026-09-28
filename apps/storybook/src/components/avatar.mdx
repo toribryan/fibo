@@ -1,0 +1,236 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/avatar.stories"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+} from "../../../../packages/ui/src/components/avatar"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Avatar
+
+An avatar shows who someone is: their photo, or their initials when there's
+no photo or it fails to load.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Falls back to initials until the photo loads, and stays on them if it
+  never does, built on Base UI's Avatar.
+- Three sizes: 24, 32 and 40 pixels.
+- A badge in the corner for status, such as online.
+- Groups overlap into a stack, with a count for the people left out.
+
+## Installation
+
+<Install name="avatar" exports={["Avatar", "AvatarImage", "AvatarFallback"]} />
+
+`AvatarBadge`, `AvatarGroup` and `AvatarGroupCount` are exported too.
+
+## Usage
+
+```tsx
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+export function Author() {
+  return (
+    <Avatar>
+      <AvatarImage src="/people/ada.jpg" alt="Ada Lovelace" />
+      <AvatarFallback>AL</AvatarFallback>
+    </Avatar>
+  )
+}
+```
+
+Always include an AvatarFallback. It shows while the photo loads and stays if
+the photo fails.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Avatar",
+    slot: "avatar",
+    note: "The circle. Carries data-size.",
+    children: [
+      {
+        name: "AvatarImage",
+        slot: "avatar-image",
+        note: "The photo, once it has loaded.",
+      },
+      {
+        name: "AvatarFallback",
+        slot: "avatar-fallback",
+        note: "Initials, until the photo loads or if it fails.",
+      },
+      {
+        name: "AvatarBadge",
+        slot: "avatar-badge",
+        note: "Optional. A dot in the corner.",
+      },
+    ],
+  }}
+/>
+
+In a stack, `AvatarGroup` (`avatar-group`) wraps the avatars and
+`AvatarGroupCount` (`avatar-group-count`) shows how many more there are.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use two initials in the fallback: first and last name. One is fine for a single name.",
+    "Pick one size per list, so rows line up.",
+    "In a group, show three to five faces and a count for the rest.",
+    "Put the person's name next to the avatar wherever there's room. A face alone isn't enough to recognise someone.",
+  ]}
+/>
+
+## Examples
+
+### Fallback
+
+When the photo fails to load, the initials stay.
+
+<Canvas of={Stories.Fallback} />
+
+### Sizes
+
+`size` is `sm`, `default` or `lg`.
+
+<Canvas of={Stories.Sizes} />
+
+### With badge
+
+AvatarBadge puts a dot in the corner. Here it uses the success colour for
+online.
+
+<Canvas of={Stories.WithBadge} />
+
+### Group
+
+AvatarGroup overlaps the avatars; AvatarGroupCount says how many more.
+
+<Canvas of={Stories.Group} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <AvatarGroup>
+            {["AL", "GH", "KJ"].map((initials) => (
+              <Avatar key={initials}>
+                <AvatarFallback>{initials}</AvatarFallback>
+              </Avatar>
+            ))}
+            <AvatarGroupCount>+9</AvatarGroupCount>
+          </AvatarGroup>
+        ),
+        description: "Show a few faces and count the rest.",
+      },
+      negative: {
+        component: (
+          <AvatarGroup>
+            {["AL", "GH", "KJ", "MB", "RT", "SC", "TL", "YW"].map(
+              (initials) => (
+                <Avatar key={initials}>
+                  <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
+              )
+            )}
+          </AvatarGroup>
+        ),
+        description:
+          "Don't stack everyone. Past five, faces blur into a band nobody can read.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Avatar takes every prop of Base UI's `Avatar.Root`. AvatarImage takes
+`src`, `alt` and `onLoadingStatusChange`; AvatarFallback takes `delay` to
+wait before showing, so a fast photo doesn't flash the initials first.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="avatar"',
+      element: "The circle",
+      when: "Always.",
+    },
+    {
+      attribute: "data-size",
+      element: "The circle",
+      when: (
+        <>
+          Always. <code>sm</code>, <code>default</code> or <code>lg</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="avatar-image"',
+      element: "The photo",
+      when: "Once it has loaded.",
+    },
+    {
+      attribute: 'data-slot="avatar-fallback"',
+      element: "The initials",
+      when: "Until the photo loads, or if it fails.",
+    },
+    {
+      attribute: 'data-slot="avatar-badge"',
+      element: "The badge",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="avatar-group"',
+      element: "The stack",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="avatar-group-count"',
+      element: "The count",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Give AvatarImage an <code>alt</code> with the person's name. If their name
+      is already written beside it, use <code>alt=""</code> so it isn't read
+      twice.
+    </>,
+    "The initials are read out as text. When a name sits beside the avatar, hide the avatar with aria-hidden instead.",
+    "A badge's colour isn't announced. Put the status in the image's alt, such as “Ada Lovelace, online”.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Badge", "Skeleton"]} />
+
+## References
+
+- [Base UI Avatar](https://base-ui.com/react/components/avatar)

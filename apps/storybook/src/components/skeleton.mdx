@@ -1,0 +1,141 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/skeleton.stories"
+import { Skeleton } from "../../../../packages/ui/src/components/skeleton"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Skeleton
+
+A skeleton is a placeholder in the shape of content that's still loading. It
+keeps the layout steady, so nothing jumps when the real content arrives.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- One element you size and shape with classes: a line, a circle, a card.
+- A slow pulse that stops under reduced motion.
+- No dependencies. It's a styled `div`.
+
+## Installation
+
+<Install name="skeleton" exports={["Skeleton"]} />
+
+## Usage
+
+```tsx
+import { Skeleton } from "@/components/ui/skeleton"
+
+export function AuthorLoading() {
+  return (
+    <div className="flex items-center gap-3" aria-busy="true">
+      <Skeleton className="size-10 rounded-full" />
+      <Skeleton className="h-4 w-40" />
+    </div>
+  )
+}
+```
+
+Match the size and shape of what's coming, so the swap doesn't move anything.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use skeletons for content that loads into a known layout: lists, cards, profiles.",
+    "Mirror the real layout closely, but simply. Leave out icons, borders and small details.",
+    "Vary the widths of text lines, so they read as text rather than a grid.",
+    "For a task with a known length, like an upload, use a progress bar instead.",
+  ]}
+/>
+
+## Examples
+
+### Profile row
+
+A circle for the avatar and two lines for the name and detail.
+
+<Canvas of={Stories.ProfileRow} />
+
+### Card
+
+An image block, two lines of text and a button.
+
+<Canvas of={Stories.Card} />
+
+### Paragraph
+
+Lines of text with the last one short, as a paragraph ends.
+
+<Canvas of={Stories.Paragraph} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex items-center gap-3">
+            <Skeleton className="size-10 rounded-full" />
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+        ),
+        description: "Match the shape of what's loading.",
+      },
+      negative: {
+        component: <Skeleton className="h-20 w-56 rounded-xl" />,
+        description:
+          "Don't use one block for everything. It hides what's coming and the layout shifts when it arrives.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Skeleton takes every prop of a `div`. Size and shape it with `className`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="skeleton"',
+      element: "The placeholder",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Skeletons have no role and aren't announced. Set{" "}
+      <code>aria-busy="true"</code> on the region that's loading, and remove it
+      when the content arrives.
+    </>,
+    "If loading could take a while, add a visually hidden status message, such as “Loading projects”.",
+    "The pulse stops under prefers-reduced-motion.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Progress", "Pixel snail", "Avatar"]} />
+
+## References
+
+- [MDN: aria-busy](https://developer.mozilla.org/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-busy)
