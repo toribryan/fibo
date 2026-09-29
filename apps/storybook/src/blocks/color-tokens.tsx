@@ -1,12 +1,11 @@
-import type { ReactNode } from "react"
 import {
-  MousePointerClickIcon,
-  TagIcon,
-  TextCursorInputIcon,
-} from "lucide-react"
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+  type ReactNode,
+} from "react"
 
 import globals from "@workspace/ui/globals.css?raw"
-import { IntegrationVisual } from "@workspace/ui/components/integration-visual"
 import { cn } from "@workspace/ui/lib/utils"
 
 /*
@@ -410,94 +409,337 @@ function Primitives() {
   )
 }
 
-// Tiny swatch marks for the diagram's tiles. Each follows the mode, as the
-// tokens it feeds do.
-function Neutrals() {
-  return (
-    <span aria-hidden="true" className="flex flex-col gap-0.5">
-      {[
-        "bg-neutral-200 dark:bg-neutral-800",
-        "bg-neutral-500",
-        "bg-neutral-900 dark:bg-neutral-50",
-      ].map((className) => (
-        <span
-          key={className}
-          className={cn("block h-1.5 w-5 rounded-full", className)}
-        />
-      ))}
-    </span>
-  )
-}
+const STEPS = [
+  "white",
+  "50",
+  "100",
+  "200",
+  "300",
+  "400",
+  "500",
+  "600",
+  "700",
+  "800",
+  "900",
+  "950",
+]
 
-function Hues() {
-  return (
-    <span aria-hidden="true" className="grid grid-cols-2 gap-0.5">
-      {[
-        "bg-red-700 dark:bg-red-400",
-        "bg-green-700 dark:bg-green-400",
-        "bg-amber-700 dark:bg-amber-400",
-        "bg-blue-700 dark:bg-blue-400",
-      ].map((className) => (
-        <span
-          key={className}
-          className={cn("block size-2 rounded-full", className)}
-        />
-      ))}
-    </span>
-  )
-}
-
-// A column in `sides` holds three rows on the plate, so the hues share one
-// tile.
-const FLOW = [
-  { title: "Tailwind neutral", side: "in", icon: <Neutrals /> },
-  { title: "Tailwind red, green, amber and blue", side: "in", icon: <Hues /> },
-  { title: "Button", side: "out", icon: <MousePointerClickIcon /> },
-  { title: "Input", side: "out", icon: <TextCursorInputIcon /> },
-  { title: "Badge", side: "out", icon: <TagIcon /> },
-] as const
-
-// What the hub's preview spells out: a primitive, the token that names its
-// job, and the class a component writes.
-const CHAIN = [
-  ["neutral-900", "--primary", "bg-primary"],
-  ["red-700", "--destructive", "text-destructive"],
-  ["neutral-200", "--border", "border-border"],
+// Spelled out in full so Tailwind generates each one.
+const STEP_CLASSES = [
+  "bg-white",
+  "bg-neutral-50",
+  "bg-neutral-100",
+  "bg-neutral-200",
+  "bg-neutral-300",
+  "bg-neutral-400",
+  "bg-neutral-500",
+  "bg-neutral-600",
+  "bg-neutral-700",
+  "bg-neutral-800",
+  "bg-neutral-900",
+  "bg-neutral-950",
 ]
 
 /*
- * The layers as a pipeline: Tailwind's hues flow into the semantic tokens,
- * and the tokens flow out to components. The swatches follow the mode, as
- * the tokens do.
+ * The tokens pinned to the ramp, each in a fixed lane. Lanes are chosen so
+ * no two pins in a lane sit close in either mode: in dark, border, primary
+ * and foreground all land at the light end.
  */
-function ColorFlow() {
+const PINS: { token: string; lane: number }[] = [
+  { token: "background", lane: 2 },
+  { token: "foreground", lane: 2 },
+  { token: "primary", lane: 1 },
+  { token: "muted", lane: 1 },
+  { token: "border", lane: 0 },
+  { token: "muted-foreground", lane: 0 },
+]
+
+const HUE_PINS = [
+  { token: "destructive", hue: "red", light: "bg-red-700", dark: "bg-red-400" },
+  {
+    token: "success",
+    hue: "green",
+    light: "bg-green-700",
+    dark: "bg-green-400",
+  },
+  {
+    token: "warning",
+    hue: "amber",
+    light: "bg-amber-700",
+    dark: "bg-amber-400",
+  },
+  { token: "info", hue: "blue", light: "bg-blue-700", dark: "bg-blue-400" },
+]
+
+type Mode = "light" | "dark"
+
+// Where a token lands on the neutral ramp, and the alpha it's mixed at, if
+// any: dark borders are white at a low alpha rather than a step.
+function stepOf(value: string | undefined) {
+  const name = primitive(value)
+  const alpha = / at (\d+%)$/.exec(name)?.[1]
+  const step = name.replace(/ at \d+%$/, "").replace(/^neutral-/, "")
+  return { index: STEPS.indexOf(step), alpha }
+}
+
+/**
+ * Tailwind's neutral ramp with fibo's tokens pinned to the steps they point
+ * at. Switching mode slides every pin to its other step, and a small card
+ * beside it is drawn with the same tokens, so the mapping can be seen at
+ * work. Hovering or focusing a token picks out where the card uses it.
+ */
+function RampMap() {
+  const [mode, setMode] = useState<Mode>(() =>
+    typeof document !== "undefined" &&
+    document.documentElement.classList.contains("dark")
+      ? "dark"
+      : "light"
+  )
+  const [active, setActive] = useState<string | null>(null)
+  const values = mode === "dark" ? DARK : LIGHT
+  const last = STEPS.length - 1
+  const pins = PINS.map(({ token, lane }, row) => ({
+    token,
+    lane,
+    row,
+    ...stepOf(values[token]),
+  })).filter(({ index }) => index >= 0)
+
+  const hover = (token: string) => ({
+    onPointerEnter: () => setActive(token),
+    onPointerLeave: () => setActive(null),
+    onFocus: () => setActive(token),
+    onBlur: () => setActive(null),
+  })
+  const dim = (token: string) =>
+    active && active !== token ? "opacity-30" : "opacity-100"
+  // In the card, the parts using the active token are outlined instead, so
+  // the card stays readable.
+  const mark = (...tokens: string[]) =>
+    active &&
+    tokens.includes(active) &&
+    "outline-2 outline-offset-2 outline-foreground outline-dashed"
+  // Pointing at a part of the card picks its token; stopped here so the
+  // plate underneath doesn't take over.
+  const point = (token: string) => ({
+    onPointerOver: (event: PointerEvent) => {
+      event.stopPropagation()
+      setActive(token)
+    },
+    onPointerLeave: () => setActive(null),
+  })
+
+  // The card reads the chosen mode's tokens whatever the page is in.
+  const cardVars = Object.fromEntries(
+    Object.entries(values).map(([name, value]) => [`--${name}`, value])
+  ) as CSSProperties
+
   return (
-    <div className="mx-auto my-6 max-w-2xl overflow-hidden rounded-xl border border-border">
-      <IntegrationVisual
-        layout="sides"
-        pulse="through"
-        center="tokens"
-        label="Tailwind's colours flow into fibo's semantic tokens, which components read"
-        items={FLOW.map((item) => ({ ...item }))}
-        preview={
-          <div className="flex flex-col gap-1.5 font-mono text-xs">
-            {CHAIN.map(([primitive, token, utility]) => (
-              <div
-                key={token}
-                className="flex items-center gap-1.5 whitespace-nowrap"
-              >
-                <span className="text-muted-foreground">{primitive}</span>
-                <span aria-hidden="true">→</span>
-                <span>{token}</span>
-                <span aria-hidden="true">→</span>
-                <span className="rounded-sm bg-muted px-1">{utility}</span>
-              </div>
-            ))}
+    <figure className="my-6 flex flex-col gap-6 rounded-xl border border-border bg-card p-4 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <figcaption className="text-sm text-muted-foreground">
+          Tokens pinned to Tailwind&apos;s steps, in{" "}
+          <span className="text-foreground">{mode}</span> mode.
+        </figcaption>
+        <div
+          role="group"
+          aria-label="Mode"
+          className="inline-flex rounded-lg border border-border p-0.5"
+        >
+          {(["light", "dark"] as const).map((option) => (
+            <button
+              key={option}
+              type="button"
+              aria-pressed={mode === option}
+              onClick={() => setMode(option)}
+              className="rounded-md px-3 py-1 text-sm text-muted-foreground capitalize outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle aria-pressed:bg-muted aria-pressed:text-foreground"
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        {/* Lines first, so the labels cover any that pass behind them. On
+        narrow screens each label takes a row of its own. */}
+        <div className="relative h-[162px] sm:h-[96px]">
+          {pins.map(({ token, index, row, lane }) => (
+            <span
+              key={token}
+              aria-hidden="true"
+              className={cn(
+                "absolute top-[calc(var(--row)*25px+20px)] bottom-0 w-px bg-border transition-[left,opacity] duration-500 ease-out motion-reduce:transition-none sm:top-[calc(var(--lane)*28px+20px)]",
+                dim(token),
+                active === token && "bg-foreground"
+              )}
+              style={
+                {
+                  left: `${((index + 0.5) / STEPS.length) * 100}%`,
+                  "--row": row,
+                  "--lane": lane,
+                } as CSSProperties
+              }
+            />
+          ))}
+          {pins.map(({ token, index, alpha, row, lane }) => (
+            <button
+              key={token}
+              type="button"
+              {...hover(token)}
+              className={cn(
+                "absolute top-[calc(var(--row)*25px)] rounded-md border border-border bg-background px-1.5 py-0.5 font-mono text-[11px] whitespace-nowrap text-foreground transition-[left,transform,opacity] duration-500 ease-out outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle motion-reduce:transition-none sm:top-[calc(var(--lane)*28px)] sm:text-xs",
+                dim(token)
+              )}
+              style={
+                {
+                  "--row": row,
+                  "--lane": lane,
+                  left: `${((index + 0.5) / STEPS.length) * 100}%`,
+                  // Anchored in proportion to where it sits, so labels at
+                  // either end stay inside the ramp.
+                  transform: `translateX(-${(index / last) * 100}%)`,
+                } as CSSProperties
+              }
+            >
+              {token}
+              {alpha ? (
+                <span className="text-muted-foreground"> {alpha}</span>
+              ) : null}
+            </button>
+          ))}
+        </div>
+        <div
+          className="flex overflow-hidden rounded-lg border border-border"
+          role="img"
+          aria-label={`${mode} mode: ${PINS.map(({ token }) => `${token} is ${primitive(values[token])}`).join(", ")}`}
+        >
+          {STEPS.map((step, i) => (
+            <span key={step} className={cn("h-10 flex-1", STEP_CLASSES[i])} />
+          ))}
+        </div>
+        <div
+          aria-hidden="true"
+          className="flex font-mono text-[10px] text-muted-foreground"
+        >
+          {STEPS.map((step) => (
+            <span key={step} className="flex-1 text-center">
+              {step === "white" ? "white" : step}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3">
+          {HUE_PINS.map(({ token, hue, light, dark }) => (
+            <button
+              key={token}
+              type="button"
+              {...hover(token)}
+              className={cn(
+                "flex flex-col gap-1.5 rounded-lg text-left transition-opacity outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
+                dim(token)
+              )}
+            >
+              <span className="font-mono text-xs text-foreground">
+                {token} <span className="text-muted-foreground">{hue}</span>
+              </span>
+              <span className="flex overflow-hidden rounded-md border border-border">
+                {[
+                  [light, "700", "light"],
+                  [dark, "400", "dark"],
+                ].map(([className, step, stepMode]) => (
+                  <span
+                    key={step}
+                    className={cn(
+                      "flex h-8 flex-1 items-end px-1.5 pb-1 font-mono text-[10px] transition-[flex-grow] duration-500 ease-out motion-reduce:transition-none",
+                      className,
+                      stepMode === mode ? "grow-[3]" : "grow"
+                    )}
+                  >
+                    <span className="rounded-sm bg-background px-1 text-foreground">
+                      {step}
+                    </span>
+                  </span>
+                ))}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div
+          aria-hidden="true"
+          style={cardVars}
+          {...point("background")}
+          className={cn(
+            "flex flex-col gap-3 rounded-lg border border-border bg-background p-4 transition-colors duration-500 motion-reduce:transition-none",
+            mark("background", "border")
+          )}
+        >
+          <div className="flex flex-col gap-0.5">
+            <span
+              {...point("foreground")}
+              className={cn(
+                "w-fit text-sm font-medium text-foreground",
+                mark("foreground")
+              )}
+            >
+              Weekly sync
+            </span>
+            <span
+              {...point("muted-foreground")}
+              className={cn(
+                "w-fit text-xs text-muted-foreground",
+                mark("muted-foreground")
+              )}
+            >
+              Last run 2 minutes ago
+            </span>
           </div>
-        }
-      />
-    </div>
+          <span
+            {...point("border")}
+            className={cn(
+              "flex h-8 items-center rounded-md border border-border px-2 text-xs text-muted-foreground",
+              mark("border")
+            )}
+          >
+            Add a note…
+          </span>
+          <div className="flex items-center gap-2">
+            <span
+              {...point("muted")}
+              className={cn(
+                "rounded-full bg-muted px-2 py-0.5 text-xs text-foreground",
+                mark("muted")
+              )}
+            >
+              Design
+            </span>
+            <span
+              {...point("success")}
+              className={cn(
+                "flex items-center gap-1 text-xs text-success",
+                mark("success")
+              )}
+            >
+              <span className="size-1.5 rounded-full bg-success" />
+              Synced
+            </span>
+            <span
+              {...point("primary")}
+              className={cn(
+                "ml-auto rounded-md bg-primary px-3 py-1 text-xs font-medium text-primary-foreground",
+                mark("primary")
+              )}
+            >
+              Save
+            </span>
+          </div>
+        </div>
+      </div>
+    </figure>
   )
 }
 
-export { ColorFlow, Primitives, TokenFamily }
+export { Primitives, RampMap, TokenFamily }
