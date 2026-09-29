@@ -106,6 +106,46 @@ async function inlineComponent(spec) {
   return { imports, body: privateBody }
 }
 
+// Inlined files share one scope, so a name declared twice, or declared and
+// imported, would not compile. Types and values are tracked apart because
+// TypeScript lets a type and a function share a name.
+function checkNames(file, imports, bodies) {
+  const seen = { type: new Set(), value: new Set() }
+  const add = (name, spaces) => {
+    for (const space of spaces) {
+      if (seen[space].has(name)) {
+        throw new Error(
+          `${file} would declare ${name} twice once inlined. Rename one of them.`
+        )
+      }
+      seen[space].add(name)
+    }
+  }
+  for (const text of imports) {
+    const typeOnly = /^import\s+type\s/.test(text)
+    const clause = text
+      .replace(/^import\s+(?:type\s+)?/, "")
+      .split(/\sfrom\s/)[0]
+    for (const [, type, name] of clause.matchAll(
+      /(?:\bas\s+|^|[{,]\s*)(type\s+)?(\w+)\s*(?=[,}]|$)/gm
+    )) {
+      add(name, typeOnly || type ? ["type"] : ["type", "value"])
+    }
+  }
+  const spacesOf = {
+    type: ["type"],
+    interface: ["type"],
+    class: ["type", "value"],
+  }
+  for (const body of bodies) {
+    for (const [, keyword, name] of body.matchAll(
+      /^(?:export\s+)?(?:async\s+)?(function|const|let|class|type|interface)\s+(\w+)/gm
+    )) {
+      add(name, spacesOf[keyword] ?? ["value"])
+    }
+  }
+}
+
 function mergeImports(statements) {
   const bySpec = new Map()
   for (const { text, spec } of statements) {
@@ -187,6 +227,7 @@ async function assemble(source, file, own) {
     ),
     ...(usesCn ? cnHelper.imports : []),
   ])
+  checkNames(file, allImports, [body, ...inlined.map((dep) => dep.body)])
   return mapRoles(
     [
       '"use client"',
