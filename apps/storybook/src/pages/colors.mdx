@@ -1,7 +1,6 @@
 import { Meta } from "@storybook/addon-docs/blocks"
 
-import { TokenFlow } from "../../../../packages/ui/src/components/token-flow"
-import { Primitives, TokenFamily } from "../blocks/color-tokens"
+import { ColorFlow, Primitives, TokenFamily } from "../blocks/color-tokens"
 import { ComponentRules, Tip } from "../blocks/guidelines"
 
 <Meta title="Foundations/Colors" />
@@ -12,32 +11,7 @@ fibo is achromatic. Greys do the structural work, and colour only ever carries
 meaning. Components never name a colour: they read semantic tokens, and each
 token points at one of Tailwind's primitives, per mode.
 
-<TokenFlow
-  showUse
-  rows={[
-    {
-      base: "oklch(0.205 0 0)",
-      primitive: "neutral-900",
-      semantic: "bg-primary",
-      use: "The main action",
-      dark: { base: "oklch(0.985 0 0)", primitive: "neutral-50" },
-    },
-    {
-      base: "oklch(0.505 0.213 27.518)",
-      primitive: "red-700",
-      semantic: "text-destructive",
-      use: "Errors and deletion",
-      dark: { base: "oklch(0.704 0.191 22.216)", primitive: "red-400" },
-    },
-    {
-      base: "oklch(0.922 0 0)",
-      primitive: "neutral-200",
-      semantic: "border-border",
-      use: "Dividers and edges",
-      dark: { base: "oklch(1 0 0 / 10%)", primitive: "white at 10%" },
-    },
-  ]}
-/>
+<ColorFlow />
 
 ## How the layers work
 
