@@ -33,7 +33,7 @@
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "chromatic": "^18.9.5",
-    "eslint": "^9",
+    "eslint": "^10.11.0",
     "eslint-plugin-storybook": "10.5.9",
     "playwright": "^1.63.0",
     "storybook": "10.5.9",

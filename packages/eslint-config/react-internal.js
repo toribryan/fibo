@@ -1,8 +1,13 @@
+import { fixupPluginRules } from "@eslint/compat"
 import pluginReact from "eslint-plugin-react"
 import pluginReactHooks from "eslint-plugin-react-hooks"
 import globals from "globals"
 
 import { config as baseConfig } from "./base.js"
+
+// eslint-plugin-react hasn't caught up with ESLint 10, which dropped the
+// context methods its rules still call; the compat shim puts them back.
+const react = fixupPluginRules(pluginReact)
 
 /**
  * A custom ESLint configuration for libraries that use React.
@@ -10,7 +15,10 @@ import { config as baseConfig } from "./base.js"
  * @type {import("eslint").Linter.Config} */
 export const config = [
   ...baseConfig,
-  pluginReact.configs.flat.recommended,
+  {
+    ...pluginReact.configs.flat.recommended,
+    plugins: { react },
+  },
   {
     languageOptions: {
       ...pluginReact.configs.flat.recommended.languageOptions,
