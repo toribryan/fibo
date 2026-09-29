@@ -12,6 +12,7 @@ import { DocLink } from "../blocks/doc-link"
 import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
 import { PixelGrid } from "../blocks/pixel-grid"
+import { SnailCover } from "../blocks/snail-cover"
 import { FIBO_LINES } from "../blocks/lines"
 
 <Meta of={Stories} />
@@ -23,7 +24,7 @@ pixel-art snail who crawls on a loop while something loads. As a sprite
 inside your own SVG, he can also build himself up, dance and turn to watch
 the pointer.
 
-<Canvas of={Stories.Default} />
+<SnailCover />
 
 ## Meet fibo
 
@@ -297,6 +298,13 @@ holding one rectangle per pixel.
 
 ## Examples
 
+### Loading
+
+The default: he crawls in place over a dotted ground, as a status region
+announcing "Loading".
+
+<Canvas of={Stories.Default} />
+
 ### Sizes
 
 `size` sets one art pixel to 2, 3 or 4 screen pixels.
@@ -391,9 +399,10 @@ In an empty panel with a line saying what's happening and a way out.
 <UsageGuidelines
   guidelines={[
     <>
-      <code>PixelSnail</code> is a <code>status</code> region named by{" "}
-      <code>label</code>. The drawing itself is hidden from assistive
-      technology.
+      <code>PixelSnail</code> is a <code>status</code> region holding{" "}
+      <code>label</code> as visually hidden text, since screen readers read a
+      status region's content rather than its name. The drawing itself is hidden
+      from assistive technology.
     </>,
     <>
       <code>PixelSnailSprite</code> is decoration. Hide the SVG it sits in with{" "}

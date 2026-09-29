@@ -12,8 +12,8 @@ import { Install } from "../blocks/install"
 # Filter menu
 
 A filter button whose menu lists the fields you can filter by, then each
-field's values. Start typing and the same menu becomes a search across every
-field and value, like a command menu.
+field's values. A Search filters button, or just typing, slides the same menu
+over to a search across every field and value, like a command menu.
 
 <Canvas of={Stories.AppliedAsChips} />
 
@@ -21,10 +21,11 @@ field and value, like a command menu.
 
 - Two levels: pick a field such as Status, then tick any number of its
   values. Each field shows how many of its values are on.
-- Typing turns the menu into a search, grouped by field, with the matching
-  letters in bold. Inside a field, the search stays within it.
-- Or, with `search="button"`, a Search filters button takes the place of the
-  search box, and the menu slides over to its search state when it's used.
+- A Search filters button at the top slides the menu over to a search,
+  grouped by field, with the matching letters in bold. Typing a letter on the
+  menu does the same. Inside a field, the search stays within it.
+- Or, with `search="inline"`, a search box sits at the top instead, and
+  typing turns the menu into results in place.
 - Escape steps back: first it clears the search, then it leaves the field,
   and only then does it close the menu.
 - Views slide forward and back, and the popup's height follows its content.
@@ -91,6 +92,38 @@ type FilterField = {
 type FilterValue = Record<string, string[]>
 ```
 
+### Fitting it into your app
+
+The menu works on its own, and each of these props lets you take over one
+part of it:
+
+- `open`, `defaultOpen` and `onOpenChange` put the open state in your hands,
+  for a keyboard shortcut or a menu that opens from elsewhere.
+- `trigger` swaps the default button for your own element. It must forward its
+  ref and props, as fibo's `Button` does.
+- `side` and `align` place the popup, and `container` portals it somewhere
+  other than the body, such as inside a dialog.
+- `popupClassName` styles the popup, which is portalled out of reach of
+  selectors on the trigger.
+- `labels` replaces the wording the menu writes for itself, alongside
+  `triggerLabel`, `placeholder`, `emptyText`, `label` and `searchLabel`.
+
+```tsx
+<FilterMenu
+  fields={fields}
+  trigger={<Button variant="ghost" size="icon" aria-label="Filtern" />}
+  label="Filter"
+  searchLabel="Filter durchsuchen"
+  emptyText="Keine passenden Filter"
+  labels={{
+    backToFields: "Zurück zu den Feldern",
+    backToFilters: "Zurück zu den Filtern",
+    backToField: (field) => `Zurück zu ${field}`,
+    results: (count) => `${count} ${count === 1 ? "Ergebnis" : "Ergebnisse"}`,
+  }}
+/>
+```
+
 ## Anatomy
 
 <Anatomy
@@ -116,7 +149,7 @@ type FilterValue = Record<string, string[]>
               {
                 name: "search button",
                 slot: "filter-menu-search-button",
-                note: 'With search="button", on the field menu.',
+                note: "On the field menu, unless search is inline.",
               },
             ],
           },
@@ -167,20 +200,20 @@ chip beside the button, with a button to remove it.
 
 <Canvas of={Stories.AppliedAsChips} />
 
-### Search button
-
-`search="button"` swaps the search box for a Search filters button. Using it
-slides the whole menu, header and body, over to the search state, which
-lists every value until you type. Back, Escape or Backspace slides it home.
-Typing a letter on the menu starts a search too.
-
-<Canvas of={Stories.SearchButton} />
-
 ### Default
 
-The menu on its own, keeping its own state.
+The menu on its own, keeping its own state. The Search filters button
+slides the whole menu, header and body, over to the search state, which
+lists every value until you type. Back, Escape or Backspace slides it home.
 
 <Canvas of={Stories.Default} />
+
+### Inline search
+
+`search="inline"` keeps a search box at the top of the menu. Typing turns it
+into results in place, and clearing the text brings the menu back.
+
+<Canvas of={Stories.InlineSearch} />
 
 ### With selections
 
@@ -273,7 +306,7 @@ A search with no results says so, using `emptyText`.
       element: "The Search filters button",
       when: (
         <>
-          <code>search="button"</code>, on the field menu.
+          On the field menu, unless <code>search</code> is <code>inline</code>.
         </>
       ),
     },
@@ -318,8 +351,9 @@ A search with no results says so, using `emptyText`.
 
 <UsageGuidelines
   guidelines={[
-    "Focus goes to the search box when the menu opens, and stays there. The box is a combobox, and aria-activedescendant points to the highlighted row, so screen readers read each row as the arrows move.",
-    "With the search button, the list takes focus instead and points at the highlighted row itself, and the button is one Tab away. Entering search moves focus into the search box; leaving it moves focus back to the list.",
+    "When the menu opens, the list takes focus and points at the highlighted row with aria-activedescendant, so screen readers read each row as the arrows move. The Search filters button is one Tab away.",
+    "Entering search moves focus into the search box, a combobox that points at the highlighted row the same way. Leaving the search moves focus back to the list.",
+    "With the inline search, focus goes to the search box when the menu opens, and stays there.",
     "Values are options in a multi-select listbox, announced as selected or not. Each field is read with how many of its values are chosen and that it opens its values.",
     "A search announces how many results it found.",
     "Escape steps back one level at a time, and the last press returns focus to the Filter button.",
