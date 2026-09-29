@@ -11,3 +11,12 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # typescript-eslint supports TypeScript below 6.1, and crashes on 7.
+      # Lift this once it supports 7.
+      - dependency-name: typescript
+        versions: [">=7"]
+      # Node's types follow the Node version pinned in .nvmrc, so their
+      # major moves with that pin rather than on its own.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
