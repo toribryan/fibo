@@ -266,7 +266,7 @@ type ReactionsProps = Omit<React.ComponentProps<"div">, "onChange"> &
     onReactionsChange?: (reactions: Reaction[]) => void
     /** Fires with the reaction that changed and whether it is now on. */
     onReact?: (reaction: Reaction, active: boolean) => void
-    /** Show the count on each pill. */
+    /** Show the count on each pill, or the total on the floating bar. */
     showCounts?: boolean
     /** Emoji thrown up on each new reaction. `0` turns the burst off. */
     particles?: number
@@ -359,7 +359,13 @@ function Reactions({
     )
 
     onReact?.(reaction, nowActive)
-    setAnnouncement(`${nowActive ? "Added" : "Removed"} ${reaction.label}`)
+    const change = `${nowActive ? "Added" : "Removed"} ${reaction.label}`
+    // The floating bar has no pills, so its total is the only count to hear.
+    setAnnouncement(
+      variant === "floating" && showCounts
+        ? `${change}, ${describeCount(total + (nowActive ? 1 : -1))} in total`
+        : change
+    )
     pulseNonce.current += 1
     setPulse({ emoji: reaction.emoji, nonce: pulseNonce.current })
     if (nowActive) burst(reaction.emoji, origin, particles)
@@ -399,14 +405,14 @@ function Reactions({
   const alignsEnd =
     isBar && (position === "bottom-right" || position === "top-right")
 
-  const totalChip = total > 0 && (
+  const totalChip = showCounts && total > 0 && (
     <span
       ref={badgeRef}
       data-slot="reactions-badge"
-      aria-hidden="true"
       className="inline-flex h-8 min-w-6 shrink-0 items-center justify-center px-1.5 text-xs font-medium text-muted-foreground tabular-nums"
     >
-      {formatCount(total)}
+      <span aria-hidden="true">{formatCount(total)}</span>
+      <span className="sr-only">{describeCount(total)}</span>
     </span>
   )
 
@@ -452,7 +458,11 @@ function Reactions({
             data-emoji={item.emoji}
             data-active={item.active ? "" : undefined}
             aria-pressed={Boolean(item.active)}
-            aria-label={`${item.label}, ${describeCount(item.count ?? 0)}`}
+            aria-label={
+              showCounts
+                ? `${item.label}, ${describeCount(item.count ?? 0)}`
+                : item.label
+            }
             onClick={(event) => toggle(item, event.currentTarget)}
             className="group/pill relative inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-card px-2.5 text-xs transition-[background-color,border-color,transform] duration-150 outline-none hover:bg-muted focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring-subtle active:translate-y-0 motion-safe:hover:-translate-y-px data-active:border-primary data-active:bg-primary-subtle"
           >

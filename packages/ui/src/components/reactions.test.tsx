@@ -104,4 +104,40 @@ describe("Reactions", () => {
       expect.objectContaining({ label: "Heart", count: 4, active: true }),
     ])
   })
+
+  it("reads out the floating total, and hides it with showCounts off", async () => {
+    const screen = await render(
+      <Reactions variant="floating" particles={0} defaultReactions={[heart]} />
+    )
+    await expect
+      .element(screen.getByText("3 reactions", { exact: true }))
+      .toBeInTheDocument()
+
+    await screen.getByRole("button", { name: "Add reaction" }).click()
+    await page.getByRole("button", { name: "Heart" }).click()
+    await expect
+      .element(screen.getByRole("status"))
+      .toHaveTextContent("Added Heart, 4 reactions in total")
+
+    screen.rerender(
+      <Reactions
+        variant="floating"
+        particles={0}
+        showCounts={false}
+        defaultReactions={[heart]}
+      />
+    )
+    await expect
+      .element(screen.getByText("4 reactions", { exact: true }))
+      .not.toBeInTheDocument()
+  })
+
+  it("leaves counts out of pill names with showCounts off", async () => {
+    const screen = await render(
+      <Reactions particles={0} showCounts={false} defaultReactions={[heart]} />
+    )
+    await expect
+      .element(screen.getByRole("button", { name: /^Heart/ }))
+      .toHaveAccessibleName("Heart")
+  })
 })
