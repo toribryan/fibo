@@ -16,10 +16,10 @@ Given a component name, read:
 
 Check each item and report only the ones that fail, with file and line:
 
-1. **Shelf.** Title is `Components/` or `Niche/` to match `tier` in the
-   metadata. A Component imports nothing beyond Base UI,
+1. **Shelf.** Title is `Base components/` or `Special components/` to match
+   `tier` in the metadata. A base component imports nothing beyond Base UI,
    `class-variance-authority`, `lucide-react` and other fibo components; only
-   Niche may import `motion`.
+   special components may import `motion`.
 2. **Tokens.** Only semantic colour classes. No primitive ramps
    (`neutral-*`, `red-*`), no opacity modifiers on colours (`/10`), no hex or
    rgb values in class names.

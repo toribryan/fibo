@@ -11,18 +11,18 @@ in order; each links to a file that already does it well, so copy that shape.
 
 ## 1. Choose the shelf
 
-- **Components** (`Components/<Name>`): standard parts most interfaces need.
+- **Base components** (`Base components/<Name>`): standard parts most interfaces need.
   Depend on nothing beyond Base UI, `class-variance-authority` and
   `lucide-react`. No animation libraries.
-- **Niche** (`Niche/<Name>`): playful parts built for one kind of moment, such
+- **Special components** (`Special components/<Name>`): playful parts built for one kind of moment, such
   as a diagram, a reading rail or a reaction. May use `motion`.
 
-If unsure, it is a Component.
+If unsure, it is a base component.
 
 ## 2. Write the source
 
 `packages/ui/src/components/<name>.tsx`, kebab-case. Model:
-`button.tsx` (Components) or `integration-visual.tsx` (Niche).
+`button.tsx` (base) or `integration-visual.tsx` (special).
 
 - Build on Base UI primitives (`@base-ui/react/*`), not Radix.
 - Set `data-slot="<name>"` on the root, and `data-slot="<name>-<part>"` on
@@ -50,7 +50,7 @@ If unsure, it is a Component.
 `packages/ui/src/components/<name>.stories.tsx`. Model:
 `chapter-scrubber.stories.tsx`.
 
-- `title: "Components/<Name>"` or `"Niche/<Name>"`.
+- `title: "Base components/<Name>"` or `"Special components/<Name>"`.
 - No `autodocs` tag; the MDX page is the docs. Add `tags: ["new"]` for a
   new part (it shows a pill in the sidebar).
 - A `Default` story driven entirely by args, so the playground controls work.
@@ -98,7 +98,7 @@ Headings and copy in sentence case.
 ## 5. Register the metadata
 
 - Add an entry to `packages/ui/components.meta.json`: `title`, a one-line
-  `description`, `tier` (`components` or `niche`), `group`, and
+  `description`, `tier` (`base-components` or `special-components`), `group`, and
   `"status": "new"` for a new part. The registry build fails without it.
 - Add a small, inert preview to `PREVIEWS` in
   `apps/storybook/src/blocks/catalog.tsx`, keyed by file name.

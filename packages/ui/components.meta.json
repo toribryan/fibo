@@ -3,128 +3,128 @@
   "avatar": {
     "title": "Avatar",
     "description": "A person's photo, or their initials when there's no photo.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Display"
   },
   "badge": {
     "title": "Badge",
     "description": "A short label for status, category or count.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Display"
   },
   "button": {
     "title": "Button",
     "description": "Triggers an action or event with a single click.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Actions"
   },
   "chapter-scrubber": {
     "title": "Chapter scrubber",
     "description": "A rail of marks that swell under the pointer like the Dock, previewing the chapter at the crest.",
-    "tier": "niche",
+    "tier": "special-components",
     "group": "Navigation"
   },
   "checkbox": {
     "title": "Checkbox",
     "description": "Turns a single option on or off, or picks many from a list.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Forms"
   },
   "filter-menu": {
     "title": "Filter menu",
     "description": "A filter menu of fields and values that turns into a search as you type.",
-    "tier": "niche",
+    "tier": "special-components",
     "group": "Navigation",
     "status": "new"
   },
   "input": {
     "title": "Input",
     "description": "A single line of free text.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Forms"
   },
   "integration-visual": {
     "title": "Integration visual",
     "description": "A hub and the tools wired into it, with pulses along the routes.",
-    "tier": "niche",
+    "tier": "special-components",
     "group": "Diagrams"
   },
   "kbd": {
     "title": "Kbd",
     "description": "Shows a key or a keyboard shortcut in text.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Display"
   },
   "label": {
     "title": "Label",
     "description": "Names a form control and widens its hit area.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Forms"
   },
   "pixel-snail": {
     "title": "Pixel snail",
     "description": "A one-colour pixel snail that crawls on a loop while something loads.",
-    "tier": "niche",
+    "tier": "special-components",
     "group": "Feedback"
   },
   "progress": {
     "title": "Progress",
     "description": "Shows how far a task has got, or that it's under way.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Feedback"
   },
   "radio-group": {
     "title": "Radio group",
     "description": "Picks exactly one option from a short list.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Forms"
   },
   "reactions": {
     "title": "Reactions",
     "description": "Lets people respond to content with an emoji in one tap.",
-    "tier": "niche",
+    "tier": "special-components",
     "group": "Feedback"
   },
   "select": {
     "title": "Select",
     "description": "Picks one option from a list that opens on demand.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Forms"
   },
   "skeleton": {
     "title": "Skeleton",
     "description": "A placeholder in the shape of content that's still loading.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Feedback"
   },
   "slider": {
     "title": "Slider",
     "description": "Picks a number, or a range, by dragging along a track.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Forms"
   },
   "switch": {
     "title": "Switch",
     "description": "Turns a setting on or off, taking effect at once.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Forms"
   },
   "textarea": {
     "title": "Textarea",
     "description": "Several lines of free text that grow with the content.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Forms"
   },
   "toast": {
     "title": "Toast",
     "description": "A brief message in the corner about something that just happened.",
-    "tier": "components",
+    "tier": "base-components",
     "group": "Feedback"
   },
   "token-flow": {
     "title": "Token flow",
     "description": "Walks a colour token from raw value to primitive to semantic role.",
-    "tier": "niche",
+    "tier": "special-components",
     "group": "Diagrams"
   }
 }

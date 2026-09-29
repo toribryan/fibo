@@ -47,7 +47,7 @@ your own.
 
 ## What's inside
 
-**Components** are the standard set. They depend on nothing beyond Base UI,
+**Base components** are the standard set. They depend on nothing beyond Base UI,
 `class-variance-authority` and `lucide-react`.
 
 | Part     | What it does                                                |
@@ -59,7 +59,7 @@ your own.
 | Label    | Names a form control and widens its hit area.               |
 | Textarea | Several lines of free text that grow with the content.      |
 
-**Niche** parts are playful and built for one kind of moment. They may bring
+**Special components** are playful and built for one kind of moment. They may bring
 `motion` with them.
 
 | Part               | What it does                                                           |

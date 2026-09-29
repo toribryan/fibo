@@ -67,7 +67,7 @@ const FIELDS: FilterField[] = [
 const settle = () => new Promise((resolve) => setTimeout(resolve, 400))
 
 const meta: Meta<typeof FilterMenu> = {
-  title: "Niche/Filter menu",
+  title: "Special components/Filter menu",
   component: FilterMenu,
   tags: ["new"],
   argTypes: {

@@ -5,7 +5,7 @@ import { Button } from "./button.js"
 import { Toaster, toast } from "./toast.js"
 
 const meta: Meta<typeof Toaster> = {
-  title: "Components/Toast",
+  title: "Base components/Toast",
   component: Toaster,
   argTypes: {
     timeout: { control: { type: "range", min: 0, max: 10000, step: 500 } },

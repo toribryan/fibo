@@ -20,7 +20,7 @@ const RESOURCES = [
     icon: BoxesIcon,
     title: "Components",
     description:
-      "The standard set, plus a Niche shelf of playful parts built for one moment.",
+      "The base set, plus a shelf of special components built for one moment.",
   },
   {
     to: "getting-started--docs",
