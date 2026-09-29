@@ -88,7 +88,7 @@ const meta: Meta<typeof FilterMenu> = {
     placeholder: "Filter by…",
     emptyText: "No matching filters",
     align: "start",
-    search: "inline",
+    search: "button",
     onValueChange: fn(),
   },
   parameters: {
@@ -109,6 +109,63 @@ export default meta
 type Story = StoryObj<typeof FilterMenu>
 
 export const Default: Story = {
+  play: async ({ args, canvas, canvasElement, userEvent }) => {
+    // The menu renders in a portal on the body, outside the story's canvas.
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(canvas.getByRole("button", { name: "Filter" }))
+
+    // No search box yet: the list has focus, and a button offers search.
+    const list = await page.findByRole("listbox", { name: "Search filters" })
+    await waitFor(() => expect(list).toHaveFocus())
+    await expect(page.queryByRole("combobox")).toBeNull()
+
+    // The button slides the menu over to its search state, listing every
+    // value until you type.
+    await userEvent.click(page.getByRole("button", { name: "Search filters" }))
+    const search = await page.findByRole("combobox", { name: "Search filters" })
+    await waitFor(() => expect(search).toHaveFocus())
+    await waitFor(() =>
+      expect(page.getByRole("group", { name: "Status" })).toBeVisible()
+    )
+    await userEvent.keyboard("urg{Enter}")
+    await expect(args.onValueChange).toHaveBeenLastCalledWith({
+      priority: ["urgent"],
+    })
+
+    // Escape clears the text, then slides back to the menu.
+    await userEvent.keyboard("{Escape}")
+    await waitFor(() => expect(search).toHaveValue(""))
+    await userEvent.keyboard("{Escape}")
+    // The button fades in as the menu slides home.
+    const button = await page.findByRole("button", { name: "Search filters" })
+    await waitFor(() => expect(button).toBeVisible())
+    await waitFor(() => expect(page.queryByRole("combobox")).toBeNull())
+
+    // Typing on the list starts a search with that letter.
+    await waitFor(() =>
+      expect(
+        page.getByRole("listbox", { name: "Search filters" })
+      ).toHaveFocus()
+    )
+    await userEvent.keyboard("d")
+    await waitFor(() =>
+      expect(
+        page.getByRole("combobox", { name: "Search filters" })
+      ).toHaveValue("d")
+    )
+
+    // Escape clears the text, slides back to the menu, then closes it.
+    await userEvent.keyboard("{Escape}{Escape}")
+    await waitFor(() => expect(page.queryByRole("combobox")).toBeNull())
+    await userEvent.keyboard("{Escape}")
+    await waitFor(() => expect(page.queryByRole("listbox")).toBeNull())
+    await expect(canvas.getByRole("button", { name: "Filter" })).toHaveFocus()
+  },
+}
+
+export const InlineSearch: Story = {
+  name: "Inline search",
+  args: { search: "inline" },
   play: async ({ args, canvas, canvasElement, userEvent }) => {
     // The menu renders in a portal on the body, outside the story's canvas.
     const page = within(canvasElement.ownerDocument.body)
@@ -160,12 +217,12 @@ export const KeyboardOnly: Story = {
     const page = within(canvasElement.ownerDocument.body)
     canvas.getByRole("button", { name: "Filter" }).focus()
     await userEvent.keyboard("{Enter}")
-    const search = await page.findByRole("combobox")
-    await waitFor(() => expect(search).toHaveFocus())
+    const list = await page.findByRole("listbox")
+    await waitFor(() => expect(list).toHaveFocus())
 
     // Down to Assignee, Right to open it, Down and Enter to pick Grace.
     await userEvent.keyboard("{ArrowDown}{ArrowRight}")
-    await expect(search).toHaveAttribute("placeholder", "Assignee")
+    await waitFor(() => expect(list).toHaveAccessibleName("Assignee"))
     await userEvent.keyboard("{ArrowDown}{Enter}")
     await expect(args.onValueChange).toHaveBeenLastCalledWith({
       assignee: ["grace"],
@@ -173,8 +230,8 @@ export const KeyboardOnly: Story = {
 
     // Left goes back, landing on the field it came from.
     await userEvent.keyboard("{ArrowLeft}")
-    const assignee = page.getByRole("option", { name: /^Assignee/ })
-    await expect(search).toHaveAttribute("aria-activedescendant", assignee.id)
+    const assignee = await page.findByRole("option", { name: /^Assignee/ })
+    await expect(list).toHaveAttribute("aria-activedescendant", assignee.id)
     await settle()
   },
 }
@@ -184,60 +241,12 @@ export const NoMatches: Story = {
   play: async ({ canvas, canvasElement, userEvent }) => {
     const page = within(canvasElement.ownerDocument.body)
     await userEvent.click(canvas.getByRole("button", { name: "Filter" }))
-    await page.findByRole("combobox")
+    const list = await page.findByRole("listbox")
+    await waitFor(() => expect(list).toHaveFocus())
+    // Typing on the list starts a search.
     await userEvent.keyboard("zzz")
     const empty = await page.findByText("No matching filters")
     await waitFor(() => expect(empty).toBeVisible())
-    await settle()
-  },
-}
-
-export const SearchButton: Story = {
-  name: "Search button",
-  args: { search: "button" },
-  play: async ({ args, canvas, canvasElement, userEvent }) => {
-    const page = within(canvasElement.ownerDocument.body)
-    await userEvent.click(canvas.getByRole("button", { name: "Filter" }))
-
-    // No search box yet: the list has focus, and a button offers search.
-    const list = await page.findByRole("listbox", { name: "Search filters" })
-    await waitFor(() => expect(list).toHaveFocus())
-    await expect(page.queryByRole("combobox")).toBeNull()
-
-    // The button slides the menu over to its search state, listing every
-    // value until you type.
-    await userEvent.click(page.getByRole("button", { name: "Search filters" }))
-    const search = await page.findByRole("combobox", { name: "Search filters" })
-    await waitFor(() => expect(search).toHaveFocus())
-    await waitFor(() =>
-      expect(page.getByRole("group", { name: "Status" })).toBeVisible()
-    )
-    await userEvent.keyboard("urg{Enter}")
-    await expect(args.onValueChange).toHaveBeenLastCalledWith({
-      priority: ["urgent"],
-    })
-
-    // Escape clears the text, then slides back to the menu.
-    await userEvent.keyboard("{Escape}")
-    await waitFor(() => expect(search).toHaveValue(""))
-    await userEvent.keyboard("{Escape}")
-    // The button fades in as the menu slides home.
-    const button = await page.findByRole("button", { name: "Search filters" })
-    await waitFor(() => expect(button).toBeVisible())
-    await waitFor(() => expect(page.queryByRole("combobox")).toBeNull())
-
-    // Typing on the list starts a search with that letter.
-    await waitFor(() =>
-      expect(
-        page.getByRole("listbox", { name: "Search filters" })
-      ).toHaveFocus()
-    )
-    await userEvent.keyboard("d")
-    await waitFor(() =>
-      expect(
-        page.getByRole("combobox", { name: "Search filters" })
-      ).toHaveValue("d")
-    )
     await settle()
   },
 }
