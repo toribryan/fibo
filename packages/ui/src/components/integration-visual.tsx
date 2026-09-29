@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip"
+import { motion, useReducedMotion } from "motion/react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { SnailIcon } from "lucide-react"
 
@@ -224,7 +225,8 @@ function PreviewMedia({
   src,
   alt = "",
   aspectRatio = "16 / 9",
-}: IntegrationPreviewMedia) {
+  still,
+}: IntegrationPreviewMedia & { still: boolean }) {
   const className = "block w-full rounded-lg bg-muted object-cover"
   const style = { aspectRatio }
   return /\.(mp4|webm)(\?|#|$)/i.test(src) ? (
@@ -233,7 +235,8 @@ function PreviewMedia({
       style={style}
       src={src}
       aria-label={alt || undefined}
-      autoPlay
+      // Under reduced motion the clip waits on its first frame.
+      autoPlay={!still}
       loop
       muted
       playsInline
@@ -274,6 +277,11 @@ type IntegrationVisualProps = Omit<React.ComponentProps<"div">, "children"> &
     halo?: boolean
     /** Accessible name for the diagram. */
     label?: string
+    /**
+     * Accessible name for the hub, which becomes a button when there's a
+     * preview. Defaults to `center` when that's text, otherwise to `label`.
+     */
+    centerLabel?: string
   }
 
 /**
@@ -292,12 +300,11 @@ function IntegrationVisual({
   halo = true,
   size = "default",
   label = "Integrations",
+  centerLabel,
   className,
   ...props
 }: IntegrationVisualProps) {
   const reduceMotion = useReducedMotion()
-  const [open, setOpen] = React.useState(false)
-  const previewId = React.useId()
   const plateId = React.useId()
 
   const shown = items.slice(0, MAX_ITEMS[layout])
@@ -308,6 +315,30 @@ function IntegrationVisual({
         ? sideSlots(shown)
         : cornerSlots(shown.length)
   const effectivePulse = reduceMotion ? "none" : pulse
+  const textCenter = typeof center === "string" || typeof center === "number"
+  const hubLabel = centerLabel ?? (textCenter ? String(center) : label)
+
+  const hub = (
+    <>
+      <div
+        data-slot="integration-visual-hub-face"
+        className={hubFaceVariants({
+          size,
+          content: textCenter ? "text" : "icon",
+        })}
+      >
+        {center}
+      </div>
+      {halo && !reduceMotion ? (
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 rounded-xl border-2 border-border"
+          animate={{ scale: [1, 1.18, 1], opacity: [0.9, 0, 0.9] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ) : null}
+    </>
+  )
 
   return (
     <div
@@ -428,74 +459,45 @@ function IntegrationVisual({
       </ul>
 
       <div className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
-        <div
-          data-slot="integration-visual-hub"
-          tabIndex={preview ? 0 : undefined}
-          aria-describedby={preview && open ? previewId : undefined}
-          className={HUB}
-          onPointerEnter={() => setOpen(true)}
-          onPointerLeave={() => setOpen(false)}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setOpen(false)}
-        >
-          <div
-            data-slot="integration-visual-hub-face"
-            className={hubFaceVariants({
-              size,
-              content:
-                typeof center === "string" || typeof center === "number"
-                  ? "text"
-                  : "icon",
-            })}
-          >
-            {center}
-          </div>
-          {halo && !reduceMotion ? (
-            <motion.div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 rounded-xl border-2 border-border"
-              animate={{ scale: [1, 1.18, 1], opacity: [0.9, 0, 0.9] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            />
-          ) : null}
-        </div>
-
-        <AnimatePresence>
-          {preview && open ? (
-            <motion.div
-              id={previewId}
-              data-slot="integration-visual-preview"
-              className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-3 w-56 origin-bottom -translate-x-1/2 rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-lg"
-              initial={
-                reduceMotion
-                  ? { opacity: 0 }
-                  : { opacity: 0, y: 10, scale: 0.85 }
-              }
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={
-                reduceMotion
-                  ? { opacity: 0 }
-                  : {
-                      opacity: 0,
-                      y: 6,
-                      scale: 0.9,
-                      transition: { duration: 0.15 },
-                    }
-              }
-              transition={
-                reduceMotion
-                  ? { duration: 0.15 }
-                  : { type: "spring", bounce: 0.4, duration: 0.5 }
-              }
+        {preview ? (
+          // Base UI's tooltip portals the preview so the plate can't clip it,
+          // keeps it open while it's hovered, and closes it on Escape.
+          <TooltipPrimitive.Root>
+            <TooltipPrimitive.Trigger
+              delay={150}
+              closeDelay={100}
+              data-slot="integration-visual-hub"
+              aria-label={hubLabel}
+              className={HUB}
             >
-              {isMedia(preview) ? <PreviewMedia {...preview} /> : preview}
-              <span
-                aria-hidden="true"
-                className="absolute top-full left-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-r border-b border-border bg-popover"
-              />
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+              {hub}
+            </TooltipPrimitive.Trigger>
+            <TooltipPrimitive.Portal>
+              <TooltipPrimitive.Positioner
+                side="top"
+                sideOffset={12}
+                collisionPadding={8}
+                className="isolate z-50"
+              >
+                <TooltipPrimitive.Popup
+                  data-slot="integration-visual-preview"
+                  className="w-56 origin-(--transform-origin) rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-lg transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] data-ending-style:scale-90 data-ending-style:opacity-0 data-ending-style:duration-150 data-starting-style:translate-y-2.5 data-starting-style:scale-[0.85] data-starting-style:opacity-0 motion-reduce:transition-opacity motion-reduce:data-ending-style:scale-100 motion-reduce:data-starting-style:translate-y-0 motion-reduce:data-starting-style:scale-100"
+                >
+                  {isMedia(preview) ? (
+                    <PreviewMedia {...preview} still={Boolean(reduceMotion)} />
+                  ) : (
+                    preview
+                  )}
+                  <TooltipPrimitive.Arrow className="size-2.5 rotate-45 border-r border-b border-border bg-popover data-[side=bottom]:-top-[5px] data-[side=bottom]:rotate-[225deg] data-[side=top]:-bottom-[5px]" />
+                </TooltipPrimitive.Popup>
+              </TooltipPrimitive.Positioner>
+            </TooltipPrimitive.Portal>
+          </TooltipPrimitive.Root>
+        ) : (
+          <div data-slot="integration-visual-hub" className={HUB}>
+            {hub}
+          </div>
+        )}
       </div>
     </div>
   )

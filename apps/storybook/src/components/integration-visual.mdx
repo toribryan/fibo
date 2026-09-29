@@ -30,9 +30,10 @@ hub opens a preview on hover.
 - Pulses run inward or outward along live routes. Idle tools keep their route
   and dim.
 - A preview opens over the hub on hover or focus. It takes any content, or an
-  image or looping video.
-- Respects reduced motion: the pulses, halo and springs stop, and the preview
-  fades in.
+  image or looping video, and it's a Base UI tooltip: portalled so no card
+  clips it, hoverable, and dismissed with Escape.
+- Respects reduced motion: the pulses, halo and springs stop, the preview
+  fades in, and a preview video waits on its first frame.
 
 ## Installation
 
@@ -41,7 +42,7 @@ hub opens a preview on hover.
   exports={["IntegrationVisual", "type IntegrationItem"]}
 />
 
-It installs `motion` with it, for the pulses and the preview.
+It installs `motion` with it, for the pulses and the halo.
 
 ## Usage
 
@@ -100,7 +101,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
       {
         name: "hub",
         slot: "integration-visual-hub",
-        note: "Takes focus when there's a preview.",
+        note: "A button, named by centerLabel, when there's a preview.",
         children: [
           {
             name: "face",
@@ -112,7 +113,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
       {
         name: "preview",
         slot: "integration-visual-preview",
-        note: "Above the hub, while it's hovered or focused.",
+        note: "Above the hub, while it's hovered or focused. Portalled to the body.",
       },
     ],
   }}
@@ -145,9 +146,8 @@ Every part the component renders, with the `data-slot` it carries. You pass
 />
 
 <Tip>
-  Nothing inside the preview can be clicked, so link out from the card around
-  the diagram instead. The preview opens above the hub, so leave it off when the
-  plate is small or sits in a card that would clip it.
+  The preview is for looking at: keyboard users can't reach anything inside it,
+  so link out from the card around the diagram instead.
 </Tip>
 
 ## Examples
@@ -256,7 +256,7 @@ Style parts by slot or state, for example with
     },
     {
       attribute: 'data-slot="integration-visual-hub"',
-      element: "The hub, which takes focus when there's a preview",
+      element: "The hub, a button when there's a preview",
       when: "Always.",
     },
     {
@@ -305,7 +305,12 @@ Style parts by slot or state, for example with
       what the diagram is.
     </>,
     "Routes, pulses and the halo are decorative and hidden from assistive tech.",
-    "When there's a preview the hub joins the tab order, and focusing it shows the preview the same way hovering does.",
+    <>
+      When there's a preview the hub is a button, named by{" "}
+      <code>centerLabel</code> (or by <code>center</code> when that's text, or
+      by <code>label</code>). Focusing it shows the preview the same way
+      hovering does, the preview describes it, and Escape closes it.
+    </>,
   ]}
 />
 
@@ -315,6 +320,7 @@ Style parts by slot or state, for example with
 
 ## References
 
-- [Motion](https://motion.dev), for the pulses, halo and preview springs
+- [Motion](https://motion.dev), for the pulses and halo
+- [Base UI Tooltip](https://base-ui.com/react/components/tooltip), for the preview
 - [`prefers-reduced-motion`](https://developer.mozilla.org/docs/Web/CSS/@media/prefers-reduced-motion)
 - [Lucide](https://lucide.dev/icons/snail), for the default snail
