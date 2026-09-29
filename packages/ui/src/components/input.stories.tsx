@@ -5,7 +5,7 @@ import { Input } from "./input.js"
 import { Label } from "./label.js"
 
 const meta: Meta<typeof Input> = {
-  title: "Components/Input",
+  title: "Base components/Input",
   component: Input,
   args: {
     placeholder: "Enter text...",

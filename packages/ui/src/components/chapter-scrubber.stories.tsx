@@ -76,10 +76,10 @@ const talk: Chapter[] = [
     description: "Springs, reduced motion, and when to leave things still.",
   },
   {
-    id: "niche",
+    id: "special",
     meta: "28:50",
-    title: "Niche parts",
-    description: "Room for the playful components next to the standard ones.",
+    title: "Special components",
+    description: "Room for the playful components next to the base ones.",
   },
   {
     id: "next",
@@ -91,7 +91,7 @@ const talk: Chapter[] = [
 ]
 
 const meta: Meta<typeof ChapterScrubber> = {
-  title: "Niche/Chapter scrubber",
+  title: "Special components/Chapter scrubber",
   component: ChapterScrubber,
   parameters: { layout: "centered" },
   argTypes: {

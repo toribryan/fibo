@@ -22,9 +22,10 @@ pnpm storybook
 
 ## Making a change
 
-- **Components or Niche.** Standard parts go on the Components shelf and
+- **Base or special.** Standard parts go on the Base components shelf and
   depend on nothing beyond Base UI, `class-variance-authority` and
-  `lucide-react`. Playful, specific parts go in Niche and may use `motion`.
+  `lucide-react`. Playful, specific parts go in Special components and may use
+  `motion`.
 - **Adding a component.** Follow
   [`.agents/skills/add-component/SKILL.md`](./.agents/skills/add-component/SKILL.md).
   It lists every file a part needs (source, stories, docs page, metadata) and

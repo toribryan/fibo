@@ -5,7 +5,7 @@ import { Label } from "./label.js"
 import { Switch } from "./switch.js"
 
 const meta: Meta<typeof Switch> = {
-  title: "Components/Switch",
+  title: "Base components/Switch",
   component: Switch,
   argTypes: {
     size: { control: "inline-radio", options: ["default", "sm"] },

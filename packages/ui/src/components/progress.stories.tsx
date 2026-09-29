@@ -8,7 +8,7 @@ import { Progress, ProgressLabel, ProgressValue } from "./progress.js"
 type Args = { value: number | null; label: string }
 
 const meta: Meta<Args> = {
-  title: "Components/Progress",
+  title: "Base components/Progress",
   component: Progress,
   subcomponents: { ProgressLabel, ProgressValue },
   argTypes: {

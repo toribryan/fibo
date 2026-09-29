@@ -62,12 +62,12 @@ const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const
  */
 function Exhibit({
   name,
-  shelf = "Components",
+  shelf = "Base components",
   children,
   className,
 }: {
   name: string
-  shelf?: "Components" | "Niche" | "Foundations"
+  shelf?: "Base components" | "Special components" | "Foundations"
   children: ReactNode
   className?: string
 }) {
@@ -269,7 +269,7 @@ function Filters() {
       (o) => o.value === option
     )?.label
   return (
-    <Exhibit name="Filter menu" shelf="Niche">
+    <Exhibit name="Filter menu" shelf="Special components">
       <div className="flex flex-wrap items-center gap-2">
         <FilterMenu
           fields={FILTER_FIELDS}
@@ -304,7 +304,7 @@ function Filters() {
 
 function Integrations() {
   return (
-    <Exhibit name="Integration visual" shelf="Niche">
+    <Exhibit name="Integration visual" shelf="Special components">
       <div className="overflow-hidden rounded-lg border border-border">
         <IntegrationVisual
           label="fibo's toolchain"
@@ -322,7 +322,7 @@ function Integrations() {
 
 function Chapters() {
   return (
-    <Exhibit name="Chapter scrubber" shelf="Niche">
+    <Exhibit name="Chapter scrubber" shelf="Special components">
       <div className="flex justify-center py-2">
         <ChapterScrubber
           orientation="horizontal"
@@ -343,7 +343,7 @@ function Chapters() {
 
 function ReactionsExhibit() {
   return (
-    <Exhibit name="Reactions" shelf="Niche">
+    <Exhibit name="Reactions" shelf="Special components">
       <p className="m-0 text-sm">
         Shipped the theme creator. Try tinting the greys.
       </p>
@@ -438,7 +438,7 @@ function Team() {
 
 function Flow() {
   return (
-    <Exhibit name="Token flow" shelf="Niche" className="mb-0">
+    <Exhibit name="Token flow" shelf="Special components" className="mb-0">
       <TokenFlow
         rows={[
           {

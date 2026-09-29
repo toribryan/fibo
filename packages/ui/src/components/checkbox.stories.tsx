@@ -5,7 +5,7 @@ import { Checkbox } from "./checkbox.js"
 import { Label } from "./label.js"
 
 const meta: Meta<typeof Checkbox> = {
-  title: "Components/Checkbox",
+  title: "Base components/Checkbox",
   component: Checkbox,
   // The bare stories have no visible Label, so they name the box directly.
   args: {
