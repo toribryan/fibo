@@ -7,7 +7,6 @@ import { Slider } from "./slider.js"
 const meta: Meta<typeof Slider> = {
   title: "Components/Slider",
   component: Slider,
-  tags: ["new"],
   argTypes: {
     min: { control: "number" },
     max: { control: "number" },

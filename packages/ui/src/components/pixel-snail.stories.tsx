@@ -11,7 +11,6 @@ import {
 const meta: Meta<typeof PixelSnail> = {
   title: "Niche/Pixel snail",
   component: PixelSnail,
-  tags: ["new"],
   argTypes: {
     size: { control: "inline-radio", options: ["sm", "default", "lg"] },
     pace: { control: "inline-radio", options: ["slow", "default", "fast"] },

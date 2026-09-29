@@ -7,7 +7,6 @@ import { Toaster, toast } from "./toast.js"
 const meta: Meta<typeof Toaster> = {
   title: "Components/Toast",
   component: Toaster,
-  tags: ["new"],
   argTypes: {
     timeout: { control: { type: "range", min: 0, max: 10000, step: 500 } },
     limit: { control: { type: "range", min: 1, max: 5, step: 1 } },

@@ -39,7 +39,6 @@ const meta: Meta<Args> = {
     SelectLabel,
     SelectSeparator,
   },
-  tags: ["new"],
   argTypes: {
     size: {
       control: "inline-radio",
