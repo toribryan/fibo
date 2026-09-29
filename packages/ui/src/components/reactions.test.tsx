@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
+import { page, userEvent } from "vitest/browser"
 import { render } from "vitest-browser-react"
 
 import { Reactions, type Reaction } from "./reactions.js"
@@ -34,7 +35,8 @@ describe("Reactions", () => {
   it("opens the picker below when there is no room above", async () => {
     const screen = await render(<Reactions particles={0} />)
     await screen.getByRole("button", { name: "Add reaction" }).click()
-    const panel = screen.getByRole("group", { name: "Pick a reaction" })
+    // The panel is portalled to the body, outside the component.
+    const panel = page.getByRole("dialog", { name: "Pick a reaction" })
     await expect.element(panel).toBeVisible()
     const trigger = screen
       .getByRole("button", { name: "Add reaction" })
@@ -42,6 +44,50 @@ describe("Reactions", () => {
       .getBoundingClientRect()
     const box = panel.element().getBoundingClientRect()
     expect(box.top).toBeGreaterThanOrEqual(trigger.bottom)
+  })
+
+  it("isn't clipped by a container that hides its overflow", async () => {
+    await render(
+      <div style={{ overflow: "hidden", height: 48, paddingTop: 200 }}>
+        <Reactions particles={0} />
+      </div>
+    )
+    await page.getByRole("button", { name: "Add reaction" }).click()
+    const panel = page.getByRole("dialog", { name: "Pick a reaction" })
+    await expect.element(panel).toBeVisible()
+    expect(panel.element().closest('[style*="overflow"]')).toBeNull()
+  })
+
+  it("focuses the first choice, and returns focus on Escape", async () => {
+    await render(<Reactions particles={0} />)
+    const trigger = page.getByRole("button", { name: "Add reaction" })
+    await trigger.click()
+    await expect
+      .element(page.getByRole("button", { name: "Thumbs up" }))
+      .toHaveFocus()
+    await userEvent.keyboard("{ArrowRight}")
+    await expect
+      .element(page.getByRole("button", { name: "Heart" }))
+      .toHaveFocus()
+    await userEvent.keyboard("{Escape}")
+    await expect.element(trigger).toHaveFocus()
+    await expect.element(trigger).toHaveAttribute("aria-expanded", "false")
+  })
+
+  it("closes when focus tabs out of the panel", async () => {
+    await render(
+      <>
+        <Reactions particles={0} />
+        <button type="button">After</button>
+      </>
+    )
+    const trigger = page.getByRole("button", { name: "Add reaction" })
+    await trigger.click()
+    await expect
+      .element(page.getByRole("button", { name: "Thumbs up" }))
+      .toHaveFocus()
+    for (let i = 0; i < 6; i++) await userEvent.tab()
+    await expect.element(trigger).toHaveAttribute("aria-expanded", "false")
   })
 
   it("reports the whole list when controlled", async () => {
