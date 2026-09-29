@@ -92,6 +92,38 @@ type FilterField = {
 type FilterValue = Record<string, string[]>
 ```
 
+### Fitting it into your app
+
+The menu works on its own, and each of these props lets you take over one
+part of it:
+
+- `open`, `defaultOpen` and `onOpenChange` put the open state in your hands,
+  for a keyboard shortcut or a menu that opens from elsewhere.
+- `trigger` swaps the default button for your own element. It must forward its
+  ref and props, as fibo's `Button` does.
+- `side` and `align` place the popup, and `container` portals it somewhere
+  other than the body, such as inside a dialog.
+- `popupClassName` styles the popup, which is portalled out of reach of
+  selectors on the trigger.
+- `labels` replaces the wording the menu writes for itself, alongside
+  `triggerLabel`, `placeholder`, `emptyText`, `label` and `searchLabel`.
+
+```tsx
+<FilterMenu
+  fields={fields}
+  trigger={<Button variant="ghost" size="icon" aria-label="Filtern" />}
+  label="Filter"
+  searchLabel="Filter durchsuchen"
+  emptyText="Keine passenden Filter"
+  labels={{
+    backToFields: "Zurück zu den Feldern",
+    backToFilters: "Zurück zu den Filtern",
+    backToField: (field) => `Zurück zu ${field}`,
+    results: (count) => `${count} ${count === 1 ? "Ergebnis" : "Ergebnisse"}`,
+  }}
+/>
+```
+
 ## Anatomy
 
 <Anatomy
