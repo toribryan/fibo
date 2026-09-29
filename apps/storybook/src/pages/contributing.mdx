@@ -11,12 +11,13 @@ entry and a matching Figma component. The full checklist lives in the repo's
 `add-component` skill (`.agents/skills/add-component/SKILL.md`), which people
 and coding agents both follow. This page is the short version.
 
-## Components or Niche
+## Base or special
 
-fibo has two shelves. **Components** are the standard parts most interfaces
+fibo has two shelves. **Base components** are the standard parts most interfaces
 need: they depend on nothing beyond Base UI, `class-variance-authority` and
-`lucide-react`. **Niche** parts are built for one kind of moment, such as a diagram, a reading rail or a
-reaction, and may use `motion`. Give a Niche part a `Niche/` title and it
+`lucide-react`. **Special components** are built for one kind of moment, such as a diagram, a reading rail or a
+reaction, and may use `motion`. Give a special component a `Special components/`
+title and it
 lands in its own section of the sidebar and the catalog.
 
 ## Add a component
@@ -27,7 +28,7 @@ lands in its own section of the sidebar and the catalog.
 3. Write its docs page at `apps/storybook/src/components/<name>.mdx`, using an
    existing page as the template.
 4. Describe it in `packages/ui/components.meta.json`: title, description,
-   tier and group. The registry, the catalog and `llms.txt` all read it.
+   tier (`base-components` or `special-components`) and group. The registry, the catalog and `llms.txt` all read it.
 5. Add a small preview for the catalog card in
    `apps/storybook/src/blocks/catalog.tsx`.
 6. Run `pnpm format:write`, `pnpm lint`, `pnpm build`, `pnpm typecheck` and

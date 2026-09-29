@@ -24,7 +24,7 @@ import componentsMeta from "@workspace/ui/components.meta.json" with { type: "js
 
 import { DocLink } from "./doc-link.js"
 
-type Tier = "components" | "niche"
+type Tier = "base-components" | "special-components"
 
 type Entry = {
   name: string
@@ -38,8 +38,8 @@ type Entry = {
 
 // The order groups appear in on the Catalog page, per tier.
 const GROUPS: Record<Tier, string[]> = {
-  components: ["Actions", "Forms", "Display", "Feedback"],
-  niche: ["Diagrams", "Navigation", "Feedback"],
+  "base-components": ["Actions", "Forms", "Display", "Feedback"],
+  "special-components": ["Diagrams", "Navigation", "Feedback"],
 }
 
 // The wave a Chapter scrubber makes under the pointer, frozen for a preview.

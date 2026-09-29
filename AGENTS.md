@@ -82,9 +82,10 @@ against the conventions below.
 
 ## Conventions
 
-- **Two shelves.** Standard parts are titled `Components/<Name>` and depend
-  on nothing beyond Base UI, `class-variance-authority` and `lucide-react`.
-  Playful, specific parts are titled `Niche/<Name>` and may use `motion`.
+- **Two shelves.** Standard parts are titled `Base components/<Name>` and
+  depend on nothing beyond Base UI, `class-variance-authority` and
+  `lucide-react`. Playful, specific parts are titled `Special components/<Name>`
+  and may use `motion`.
 - **Tokens.** Semantic tokens only in components (`bg-primary`,
   `text-muted-foreground`). Primitive ramps (`neutral-*`, `red-*`, `green-*`,
   `amber-*`, `blue-*`) belong in `globals.css`. There is no brand hue:

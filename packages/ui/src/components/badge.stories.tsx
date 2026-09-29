@@ -3,7 +3,7 @@ import type { ComponentProps } from "react"
 import { Badge } from "./badge.js"
 
 const meta: Meta<typeof Badge> = {
-  title: "Components/Badge",
+  title: "Base components/Badge",
   component: Badge,
   argTypes: {
     variant: {

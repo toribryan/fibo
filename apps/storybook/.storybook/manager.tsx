@@ -46,8 +46,8 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   "contributing--docs": GitPullRequestIcon,
   foundations: PaletteIcon,
   "foundations-theme-creator--docs": PaintbrushIcon,
-  components: BoxesIcon,
-  niche: SnailIcon,
+  "base-components": BoxesIcon,
+  "special-components": SnailIcon,
 }
 
 // Foundations pages document tokens rather than components.
