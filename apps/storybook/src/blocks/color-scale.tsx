@@ -131,11 +131,11 @@ function Scramble({
 type Callout = { token: string; side: "left" | "right"; pair?: string }
 
 const CALLOUTS: Callout[] = [
-  { token: "card", side: "left" },
   { token: "foreground", side: "left" },
   { token: "muted-foreground", side: "left" },
   { token: "border", side: "left" },
   { token: "muted", side: "left" },
+  { token: "card", side: "left" },
   { token: "background", side: "right" },
   { token: "success", side: "right" },
   { token: "ring", side: "right" },
@@ -143,78 +143,74 @@ const CALLOUTS: Callout[] = [
 ]
 
 // Where down its part a line lands, as a share of the part's height. The
-// two surfaces are met near their top corners, clear of the content.
-const LANDING: Record<string, number> = { background: 0.08, card: 0.08 }
+// two surfaces are met near a corner, clear of the content: the page at
+// its top, the card at its foot.
+const LANDING: Record<string, number> = { background: 0.08, card: 0.96 }
+
+// The least room between two callouts stacked on one side.
+const CALLOUT_GAP = 2
 
 type Line = { token: string; d: string; x: number; y: number }
+type Annotations = { tops: Record<string, number>; lines: Line[] }
 
 /*
- * Routes a line from each callout to the part of the card it names: across
- * to a lane in the gutter, then up or down, then in to the part. Measured
- * whenever the figure resizes; the layout doesn't change between modes.
+ * Sets each callout level with the part it names, so its line runs
+ * straight across. Where two parts sit closer than their callouts are
+ * tall, the lower callout steps down and its line bends in just short of
+ * the part. Measured whenever the figure resizes; the layout doesn't change
+ * between modes.
  */
-function useLeaderLines(
+function useAnnotations(
   frame: React.RefObject<HTMLDivElement | null>,
+  columns: React.RefObject<Map<string, HTMLElement>>,
   callouts: React.RefObject<Map<string, HTMLElement>>,
   parts: React.RefObject<Map<string, HTMLElement>>
 ) {
-  const [lines, setLines] = useState<Line[]>([])
+  const [annotations, setAnnotations] = useState<Annotations | null>(null)
   useLayoutEffect(() => {
     const node = frame.current
     if (!node) return
     const observer = new ResizeObserver(() => {
       const box = node.getBoundingClientRect()
-      const plate = parts.current.get("background")?.getBoundingClientRect()
-      if (!plate) return
-      setLines(
-        (["left", "right"] as const).flatMap((side) => {
-          const left = side === "left"
-          const edge = (left ? plate.left : plate.right) - box.left
-          const runs = CALLOUTS.filter((c) => c.side === side).flatMap(
-            ({ token }) => {
-              const from = callouts.current.get(token)?.getBoundingClientRect()
-              const to = parts.current.get(token)?.getBoundingClientRect()
-              // Hidden callouts, on narrow screens, measure as zero.
-              if (!from || !to || from.width === 0) return []
-              return [
-                {
-                  token,
-                  x1: (left ? from.right : from.left) - box.left,
-                  y1: from.top + from.height / 2 - box.top,
-                  // The dot lands just outside the part, clear of its text.
-                  x2: (left ? to.left - 6 : to.right + 6) - box.left,
-                  y2: to.top + to.height * (LANDING[token] ?? 0.5) - box.top,
-                },
-              ]
-            }
-          )
-          // Lines that rise take lanes nearer the card the lower they
-          // start, and lines that fall the higher they start, so the bends
-          // nest instead of crossing.
-          const rising = runs
-            .filter((r) => r.y2 < r.y1)
-            .sort((a, b) => a.y1 - b.y1)
-          const falling = runs
-            .filter((r) => r.y2 >= r.y1)
-            .sort((a, b) => b.y1 - a.y1)
-          return [rising, falling].flatMap((set) =>
-            set.map(({ token, x1, y1, x2, y2 }, rank) => {
-              const lane = x1 + ((edge - x1) * (rank + 1)) / (set.length + 1)
-              return {
-                token,
-                d: `M${x1} ${y1}H${lane}V${y2}H${x2}`,
-                x: x2,
-                y: y2,
-              }
-            })
-          )
-        })
-      )
+      const tops: Record<string, number> = {}
+      const lines: Line[] = []
+      for (const side of ["left", "right"] as const) {
+        const column = columns.current.get(side)?.getBoundingClientRect()
+        // The columns are hidden on narrow screens, and measure as zero.
+        if (!column || column.width === 0) continue
+        const left = side === "left"
+        const x1 = (left ? column.right : column.left) - box.left
+        const offset = column.top - box.top
+        let floor = -Infinity
+        for (const { token } of CALLOUTS.filter((c) => c.side === side)) {
+          const to = parts.current.get(token)?.getBoundingClientRect()
+          const height = callouts.current.get(token)?.offsetHeight ?? 0
+          if (!to) continue
+          const y = to.top + to.height * (LANDING[token] ?? 0.5) - box.top
+          const top = Math.max(y - offset - height / 2, floor)
+          floor = top + height + CALLOUT_GAP
+          tops[token] = top
+          const from = top + offset + height / 2
+          // The dot lands just outside the part, clear of its text.
+          const x2 = (left ? to.left - 6 : to.right + 6) - box.left
+          const bend = left ? x2 - 16 : x2 + 16
+          lines.push({
+            token,
+            d:
+              Math.abs(from - y) < 1
+                ? `M${x1} ${y}H${x2}`
+                : `M${x1} ${from}H${bend}L${x2} ${y}`,
+            x: x2,
+            y,
+          })
+        }
+      }
+      setAnnotations({ tops, lines })
     })
     observer.observe(node)
     return () => observer.disconnect()
-  }, [frame, callouts, parts])
-  return lines
+  }, [frame, columns, callouts, parts])
+  return annotations
 }
 
 /**
@@ -235,9 +231,16 @@ function ColorScale() {
   >(null)
 
   const frame = useRef<HTMLDivElement>(null)
+  const columnNodes = useRef(new Map<string, HTMLElement>())
   const calloutNodes = useRef(new Map<string, HTMLElement>())
   const partNodes = useRef(new Map<string, HTMLElement>())
-  const lines = useLeaderLines(frame, calloutNodes, partNodes)
+  const annotations = useAnnotations(
+    frame,
+    columnNodes,
+    calloutNodes,
+    partNodes
+  )
+  const lines = annotations?.lines ?? []
 
   const names = RAMP.map(([step]) =>
     step === "white" ? "white" : `neutral-${step}`
@@ -383,9 +386,12 @@ function ColorScale() {
           else calloutNodes.current.delete(token)
         }}
         {...pointAt({ token })}
+        // Hidden until measured, so callouts never jump into place.
+        style={{ top: annotations?.tops[token] ?? 0 }}
         className={cn(
-          "flex flex-col gap-1 rounded-md px-2 py-1 text-left transition-opacity duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle md:w-44",
-          side === "left" ? "md:items-end md:text-right" : "md:items-start",
+          "absolute inset-x-0 flex flex-col gap-1 rounded-md px-2 py-0.5 transition-opacity duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
+          side === "left" ? "items-end text-right" : "items-start text-left",
+          annotations?.tops[token] === undefined && "invisible",
           active && !picked(c) && "opacity-40"
         )}
       >
@@ -473,13 +479,25 @@ function ColorScale() {
           ))}
         </svg>
 
-        <div className="order-2 hidden flex-col gap-3 md:order-none md:flex">
+        <div
+          ref={(node) => {
+            if (node) columnNodes.current.set("left", node)
+            else columnNodes.current.delete("left")
+          }}
+          className="relative hidden w-44 shrink-0 self-stretch md:block"
+        >
           {CALLOUTS.filter((c) => c.side === "left").map((c) => callout(c))}
         </div>
 
         <Specimen part={part} />
 
-        <div className="order-3 hidden flex-col gap-3 md:order-none md:flex">
+        <div
+          ref={(node) => {
+            if (node) columnNodes.current.set("right", node)
+            else columnNodes.current.delete("right")
+          }}
+          className="relative hidden w-44 shrink-0 self-stretch md:block"
+        >
           {CALLOUTS.filter((c) => c.side === "right").map((c) => callout(c))}
         </div>
 
@@ -527,12 +545,12 @@ function Specimen({ part }: { part: PartProps }): ReactNode {
       <div
         {...part("card")}
         className={cn(
-          "flex flex-col gap-3 rounded-lg border border-border bg-card p-4 transition-colors duration-500 motion-reduce:transition-none",
+          "flex flex-col gap-4 rounded-lg border border-border bg-card p-4 transition-colors duration-500 motion-reduce:transition-none",
           PICKED
         )}
       >
         <div className="flex items-start gap-3">
-          <div className="flex flex-1 flex-col gap-0.5">
+          <div className="flex flex-1 flex-col gap-1.5">
             <span
               {...part("foreground")}
               className={cn(
