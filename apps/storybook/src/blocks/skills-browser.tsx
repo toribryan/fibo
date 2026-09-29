@@ -11,7 +11,9 @@ import {
 import { Markdown } from "@storybook/addon-docs/blocks"
 import {
   ArrowUpRightIcon,
+  CheckIcon,
   ChevronRightIcon,
+  CopyIcon,
   FileCodeIcon,
   FileTextIcon,
   FolderIcon,
@@ -19,6 +21,7 @@ import {
 } from "lucide-react"
 
 import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -391,6 +394,48 @@ function Blockquote({ className, ...props }: ComponentProps<"blockquote">) {
   )
 }
 
+// Copies the file exactly as it sits in the repo, frontmatter included, so
+// it pastes straight into a project's `.claude/skills/` or `.claude/agents/`.
+function CopyFileButton({ path }: { path: string }) {
+  const [copied, setCopied] = useState<string>()
+  const done = copied === path
+
+  useEffect(() => {
+    if (!copied) return
+    const timer = setTimeout(() => setCopied(undefined), 1500)
+    return () => clearTimeout(timer)
+  }, [copied])
+
+  return (
+    <Button
+      variant="ghost"
+      size="xs"
+      onClick={() => {
+        void loadFile(path)
+          .then((source) => navigator.clipboard.writeText(source))
+          .then(() => setCopied(path))
+      }}
+    >
+      {done ? <CheckIcon aria-hidden /> : <CopyIcon aria-hidden />}
+      <span aria-live="polite">{done ? "Copied" : "Copy markdown"}</span>
+    </Button>
+  )
+}
+
+function HeaderLink({ href, children }: ComponentProps<"a">) {
+  return (
+    <Button
+      variant="ghost"
+      size="xs"
+      nativeButton={false}
+      render={<a href={href} target="_blank" rel="noreferrer" />}
+    >
+      {children}
+      <ArrowUpRightIcon aria-hidden />
+    </Button>
+  )
+}
+
 function FileView({
   path,
   paths,
@@ -463,19 +508,15 @@ function FileView({
   }, [path, paths, onSelect])
 
   const header = (
-    <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-background px-5 py-3">
+    <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-background py-2 pr-3 pl-5">
       <span className="truncate font-mono text-[0.8125rem] text-muted-foreground">
         {ROOT}/{path}
       </span>
-      <a
-        href={githubUrl}
-        target="_blank"
-        rel="noreferrer"
-        className="flex shrink-0 items-center gap-1 text-sm font-medium text-foreground no-underline hover:underline"
-      >
-        GitHub
-        <ArrowUpRightIcon aria-hidden className="size-3.5" />
-      </a>
+      <div className="flex shrink-0 items-center gap-1">
+        <CopyFileButton path={path} />
+        <HeaderLink href={`${RAW_URL}/${ROOT}/${path}`}>Raw</HeaderLink>
+        <HeaderLink href={githubUrl}>GitHub</HeaderLink>
+      </div>
     </div>
   )
 
