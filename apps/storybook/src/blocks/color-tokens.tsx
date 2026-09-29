@@ -1,12 +1,6 @@
 import type { ReactNode } from "react"
-import {
-  MousePointerClickIcon,
-  TagIcon,
-  TextCursorInputIcon,
-} from "lucide-react"
 
 import globals from "@workspace/ui/globals.css?raw"
-import { IntegrationVisual } from "@workspace/ui/components/integration-visual"
 import { cn } from "@workspace/ui/lib/utils"
 
 /*
@@ -410,94 +404,4 @@ function Primitives() {
   )
 }
 
-// Tiny swatch marks for the diagram's tiles. Each follows the mode, as the
-// tokens it feeds do.
-function Neutrals() {
-  return (
-    <span aria-hidden="true" className="flex flex-col gap-0.5">
-      {[
-        "bg-neutral-200 dark:bg-neutral-800",
-        "bg-neutral-500",
-        "bg-neutral-900 dark:bg-neutral-50",
-      ].map((className) => (
-        <span
-          key={className}
-          className={cn("block h-1.5 w-5 rounded-full", className)}
-        />
-      ))}
-    </span>
-  )
-}
-
-function Hues() {
-  return (
-    <span aria-hidden="true" className="grid grid-cols-2 gap-0.5">
-      {[
-        "bg-red-700 dark:bg-red-400",
-        "bg-green-700 dark:bg-green-400",
-        "bg-amber-700 dark:bg-amber-400",
-        "bg-blue-700 dark:bg-blue-400",
-      ].map((className) => (
-        <span
-          key={className}
-          className={cn("block size-2 rounded-full", className)}
-        />
-      ))}
-    </span>
-  )
-}
-
-// A column in `sides` holds three rows on the plate, so the hues share one
-// tile.
-const FLOW = [
-  { title: "Tailwind neutral", side: "in", icon: <Neutrals /> },
-  { title: "Tailwind red, green, amber and blue", side: "in", icon: <Hues /> },
-  { title: "Button", side: "out", icon: <MousePointerClickIcon /> },
-  { title: "Input", side: "out", icon: <TextCursorInputIcon /> },
-  { title: "Badge", side: "out", icon: <TagIcon /> },
-] as const
-
-// What the hub's preview spells out: a primitive, the token that names its
-// job, and the class a component writes.
-const CHAIN = [
-  ["neutral-900", "--primary", "bg-primary"],
-  ["red-700", "--destructive", "text-destructive"],
-  ["neutral-200", "--border", "border-border"],
-]
-
-/*
- * The layers as a pipeline: Tailwind's hues flow into the semantic tokens,
- * and the tokens flow out to components. The swatches follow the mode, as
- * the tokens do.
- */
-function ColorFlow() {
-  return (
-    <div className="mx-auto my-6 max-w-2xl overflow-hidden rounded-xl border border-border">
-      <IntegrationVisual
-        layout="sides"
-        pulse="through"
-        center="tokens"
-        label="Tailwind's colours flow into fibo's semantic tokens, which components read"
-        items={FLOW.map((item) => ({ ...item }))}
-        preview={
-          <div className="flex flex-col gap-1.5 font-mono text-xs">
-            {CHAIN.map(([primitive, token, utility]) => (
-              <div
-                key={token}
-                className="flex items-center gap-1.5 whitespace-nowrap"
-              >
-                <span className="text-muted-foreground">{primitive}</span>
-                <span aria-hidden="true">→</span>
-                <span>{token}</span>
-                <span aria-hidden="true">→</span>
-                <span className="rounded-sm bg-muted px-1">{utility}</span>
-              </div>
-            ))}
-          </div>
-        }
-      />
-    </div>
-  )
-}
-
-export { ColorFlow, Primitives, TokenFamily }
+export { DARK, LIGHT, primitive, Primitives, TokenFamily }
