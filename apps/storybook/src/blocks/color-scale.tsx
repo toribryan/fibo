@@ -1,7 +1,9 @@
 import {
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type CSSProperties,
   type ReactNode,
 } from "react"
@@ -62,6 +64,66 @@ function resolve(token: string, mode: Mode) {
  * order top to bottom, so no two lines cross. primary-foreground rides on
  * primary's callout, since both colour the one button.
  */
+const NOISE = "_!X$0-+*#"
+const REDUCED_MOTION = "(prefers-reduced-motion: reduce)"
+
+function subscribeToReducedMotion(onChange: () => void) {
+  const query = window.matchMedia(REDUCED_MOTION)
+  query.addEventListener("change", onChange)
+  return () => query.removeEventListener("change", onChange)
+}
+
+/*
+ * Text that runs as noise for a moment when it changes, resolving left to
+ * right onto the new value, as Token flow's values do. The first value is
+ * shown as is.
+ */
+function Scramble({
+  text,
+  duration = 500,
+}: {
+  text: string
+  duration?: number
+}) {
+  const reduced = useSyncExternalStore(
+    subscribeToReducedMotion,
+    () => window.matchMedia(REDUCED_MOTION).matches,
+    () => false
+  )
+  const settled = useRef<string | null>(null)
+  const [noise, setNoise] = useState<string | null>(null)
+
+  useEffect(() => {
+    const previous = settled.current
+    settled.current = text
+    if (previous === null || previous === text || reduced) return
+    const started = performance.now()
+    let frame = 0
+    let tick = -1
+    const loop = (now: number) => {
+      const progress = Math.min((now - started) / duration, 1)
+      const next = Math.floor(progress * (duration / 40))
+      if (progress >= 1) return setNoise(null)
+      if (next !== tick) {
+        tick = next
+        const revealed = Math.floor(progress * text.length)
+        setNoise(
+          text.slice(0, revealed) +
+            Array.from(
+              { length: text.length - revealed },
+              () => NOISE[Math.floor(Math.random() * NOISE.length)]
+            ).join("")
+        )
+      }
+      frame = window.requestAnimationFrame(loop)
+    }
+    frame = window.requestAnimationFrame(loop)
+    return () => window.cancelAnimationFrame(frame)
+  }, [text, duration, reduced])
+
+  return <span aria-hidden="true">{noise ?? text}</span>
+}
+
 type Callout = { token: string; side: "left" | "right"; pair?: string }
 
 const CALLOUTS: Callout[] = [
@@ -214,9 +276,8 @@ function ColorScale() {
     "data-picked": isActive(token) || undefined,
   })
 
-  // The card reads the chosen mode's tokens whatever the page is in.
   const values = mode === "dark" ? DARK : LIGHT
-  const cardVars = Object.fromEntries(
+  const modeVars = Object.fromEntries(
     Object.entries(values).map(([name, value]) => [`--${name}`, value])
   ) as CSSProperties
 
@@ -255,7 +316,12 @@ function ColorScale() {
   }
 
   return (
-    <figure className="my-6 flex flex-col gap-8 rounded-xl border border-border bg-card p-4 sm:p-6">
+    // The whole exhibit takes the chosen mode's tokens, whatever the page is
+    // in, and every colour in it eases across when the mode changes.
+    <figure
+      style={modeVars}
+      className="my-6 flex flex-col gap-8 rounded-xl border border-border bg-card p-4 text-foreground transition-colors duration-500 motion-reduce:transition-none sm:p-6 [&_*]:transition-[color,background-color,border-color,outline-color,fill,stroke,opacity,box-shadow] [&_*]:duration-500 motion-reduce:[&_*]:transition-none"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <figcaption className="max-w-md text-sm text-muted-foreground">
           Tailwind&apos;s neutrals as twelve steps. Step 1 is always the page,
@@ -309,40 +375,34 @@ function ColorScale() {
             </span>
           ))}
 
-          {/* Each swatch sits over the step it plays in this mode, and
-          slides across when the mode changes. */}
-          <div
-            role="img"
-            aria-label={`${mode} mode, steps 1 to 12: ${ordered.join(", ")}`}
-            className="relative col-span-12 h-16"
-          >
-            {RAMP.map(([step, className], index) => {
-              const at = stepOf(index, mode) - 1
-              return (
-                <div
-                  key={step}
-                  {...pointAt({ step: at + 1 })}
-                  className="absolute inset-y-0 flex flex-col gap-1.5 transition-[left] duration-700 ease-in-out motion-reduce:transition-none"
-                  style={{
-                    left: `calc(${at} * (100% + 0.375rem) / 12)`,
-                    width: "calc((100% - 11 * 0.375rem) / 12)",
-                  }}
-                >
-                  <span
-                    className={cn(
-                      "flex-1 rounded-md border border-border transition-shadow",
-                      className,
-                      activeStep === at + 1 &&
-                        "ring-2 ring-foreground ring-offset-2 ring-offset-card"
-                    )}
-                  />
-                  <span className="text-center font-mono text-[10px] text-muted-foreground">
-                    {step}
-                  </span>
-                </div>
-              )
-            })}
-          </div>
+          <span className="sr-only">
+            In {mode} mode, steps 1 to 12 are {ordered.join(", ")}.
+          </span>
+          {/* The steps stay put; each takes its colour for the mode, and
+          its Tailwind name scrambles over to the new one. */}
+          {Array.from({ length: RAMP.length }, (_, slot) => {
+            const [step, className] =
+              RAMP[mode === "light" ? slot : RAMP.length - 1 - slot]!
+            return (
+              <div
+                key={slot}
+                {...pointAt({ step: slot + 1 })}
+                className="flex flex-col gap-1.5"
+              >
+                <span
+                  className={cn(
+                    "h-12 rounded-md border border-border",
+                    className,
+                    activeStep === slot + 1 &&
+                      "ring-2 ring-foreground ring-offset-2 ring-offset-card"
+                  )}
+                />
+                <span className="text-center font-mono text-[10px] text-muted-foreground">
+                  <Scramble text={step} />
+                </span>
+              </div>
+            )
+          })}
         </div>
       </div>
 
@@ -375,7 +435,7 @@ function ColorScale() {
           {CALLOUTS.filter((c) => c.side === "left").map((c) => callout(c))}
         </div>
 
-        <Specimen style={cardVars} part={part} />
+        <Specimen part={part} />
 
         <div className="order-3 hidden flex-col gap-3 md:order-none md:flex">
           {CALLOUTS.filter((c) => c.side === "right").map((c) => callout(c))}
@@ -400,17 +460,10 @@ const PICKED =
 
 // A small settings card on its own page, drawn with the tokens it's
 // labelled with.
-function Specimen({
-  style,
-  part,
-}: {
-  style: CSSProperties
-  part: PartProps
-}): ReactNode {
+function Specimen({ part }: { part: PartProps }): ReactNode {
   return (
     <div
       aria-hidden="true"
-      style={style}
       {...part("background")}
       className={cn(
         "w-full max-w-72 shrink-0 rounded-xl border border-dashed border-border bg-background p-5 transition-colors duration-500 motion-reduce:transition-none",
