@@ -14,7 +14,6 @@ const meta: Meta<typeof RadioGroup> = {
   title: "Components/Radio group",
   component: RadioGroup,
   subcomponents: { RadioGroupItem },
-  tags: ["new"],
   argTypes: {
     disabled: { control: "boolean" },
     defaultValue: { control: false },

@@ -25,7 +25,6 @@ const meta: Meta<typeof Avatar> = {
     AvatarGroup,
     AvatarGroupCount,
   },
-  tags: ["new"],
   argTypes: {
     size: { control: "inline-radio", options: ["sm", "default", "lg"] },
   },

@@ -7,7 +7,6 @@ const meta: Meta<typeof Kbd> = {
   title: "Components/Kbd",
   component: Kbd,
   subcomponents: { KbdGroup },
-  tags: ["new"],
   argTypes: { children: { control: "text" } },
   args: { children: "Esc" },
 }
