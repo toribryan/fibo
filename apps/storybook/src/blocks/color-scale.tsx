@@ -63,11 +63,6 @@ function resolve(token: string, mode: Mode) {
   return { name, alpha, index }
 }
 
-/*
- * Each callout sits on the side of the card nearest its part, in the same
- * order top to bottom, so no two lines cross. primary-foreground rides on
- * primary's callout, since both colour the one button.
- */
 const NOISE = "_!X$0-+*#"
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)"
 
@@ -128,7 +123,12 @@ function Scramble({
   return <span aria-hidden="true">{noise ?? text}</span>
 }
 
-type Callout = { token: string; side: "left" | "right"; pair?: string }
+/*
+ * Each callout sits on the side of the card nearest its part, in the same
+ * order top to bottom, so no two lines cross. The button's fill and its
+ * label each get a line, since they're two tokens.
+ */
+type Callout = { token: string; side: "left" | "right" }
 
 const CALLOUTS: Callout[] = [
   { token: "foreground", side: "left" },
@@ -139,13 +139,19 @@ const CALLOUTS: Callout[] = [
   { token: "background", side: "right" },
   { token: "success", side: "right" },
   { token: "ring", side: "right" },
-  { token: "primary", side: "right", pair: "primary-foreground" },
+  { token: "primary", side: "right" },
+  { token: "primary-foreground", side: "right" },
 ]
 
 // Where down its part a line lands, as a share of the part's height. The
 // two surfaces are met near a corner, clear of the content: the page at
 // its top, the card at its foot.
 const LANDING: Record<string, number> = { background: 0.08, card: 0.96 }
+
+// Parts met from underneath: a label inside a button, whose line comes in
+// below the button and rises into the text rather than cutting through the
+// fill from the side.
+const FROM_BELOW = new Set(["primary-foreground"])
 
 // The least room between two callouts stacked on one side.
 const CALLOUT_GAP = 2
@@ -186,11 +192,22 @@ function useAnnotations(
           const to = parts.current.get(token)?.getBoundingClientRect()
           const height = callouts.current.get(token)?.offsetHeight ?? 0
           if (!to) continue
-          const y = to.top + to.height * (LANDING[token] ?? 0.5) - box.top
-          const top = Math.max(y - offset - height / 2, floor)
+          const below = FROM_BELOW.has(token)
+          const y = below
+            ? to.bottom + 3 - box.top
+            : to.top + to.height * (LANDING[token] ?? 0.5) - box.top
+          // A line from below needs its callout clear of the part's owner,
+          // so it aims a row lower.
+          const aim = below ? y + 16 : y
+          const top = Math.max(aim - offset - height / 2, floor)
           floor = top + height + CALLOUT_GAP
           tops[token] = top
           const from = top + offset + height / 2
+          if (below) {
+            const x2 = to.left + to.width / 2 - box.left
+            lines.push({ token, d: `M${x1} ${from}H${x2}V${y}`, x: x2, y })
+            continue
+          }
           // The dot lands just outside the part, clear of its text.
           const x2 = (left ? to.left - 6 : to.right + 6) - box.left
           const bend = left ? x2 - 16 : x2 + 16
@@ -255,10 +272,6 @@ function ColorScale() {
     ("token" in active
       ? active.token === token
       : stepFor(token) === active.step)
-  const picked = ({ token, pair }: Callout) =>
-    isActive(token) || (pair !== undefined && isActive(pair))
-  const pickedToken = (token: string) =>
-    picked(CALLOUTS.find((c) => c.token === token)!)
   const activeStep =
     active === null
       ? null
@@ -375,37 +388,29 @@ function ColorScale() {
     Object.entries(values).map(([name, value]) => [`--${name}`, value])
   ) as CSSProperties
 
-  const callout = (c: Callout) => {
-    const { token, side, pair } = c
-    return (
-      <button
-        key={token}
-        type="button"
-        ref={(node) => {
-          if (node) calloutNodes.current.set(token, node)
-          else calloutNodes.current.delete(token)
-        }}
-        {...pointAt({ token })}
-        // Hidden until measured, so callouts never jump into place.
-        style={{ top: annotations?.tops[token] ?? 0 }}
-        className={cn(
-          "absolute inset-x-0 flex flex-col gap-1 rounded-md px-2 py-0.5 transition-opacity duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
-          side === "left" ? "items-end text-right" : "items-start text-left",
-          annotations?.tops[token] === undefined && "invisible",
-          active && !picked(c) && "opacity-40"
-        )}
-      >
-        <span className="font-mono text-xs whitespace-nowrap text-foreground">
-          --{token}
-        </span>
-        {pair ? (
-          <span className="font-mono text-xs whitespace-nowrap text-foreground">
-            --{pair}
-          </span>
-        ) : null}
-      </button>
-    )
-  }
+  const callout = ({ token, side }: Callout) => (
+    <button
+      key={token}
+      type="button"
+      ref={(node) => {
+        if (node) calloutNodes.current.set(token, node)
+        else calloutNodes.current.delete(token)
+      }}
+      {...pointAt({ token })}
+      // Hidden until measured, so callouts never jump into place.
+      style={{ top: annotations?.tops[token] ?? 0 }}
+      className={cn(
+        "absolute inset-x-0 flex flex-col gap-1 rounded-md px-2 py-0.5 transition-opacity duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
+        side === "left" ? "items-end text-right" : "items-start text-left",
+        annotations?.tops[token] === undefined && "invisible",
+        active && !isActive(token) && "opacity-40"
+      )}
+    >
+      <span className="font-mono text-xs whitespace-nowrap text-foreground">
+        --{token}
+      </span>
+    </button>
+  )
 
   return (
     // The whole exhibit takes the chosen mode's tokens, whatever the page is
@@ -467,8 +472,8 @@ function ColorScale() {
               key={token}
               className={cn(
                 "transition-opacity duration-200",
-                active && !pickedToken(token) ? "opacity-25" : "opacity-100",
-                pickedToken(token)
+                active && !isActive(token) ? "opacity-25" : "opacity-100",
+                isActive(token)
                   ? "fill-foreground stroke-foreground"
                   : "fill-muted-foreground stroke-border"
               )}
@@ -503,9 +508,7 @@ function ColorScale() {
 
         {/* On narrow screens the callouts list under the card instead. */}
         <div className="flex w-full flex-wrap justify-center gap-1.5 md:hidden">
-          {CALLOUTS.flatMap(({ token, pair }) =>
-            pair ? [token, pair] : [token]
-          ).map((token) => (
+          {CALLOUTS.map(({ token }) => (
             <button
               key={token}
               type="button"
@@ -601,13 +604,19 @@ function Specimen({ part }: { part: PartProps }): ReactNode {
           <span
             {...part("primary")}
             className={cn(
-              "ml-auto flex rounded-md bg-primary px-3 py-1 text-xs font-medium",
+              "ml-auto flex rounded-md bg-primary px-3 py-1.5 text-xs font-medium",
               PICKED
             )}
           >
             <span
               {...part("primary-foreground")}
-              className={cn("text-primary-foreground", PICKED)}
+              // Outlined in its own colour, which is the one that shows
+              // against the button's fill.
+              className={cn(
+                "text-primary-foreground",
+                PICKED,
+                "data-picked:outline-primary-foreground"
+              )}
             >
               Save
             </span>
