@@ -6,7 +6,8 @@
 // gets a package.json because the CLI checks every import against the nearest
 // one.
 //
-// A component is exported when it has a demo in packages/ui/src/21st. Publish
+// A component is exported when it has a demo in packages/ui/src/21st. A demo
+// may use other fibo components; they are inlined into the demo too. Publish
 // with the commands this prints; each opens a review page in the browser.
 import process from "node:process"
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
@@ -137,67 +138,76 @@ function dependenciesOf(...sources) {
   return Object.fromEntries(Object.entries(deps).sort())
 }
 
-async function exportComponent(name) {
-  const source = await readFile(path.join(componentsDir, `${name}.tsx`), "utf8")
-  const { imports, body } = split(source)
-
-  const kept = []
-  const inlined = []
-  for (const statement of imports) {
-    if (statement.spec === "@workspace/ui/lib/utils") continue
-    if (statement.spec.startsWith("@workspace/ui/components/")) {
-      inlined.push(await inlineComponent(statement.spec))
-    } else if (statement.spec.startsWith("@workspace/")) {
-      throw new Error(
-        `${name} imports ${statement.spec}, which is not inlined.`
-      )
-    } else {
-      kept.push(statement)
-    }
-  }
-  const utils = [
+const cnHelper = {
+  imports: [
     { text: 'import { clsx, type ClassValue } from "clsx"', spec: "clsx" },
     {
       text: 'import { twMerge } from "tailwind-merge"',
       spec: "tailwind-merge",
     },
-  ]
+  ],
+  body: "function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs))\n}",
+}
+
+// Makes one self-contained file: `cn` and every fibo component the source
+// imports are copied in, except `own`, which a demo keeps as an import of the
+// component it shows.
+async function assemble(source, file, own) {
+  const { imports, body } = split(source)
+  const kept = []
+  const inlined = []
+  let usesCn = false
+  for (const statement of imports) {
+    if (statement.spec === "@workspace/ui/lib/utils") {
+      usesCn = true
+    } else if (statement.spec === own) {
+      kept.push({
+        spec: statement.spec,
+        text: statement.text.replace(
+          own,
+          `@/components/ui/${path.basename(own)}`
+        ),
+      })
+    } else if (statement.spec.startsWith("@workspace/ui/components/")) {
+      const dep = await inlineComponent(statement.spec)
+      usesCn ||= dep.imports.some((i) => i.spec === "@workspace/ui/lib/utils")
+      inlined.push(dep)
+    } else if (statement.spec.startsWith("@workspace/")) {
+      throw new Error(
+        `${file} imports ${statement.spec}, which is not inlined.`
+      )
+    } else {
+      kept.push(statement)
+    }
+  }
   const allImports = mergeImports([
     ...kept,
     ...inlined.flatMap((dep) =>
       dep.imports.filter((i) => !i.spec.startsWith("@workspace/"))
     ),
-    ...utils,
+    ...(usesCn ? cnHelper.imports : []),
   ])
-
-  const component = mapRoles(
+  return mapRoles(
     [
       '"use client"',
       allImports.join("\n"),
-      "function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs))\n}",
+      ...(usesCn ? [cnHelper.body] : []),
       ...inlined.map((dep) => dep.body),
       body,
     ].join("\n\n") + "\n",
+    file
+  )
+}
+
+async function exportComponent(name) {
+  const component = await assemble(
+    await readFile(path.join(componentsDir, `${name}.tsx`), "utf8"),
     `${name}.tsx`
   )
-
-  const demoSource = await readFile(path.join(demosDir, `${name}.tsx`), "utf8")
-  for (const [, spec] of demoSource.matchAll(/from\s+["']([^"']+)["']/g)) {
-    if (
-      spec.startsWith("@workspace/") &&
-      spec !== `@workspace/ui/components/${name}`
-    ) {
-      throw new Error(
-        `The ${name} demo imports ${spec}. A demo can only import its own component.`
-      )
-    }
-  }
-  const demo = mapRoles(
-    demoSource.replace(
-      `@workspace/ui/components/${name}`,
-      `@/components/ui/${name}`
-    ),
-    `${name} demo`
+  const demo = await assemble(
+    await readFile(path.join(demosDir, `${name}.tsx`), "utf8"),
+    `${name} demo`,
+    `@workspace/ui/components/${name}`
   )
 
   const dir = path.join(outDir, name)
