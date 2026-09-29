@@ -1,5 +1,5 @@
 import type { Decorator, Meta, StoryObj } from "@storybook/react-vite"
-import { expect, waitFor } from "storybook/test"
+import { expect, waitFor, within } from "storybook/test"
 import { useState } from "react"
 
 import { Reactions, type Reaction } from "./reactions.js"
@@ -74,7 +74,9 @@ export default meta
 type Story = StoryObj<typeof Reactions>
 
 export const Default: Story = {
-  play: async ({ canvas, userEvent }) => {
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    // The picker's panel is portalled to the body, outside the canvas.
+    const page = within(canvasElement.ownerDocument.body)
     const thumbs = canvas.getByRole("button", { name: /^Thumbs up/ })
     await expect(thumbs).toHaveAttribute("aria-pressed", "false")
     await userEvent.click(thumbs)
@@ -88,14 +90,15 @@ export const Default: Story = {
     await expect(trigger).toHaveAttribute("aria-expanded", "true")
     await waitFor(() =>
       expect(
-        canvas.getByRole("group", { name: "Pick a reaction" })
+        page.getByRole("dialog", { name: "Pick a reaction" })
       ).toBeVisible()
     )
     await userEvent.keyboard("{Escape}")
     await waitFor(() =>
       expect(trigger).toHaveAttribute("aria-expanded", "false")
     )
-    await expect(trigger).toHaveFocus()
+    // Focus returns once the panel has finished closing.
+    await waitFor(() => expect(trigger).toHaveFocus())
   },
 }
 
