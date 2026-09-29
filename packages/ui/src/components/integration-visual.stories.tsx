@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { expect, waitFor } from "storybook/test"
+import { expect, waitFor, within } from "storybook/test"
 import {
   BellIcon,
   CalendarIcon,
@@ -119,23 +119,29 @@ const meta: Meta<Args> = {
 export default meta
 type Story = StoryObj<Args>
 
-// Only stories with room above the hub carry a preview. In a small plate or
-// a card it would be clipped by the frame.
 export const Default: Story = {
   args: {
     preview: <SyncPreview />,
   },
   play: async ({ canvasElement, userEvent }) => {
+    // The preview is portalled to the body, outside the story's canvas.
+    const page = within(canvasElement.ownerDocument.body)
     const preview = () =>
-      canvasElement.querySelector('[data-slot="integration-visual-preview"]')
+      canvasElement.ownerDocument.querySelector(
+        '[data-slot="integration-visual-preview"]'
+      )
     await expect(preview()).toBeNull()
+
+    // The hub is a named button, and focusing it opens the preview.
     await userEvent.tab()
-    await expect(
-      canvasElement.querySelector('[data-slot="integration-visual-hub"]')
-    ).toHaveFocus()
+    const hub = page.getByRole("button", { name: "Integrations" })
+    await expect(hub).toHaveFocus()
     await waitFor(() => expect(preview()).not.toBeNull())
-    await userEvent.tab()
+
+    // Escape dismisses it without moving focus.
+    await userEvent.keyboard("{Escape}")
     await waitFor(() => expect(preview()).toBeNull())
+    await expect(hub).toHaveFocus()
   },
 }
 
@@ -225,6 +231,7 @@ export const InACard: Story = {
   args: {
     hub: "text",
     hubText: "12",
+    preview: <SyncPreview />,
   },
   render: ({ count, hub, hubText, ...args }) => (
     <div className="mx-auto flex w-full max-w-sm flex-col overflow-hidden rounded-2xl border border-border bg-card">

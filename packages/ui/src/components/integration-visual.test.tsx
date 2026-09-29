@@ -37,5 +37,6 @@ describe("IntegrationVisual", () => {
       '[data-slot="integration-visual-hub"]'
     )
     expect(hub?.hasAttribute("tabindex")).toBe(false)
+    expect(hub?.tagName).toBe("DIV")
   })
 })
