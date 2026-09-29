@@ -1,0 +1,31 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+import { DocLink } from "../blocks/doc-link"
+import { SkillChecks } from "../blocks/skill-checks"
+
+<Meta title="Skill checks" />
+
+export const link =
+  "font-medium text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+
+# Skill checks
+
+The design-skills collection checked against its own contract, as it stands
+on GitHub right now.
+
+Every rule comes from the collection itself: the skill and reviewer format in
+`AUTHORING.md` and the definition of done in `AGENTS.md`. A failure breaks a
+rule the contract requires. A warning breaks a default, a rule the contract
+words as "if one fits" or "when a neighbor is closer", so it can be a
+deliberate choice. Read any file on the <DocLink to="design-skills--docs" className={link}>Design skills</DocLink> page.
+
+<SkillChecks />
+
+## What it cannot check
+
+These checks read structure, not meaning. They confirm a skill has a Verify
+section that names a reviewer, not that the reviewer's checklist covers what
+the skill produces, or that the two agree on a threshold. Numbers stated
+differently across files, facts about the outside world, and whether a
+standard can be checked at all still need a person, or a reviewer agent,
+reading the files.
