@@ -1,0 +1,32 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+import { SkillsBrowser } from "../blocks/skills-browser"
+
+<Meta title="Design skills" />
+
+# Design skills
+
+Claude skills and read-only reviewer agents for the whole product design
+process, from discovery through shipped code, plus design systems, motion and
+brand. fibo is the worked example they are calibrated against.
+
+Pick a file in the tree to read it. Links between files open here; the GitHub
+link opens the file in the
+[design-skills repo](https://github.com/toribryan/toribryan/tree/main/design-skills).
+
+<SkillsBrowser />
+
+## Install
+
+Clone the repo, then link the skills and reviewers into your user-level Claude
+folders so every project sees them:
+
+```bash
+git clone https://github.com/toribryan/toribryan
+mkdir -p ~/.claude/skills ~/.claude/agents
+ln -s "$PWD"/toribryan/design-skills/skills/* ~/.claude/skills/
+ln -s "$PWD"/toribryan/design-skills/agents/*.md ~/.claude/agents/
+```
+
+Each `skills/<name>/` folder also works on its own, so you can copy in only the
+ones you want.
