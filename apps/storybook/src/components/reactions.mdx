@@ -23,7 +23,9 @@ inline under the content or float in a corner of the page.
   viewport.
 - One tap to react or take it back, with a particle burst. Counts past a
   thousand shorten to 1.2K.
-- A picker of six common reactions, plus any already on the item.
+- A picker of six common reactions, plus any already on the item. It's a
+  Base UI popover, so a card that clips its overflow can't cut it off, and it
+  flips to whichever side has room.
 - Controlled or uncontrolled. Particles and pill motion switch off under
   reduced motion.
 
@@ -85,7 +87,7 @@ the reactions; the component builds the rest.
           {
             name: "panel",
             slot: "reactions-panel",
-            note: "The choices, while the picker is open.",
+            note: "The choices, while the picker is open. Portalled to the body.",
             children: [
               {
                 name: "choice",
@@ -97,7 +99,7 @@ the reactions; the component builds the rest.
           {
             name: "badge",
             slot: "reactions-badge",
-            note: "Floating only. The total count.",
+            note: 'Floating only, while showCounts is on. The total count, read as "12 reactions".',
           },
           {
             name: "trigger",
@@ -157,7 +159,8 @@ Counts past a thousand shorten, such as 1.2K, so the pills stay small.
 
 ### Without counts
 
-`showCounts={false}` hides the numbers.
+`showCounts={false}` hides the numbers: the pill counts, and the total on the
+floating bar.
 
 <Canvas of={Stories.WithoutCounts} />
 
@@ -267,7 +270,8 @@ Counts past a thousand shorten, such as 1.2K, so the pills stay small.
       as "Heart, 3 reactions", with <code>aria-pressed</code> for whether you've
       reacted. The emoji itself is hidden from screen readers.
     </>,
-    'A polite live region announces each change: "Added Heart", "Removed Heart".',
+    'A polite live region announces each change: "Added Heart", "Removed Heart". On the floating bar, with counts on, it adds the new total: "Added Heart, 13 reactions in total".',
+    "With showCounts off, pills are named by their label alone, so screen readers hear what sighted users see.",
     "Choices you've already picked show as pressed in the picker too.",
     "Arrow keys, Home and End move through the choices. Escape closes the picker and returns focus to its trigger; tabbing away closes it too.",
     "Particles and pill motion switch off under prefers-reduced-motion.",
@@ -285,4 +289,5 @@ Counts past a thousand shorten, such as 1.2K, so the pills stay small.
 ## References
 
 - [WAI-ARIA button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/), for the toggle pills
+- [Base UI Popover](https://base-ui.com/react/components/popover), for the picker
 - [Web Animations API](https://developer.mozilla.org/docs/Web/API/Web_Animations_API)
