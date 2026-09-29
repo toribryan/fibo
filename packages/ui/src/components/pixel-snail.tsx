@@ -564,7 +564,6 @@ function PixelSnail({
       data-slot="pixel-snail"
       data-travel={travel || undefined}
       role="status"
-      aria-label={label}
       className={cn(
         "text-foreground",
         travel ? "relative w-full overflow-hidden" : "inline-flex",
@@ -573,6 +572,9 @@ function PixelSnail({
       style={travel ? { height } : undefined}
       {...props}
     >
+      {/* Text, not aria-label: screen readers read a status region's
+      content and often skip its name. */}
+      <span className="sr-only">{label}</span>
       {travel ? (
         <div ref={trackRef} className="absolute inset-0">
           {ground ? (
