@@ -162,7 +162,7 @@ function HueSlider({
 /*
  * One setting in the panel, as a pill in fibo's own style: a small picture
  * of the value, the setting's name and its current value. Pressing it opens
- * the control beside the panel.
+ * the control beside the panel, with any contrast failures it causes.
  */
 function Tile({
   label,
@@ -198,12 +198,6 @@ function Tile({
           {label}
         </span>
         <span className="max-w-28 truncate font-medium">{value}</span>
-        {failing ? (
-          <TriangleAlertIcon
-            aria-label={`${failing} contrast ${failing === 1 ? "failure" : "failures"}`}
-            className="size-4 shrink-0 text-destructive"
-          />
-        ) : null}
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Positioner
@@ -220,6 +214,14 @@ function Tile({
             <PopoverPrimitive.Title className="m-0 text-sm font-medium">
               {label}
             </PopoverPrimitive.Title>
+            {/* Failures show here, in the setting's own menu, rather than
+                crowding the panel; the count at its foot sums them up. */}
+            {failing ? (
+              <p className="m-0 flex items-center gap-1.5 text-xs font-medium text-destructive">
+                <TriangleAlertIcon aria-hidden="true" className="size-3.5" />
+                {failing} contrast {failing === 1 ? "failure" : "failures"}
+              </p>
+            ) : null}
             {children}
           </PopoverPrimitive.Popup>
         </PopoverPrimitive.Positioner>
@@ -617,7 +619,6 @@ function Panel({
               ))}
             </span>
           }
-          failing={STATUS_ROLES.reduce((sum, role) => sum + failing(role), 0)}
         >
           {STATUS_ROLES.map((role) => (
             <div key={role} className="flex flex-col gap-1.5">
