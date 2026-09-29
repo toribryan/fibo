@@ -399,9 +399,10 @@ In an empty panel with a line saying what's happening and a way out.
 <UsageGuidelines
   guidelines={[
     <>
-      <code>PixelSnail</code> is a <code>status</code> region named by{" "}
-      <code>label</code>. The drawing itself is hidden from assistive
-      technology.
+      <code>PixelSnail</code> is a <code>status</code> region holding{" "}
+      <code>label</code> as visually hidden text, since screen readers read a
+      status region's content rather than its name. The drawing itself is hidden
+      from assistive technology.
     </>,
     <>
       <code>PixelSnailSprite</code> is decoration. Hide the SVG it sits in with{" "}
