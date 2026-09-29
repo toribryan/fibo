@@ -16,7 +16,7 @@ jobs:
     # Skipped until the project token is added as a repository secret.
     if: ${{ vars.CHROMATIC_ENABLED == 'true' }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # Chromatic compares against the baseline on the ancestor commit.
           fetch-depth: 0
