@@ -38,19 +38,26 @@ page. The site is static, so everything runs in the browser.
 - Fonts: sans and mono from a short list of Google Fonts, loaded on demand.
 
 **Layout.** A first version stacked form controls above a small preview,
-which read as a settings page. The shipped layout leads with the result:
+which read as a settings page. A second led with the result, after shadcn's
+theme builder and Radix's colour page: a dark floating rail of setting
+tiles beside a scene of generic example cards. A third moved the settings
+into a toolbar across the top, which crowded the settings into one line. The
+shipped layout keeps the result first but speaks fibo's own language:
 
-- The rail is a column of tiles, one per setting, each showing its name, its
-  current value and a small picture of it. Pressing a tile opens the control
-  beside the rail. The rail stays in fibo's dark scheme whatever the site's
-  theme, so it reads as a control surface and never takes on the theme being
-  made.
-- The scene is a grey canvas of cards, laid out in columns: the ramps across
-  the top, as Radix shows a scale, then tokens, type, controls, a chart,
-  forms, notifications, a team list and tasks. It shows one mode at a time,
-  with a switch.
-- The contrast report and the code export open in dialogs from the foot of
-  the rail, next to Shuffle and Copy link.
+- A light panel docks beside the stage on a card surface with hairlines and
+  pill controls, the way fibo's own parts look, and stays in view while the
+  stage scrolls. It holds the title and reset, the light and dark switch,
+  one pill per setting, each showing a small picture of its value and
+  opening its control beside the panel, and at its foot the contrast count,
+  Shuffle, Copy link and Get code. The panel stays in the site's theme and
+  never takes on the one being made.
+- The scene is a stage of real fibo parts, each labelled with its name and
+  shelf as the catalog labels it: the ramps, type, Button, Badge and Kbd,
+  the form controls, Filter menu, Integration visual, Reactions, Chapter
+  scrubber, Pixel snail with Progress and Skeleton, Avatar, and Token flow.
+  Toast raises into a portal outside the stage, so its look is drawn with
+  the same tokens instead.
+- The contrast report and the code export open in dialogs.
 
 The page drops the docs column's width and its "On this page" rail, as the
 Welcome page does.
