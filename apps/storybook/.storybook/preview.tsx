@@ -57,6 +57,7 @@ const preview: Preview = {
           "Catalog",
           "Changelog",
           "Contributing",
+          "Design skills",
           "Foundations",
           ["Colors", "Typography", "Theme creator"],
           "Base components",
