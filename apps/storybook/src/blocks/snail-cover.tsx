@@ -7,7 +7,7 @@ import { FIBO_LINES } from "./lines.js"
 // The sprite's drawing area around its origin, under the middle of the foot.
 const LEFT = -10
 const TOP = -15
-const COLS = 23
+const COLS = 24
 const ROWS = 17
 const PIXEL = 6
 
