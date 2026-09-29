@@ -719,7 +719,7 @@ function Pitch({ width, className }: { width: number; className?: string }) {
       style={{ "--u": `calc(100cqw * ${LATTICE} / ${width})` } as CSSProperties}
     >
       <div className="flex flex-col justify-end">
-        <h1 className="fibo-tile m-0 mb-[max(0.75rem,1.2cqw)] text-[80px] leading-none font-semibold tracking-[-0.035em] text-foreground">
+        <h1 className="fibo-tile m-0 mb-[max(0.75rem,1.2cqw)] text-[clamp(3.5rem,18cqw,5rem)] leading-none font-semibold tracking-[-0.035em] text-foreground">
           fibo
         </h1>
         <p
@@ -780,8 +780,10 @@ function Pitch({ width, className }: { width: number; className?: string }) {
           GitHub
         </Button>
       </div>
+      {/* On a phone the pitch has no room for the stack under its buttons,
+          so it's left out rather than clipped by the frame. */}
       <ul
-        className="fibo-tile m-0 mt-[var(--u)] flex min-h-[var(--u)] list-none flex-wrap items-center gap-x-4 gap-y-2 p-0"
+        className="fibo-tile m-0 mt-[var(--u)] hidden min-h-[var(--u)] list-none flex-wrap items-center gap-x-4 gap-y-2 p-0 @sm:flex"
         style={{ animationDelay: "0.45s" }}
       >
         {STACK.map(({ icon: Icon, title }) => (
@@ -894,7 +896,7 @@ function Hero() {
   return (
     <header
       ref={area}
-      className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden px-8 pb-12"
+      className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden px-4 pb-12 sm:px-8"
     >
       <div className="@container relative mx-auto w-full max-w-[68rem]">
         <div className="hidden @3xl:block">

@@ -182,7 +182,71 @@
   [data-fibo-theme="dark"] .fibo-status--deprecated {
     color: #f87171;
   }
+
+  /*
+   * Phones (Storybook switches to its mobile layout below 600px). The page
+   * list opens from a bar at the bottom of the screen, so the bar reads as
+   * a clear, full-width control, and the list's rows are thumb-sized.
+   */
+  @media (max-width: 599px) {
+    header.sb-bar:has(button[aria-label="Open navigation menu"]) {
+      min-height: 56px;
+      padding: 0 12px;
+      border-top: 1px solid var(--fibo-border);
+      background: var(--fibo-bg);
+    }
+    header.sb-bar button[aria-label="Open navigation menu"] {
+      height: 44px;
+      width: 100%;
+      gap: 12px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--fibo-border);
+      color: var(--fibo-fg);
+    }
+    header.sb-bar button[aria-label="Open navigation menu"] p {
+      font:
+        500 15px/1 Geist,
+        ui-sans-serif,
+        system-ui,
+        sans-serif;
+      color: var(--fibo-fg);
+    }
+    #storybook-explorer-menu a,
+    #storybook-explorer-menu button {
+      min-height: 44px;
+      font-size: 16px;
+    }
+    #storybook-explorer-searchfield {
+      font-size: 16px;
+    }
+  }
 </style>
+
+<script>
+  // On phones the menu button names the page by its path, such as
+  // "Components/Button/Docs". Show just the page instead: "Button". The text
+  // node is edited in place, so Storybook's own updates still land on it.
+  ;(function () {
+    function tidy() {
+      var label = document.querySelector(
+        'button[aria-label="Open navigation menu"] p'
+      )
+      var node = label && label.firstChild
+      if (!node || node.nodeType !== 3) return
+      var parts = node.nodeValue.split("/")
+      if (parts.length < 2) return
+      var docs = parts[parts.length - 1] === "Docs"
+      var next = docs ? parts[parts.length - 2] : parts.slice(-2).join(" · ")
+      if (node.nodeValue !== next) node.nodeValue = next
+    }
+    new MutationObserver(tidy).observe(document.documentElement, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+    })
+  })()
+</script>
 
 <script>
   // Vibe widens the nav to 244px so long story names fit. Only raises a
