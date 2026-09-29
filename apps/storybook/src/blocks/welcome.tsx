@@ -38,9 +38,9 @@ function Resources() {
         <DocLink
           key={to}
           to={to}
-          className="group flex flex-col gap-10 rounded-2xl border border-border bg-card p-6 no-underline transition-colors hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle focus-visible:outline-none"
+          className="group flex items-start gap-4 rounded-2xl border border-border bg-card p-5 no-underline transition-colors hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle focus-visible:outline-none sm:flex-col sm:gap-10 sm:p-6"
         >
-          <span className="flex size-10 items-center justify-center rounded-xl border border-border bg-background text-foreground transition-transform group-hover:-rotate-6">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-foreground transition-transform group-hover:-rotate-6">
             <Icon className="size-5" />
           </span>
           <span className="flex flex-col gap-1.5">
