@@ -7,7 +7,7 @@ import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
 // middle of the foot, sits 10 art pixels in from the left and 15 down.
 const LEFT = -10
 const TOP = -15
-const COLS = 23
+const COLS = 24
 const ROWS = 17
 const GROUND = 1
 

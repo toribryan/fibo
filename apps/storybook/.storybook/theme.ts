@@ -10,11 +10,11 @@ const fonts = {
 
 // fibo's resting frame from the pixel snail, one unit per art pixel.
 const FIBO =
-  "M12 0h2v1h-2zM17 0h2v1h-2zM4 1h5v1h-5zM11 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM19 1h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h4v1h-4zM13 2h2v1h-2zM16 2h1v1h-1zM18 2h2v1h-2zM2 3h1v1h-1zM4 3h2v1h-2zM8 3h1v1h-1zM10 3h1v1h-1zM12 3h2v1h-2zM17 3h2v1h-2zM1 4h4v1h-4zM9 4h3v1h-3zM13 4h1v1h-1zM17 4h1v1h-1zM1 5h1v1h-1zM3 5h1v1h-1zM6 5h2v1h-2zM11 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM1 6h1v1h-1zM3 6h2v1h-2zM7 6h1v1h-1zM11 6h1v1h-1zM14 6h3v1h-3zM1 7h2v1h-2zM4 7h4v1h-4zM10 7h2v1h-2zM13 7h4v1h-4zM2 8h1v1h-1zM10 8h1v1h-1zM13 8h4v1h-4zM2 9h3v1h-3zM8 9h3v1h-3zM13 9h3v1h-3zM4 10h5v1h-5zM12 10h4v1h-4zM1 11h16v1h-16zM0 12h18v1h-18z"
+  "M13 0h2v1h-2zM18 0h2v1h-2zM4 1h5v1h-5zM12 1h1v1h-1zM15 1h1v1h-1zM17 1h1v1h-1zM20 1h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM12 2h1v1h-1zM14 2h2v1h-2zM17 2h1v1h-1zM19 2h2v1h-2zM2 3h1v1h-1zM4 3h2v1h-2zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h2v1h-2zM18 3h2v1h-2zM1 4h4v1h-4zM9 4h3v1h-3zM14 4h1v1h-1zM18 4h1v1h-1zM1 5h1v1h-1zM3 5h1v1h-1zM6 5h2v1h-2zM11 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM1 6h1v1h-1zM3 6h2v1h-2zM7 6h1v1h-1zM11 6h1v1h-1zM15 6h3v1h-3zM1 7h2v1h-2zM4 7h4v1h-4zM10 7h2v1h-2zM14 7h4v1h-4zM2 8h1v1h-1zM10 8h1v1h-1zM14 8h4v1h-4zM2 9h3v1h-3zM8 9h3v1h-3zM14 9h3v1h-3zM4 10h5v1h-5zM13 10h4v1h-4zM1 11h17v1h-17zM0 12h19v1h-19z"
 
 const mark = (color: string) =>
   `<span style="display:inline-flex;align-items:center;gap:6px;font:500 26px/1 ${fonts.fontBase};letter-spacing:-0.04em;color:${color}">` +
-  `<svg width="40" height="26" viewBox="0 0 20 13" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">` +
+  `<svg width="42" height="26" viewBox="0 0 21 13" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">` +
   `<path d="${FIBO}"/></svg>fibo</span>`
 
 export const lightTheme = create({

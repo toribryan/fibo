@@ -31,10 +31,10 @@ type Frame = {
 }
 
 const FRAMES: Frame[] = [
-  { tail: 0, head: 15, lean: 0, shift: 0 },
-  { tail: 0, head: 16, lean: 1, shift: 0 },
-  { tail: -1, head: 16, lean: 1, shift: 1 },
-  { tail: -1, head: 15, lean: 0, shift: 2 },
+  { tail: 0, head: 16, lean: 0, shift: 0 },
+  { tail: 0, head: 17, lean: 1, shift: 0 },
+  { tail: -1, head: 17, lean: 1, shift: 1 },
+  { tail: -1, head: 16, lean: 0, shift: 2 },
 ]
 const CYCLE_SHIFT = 2
 
@@ -51,13 +51,13 @@ const IDLE: [frame: Frame, ms: number][] = [
   [REST, 900],
   [{ ...REST, blink: true }, 140],
   [REST, 1500],
-  [{ ...REST, head: 16, lean: 1 }, 600],
+  [{ ...REST, head: 17, lean: 1 }, 600],
   [{ ...REST, dx: 1 }, 1600],
   [{ ...REST, dx: 1, lean: -1 }, 900],
   [{ ...REST, dx: 1 }, 700],
   [{ ...REST, dx: 1, blink: true }, 140],
   [{ ...REST, dx: 1 }, 1200],
-  [{ ...REST, tail: -1, head: 15, dx: 0 }, 500],
+  [{ ...REST, tail: -1, head: 16, dx: 0 }, 500],
 ]
 
 /*
@@ -66,7 +66,7 @@ const IDLE: [frame: Frame, ms: number][] = [
  */
 const SWAY: [frame: Frame, ms: number][] = [
   [{ ...REST, lean: -1 }, 280],
-  [{ ...REST, lean: 1, head: 16, bob: 1, gaze: -1 }, 280],
+  [{ ...REST, lean: 1, head: 17, bob: 1, gaze: -1 }, 280],
 ]
 const DANCE: [frame: Frame, ms: number][] = [
   ...SWAY,
@@ -98,13 +98,13 @@ const SHELL = [
 const SHELL_TOP = -1
 
 /*
- * The drawing spans columns -1 to 21 and rows -4 to 12: room for the shell
+ * The drawing spans columns -1 to 22 and rows -4 to 12: room for the shell
  * to hop a row and the eyes to rise on stretched stalks. The ground is row
  * 12, and the foot's middle, where a sprite is anchored, is column 9.
  */
 const MIN_X = -1
 const MIN_Y = -4
-const COLS = 23
+const COLS = 24
 const ROWS = 17
 const FOOT_MIDDLE = 9
 const GROUND_ROW = 12
