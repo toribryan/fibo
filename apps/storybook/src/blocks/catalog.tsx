@@ -328,7 +328,7 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
       <div
         inert
         className={cn(
-          "flex items-center justify-center bg-muted transition-colors group-hover:bg-secondary-hover",
+          "flex items-center justify-center bg-card",
           compact ? "h-32" : "h-40"
         )}
       >
