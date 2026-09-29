@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { cva, type VariantProps } from "class-variance-authority"
 import { SmilePlusIcon } from "lucide-react"
 
@@ -98,9 +99,6 @@ const SURFACE = "shadow-lg backdrop-blur-md inset-ring-1 inset-ring-border"
 
 const RISE_EASING = "cubic-bezier(0.22, 0.61, 0.36, 1)"
 const SPRING_EASING = "cubic-bezier(0.34, 1.56, 0.64, 1)"
-const PANEL_EXIT_MS = 220
-
-type PanelState = "closed" | "open" | "exiting"
 
 function prefersReducedMotion() {
   return (
@@ -268,7 +266,7 @@ type ReactionsProps = Omit<React.ComponentProps<"div">, "onChange"> &
     onReactionsChange?: (reactions: Reaction[]) => void
     /** Fires with the reaction that changed and whether it is now on. */
     onReact?: (reaction: Reaction, active: boolean) => void
-    /** Show the count on each pill. */
+    /** Show the count on each pill, or the total on the floating bar. */
     showCounts?: boolean
     /** Emoji thrown up on each new reaction. `0` turns the burst off. */
     particles?: number
@@ -292,8 +290,6 @@ function Reactions({
   triggerLabel = "Add reaction",
   panelLabel = "Pick a reaction",
   "aria-label": ariaLabel = "Reactions",
-  onKeyDown,
-  onBlur,
   ...props
 }: ReactionsProps) {
   const rootRef = React.useRef<HTMLDivElement>(null)
@@ -301,15 +297,11 @@ function Reactions({
   const triggerRef = React.useRef<HTMLButtonElement>(null)
   const badgeRef = React.useRef<HTMLSpanElement>(null)
   const pulseNonce = React.useRef(0)
-  const timerRef = React.useRef(0)
-  const panelId = React.useId()
 
   const [uncontrolled, setUncontrolled] = React.useState(defaultReactions)
   const [pulse, setPulse] = React.useState<{ emoji: string; nonce: number }>()
-  const [panel, setPanel] = React.useState<PanelState>("closed")
+  const [open, setOpen] = React.useState(false)
   const [announcement, setAnnouncement] = React.useState("")
-  const [alignEnd, setAlignEnd] = React.useState(false)
-  const [dropDown, setDropDown] = React.useState(false)
 
   const isControlled = reactionsProp !== undefined
   const items = isControlled ? reactionsProp : uncontrolled
@@ -323,63 +315,6 @@ function Reactions({
       )
     )
   const total = items.reduce((sum, item) => sum + (item.count ?? 0), 0)
-
-  const open = panel === "open"
-  const rendered = panel !== "closed"
-
-  React.useEffect(() => () => window.clearTimeout(timerRef.current), [])
-
-  // Entry rides on @starting-style, so the panel can mount straight into its
-  // open state. Exit has no such affordance and keeps the node mounted for the
-  // length of the transition.
-  function openPanel() {
-    window.clearTimeout(timerRef.current)
-    setPanel("open")
-  }
-
-  function closePanel() {
-    window.clearTimeout(timerRef.current)
-    setPanel("exiting")
-    timerRef.current = window.setTimeout(
-      () => setPanel("closed"),
-      PANEL_EXIT_MS
-    )
-  }
-
-  React.useEffect(() => {
-    if (!open) return
-    panelRef.current
-      ?.querySelector<HTMLButtonElement>('[data-slot="reactions-choice"]')
-      ?.focus()
-  }, [open])
-
-  // The inline panel opens above the picker, from its start edge. Near the top
-  // of the viewport it drops below instead, and near the right it opens from
-  // the end. Both are decided from the picker's position and the panel's
-  // layout size, which the flip itself never changes, so it settles at once.
-  React.useLayoutEffect(() => {
-    if (!open || variant !== "inline") return
-    const node = panelRef.current
-    const anchor = node?.parentElement
-    if (!node || !anchor) return
-    const box = anchor.getBoundingClientRect()
-    const width = node.offsetWidth
-    const fitsStart = box.left + width <= window.innerWidth - 8
-    const fitsEnd = box.right - width >= 8
-    setAlignEnd(!fitsStart && fitsEnd)
-    setDropDown(box.top - node.offsetHeight - 16 < 0)
-  }, [open, variant])
-
-  React.useEffect(() => {
-    if (!open) return
-
-    function onPointerDown(event: PointerEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) closePanel()
-    }
-
-    document.addEventListener("pointerdown", onPointerDown)
-    return () => document.removeEventListener("pointerdown", onPointerDown)
-  }, [open])
 
   React.useEffect(() => {
     if (!pulse) return
@@ -424,7 +359,13 @@ function Reactions({
     )
 
     onReact?.(reaction, nowActive)
-    setAnnouncement(`${nowActive ? "Added" : "Removed"} ${reaction.label}`)
+    const change = `${nowActive ? "Added" : "Removed"} ${reaction.label}`
+    // The floating bar has no pills, so its total is the only count to hear.
+    setAnnouncement(
+      variant === "floating" && showCounts
+        ? `${change}, ${describeCount(total + (nowActive ? 1 : -1))} in total`
+        : change
+    )
     pulseNonce.current += 1
     setPulse({ emoji: reaction.emoji, nonce: pulseNonce.current })
     if (nowActive) burst(reaction.emoji, origin, particles)
@@ -456,34 +397,31 @@ function Reactions({
     }
   }
 
+  // The panel opens away from the bar's corner when floating, and above the
+  // trigger inline. Base UI flips it to whichever side has room.
   const isBar = variant === "floating"
-  const opensDown = isBar
-    ? position === "top-right" || position === "top-left"
-    : dropDown
+  const opensDown =
+    isBar && (position === "top-right" || position === "top-left")
   const alignsEnd =
     isBar && (position === "bottom-right" || position === "top-right")
 
-  const totalChip = total > 0 && (
+  const totalChip = showCounts && total > 0 && (
     <span
       ref={badgeRef}
       data-slot="reactions-badge"
-      aria-hidden="true"
       className="inline-flex h-8 min-w-6 shrink-0 items-center justify-center px-1.5 text-xs font-medium text-muted-foreground tabular-nums"
     >
-      {formatCount(total)}
+      <span aria-hidden="true">{formatCount(total)}</span>
+      <span className="sr-only">{describeCount(total)}</span>
     </span>
   )
 
   const trigger = (
-    <button
+    <PopoverPrimitive.Trigger
       ref={triggerRef}
-      type="button"
       data-slot="reactions-trigger"
       data-state={open ? "open" : "closed"}
       aria-label={triggerLabel}
-      aria-expanded={open}
-      aria-controls={rendered ? panelId : undefined}
-      onClick={() => (open ? closePanel() : openPanel())}
       className={cn(
         "group/trigger relative inline-flex shrink-0 items-center justify-center rounded-full transition-[background-color,color,transform,box-shadow] duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
         variant === "inline"
@@ -495,7 +433,7 @@ function Reactions({
         aria-hidden="true"
         className="transition-transform duration-300 ease-out motion-safe:group-data-[state=open]/trigger:rotate-90"
       />
-    </button>
+    </PopoverPrimitive.Trigger>
   )
 
   return (
@@ -507,19 +445,6 @@ function Reactions({
       aria-label={ariaLabel}
       className={cn(reactionsVariants({ variant, position, className }))}
       {...props}
-      onKeyDown={(event) => {
-        onKeyDown?.(event)
-        if (event.defaultPrevented || event.key !== "Escape" || !open) return
-        event.stopPropagation()
-        closePanel()
-        triggerRef.current?.focus()
-      }}
-      onBlur={(event) => {
-        onBlur?.(event)
-        // Tabbing out of an open picker closes it, the way a click outside does.
-        const next = event.relatedTarget as Node | null
-        if (open && next && !event.currentTarget.contains(next)) closePanel()
-      }}
     >
       <span role="status" aria-live="polite" className="sr-only">
         {announcement}
@@ -533,7 +458,11 @@ function Reactions({
             data-emoji={item.emoji}
             data-active={item.active ? "" : undefined}
             aria-pressed={Boolean(item.active)}
-            aria-label={`${item.label}, ${describeCount(item.count ?? 0)}`}
+            aria-label={
+              showCounts
+                ? `${item.label}, ${describeCount(item.count ?? 0)}`
+                : item.label
+            }
             onClick={(event) => toggle(item, event.currentTarget)}
             className="group/pill relative inline-flex h-7 items-center gap-1.5 rounded-full border border-border bg-card px-2.5 text-xs transition-[background-color,border-color,transform] duration-150 outline-none hover:bg-muted focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring-subtle active:translate-y-0 motion-safe:hover:-translate-y-px data-active:border-primary data-active:bg-primary-subtle"
           >
@@ -567,71 +496,75 @@ function Reactions({
             )
         )}
       >
-        <>
-          {rendered && (
-            <div
-              ref={panelRef}
-              id={panelId}
-              data-slot="reactions-panel"
-              data-state={open ? "open" : "closed"}
-              role="group"
-              aria-label={panelLabel}
-              onKeyDown={rove}
-              className={cn(
-                "absolute z-10 flex items-center gap-0.5 rounded-full bg-popover-overlay p-1 transition-[opacity,transform] duration-200 ease-out",
-                SURFACE,
-                "data-[state=closed]:scale-90 data-[state=closed]:opacity-0 starting:scale-90 starting:opacity-0",
-                opensDown
-                  ? "top-full mt-2 data-[state=closed]:-translate-y-2 starting:-translate-y-2"
-                  : "bottom-full mb-2 data-[state=closed]:translate-y-2 starting:translate-y-2",
-                opensDown
-                  ? alignsEnd || alignEnd
-                    ? "right-0 origin-top-right"
-                    : "left-0 origin-top-left"
-                  : alignsEnd || alignEnd
-                    ? "right-0 origin-bottom-right"
-                    : "left-0 origin-bottom-left"
-              )}
+        {/* Base UI's popover handles outside clicks, Escape, tabbing away
+            and returning focus, and portals the panel so a card that clips
+            its overflow can't cut it off. */}
+        <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+          <PopoverPrimitive.Portal>
+            <PopoverPrimitive.Positioner
+              side={opensDown ? "bottom" : "top"}
+              align={alignsEnd ? "end" : "start"}
+              sideOffset={8}
+              collisionPadding={8}
+              className="isolate z-50"
             >
-              {palette.map((choice, index) => {
-                const picked = items.find(
-                  (entry) => entry.emoji === choice.emoji
-                )?.active
-                return (
-                  <button
-                    key={choice.emoji}
-                    type="button"
-                    data-slot="reactions-choice"
-                    data-state={open ? "open" : "closed"}
-                    data-active={picked ? "" : undefined}
-                    aria-pressed={Boolean(picked)}
-                    aria-label={choice.label}
-                    // Staggering the entrance and reversing it on exit makes
-                    // the panel unfurl and furl rather than pop as one block.
-                    style={{
-                      transitionDelay: `${open ? index * 28 : (palette.length - 1 - index) * 16}ms`,
-                    }}
-                    onClick={(event) => {
-                      toggle(
-                        choice,
-                        isBar ? triggerRef.current : event.currentTarget
-                      )
-                      closePanel()
-                      triggerRef.current?.focus()
-                    }}
-                    className="inline-flex size-9 touch-manipulation items-center justify-center rounded-full text-lg leading-none transition-[background-color,transform,opacity] duration-200 ease-out outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-[state=closed]:scale-50 data-[state=closed]:opacity-0 motion-safe:hover:scale-115 motion-safe:active:scale-95 starting:scale-50 starting:opacity-0 data-active:bg-primary-subtle"
-                  >
-                    <span aria-hidden="true">{choice.emoji}</span>
-                  </button>
-                )
-              })}
-            </div>
-          )}
+              <PopoverPrimitive.Popup
+                ref={panelRef}
+                data-slot="reactions-panel"
+                data-state={open ? "open" : "closed"}
+                aria-label={panelLabel}
+                initialFocus={() =>
+                  panelRef.current?.querySelector<HTMLElement>(
+                    '[data-slot="reactions-choice"]'
+                  ) ?? true
+                }
+                onKeyDown={rove}
+                className={cn(
+                  "flex origin-(--transform-origin) items-center gap-0.5 rounded-full bg-popover-overlay p-1 transition-[opacity,transform] duration-200 ease-out outline-none motion-reduce:transition-none",
+                  SURFACE,
+                  "data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0",
+                  "data-[side=bottom]:data-ending-style:-translate-y-2 data-[side=bottom]:data-starting-style:-translate-y-2 data-[side=top]:data-ending-style:translate-y-2 data-[side=top]:data-starting-style:translate-y-2"
+                )}
+              >
+                {palette.map((choice, index) => {
+                  const picked = items.find(
+                    (entry) => entry.emoji === choice.emoji
+                  )?.active
+                  return (
+                    <button
+                      key={choice.emoji}
+                      type="button"
+                      data-slot="reactions-choice"
+                      data-state={open ? "open" : "closed"}
+                      data-active={picked ? "" : undefined}
+                      aria-pressed={Boolean(picked)}
+                      aria-label={choice.label}
+                      // Staggering the entrance and reversing it on exit makes
+                      // the panel unfurl and furl rather than pop as one block.
+                      style={{
+                        transitionDelay: `${open ? index * 28 : (palette.length - 1 - index) * 16}ms`,
+                      }}
+                      onClick={(event) => {
+                        toggle(
+                          choice,
+                          isBar ? triggerRef.current : event.currentTarget
+                        )
+                        setOpen(false)
+                      }}
+                      className="inline-flex size-9 touch-manipulation items-center justify-center rounded-full text-lg leading-none transition-[background-color,transform,opacity] duration-200 ease-out outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-[state=closed]:scale-50 data-[state=closed]:opacity-0 motion-safe:hover:scale-115 motion-safe:active:scale-95 motion-reduce:transition-none starting:scale-50 starting:opacity-0 data-active:bg-primary-subtle"
+                    >
+                      <span aria-hidden="true">{choice.emoji}</span>
+                    </button>
+                  )
+                })}
+              </PopoverPrimitive.Popup>
+            </PopoverPrimitive.Positioner>
+          </PopoverPrimitive.Portal>
 
           {variant === "floating" && totalChip}
 
           {trigger}
-        </>
+        </PopoverPrimitive.Root>
       </span>
     </div>
   )

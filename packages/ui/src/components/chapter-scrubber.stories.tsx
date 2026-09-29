@@ -160,7 +160,10 @@ export const Default: Story = {
     await waitFor(() =>
       expect(
         getComputedStyle(
-          canvasElement.querySelector('[data-slot="chapter-scrubber-preview"]')!
+          // Portalled to the body, outside the story's canvas.
+          canvasElement.ownerDocument.querySelector(
+            '[data-slot="chapter-scrubber-preview"]'
+          )!
         ).opacity
       ).toBe("1")
     )

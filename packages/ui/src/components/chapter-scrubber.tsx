@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 import {
   motion,
   useMotionValue,
@@ -53,14 +54,23 @@ const SIZES: Record<
   },
 }
 
-const CARD_WIDTH = 260
+const CARD_WIDTH = 248
 const GAP = 16
+// The card flips to the rail's other side when it would come closer than
+// this to the viewport's edge.
+const VIEWPORT_MARGIN = 8
+// Measured sizes stand in for these until the card first renders.
+const CARD_FALLBACK_HEIGHT = 120
 
 // Near-critically damped: the crest tracks the pointer with almost no lag and
 // never overshoots, so the wave reads as attached to it.
 const POINTER_SPRING = { stiffness: 700, damping: 52, mass: 0.5 }
 // Softer, so the wave swells in and relaxes rather than snapping.
 const STRENGTH_SPRING = { stiffness: 260, damping: 30, mass: 0.6 }
+
+function subscribeToNothing() {
+  return () => {}
+}
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
@@ -182,6 +192,11 @@ type ChapterScrubberProps = Omit<React.ComponentProps<"div">, "onSelect"> & {
   onActiveChange?: (chapter: Chapter | null, index: number) => void
   /** Accessible name for the rail. */
   label?: string
+  /**
+   * Classes for the preview. It's portalled to the body, so it can't be
+   * reached with a selector on the rail.
+   */
+  previewClassName?: string
 }
 
 /**
@@ -206,6 +221,7 @@ function ChapterScrubber({
   onCurrentIndexChange,
   onActiveChange,
   label = "Chapters",
+  previewClassName,
   className,
   style,
   ...props
@@ -245,6 +261,19 @@ function ChapterScrubber({
   const [engaged, setEngaged] = React.useState(false)
   const [flipped, setFlipped] = React.useState(false)
   const [previewSize, setPreviewSize] = React.useState(0)
+  // Where the rail sits on screen. The preview is portalled to the body so
+  // no clipping ancestor can cut it off, and is placed from this.
+  const [anchor, setAnchor] = React.useState<{
+    rect: DOMRect
+    width: number
+    height: number
+  } | null>(null)
+  // The portal needs a document, which only exists once on the client.
+  const mounted = React.useSyncExternalStore(
+    subscribeToNothing,
+    () => true,
+    () => false
+  )
   const hoveringRef = React.useRef(false)
   const focusedRef = React.useRef<number | null>(null)
   const activeRef = React.useRef(0)
@@ -273,29 +302,42 @@ function ChapterScrubber({
     setPreviewSize(vertical ? node.offsetHeight : node.offsetWidth)
   }, [activeIndex, vertical, preview])
 
-  React.useEffect(() => {
+  // Measure the rail, and decide which side the preview opens on, before
+  // paint, so it never shows a frame on the wrong side. While engaged, the
+  // rail is re-measured as the page scrolls or resizes.
+  React.useLayoutEffect(() => {
     if (!engaged || preview === "none") return
     const root = rootRef.current
     const view = root?.ownerDocument.defaultView
     if (!root || !view) return
-    const rect = root.getBoundingClientRect()
-    const node = previewRef.current
-    const need =
-      (vertical
-        ? (node?.offsetWidth ?? CARD_WIDTH)
-        : (node?.offsetHeight ?? 120)) +
-      GAP +
-      8
-    const before = vertical ? rect.left : rect.top
-    const after = vertical
-      ? view.innerWidth - rect.right
-      : view.innerHeight - rect.bottom
-    const wantsAfter = preferredSide === "right" || preferredSide === "bottom"
-    let useAfter = wantsAfter
-    if (useAfter && after < need && before >= need) useAfter = false
-    if (!useAfter && before < need && after >= need) useAfter = true
-    setFlipped(useAfter !== wantsAfter)
-  }, [engaged, activeIndex, preferredSide, vertical, preview])
+    const measure = () => {
+      const rect = root.getBoundingClientRect()
+      setAnchor({ rect, width: view.innerWidth, height: view.innerHeight })
+      const node = previewRef.current
+      const need =
+        (vertical
+          ? (node?.offsetWidth ?? CARD_WIDTH)
+          : (node?.offsetHeight ?? CARD_FALLBACK_HEIGHT)) +
+        GAP +
+        VIEWPORT_MARGIN
+      const before = vertical ? rect.left : rect.top
+      const after = vertical
+        ? view.innerWidth - rect.right
+        : view.innerHeight - rect.bottom
+      const wantsAfter = preferredSide === "right" || preferredSide === "bottom"
+      let useAfter = wantsAfter
+      if (useAfter && after < need && before >= need) useAfter = false
+      if (!useAfter && before < need && after >= need) useAfter = true
+      setFlipped(useAfter !== wantsAfter)
+    }
+    measure()
+    view.addEventListener("scroll", measure, true)
+    view.addEventListener("resize", measure)
+    return () => {
+      view.removeEventListener("scroll", measure, true)
+      view.removeEventListener("resize", measure)
+    }
+  }, [engaged, preferredSide, vertical, preview])
 
   const opposite: Record<Side, Side> = {
     left: "right",
@@ -399,12 +441,20 @@ function ChapterScrubber({
         : "end"
 
   const chapter = chapters[activeIndex]
-  const placement = {
-    right: { left: crossSize + GAP },
-    left: { right: crossSize + GAP },
-    bottom: { top: crossSize + GAP },
-    top: { bottom: crossSize + GAP },
-  }[resolvedSide]
+  const placement = anchor
+    ? {
+        right: { top: anchor.rect.top, left: anchor.rect.right + GAP },
+        left: {
+          top: anchor.rect.top,
+          right: anchor.width - anchor.rect.left + GAP,
+        },
+        bottom: { left: anchor.rect.left, top: anchor.rect.bottom + GAP },
+        top: {
+          left: anchor.rect.left,
+          bottom: anchor.height - anchor.rect.top + GAP,
+        },
+      }[resolvedSide]
+    : { visibility: "hidden" as const }
 
   return (
     <div
@@ -489,65 +539,73 @@ function ChapterScrubber({
         })}
       </div>
 
-      {chapter && preview !== "none" ? (
-        <motion.div
-          ref={previewRef}
-          aria-hidden="true"
-          data-slot="chapter-scrubber-preview"
-          style={{
-            ...(vertical ? { top: previewOffset } : { left: previewOffset }),
-            ...(vertical ? { x: previewShift } : { y: previewShift }),
-            scale: previewScale,
-            opacity: strength,
-            ...placement,
-          }}
-          className={cn(
-            "pointer-events-none absolute z-10",
-            {
-              right: "origin-left",
-              left: "origin-right",
-              bottom: "origin-top",
-              top: "origin-bottom",
-            }[resolvedSide],
-            preview === "card"
-              ? "w-[248px] rounded-xl border border-border bg-popover p-3 text-popover-foreground shadow-md"
-              : "w-max max-w-[220px] rounded-md border border-border bg-popover px-2 py-1 text-popover-foreground shadow-sm"
-          )}
-        >
-          {preview === "card" ? (
-            <>
-              {/* Title and time share a row, like a chapter list, so the
+      {chapter && preview !== "none" && mounted
+        ? createPortal(
+            <motion.div
+              ref={previewRef}
+              aria-hidden="true"
+              data-slot="chapter-scrubber-preview"
+              style={{
+                // Fixed to the rail's place on screen; the springs move it along
+                // the rail and ease it in, as a transform on top.
+                ...(vertical
+                  ? { y: previewOffset, x: previewShift }
+                  : { x: previewOffset, y: previewShift }),
+                scale: previewScale,
+                opacity: strength,
+                ...(preview === "card" ? { width: CARD_WIDTH } : null),
+                ...placement,
+              }}
+              className={cn(
+                "pointer-events-none fixed z-50",
+                {
+                  right: "origin-left",
+                  left: "origin-right",
+                  bottom: "origin-top",
+                  top: "origin-bottom",
+                }[resolvedSide],
+                preview === "card"
+                  ? "rounded-xl border border-border bg-popover p-3 text-popover-foreground shadow-md"
+                  : "w-max max-w-[220px] rounded-md border border-border bg-popover px-2 py-1 text-popover-foreground shadow-sm",
+                previewClassName
+              )}
+            >
+              {preview === "card" ? (
+                <>
+                  {/* Title and time share a row, like a chapter list, so the
                   card leads with what the chapter is. */}
-              <div className="flex items-baseline gap-3">
-                <div className="min-w-0 flex-1 truncate text-sm leading-5 font-medium tracking-[-0.01em]">
-                  {chapter.title}
-                </div>
-                {chapter.meta ? (
-                  <span className="shrink-0 font-mono text-xs text-muted-foreground tabular-nums">
-                    {chapter.meta}
+                  <div className="flex items-baseline gap-3">
+                    <div className="min-w-0 flex-1 truncate text-sm leading-5 font-medium tracking-[-0.01em]">
+                      {chapter.title}
+                    </div>
+                    {chapter.meta ? (
+                      <span className="shrink-0 font-mono text-xs text-muted-foreground tabular-nums">
+                        {chapter.meta}
+                      </span>
+                    ) : null}
+                  </div>
+                  {chapter.description ? (
+                    <p className="mt-1 line-clamp-3 text-[13px] leading-[18px] text-pretty text-muted-foreground">
+                      {chapter.description}
+                    </p>
+                  ) : null}
+                </>
+              ) : (
+                <div className="flex items-baseline gap-2 text-sm whitespace-nowrap">
+                  {chapter.meta ? (
+                    <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                      {chapter.meta}
+                    </span>
+                  ) : null}
+                  <span className="truncate font-medium text-foreground">
+                    {chapter.title}
                   </span>
-                ) : null}
-              </div>
-              {chapter.description ? (
-                <p className="mt-1 line-clamp-3 text-[13px] leading-[18px] text-pretty text-muted-foreground">
-                  {chapter.description}
-                </p>
-              ) : null}
-            </>
-          ) : (
-            <div className="flex items-baseline gap-2 text-sm whitespace-nowrap">
-              {chapter.meta ? (
-                <span className="font-mono text-xs text-muted-foreground tabular-nums">
-                  {chapter.meta}
-                </span>
-              ) : null}
-              <span className="truncate font-medium text-foreground">
-                {chapter.title}
-              </span>
-            </div>
-          )}
-        </motion.div>
-      ) : null}
+                </div>
+              )}
+            </motion.div>,
+            document.body
+          )
+        : null}
     </div>
   )
 }

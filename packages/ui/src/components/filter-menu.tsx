@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import { cn } from "@workspace/ui/lib/utils"
 
 type FilterOption = {
   value: string
@@ -73,14 +74,14 @@ function Highlight({ text, query }: { text: string; query: string }) {
   )
 }
 
-function useControllable(
-  value: FilterValue | undefined,
-  defaultValue: FilterValue,
-  onChange: ((value: FilterValue) => void) | undefined
+function useControllable<T>(
+  value: T | undefined,
+  defaultValue: T,
+  onChange: ((value: T) => void) | undefined
 ) {
   const [own, setOwn] = React.useState(defaultValue)
   const current = value ?? own
-  const set = (next: FilterValue) => {
+  const set = (next: T) => {
     if (value === undefined) setOwn(next)
     onChange?.(next)
   }
@@ -125,6 +126,24 @@ function View(props: HTMLMotionProps<"div">) {
   )
 }
 
+type FilterMenuLabels = {
+  /** The back button in a field's values. */
+  backToFields: string
+  /** The back button that leaves a search started from the field menu. */
+  backToFilters: string
+  /** The back button that leaves a search started inside a field. */
+  backToField: (field: string) => string
+  /** Announces how many rows a search found. */
+  results: (count: number) => string
+}
+
+const DEFAULT_LABELS: FilterMenuLabels = {
+  backToFields: "Back to fields",
+  backToFilters: "Back to filters",
+  backToField: (field) => `Back to ${field}`,
+  results: (count) => `${count} ${count === 1 ? "result" : "results"}`,
+}
+
 type FilterMenuProps = {
   /** The fields people can filter by, each with the values it offers. */
   fields: FilterField[]
@@ -144,16 +163,36 @@ type FilterMenuProps = {
   label?: string
   /** Names the search box for assistive technology. */
   searchLabel?: string
+  /** Wording the menu writes for itself, for translation. */
+  labels?: Partial<FilterMenuLabels>
+  /** Whether the menu is open, when you control it. */
+  open?: boolean
+  /** Whether the menu starts open, when it keeps its own state. */
+  defaultOpen?: boolean
+  /** Called when the menu opens or closes. */
+  onOpenChange?: (open: boolean) => void
+  /** Which side of the trigger the popup opens on. Flips when there's no room. */
+  side?: PopoverPrimitive.Positioner.Props["side"]
   /** Which edge of the trigger the popup lines up with. */
   align?: "start" | "center" | "end"
+  /** Where the popup portals to. Defaults to the body. */
+  container?: PopoverPrimitive.Portal.Props["container"]
   /**
-   * How search starts. `inline` keeps a search box at the top, and typing
-   * turns the menu into results. `button` shows a Search filters button
-   * instead, and the menu slides over to its search state when it's used.
+   * An element to use as the trigger instead of the default button. It must
+   * forward its ref and props, as fibo's Button does.
+   */
+  trigger?: React.ReactElement
+  /**
+   * How search starts. `button`, the default, shows a Search filters button
+   * at the top, and the menu slides over to its search state when it's
+   * used. `inline` keeps a search box there instead, and typing turns the
+   * menu into results.
    */
   search?: "inline" | "button"
   /** Classes for the trigger button. */
   className?: string
+  /** Classes for the popup. */
+  popupClassName?: string
 }
 
 /**
@@ -171,16 +210,25 @@ function FilterMenu({
   emptyText = "No matching filters",
   label = "Filters",
   searchLabel = "Search filters",
+  labels,
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
+  side = "bottom",
   align = "start",
-  search = "inline",
+  container,
+  trigger,
+  search = "button",
   className,
+  popupClassName,
 }: FilterMenuProps) {
   const [selected, setSelected] = useControllable(
     value,
     defaultValue,
     onValueChange
   )
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useControllable(openProp, defaultOpen, onOpenChange)
+  const text = { ...DEFAULT_LABELS, ...labels }
   const [query, setQuery] = React.useState("")
   const [fieldId, setFieldId] = React.useState<string | null>(null)
   const [highlight, setHighlight] = React.useState(0)
@@ -279,10 +327,11 @@ function FilterMenu({
     setHighlight(0)
   }
 
+  // A search started inside a field stays within it, as it does inline,
+  // and leaving the search goes back to that field.
   const enterSearch = (initial = "") => {
     setDirection(1)
     setSearching(true)
-    setFieldId(null)
     setQuery(initial)
     setHighlight(0)
   }
@@ -480,16 +529,25 @@ function FilterMenu({
         if (!isOpen) reset()
       }}
     >
-      <PopoverPrimitive.Trigger
-        data-slot="filter-menu-trigger"
-        render={<Button variant="outline" size="sm" />}
-        className={className}
-      >
-        <ListFilterIcon data-icon="inline-start" aria-hidden="true" />
-        {triggerLabel}
-      </PopoverPrimitive.Trigger>
-      <PopoverPrimitive.Portal>
+      {trigger ? (
+        <PopoverPrimitive.Trigger
+          data-slot="filter-menu-trigger"
+          render={trigger}
+          className={className}
+        />
+      ) : (
+        <PopoverPrimitive.Trigger
+          data-slot="filter-menu-trigger"
+          render={<Button variant="outline" size="sm" />}
+          className={className}
+        >
+          <ListFilterIcon data-icon="inline-start" aria-hidden="true" />
+          {triggerLabel}
+        </PopoverPrimitive.Trigger>
+      )}
+      <PopoverPrimitive.Portal container={container}>
         <PopoverPrimitive.Positioner
+          side={side}
           align={align}
           sideOffset={6}
           className="isolate z-50"
@@ -500,7 +558,10 @@ function FilterMenu({
             aria-label={label}
             data-search={search}
             initialFocus={home}
-            className="w-64 origin-(--transform-origin) overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg outline-none motion-reduce:animate-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+            className={cn(
+              "w-64 origin-(--transform-origin) overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg outline-none motion-reduce:animate-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+              popupClassName
+            )}
           >
             <motion.div style={{ height }}>
               <div ref={contentRef}>
@@ -519,7 +580,7 @@ function FilterMenu({
                             exit={{ opacity: 0, x: slide }}
                             transition={transition}
                           >
-                            {backButton(back, "Back to fields")}
+                            {backButton(back, text.backToFields)}
                           </motion.span>
                         ) : (
                           <motion.span
@@ -571,14 +632,19 @@ function FilterMenu({
                           </button>
                         ) : view === "values" ? (
                           <>
-                            {backButton(back, "Back to fields")}
+                            {backButton(back, text.backToFields)}
                             <span className="truncate text-sm font-medium">
                               {field?.label}
                             </span>
                           </>
                         ) : (
                           <>
-                            {backButton(exitSearch, "Back to filters")}
+                            {backButton(
+                              exitSearch,
+                              field
+                                ? text.backToField(field.label)
+                                : text.backToFilters
+                            )}
                             {searchInput}
                           </>
                         )}
@@ -658,9 +724,7 @@ function FilterMenu({
               </div>
             </motion.div>
             <span className="sr-only" aria-live="polite">
-              {view === "search"
-                ? `${count} ${count === 1 ? "result" : "results"}`
-                : ""}
+              {view === "search" ? text.results(count) : ""}
             </span>
           </PopoverPrimitive.Popup>
         </PopoverPrimitive.Positioner>
@@ -747,4 +811,10 @@ function FilterMenuRow({
 }
 
 export { FilterMenu }
-export type { FilterField, FilterMenuProps, FilterOption, FilterValue }
+export type {
+  FilterField,
+  FilterMenuLabels,
+  FilterMenuProps,
+  FilterOption,
+  FilterValue,
+}
