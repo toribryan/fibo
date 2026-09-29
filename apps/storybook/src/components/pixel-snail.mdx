@@ -12,6 +12,7 @@ import { DocLink } from "../blocks/doc-link"
 import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
 import { Install } from "../blocks/install"
 import { PixelGrid } from "../blocks/pixel-grid"
+import { SnailCover } from "../blocks/snail-cover"
 import { FIBO_LINES } from "../blocks/lines"
 
 <Meta of={Stories} />
@@ -23,7 +24,7 @@ pixel-art snail who crawls on a loop while something loads. As a sprite
 inside your own SVG, he can also build himself up, dance and turn to watch
 the pointer.
 
-<Canvas of={Stories.Default} />
+<SnailCover />
 
 ## Meet fibo
 
@@ -296,6 +297,13 @@ holding one rectangle per pixel.
 </Tip>
 
 ## Examples
+
+### Loading
+
+The default: he crawls in place over a dotted ground, as a status region
+announcing "Loading".
+
+<Canvas of={Stories.Default} />
 
 ### Sizes
 
