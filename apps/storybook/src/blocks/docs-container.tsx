@@ -1,4 +1,9 @@
-import { useSyncExternalStore, type ReactNode } from "react"
+import {
+  useMemo,
+  useSyncExternalStore,
+  type ReactNode,
+  type RefObject,
+} from "react"
 import {
   DocsContainer,
   Unstyled,
@@ -8,6 +13,7 @@ import { BugIcon } from "lucide-react"
 
 import { darkTheme, lightTheme } from "../../.storybook/theme.js"
 import { FigmaIcon } from "./brand-icons.js"
+import { DocTabsContext, useDocTabsState } from "./doc-tabs.js"
 import { LINKS } from "./links.js"
 
 function subscribe(onChange: () => void) {
@@ -80,20 +86,75 @@ function Footer() {
   )
 }
 
+type Context = DocsContainerProps["context"]
+
+/*
+ * Storybook builds "On this page" once, from the headings in the DOM, and
+ * rebuilds it only when its tocbot options change identity. So the context
+ * handed to DocsContainer gives the table of contents fresh options for each
+ * doc tab, with hidden headings skipped. The context object itself stays
+ * stable, so switching tabs never re-renders the stories.
+ */
+function useTabAwareContext(
+  context: Context,
+  tabRef: RefObject<string | null>
+) {
+  return useMemo(() => {
+    const options = new Map<string | null, object>()
+    const proxy: Context = Object.create(context)
+    proxy.resolveOf = ((...args: Parameters<Context["resolveOf"]>) => {
+      const resolved = context.resolveOf(...args)
+      // Only the container asks for "meta" by name; blocks pass a module,
+      // and keep getting Storybook's own answer.
+      if (args[0] !== "meta" || !("preparedMeta" in resolved)) return resolved
+      const parameters = resolved.preparedMeta.parameters
+      const toc = parameters?.docs?.toc
+      if (!toc) return resolved
+      const key = tabRef.current
+      if (!options.has(key))
+        options.set(key, {
+          ...toc.unsafeTocbotOptions,
+          ignoreHiddenElements: true,
+        })
+      return {
+        ...resolved,
+        preparedMeta: {
+          ...resolved.preparedMeta,
+          parameters: {
+            ...parameters,
+            docs: {
+              ...parameters.docs,
+              toc: { ...toc, unsafeTocbotOptions: options.get(key) },
+            },
+          },
+        },
+      }
+    }) as Context["resolveOf"]
+    return proxy
+  }, [context, tabRef])
+}
+
 function FiboDocsContainer({
   children,
   context,
 }: DocsContainerProps & { children: ReactNode }) {
   const dark = useIsDark()
+  const tabs = useDocTabsState()
+  const tabAwareContext = useTabAwareContext(context, tabs.tabRef)
   return (
-    <DocsContainer context={context} theme={dark ? darkTheme : lightTheme}>
-      <Unstyled>
-        <div className="fibo-docs font-sans text-foreground antialiased">
-          {children}
-          <Footer />
-        </div>
-      </Unstyled>
-    </DocsContainer>
+    <DocTabsContext value={tabs}>
+      <DocsContainer
+        context={tabAwareContext}
+        theme={dark ? darkTheme : lightTheme}
+      >
+        <Unstyled>
+          <div className="fibo-docs font-sans text-foreground antialiased">
+            {children}
+            <Footer />
+          </div>
+        </Unstyled>
+      </DocsContainer>
+    </DocTabsContext>
   )
 }
 
