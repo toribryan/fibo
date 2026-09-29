@@ -1,0 +1,266 @@
+// Writes a self-contained copy of each Special component to apps/registry/21st
+// for publishing on 21st.dev. Its CLI takes one component file and one demo,
+// and rejects local imports and registry dependencies, so each copy inlines
+// `cn` and any fibo component it uses. fibo's named roles (`bg-primary-subtle`)
+// become the opacity modifiers a stock shadcn theme understands. Each folder
+// gets a package.json because the CLI checks every import against the nearest
+// one.
+//
+// A component is exported when it has a demo in packages/ui/src/21st. Publish
+// with the commands this prints; each opens a review page in the browser.
+import process from "node:process"
+import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
+import path from "node:path"
+
+const registryDir = path.resolve(import.meta.dirname, "..")
+const root = path.resolve(registryDir, "../..")
+const uiDir = path.join(root, "packages/ui")
+const componentsDir = path.join(uiDir, "src/components")
+const demosDir = path.join(uiDir, "src/21st")
+const outDir = path.join(registryDir, "21st")
+const homepage = process.env.FIBO_SITE_URL || "https://fibo.toribryan.com"
+
+const meta = JSON.parse(
+  await readFile(path.join(uiDir, "components.meta.json"), "utf8")
+)
+const uiPackage = JSON.parse(
+  await readFile(path.join(uiDir, "package.json"), "utf8")
+)
+
+// Each role and the strength it mixes its base colour at in globals.css.
+// Longer names come first so `input-subtle` never claims `input-subtle-hover`.
+const roles = [
+  ["destructive-subtle-hover", "destructive/15"],
+  ["destructive-subtle", "destructive/10"],
+  ["destructive-ring", "destructive/20"],
+  ["input-subtle-hover", "input/50"],
+  ["input-subtle", "input/20"],
+  ["primary-hover", "primary/80"],
+  ["primary-subtle", "primary/10"],
+  ["secondary-hover", "secondary/80"],
+  ["popover-overlay", "popover/85"],
+  ["ring-subtle", "ring/50"],
+]
+const utilities =
+  "bg|text|border|ring|outline|fill|stroke|from|via|to|shadow|divide|decoration|caret|accent|placeholder"
+const fiboOnly = new RegExp(
+  `\\b(?:${utilities})-(?:[a-z]+-)*(?:subtle|hover|overlay|success|warning|info)(?![\\w-])|\\bdestructive-ring\\b`
+)
+
+const importPattern = /^import\s[\s\S]*?\sfrom\s+["']([^"']+)["'];?\n/gm
+
+const packageName = (spec) =>
+  spec.startsWith("@")
+    ? spec.split("/").slice(0, 2).join("/")
+    : spec.split("/")[0]
+
+const docsUrl = (name, tier) => `${homepage}/?path=/docs/${tier}-${name}--docs`
+
+function mapRoles(code, file) {
+  const mapped = roles.reduce(
+    (out, [role, replacement]) =>
+      out.replace(
+        new RegExp(`\\b(${utilities})-${role}(?![\\w-])`, "g"),
+        (_, utility) => `${utility}-${replacement}`
+      ),
+    code
+  )
+  const leftover = mapped.match(fiboOnly)
+  if (leftover) {
+    throw new Error(
+      `${file} uses ${leftover[0]}, which has no stock shadcn equivalent. Add it to the roles in export-21st.mjs.`
+    )
+  }
+  return mapped
+}
+
+// Splits a module into its import statements and the code after them.
+function split(source) {
+  const code = source.replace(/^["']use client["'];?\n/, "")
+  const imports = [...code.matchAll(importPattern)].map((m) => ({
+    text: m[0].trimEnd(),
+    spec: m[1],
+  }))
+  const last = imports.at(-1)
+  const bodyStart = last ? code.indexOf(last.text) + last.text.length : 0
+  return { imports, body: code.slice(bodyStart).trim() }
+}
+
+async function inlineComponent(spec) {
+  const name = path.basename(spec)
+  const { imports, body } = split(
+    await readFile(path.join(componentsDir, `${name}.tsx`), "utf8")
+  )
+  for (const { spec: nested } of imports) {
+    if (nested.startsWith("@workspace/ui/components/")) {
+      throw new Error(
+        `${name} imports ${nested}. Inlining is one level deep; extend export-21st.mjs.`
+      )
+    }
+  }
+  const privateBody = body
+    .replace(/^export (?:type )?\{[\s\S]*?\}\n?/gm, "")
+    .replace(/^export (?=function|const|type|interface)/gm, "")
+    .trim()
+  return { imports, body: privateBody }
+}
+
+function mergeImports(statements) {
+  const bySpec = new Map()
+  for (const { text, spec } of statements) {
+    const existing = bySpec.get(spec)
+    if (existing && existing !== text) {
+      throw new Error(
+        `Two different imports from ${spec} would be merged. Combine them by hand in the source.`
+      )
+    }
+    bySpec.set(spec, text)
+  }
+  return [...bySpec.values()]
+}
+
+function dependenciesOf(...sources) {
+  const deps = {}
+  for (const source of sources) {
+    for (const [, spec] of source.matchAll(/from\s+["']([^"']+)["']/g)) {
+      if (spec.startsWith("@/") || spec.startsWith(".")) continue
+      const pkg = packageName(spec)
+      const version = uiPackage.dependencies[pkg]
+      if (!version) {
+        throw new Error(
+          `${pkg} is not a dependency of packages/ui, so its version is unknown.`
+        )
+      }
+      deps[pkg] = version
+    }
+  }
+  return Object.fromEntries(Object.entries(deps).sort())
+}
+
+async function exportComponent(name) {
+  const source = await readFile(path.join(componentsDir, `${name}.tsx`), "utf8")
+  const { imports, body } = split(source)
+
+  const kept = []
+  const inlined = []
+  for (const statement of imports) {
+    if (statement.spec === "@workspace/ui/lib/utils") continue
+    if (statement.spec.startsWith("@workspace/ui/components/")) {
+      inlined.push(await inlineComponent(statement.spec))
+    } else if (statement.spec.startsWith("@workspace/")) {
+      throw new Error(
+        `${name} imports ${statement.spec}, which is not inlined.`
+      )
+    } else {
+      kept.push(statement)
+    }
+  }
+  const utils = [
+    { text: 'import { clsx, type ClassValue } from "clsx"', spec: "clsx" },
+    {
+      text: 'import { twMerge } from "tailwind-merge"',
+      spec: "tailwind-merge",
+    },
+  ]
+  const allImports = mergeImports([
+    ...kept,
+    ...inlined.flatMap((dep) =>
+      dep.imports.filter((i) => !i.spec.startsWith("@workspace/"))
+    ),
+    ...utils,
+  ])
+
+  const component = mapRoles(
+    [
+      '"use client"',
+      allImports.join("\n"),
+      "function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs))\n}",
+      ...inlined.map((dep) => dep.body),
+      body,
+    ].join("\n\n") + "\n",
+    `${name}.tsx`
+  )
+
+  const demoSource = await readFile(path.join(demosDir, `${name}.tsx`), "utf8")
+  for (const [, spec] of demoSource.matchAll(/from\s+["']([^"']+)["']/g)) {
+    if (
+      spec.startsWith("@workspace/") &&
+      spec !== `@workspace/ui/components/${name}`
+    ) {
+      throw new Error(
+        `The ${name} demo imports ${spec}. A demo can only import its own component.`
+      )
+    }
+  }
+  const demo = mapRoles(
+    demoSource.replace(
+      `@workspace/ui/components/${name}`,
+      `@/components/ui/${name}`
+    ),
+    `${name} demo`
+  )
+
+  const dir = path.join(outDir, name)
+  await mkdir(dir, { recursive: true })
+  await writeFile(path.join(dir, `${name}.tsx`), component)
+  await writeFile(path.join(dir, `${name}.demo.tsx`), demo)
+  await writeFile(
+    path.join(dir, "package.json"),
+    JSON.stringify(
+      {
+        name: `fibo-${name}`,
+        private: true,
+        dependencies: dependenciesOf(component, demo),
+      },
+      null,
+      2
+    ) + "\n"
+  )
+}
+
+await rm(outDir, { recursive: true, force: true })
+
+const demos = new Set(
+  (await readdir(demosDir))
+    .filter((f) => f.endsWith(".tsx"))
+    .map((f) => f.replace(/\.tsx$/, ""))
+)
+const special = Object.entries(meta)
+  .filter(
+    ([name, info]) => name !== "$comment" && info.tier === "special-components"
+  )
+  .map(([name]) => name)
+  .sort()
+
+for (const name of demos) {
+  if (!special.includes(name)) {
+    throw new Error(
+      `packages/ui/src/21st/${name}.tsx has no Special component to go with it.`
+    )
+  }
+}
+
+const commands = []
+for (const name of special) {
+  if (!demos.has(name)) {
+    console.log(`Skipped ${name}: no demo in packages/ui/src/21st`)
+    continue
+  }
+  await exportComponent(name)
+  const info = meta[name]
+  const dir = path.relative(root, path.join(outDir, name))
+  commands.push(
+    [
+      `npx @21st-dev/cli publish ${dir}/${name}.tsx`,
+      `--demo ${dir}/${name}.demo.tsx`,
+      `--name ${JSON.stringify(info.title)}`,
+      `--slug ${name}`,
+      `--description ${JSON.stringify(info.description)}`,
+      `--tags ${info.group.toLowerCase()}`,
+      `--website ${JSON.stringify(docsUrl(name, info.tier))}`,
+    ].join(" \\\n    ")
+  )
+}
+
+console.log(`\n21st.dev: ${commands.length} components -> apps/registry/21st`)
+console.log(`Publish each from the repo root:\n\n${commands.join("\n\n")}\n`)
