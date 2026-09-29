@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react"
 
+import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { DARK, LIGHT, primitive } from "./color-tokens.js"
@@ -322,10 +323,13 @@ function ColorScale() {
       style={modeVars}
       className="my-6 flex flex-col gap-8 rounded-xl border border-border bg-card p-4 text-foreground transition-colors duration-500 motion-reduce:transition-none sm:p-6 [&_*]:transition-[color,background-color,border-color,outline-color,fill,stroke,opacity,box-shadow] [&_*]:duration-500 motion-reduce:[&_*]:transition-none"
     >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <figcaption className="max-w-md text-sm text-muted-foreground">
-          Tailwind&apos;s neutrals as twelve steps. Step 1 is always the page,
-          so dark mode reads the ramp the other way.
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <figcaption className="flex max-w-md flex-col items-start gap-2">
+          <Badge variant="outline">Tailwind neutral</Badge>
+          <span className="text-sm text-muted-foreground">
+            Point at a token or a step to trace it, and switch modes to watch
+            the ramp turn over.
+          </span>
         </figcaption>
         <div
           role="group"
