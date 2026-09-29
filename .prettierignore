@@ -7,6 +7,7 @@ apps/registry/public/r/
 apps/registry/public/llms.txt
 apps/registry/registry.json
 apps/registry/registry/
+apps/registry/21st/
 coverage/
 dist/
 node_modules/
