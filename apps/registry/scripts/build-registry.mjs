@@ -125,15 +125,15 @@ Add the registry once to \`components.json\`:
 { "registries": { "@fibo": "${homepage}/r/{name}.json" } }
 \`\`\`
 
-Then install by name with \`pnpm dlx shadcn@latest add @fibo/<name>\`. The lists below are complete: anything not listed is not part of fibo. Components depend on nothing beyond Base UI, class-variance-authority and lucide-react; Niche parts may also need \`motion\`, which the CLI installs for you.
+Then install by name with \`pnpm dlx shadcn@latest add @fibo/<name>\`. The lists below are complete: anything not listed is not part of fibo. Base components depend on nothing beyond Base UI, class-variance-authority and lucide-react; special components may also need \`motion\`, which the CLI installs for you.
 
-## Components
+## Base components
 
-${section("components")}
+${section("base-components")}
 
-## Niche
+## Special components
 
-${section("niche")}
+${section("special-components")}
 
 ## Docs
 

@@ -28,7 +28,7 @@ type Args = ComponentProps<typeof Select> & {
 }
 
 const meta: Meta<Args> = {
-  title: "Components/Select",
+  title: "Base components/Select",
   component: Select,
   subcomponents: {
     SelectTrigger,

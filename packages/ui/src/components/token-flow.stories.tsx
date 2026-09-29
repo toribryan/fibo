@@ -28,7 +28,7 @@ const rows: TokenRow[] = [
 ]
 
 const meta: Meta<typeof TokenFlow> = {
-  title: "Niche/Token flow",
+  title: "Special components/Token flow",
   component: TokenFlow,
   argTypes: {
     theme: {

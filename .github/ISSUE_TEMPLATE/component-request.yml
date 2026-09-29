@@ -13,10 +13,10 @@ body:
     id: shelf
     attributes:
       label: Shelf
-      description: Components are the standard set; Niche parts are playful and built for one moment.
+      description: Base components are the standard set; special components are playful and built for one moment.
       options:
-        - Components
-        - Niche
+        - Base components
+        - Special components
         - Not sure
     validations:
       required: true

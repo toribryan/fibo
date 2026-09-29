@@ -16,7 +16,7 @@ const PORTRAIT = `data:image/svg+xml,${encodeURIComponent(
 )}`
 
 const meta: Meta<typeof Avatar> = {
-  title: "Components/Avatar",
+  title: "Base components/Avatar",
   component: Avatar,
   subcomponents: {
     AvatarImage,

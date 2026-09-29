@@ -6,6 +6,14 @@ Notable changes to fibo. The format follows
 [changelog page](https://fibo.toribryan.com/?path=/docs/changelog--docs)
 has the same history with links into the docs.
 
+## [Unreleased]
+
+### Changed
+
+- The shelves are renamed Base components and Special components, formerly
+  Components and Niche. Docs pages move to `base-components-<name>` and
+  `special-components-<name>`; links to the old pages redirect.
+
 ## [0.1.0] - 2026-09-27
 
 The first public release.
