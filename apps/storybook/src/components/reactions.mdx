@@ -23,7 +23,9 @@ inline under the content or float in a corner of the page.
   viewport.
 - One tap to react or take it back, with a particle burst. Counts past a
   thousand shorten to 1.2K.
-- A picker of six common reactions, plus any already on the item.
+- A picker of six common reactions, plus any already on the item. It's a
+  Base UI popover, so a card that clips its overflow can't cut it off, and it
+  flips to whichever side has room.
 - Controlled or uncontrolled. Particles and pill motion switch off under
   reduced motion.
 
@@ -85,7 +87,7 @@ the reactions; the component builds the rest.
           {
             name: "panel",
             slot: "reactions-panel",
-            note: "The choices, while the picker is open.",
+            note: "The choices, while the picker is open. Portalled to the body.",
             children: [
               {
                 name: "choice",
@@ -285,4 +287,5 @@ Counts past a thousand shorten, such as 1.2K, so the pills stay small.
 ## References
 
 - [WAI-ARIA button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/), for the toggle pills
+- [Base UI Popover](https://base-ui.com/react/components/popover), for the picker
 - [Web Animations API](https://developer.mozilla.org/docs/Web/API/Web_Animations_API)
