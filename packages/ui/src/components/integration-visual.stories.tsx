@@ -60,7 +60,6 @@ type Args = React.ComponentProps<typeof IntegrationVisual> & {
 const meta: Meta<Args> = {
   title: "Niche/Integration visual",
   component: IntegrationVisual,
-  tags: ["new"],
   argTypes: {
     layout: { control: "inline-radio", options: ["corners", "orbit", "sides"] },
     background: { control: "inline-radio", options: ["dots", "grid", "none"] },

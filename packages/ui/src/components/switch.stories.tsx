@@ -7,7 +7,6 @@ import { Switch } from "./switch.js"
 const meta: Meta<typeof Switch> = {
   title: "Components/Switch",
   component: Switch,
-  tags: ["new"],
   argTypes: {
     size: { control: "inline-radio", options: ["default", "sm"] },
     disabled: { control: "boolean" },

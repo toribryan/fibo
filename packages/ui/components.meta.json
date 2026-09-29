@@ -4,8 +4,7 @@
     "title": "Avatar",
     "description": "A person's photo, or their initials when there's no photo.",
     "tier": "components",
-    "group": "Display",
-    "status": "new"
+    "group": "Display"
   },
   "badge": {
     "title": "Badge",
@@ -23,8 +22,7 @@
     "title": "Chapter scrubber",
     "description": "A rail of marks that swell under the pointer like the Dock, previewing the chapter at the crest.",
     "tier": "niche",
-    "group": "Navigation",
-    "status": "new"
+    "group": "Navigation"
   },
   "checkbox": {
     "title": "Checkbox",
@@ -49,15 +47,13 @@
     "title": "Integration visual",
     "description": "A hub and the tools wired into it, with pulses along the routes.",
     "tier": "niche",
-    "group": "Diagrams",
-    "status": "new"
+    "group": "Diagrams"
   },
   "kbd": {
     "title": "Kbd",
     "description": "Shows a key or a keyboard shortcut in text.",
     "tier": "components",
-    "group": "Display",
-    "status": "new"
+    "group": "Display"
   },
   "label": {
     "title": "Label",
@@ -69,57 +65,49 @@
     "title": "Pixel snail",
     "description": "A one-colour pixel snail that crawls on a loop while something loads.",
     "tier": "niche",
-    "group": "Feedback",
-    "status": "new"
+    "group": "Feedback"
   },
   "progress": {
     "title": "Progress",
     "description": "Shows how far a task has got, or that it's under way.",
     "tier": "components",
-    "group": "Feedback",
-    "status": "new"
+    "group": "Feedback"
   },
   "radio-group": {
     "title": "Radio group",
     "description": "Picks exactly one option from a short list.",
     "tier": "components",
-    "group": "Forms",
-    "status": "new"
+    "group": "Forms"
   },
   "reactions": {
     "title": "Reactions",
     "description": "Lets people respond to content with an emoji in one tap.",
     "tier": "niche",
-    "group": "Feedback",
-    "status": "new"
+    "group": "Feedback"
   },
   "select": {
     "title": "Select",
     "description": "Picks one option from a list that opens on demand.",
     "tier": "components",
-    "group": "Forms",
-    "status": "new"
+    "group": "Forms"
   },
   "skeleton": {
     "title": "Skeleton",
     "description": "A placeholder in the shape of content that's still loading.",
     "tier": "components",
-    "group": "Feedback",
-    "status": "new"
+    "group": "Feedback"
   },
   "slider": {
     "title": "Slider",
     "description": "Picks a number, or a range, by dragging along a track.",
     "tier": "components",
-    "group": "Forms",
-    "status": "new"
+    "group": "Forms"
   },
   "switch": {
     "title": "Switch",
     "description": "Turns a setting on or off, taking effect at once.",
     "tier": "components",
-    "group": "Forms",
-    "status": "new"
+    "group": "Forms"
   },
   "textarea": {
     "title": "Textarea",
@@ -131,14 +119,12 @@
     "title": "Toast",
     "description": "A brief message in the corner about something that just happened.",
     "tier": "components",
-    "group": "Feedback",
-    "status": "new"
+    "group": "Feedback"
   },
   "token-flow": {
     "title": "Token flow",
     "description": "Walks a colour token from raw value to primitive to semantic role.",
     "tier": "niche",
-    "group": "Diagrams",
-    "status": "new"
+    "group": "Diagrams"
   }
 }

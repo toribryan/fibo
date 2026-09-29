@@ -93,7 +93,6 @@ const talk: Chapter[] = [
 const meta: Meta<typeof ChapterScrubber> = {
   title: "Niche/Chapter scrubber",
   component: ChapterScrubber,
-  tags: ["new"],
   parameters: { layout: "centered" },
   argTypes: {
     orientation: {
