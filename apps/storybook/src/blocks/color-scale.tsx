@@ -5,6 +5,9 @@ import {
   useState,
   useSyncExternalStore,
   type CSSProperties,
+  type FocusEvent as ReactFocusEvent,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react"
 
@@ -260,12 +263,99 @@ function ColorScale() {
         ? active.step
         : stepFor(active.token)
 
+  // A mouse picks by hovering; a tap picks and a second tap lets go, since
+  // touch has no hover to end.
+  const same = (
+    a: { token: string } | { step: number } | null,
+    b: { token: string } | { step: number }
+  ) => JSON.stringify(a) === JSON.stringify(b)
   const pointAt = (next: { token: string } | { step: number }) => ({
-    onPointerEnter: () => setActive(next),
-    onPointerLeave: () => setActive(null),
-    onFocus: () => setActive(next),
+    onPointerEnter: (event: ReactPointerEvent) => {
+      if (event.pointerType === "mouse") setActive(next)
+    },
+    onPointerLeave: (event: ReactPointerEvent) => {
+      if (event.pointerType === "mouse") setActive(null)
+    },
+    onClick: (event: ReactMouseEvent) => {
+      const { pointerType } = event.nativeEvent as PointerEvent
+      if (pointerType !== "touch" && pointerType !== "pen") return
+      setActive((current) => (same(current, next) ? null : next))
+    },
+    // A tap focuses too, so only keyboard focus picks, or the tap's own
+    // click would toggle it straight back off.
+    onFocus: (event: ReactFocusEvent<HTMLElement>) => {
+      if (event.currentTarget.matches(":focus-visible")) setActive(next)
+    },
     onBlur: () => setActive(null),
   })
+
+  // A run of steps under their headers. A header that spans the run's edge
+  // is cut to it, so a band split across two rows is labelled in both.
+  const scale = (first: number, last: number) => {
+    const count = last - first + 1
+    return (
+      <div
+        className="grid gap-x-1.5 gap-y-3"
+        style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}
+      >
+        {BANDS.filter(({ from, to }) => to >= first && from <= last).map(
+          ({ label, from, to }) => (
+            <div
+              key={label}
+              className="flex flex-col items-center justify-end gap-2"
+              style={{
+                gridColumn: `${Math.max(from, first) - first + 1} / ${Math.min(to, last) - first + 2}`,
+              }}
+            >
+              <span className="text-center text-[11px] leading-tight text-balance text-muted-foreground sm:text-xs">
+                {label}
+              </span>
+              <span className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent" />
+            </div>
+          )
+        )}
+        {/* The steps stay put; each takes its colour for the mode, and its
+        Tailwind name scrambles over to the new one. Names sit centred in
+        fixed cells, so the scramble never moves anything. */}
+        {Array.from({ length: count }, (_, i) => {
+          const slot = first - 1 + i
+          const [step, className] =
+            RAMP[mode === "light" ? slot : RAMP.length - 1 - slot]!
+          const picked = activeStep === slot + 1
+          return (
+            <button
+              key={slot}
+              type="button"
+              aria-label={`Step ${slot + 1}`}
+              aria-pressed={picked}
+              {...pointAt({ step: slot + 1 })}
+              className="flex flex-col gap-1.5 rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+            >
+              <span
+                className={cn(
+                  "text-center font-mono text-xs",
+                  picked ? "text-foreground" : "text-muted-foreground"
+                )}
+              >
+                {slot + 1}
+              </span>
+              <span
+                className={cn(
+                  "h-10 rounded-md border border-border sm:h-12",
+                  className,
+                  picked &&
+                    "ring-2 ring-foreground ring-offset-2 ring-offset-card"
+                )}
+              />
+              <span className="text-center font-mono text-[10px] text-muted-foreground">
+                <Scramble text={step} />
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    )
+  }
 
   // A part of the card, registered for its leader line and outlined while
   // its token is picked.
@@ -282,21 +372,16 @@ function ColorScale() {
     Object.entries(values).map(([name, value]) => [`--${name}`, value])
   ) as CSSProperties
 
-  // Only the callouts beside the card draw lines, so only they register.
-  const callout = (c: Callout, lined = true) => {
+  const callout = (c: Callout) => {
     const { token, side, pair } = c
     return (
       <button
         key={token}
         type="button"
-        ref={
-          lined
-            ? (node) => {
-                if (node) calloutNodes.current.set(token, node)
-                else calloutNodes.current.delete(token)
-              }
-            : undefined
-        }
+        ref={(node) => {
+          if (node) calloutNodes.current.set(token, node)
+          else calloutNodes.current.delete(token)
+        }}
         {...pointAt({ token })}
         className={cn(
           "flex flex-col gap-1 rounded-md px-2 py-1 text-left transition-opacity duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle md:w-44",
@@ -327,8 +412,8 @@ function ColorScale() {
         <figcaption className="flex max-w-md flex-col items-start gap-2">
           <Badge variant="outline">Tailwind neutral</Badge>
           <span className="text-sm text-muted-foreground">
-            Point at a token or a step to trace it, and switch modes to watch
-            the ramp turn over.
+            Pick a token or a step to trace it, and switch modes to watch the
+            ramp turn over.
           </span>
         </figcaption>
         <div
@@ -350,64 +435,17 @@ function ColorScale() {
         </div>
       </div>
 
-      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <div className="grid min-w-[36rem] grid-cols-12 gap-x-1.5 gap-y-3">
-          {BANDS.map(({ label, from, to }) => (
-            <div
-              key={label}
-              className="flex flex-col items-center gap-2"
-              style={{ gridColumn: `${from} / ${to + 1}` }}
-            >
-              <span className="text-center text-xs text-muted-foreground">
-                {label}
-              </span>
-              <span className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent" />
-            </div>
-          ))}
-
-          {RAMP.map((_, i) => (
-            <span
-              key={i}
-              className={cn(
-                "text-center font-mono text-xs transition-colors",
-                activeStep === i + 1
-                  ? "text-foreground"
-                  : "text-muted-foreground"
-              )}
-            >
-              {i + 1}
-            </span>
-          ))}
-
-          <span className="sr-only">
-            In {mode} mode, steps 1 to 12 are {ordered.join(", ")}.
-          </span>
-          {/* The steps stay put; each takes its colour for the mode, and
-          its Tailwind name scrambles over to the new one. */}
-          {Array.from({ length: RAMP.length }, (_, slot) => {
-            const [step, className] =
-              RAMP[mode === "light" ? slot : RAMP.length - 1 - slot]!
-            return (
-              <div
-                key={slot}
-                {...pointAt({ step: slot + 1 })}
-                className="flex flex-col gap-1.5"
-              >
-                <span
-                  className={cn(
-                    "h-12 rounded-md border border-border",
-                    className,
-                    activeStep === slot + 1 &&
-                      "ring-2 ring-foreground ring-offset-2 ring-offset-card"
-                  )}
-                />
-                <span className="text-center font-mono text-[10px] text-muted-foreground">
-                  <Scramble text={step} />
-                </span>
-              </div>
-            )
-          })}
+      <div className="flex flex-col gap-6">
+        <span className="sr-only">
+          In {mode} mode, steps 1 to 12 are {ordered.join(", ")}.
+        </span>
+        {/* Phones get the twelve steps as two rows of six, so the whole
+        ramp shows without scrolling. */}
+        <div className="flex flex-col gap-6 sm:hidden">
+          {scale(1, 6)}
+          {scale(7, 12)}
         </div>
+        <div className="hidden sm:block">{scale(1, 12)}</div>
       </div>
 
       <div
@@ -446,8 +484,20 @@ function ColorScale() {
         </div>
 
         {/* On narrow screens the callouts list under the card instead. */}
-        <div className="grid w-full grid-cols-2 gap-2 md:hidden">
-          {CALLOUTS.map((c) => callout({ ...c, side: "right" }, false))}
+        <div className="flex w-full flex-wrap justify-center gap-1.5 md:hidden">
+          {CALLOUTS.flatMap(({ token, pair }) =>
+            pair ? [token, pair] : [token]
+          ).map((token) => (
+            <button
+              key={token}
+              type="button"
+              aria-pressed={isActive(token)}
+              {...pointAt({ token })}
+              className="rounded-full border border-border px-2.5 py-1 font-mono text-xs whitespace-nowrap text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle aria-pressed:border-foreground aria-pressed:text-foreground"
+            >
+              --{token}
+            </button>
+          ))}
         </div>
       </div>
     </figure>
