@@ -18,6 +18,7 @@ import {
   FileTextIcon,
   FolderIcon,
   FolderOpenIcon,
+  LayersIcon,
 } from "lucide-react"
 
 import { Badge } from "@workspace/ui/components/badge"
@@ -41,6 +42,7 @@ const RAW_URL = `https://raw.githubusercontent.com/${REPO}/${BRANCH}`
 const CACHE_KEY = `fibo-skills-tree:${REPO}@${BRANCH}`
 
 const ENTRY_FILES = ["README.md", "SKILL.md"]
+const WORKFLOW_SOURCE = "skills/product-design-process/SKILL.md"
 
 type FileNode = { kind: "file"; name: string; path: string }
 type FolderNode = {
@@ -48,6 +50,8 @@ type FolderNode = {
   name: string
   path: string
   children: TreeNode[]
+  /** A workflow stage: a grouping on this page, not a folder in the repo. */
+  stage?: { hint?: string }
 }
 type TreeNode = FileNode | FolderNode
 
@@ -144,6 +148,95 @@ function sortTree(folder: FolderNode) {
     if (child.kind === "folder") sortTree(child)
 }
 
+type Stage = { name: string; hint?: string; skills: string[] }
+
+/*
+ * The workflow is whatever `product-design-process` says it is: every table
+ * in that skill with a Skills column is read row by row, so its phases and
+ * tracks become the tree's groups in the order the skill lists them.
+ */
+function parseWorkflow(source: string, known: Set<string>): Stage[] {
+  const stages: Stage[] = []
+  const placed = new Set<string>()
+  let columns: { skills: number; hint: number } | null | undefined
+  for (const line of source.split(/\r?\n/)) {
+    if (!line.trim().startsWith("|")) {
+      columns = undefined
+      continue
+    }
+    const cells = line
+      .trim()
+      .split("|")
+      .slice(1, -1)
+      .map((cell) => cell.trim())
+    if (columns === undefined) {
+      const skills = cells.indexOf("Skills")
+      columns =
+        skills === -1
+          ? null
+          : {
+              skills,
+              hint: cells.findIndex((cell) => /^(Question|When)/.test(cell)),
+            }
+      continue
+    }
+    const name = columns && /^\*\*(.+)\*\*$/.exec(cells[0] ?? "")?.[1]
+    if (!columns || !name) continue
+    const members = [...(cells[columns.skills] ?? "").matchAll(/`([^`]+)`/g)]
+      .map((match) => match[1]!)
+      .filter((skill) => known.has(skill) && !placed.has(skill))
+    members.forEach((skill) => placed.add(skill))
+    if (members.length)
+      stages.push({ name, hint: cells[columns.hint], skills: members })
+  }
+  return stages
+}
+
+// Swaps the flat `skills/` listing for one folder per stage. Skills the
+// workflow does not place, such as the router itself, stay at the top.
+function groupByWorkflow(root: FolderNode, stages: Stage[]): FolderNode {
+  const skills = root.children.find(
+    (child): child is FolderNode =>
+      child.kind === "folder" && child.path === "skills"
+  )
+  if (!skills || !stages.length) return root
+  const byName = new Map(skills.children.map((child) => [child.name, child]))
+  const grouped = new Set(stages.flatMap((stage) => stage.skills))
+  const groupedSkills: FolderNode = {
+    ...skills,
+    children: [
+      ...skills.children.filter((child) => !grouped.has(child.name)),
+      ...stages.map(
+        (stage): FolderNode => ({
+          kind: "folder",
+          name: stage.name,
+          path: `skills/~${stage.name}`,
+          stage: { hint: stage.hint },
+          children: stage.skills.map((skill) => byName.get(skill)!),
+        })
+      ),
+    ],
+  }
+  return {
+    ...root,
+    children: root.children.map((child) =>
+      child === skills ? groupedSkills : child
+    ),
+  }
+}
+
+function ancestorsOf(root: FolderNode, path: string): string[] {
+  for (const child of root.children) {
+    if (child.path === path) return []
+    if (child.kind === "folder") {
+      const found = ancestorsOf(child, path)
+      if (found.length || child.children.some((c) => c.path === path))
+        return [child.path, ...found]
+    }
+  }
+  return []
+}
+
 type Frontmatter = Record<string, string>
 
 // Skills and agents open with a small YAML block: plain `key: value` lines,
@@ -213,6 +306,15 @@ function FileTree({
     ? focused
     : selected
 
+  // A file opened from a link can sit far down the tree, so the tree scrolls
+  // to it. Only on a change: on load the page itself must not jump.
+  const shown = useRef(selected)
+  useEffect(() => {
+    if (shown.current === selected) return
+    shown.current = selected
+    refs.current.get(selected)?.scrollIntoView({ block: "nearest" })
+  }, [selected])
+
   const focus = (path: string) => {
     setFocused(path)
     refs.current.get(path)?.focus()
@@ -269,15 +371,18 @@ function FileTree({
     >
       {rows.map(({ node, depth }) => {
         const isFolder = node.kind === "folder"
+        const stage = isFolder ? node.stage : undefined
         const open = isFolder && expanded.has(node.path)
         const active = !isFolder && node.path === selected
-        const Icon = isFolder
-          ? open
-            ? FolderOpenIcon
-            : FolderIcon
-          : node.name.endsWith(".md")
-            ? FileTextIcon
-            : FileCodeIcon
+        const Icon = stage
+          ? LayersIcon
+          : isFolder
+            ? open
+              ? FolderOpenIcon
+              : FolderIcon
+            : node.name.endsWith(".md")
+              ? FileTextIcon
+              : FileCodeIcon
         return (
           <li
             key={node.path}
@@ -311,7 +416,13 @@ function FileTree({
               )}
             />
             <Icon aria-hidden className="size-4 shrink-0" strokeWidth={1.75} />
-            <span className="truncate" title={node.name}>
+            <span
+              className={cn(
+                "truncate",
+                stage && "font-sans font-medium text-foreground"
+              )}
+              title={stage?.hint ?? node.name}
+            >
               {node.name}
             </span>
           </li>
@@ -593,7 +704,9 @@ function FileView({
 function SkillsBrowser() {
   const [paths, setPaths] = useState<string[]>()
   const [error, setError] = useState<string>()
-  const [expanded, setExpanded] = useState(() => new Set(["skills", "agents"]))
+  const [stages, setStages] = useState<Stage[]>([])
+  const [view, setView] = useState<"workflow" | "folders">("workflow")
+  const [expanded, setExpanded] = useState(() => new Set(["skills"]))
   const [selected, setSelected] = useState("README.md")
   const viewRef = useRef<HTMLDivElement>(null)
 
@@ -608,7 +721,40 @@ function SkillsBrowser() {
     }
   }, [])
 
-  const root = useMemo(() => (paths ? buildTree(paths) : undefined), [paths])
+  // The phase map is one more file from the same cache. If it fails to load
+  // the page keeps the plain folder listing.
+  useEffect(() => {
+    if (!paths?.includes(WORKFLOW_SOURCE)) return
+    let live = true
+    const known = new Set(
+      paths.flatMap((path) => /^skills\/([^/]+)\//.exec(path)?.[1] ?? [])
+    )
+    loadFile(WORKFLOW_SOURCE).then(
+      (source) => {
+        if (!live) return
+        const next = parseWorkflow(source, known)
+        setStages(next)
+        setExpanded((current) => {
+          const opened = new Set(current)
+          for (const stage of next) opened.add(`skills/~${stage.name}`)
+          return opened
+        })
+      },
+      () => {}
+    )
+    return () => {
+      live = false
+    }
+  }, [paths])
+
+  const folders = useMemo(() => (paths ? buildTree(paths) : undefined), [paths])
+  const root = useMemo(
+    () =>
+      folders && view === "workflow"
+        ? groupByWorkflow(folders, stages)
+        : folders,
+    [folders, stages, view]
+  )
   const pathSet = useMemo(() => new Set(paths), [paths])
 
   const toggle = (path: string, open?: boolean) =>
@@ -621,20 +767,21 @@ function SkillsBrowser() {
 
   // Opening a file from a link also opens the folders above it, so the tree
   // always shows where the reader is.
-  const select = useCallback((path: string) => {
-    setSelected(path)
-    setExpanded((current) => {
-      const next = new Set(current)
-      const parts = path.split("/")
-      for (let index = 1; index < parts.length; index++)
-        next.add(parts.slice(0, index).join("/"))
-      return next
-    })
-    if (viewRef.current) {
-      viewRef.current.scrollTop = 0
-      viewRef.current.scrollIntoView({ block: "nearest" })
-    }
-  }, [])
+  const select = useCallback(
+    (path: string) => {
+      setSelected(path)
+      setExpanded((current) => {
+        const next = new Set(current)
+        if (root) for (const folder of ancestorsOf(root, path)) next.add(folder)
+        return next
+      })
+      if (viewRef.current) {
+        viewRef.current.scrollTop = 0
+        viewRef.current.scrollIntoView({ block: "nearest" })
+      }
+    },
+    [root]
+  )
 
   if (error) {
     return (
@@ -674,6 +821,25 @@ function SkillsBrowser() {
           aria-label="Design skills"
           className="max-h-80 overflow-y-auto border-b border-border p-2 md:max-h-none md:border-r md:border-b-0"
         >
+          {stages.length ? (
+            <div
+              role="group"
+              aria-label="Arrange by"
+              className="sticky -top-2 z-10 -mx-2 -mt-2 mb-1 flex gap-1 border-b border-border bg-background px-3 pt-2 pb-2"
+            >
+              {(["workflow", "folders"] as const).map((option) => (
+                <Button
+                  key={option}
+                  variant={view === option ? "secondary" : "ghost"}
+                  size="xs"
+                  aria-pressed={view === option}
+                  onClick={() => setView(option)}
+                >
+                  {option === "workflow" ? "Workflow" : "Folders"}
+                </Button>
+              ))}
+            </div>
+          ) : null}
           {root ? (
             <FileTree
               root={root}
