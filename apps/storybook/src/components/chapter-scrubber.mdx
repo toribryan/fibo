@@ -98,7 +98,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
       {
         name: "preview",
         slot: "chapter-scrubber-preview",
-        note: "Beside the crest. Shows the chapter's meta, title and description.",
+        note: "Beside the crest, portalled to the body so no container clips it. Shows the chapter's meta, title and description.",
       },
     ],
   }}
@@ -234,7 +234,9 @@ The rail in a sticky column beside a long read.
 ### Data attributes
 
 Style parts by slot or state, for example with
-`[&_[data-slot=chapter-scrubber-preview]]:shadow-none`.
+`[&_[data-slot=chapter-scrubber-item]]:rounded-none`. The preview renders in a
+portal on the body, out of reach of the rail's selectors, so style it with
+`previewClassName`, such as `previewClassName="shadow-none"`.
 
 <DataAttributes
   rows={[
