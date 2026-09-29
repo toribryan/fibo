@@ -30,7 +30,6 @@ const rows: TokenRow[] = [
 const meta: Meta<typeof TokenFlow> = {
   title: "Niche/Token flow",
   component: TokenFlow,
-  tags: ["new"],
   argTypes: {
     theme: {
       control: "inline-radio",

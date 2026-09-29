@@ -30,7 +30,6 @@ const pinned = {
 const meta: Meta<typeof Reactions> = {
   title: "Niche/Reactions",
   component: Reactions,
-  tags: ["new"],
   parameters: {
     // Data and callbacks stay in the props table; the playground shows the
     // choices a person can actually toggle.

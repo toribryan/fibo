@@ -5,7 +5,6 @@ import { Skeleton } from "./skeleton.js"
 const meta: Meta<typeof Skeleton> = {
   title: "Components/Skeleton",
   component: Skeleton,
-  tags: ["new"],
   args: { className: "h-4 w-48" },
 }
 
