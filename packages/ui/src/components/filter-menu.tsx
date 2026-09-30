@@ -497,7 +497,7 @@ function FilterMenu({
         setHighlight(0)
       }}
       onKeyDown={onKeyDown}
-      className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+      className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-hidden placeholder:text-muted-foreground"
     />
   )
 
@@ -559,7 +559,7 @@ function FilterMenu({
             data-search={search}
             initialFocus={home}
             className={cn(
-              "w-64 origin-(--transform-origin) overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg outline-none motion-reduce:animate-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+              "w-64 origin-(--transform-origin) overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg outline-hidden motion-reduce:animate-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
               popupClassName
             )}
           >
@@ -671,7 +671,7 @@ function FilterMenu({
                   aria-multiselectable={
                     (count && view !== "fields") || undefined
                   }
-                  className="relative max-h-72 overflow-x-hidden overflow-y-auto p-1 outline-none"
+                  className="relative max-h-72 overflow-x-hidden overflow-y-auto p-1 outline-hidden"
                 >
                   <AnimatePresence
                     initial={false}
