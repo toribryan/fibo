@@ -10,28 +10,4 @@ Claude skills and read-only reviewer agents for the whole product design
 process, from discovery through shipped code, plus design systems, motion and
 brand.
 
-The tree groups the skills by workflow: the seven phases and three side
-tracks that the `product-design-process` skill routes work through, read from
-that skill so the groups follow it. **Folders** switches to the repo's own
-layout. Pick a file to read it. Links between files open here. **Copy
-markdown** copies the file exactly as it is in the repo, ready to paste into
-`.claude/skills/` or `.claude/agents/`; **Raw** opens the plain file, and
-**GitHub** opens it in the
-[design-skills repo](https://github.com/toribryan/toribryan/tree/main/design-skills).
-
 <SkillsBrowser />
-
-## Install
-
-Clone the repo, then link the skills and reviewers into your user-level Claude
-folders so every project sees them:
-
-```bash
-git clone https://github.com/toribryan/toribryan
-mkdir -p ~/.claude/skills ~/.claude/agents
-ln -s "$PWD"/toribryan/design-skills/skills/* ~/.claude/skills/
-ln -s "$PWD"/toribryan/design-skills/agents/*.md ~/.claude/agents/
-```
-
-Each `skills/<name>/` folder also works on its own, so you can copy in only the
-ones you want.
