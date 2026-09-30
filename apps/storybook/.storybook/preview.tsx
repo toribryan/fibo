@@ -54,7 +54,6 @@ const preview: Preview = {
         order: [
           "Welcome",
           "Getting started",
-          "Registry guide",
           "Catalog",
           "Changelog",
           "Design skills",

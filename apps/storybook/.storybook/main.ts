@@ -26,7 +26,7 @@ const config: StorybookConfig = {
   ],
   framework: getAbsolutePath("@storybook/react-vite"),
   // The built site gets the registry from `build:site`. In dev, serve it at the
-  // same path so the Registry guide's picker reads real files.
+  // same path so the Getting started picker reads real files.
   staticDirs: async (dirs, { configType }) => {
     const registry = resolve(
       dirname(fileURLToPath(import.meta.url)),
