@@ -32,6 +32,151 @@ const packageName = (spec) =>
 // Storybook is the site, so a component's docs page is a path off the root.
 const docsUrl = (name, tier) => `${homepage}/?path=/docs/${tier}-${name}--docs`
 
+// Tokens come from globals.css so the registry can never drift from it. Each
+// component ships only the roles a stock `shadcn init` lacks, so adding one to
+// an existing app never overwrites that app's `--primary` and friends.
+const globals = await readFile(
+  path.join(root, "packages/ui/src/styles/globals.css"),
+  "utf8"
+)
+
+const STOCK_TOKENS = new Set([
+  "background",
+  "foreground",
+  "card",
+  "card-foreground",
+  "popover",
+  "popover-foreground",
+  "primary",
+  "primary-foreground",
+  "secondary",
+  "secondary-foreground",
+  "muted",
+  "muted-foreground",
+  "accent",
+  "accent-foreground",
+  "destructive",
+  "border",
+  "input",
+  "ring",
+  "chart-1",
+  "chart-2",
+  "chart-3",
+  "chart-4",
+  "chart-5",
+  "radius",
+  "sidebar",
+  "sidebar-foreground",
+  "sidebar-primary",
+  "sidebar-primary-foreground",
+  "sidebar-accent",
+  "sidebar-accent-foreground",
+  "sidebar-border",
+  "sidebar-ring",
+])
+
+// The body of the `{ }` block that opens at or after `from`.
+function blockBody(text, from) {
+  const open = text.indexOf("{", from)
+  let depth = 0
+  for (let i = open; i < text.length; i++) {
+    if (text[i] === "{") depth++
+    else if (text[i] === "}" && --depth === 0) return text.slice(open + 1, i)
+  }
+  throw new Error(`Unclosed block in globals.css at ${from}`)
+}
+
+// Prettier wraps long values over several lines; a registry wants one.
+const oneLine = (value) =>
+  value.replace(/\s+/g, " ").replace(/\( /g, "(").replace(/ \)/g, ")").trim()
+
+function declarations(body) {
+  const flat = body
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/@keyframes[^{]+\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g, "")
+  return Object.fromEntries(
+    [...flat.matchAll(/--([\w-]+)\s*:\s*([^;]+);/g)].map(([, name, value]) => [
+      name,
+      oneLine(value),
+    ])
+  )
+}
+
+// A top-level rule, so the `:root` inside `@layer base` is never matched.
+function topLevel(selector) {
+  const at = globals.search(
+    new RegExp(`^${selector.replace(/[.:]/g, "\\$&")} \\{`, "m")
+  )
+  if (at === -1) throw new Error(`globals.css has no top-level ${selector}`)
+  return declarations(blockBody(globals, at))
+}
+
+const light = topLevel(":root")
+const dark = topLevel(".dark")
+const themeBody = blockBody(globals, globals.indexOf("@theme inline"))
+const themeVars = declarations(themeBody)
+
+const keyframes = Object.fromEntries(
+  [...themeBody.matchAll(/@keyframes\s+([\w-]+)\s*\{/g)].map((match) => {
+    const steps = blockBody(themeBody, match.index)
+    return [
+      `@keyframes ${match[1]}`,
+      Object.fromEntries(
+        [...steps.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(([, step, body]) => [
+          step.trim(),
+          Object.fromEntries(
+            body
+              .split(";")
+              .map((d) => d.split(/:(.*)/s).map(oneLine))
+              .filter(([property, value]) => property && value)
+          ),
+        ])
+      ),
+    ]
+  })
+)
+
+const extensionTokens = Object.keys(light).filter(
+  (name) => !STOCK_TOKENS.has(name)
+)
+for (const name of extensionTokens) {
+  if (!(name in dark)) throw new Error(`--${name} has no .dark value`)
+}
+const animations = Object.keys(themeVars)
+  .filter((name) => name.startsWith("animate-"))
+  .map((name) => name.slice("animate-".length))
+
+// The extension tokens and animations a component's classes use.
+function tokensFor(source) {
+  const used = (name) => new RegExp(`-${name}(?![\\w-])`).test(source)
+  const tokens = extensionTokens.filter(used)
+  const animationsUsed = animations.filter((name) =>
+    new RegExp(`\\banimate-${name}(?![\\w-])`).test(source)
+  )
+  if (tokens.length === 0 && animationsUsed.length === 0) return {}
+  const pick = (values) =>
+    Object.fromEntries(tokens.map((name) => [name, values[name]]))
+  const css = Object.fromEntries(
+    animationsUsed.map((name) => {
+      const frames = themeVars[`animate-${name}`].split(" ")[0]
+      return [`@keyframes ${frames}`, keyframes[`@keyframes ${frames}`]]
+    })
+  )
+  return {
+    cssVars: {
+      theme: Object.fromEntries([
+        ...tokens.map((name) => [`color-${name}`, `var(--${name})`]),
+        ...animationsUsed.map((name) => [
+          `animate-${name}`,
+          themeVars[`animate-${name}`],
+        ]),
+      ]),
+      ...(tokens.length && { light: pick(light), dark: pick(dark) }),
+    },
+    ...(animationsUsed.length && { css }),
+  }
+}
+
 await rm(transformedDir, { recursive: true, force: true })
 await mkdir(transformedDir, { recursive: true })
 
@@ -55,6 +200,8 @@ for (const file of files) {
   for (const [, spec] of source.matchAll(/from\s+["']([^"']+)["']/g)) {
     if (spec.startsWith("@workspace/ui/components/")) {
       registryDependencies.add(`${homepage}/r/${path.basename(spec)}.json`)
+    } else if (spec === "@workspace/ui/lib/utils") {
+      registryDependencies.add("utils")
     } else if (spec.startsWith("@workspace/") || spec.startsWith(".")) {
       continue
     } else {
@@ -86,8 +233,32 @@ for (const file of files) {
     dependencies: [...dependencies],
     registryDependencies: [...registryDependencies],
     files: [{ path: `registry/ui/${file}`, type: "registry:ui" }],
+    ...tokensFor(source),
   })
 }
+
+// Opt-in: every fibo token, for an app that wants the parts to look the way
+// they do in Storybook.
+items.push({
+  name: "theme",
+  type: "registry:theme",
+  title: "Theme",
+  description:
+    "fibo's full token set, light and dark: the achromatic roles, status colours and named -subtle, -hover and -ring roles.",
+  author: "Tori Bryan",
+  docs: `Token reference: ${homepage}/?path=/docs/foundations-colors--docs`,
+  meta: { docs: `${homepage}/?path=/docs/foundations-colors--docs` },
+  cssVars: {
+    theme: Object.fromEntries(
+      Object.entries(themeVars).filter(
+        ([name]) => !["font-sans", "font-mono"].includes(name)
+      )
+    ),
+    light,
+    dark,
+  },
+  css: keyframes,
+})
 
 const registry = {
   $schema: "https://ui.shadcn.com/schema/registry.json",
@@ -126,6 +297,8 @@ Add the registry once to \`components.json\`:
 \`\`\`
 
 Then install by name with \`pnpm dlx shadcn@latest add @fibo/<name>\`. The lists below are complete: anything not listed is not part of fibo. Base components depend on nothing beyond Base UI, class-variance-authority and lucide-react; special components may also need \`motion\`, which the CLI installs for you.
+
+Each component brings the tokens it uses that a stock shadcn theme lacks, such as \`--primary-hover\` and \`--ring-subtle\`, and leaves your existing tokens alone. To make everything look the way it does in the docs, also add the full theme with \`pnpm dlx shadcn@latest add @fibo/theme\`.
 
 ## Base components
 

@@ -10,8 +10,22 @@ has the same history with links into the docs.
 
 ### Added
 
+- `@fibo/theme`, the full token set in light and dark, installable with
+  `shadcn add @fibo/theme`.
+- An install check in CI: every registry item is added to a fresh
+  `shadcn init` app, which must typecheck, build, and define every token the
+  parts use.
 - A `brand/` folder with the brand kit's source: the rabbit, the logo,
   the social card and poster generators, and the motion prototype.
+
+### Fixed
+
+- Registry parts now bring the tokens they use that a stock shadcn theme
+  lacks, such as `--primary-hover`, `--ring-subtle` and the status colours.
+  Before, they installed without them, and hover, focus ring and destructive
+  styles silently disappeared.
+- Registry parts depend on shadcn's `utils`, so `cn` is installed in a project
+  that never ran `shadcn init`.
 
 ### Changed
 
