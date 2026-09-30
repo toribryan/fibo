@@ -33,6 +33,7 @@
     "format:check": "prettier --check . --cache",
     "format:write": "prettier --write . --cache",
     "registry:build": "pnpm --filter registry build",
+    "21st:export": "pnpm --filter registry export:21st",
     "prepare": "husky"
   },
   "devDependencies": {
