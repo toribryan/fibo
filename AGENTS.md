@@ -115,7 +115,14 @@ workspace imports rewritten to `@/lib/utils` and `@/components/ui/*`, writes
 `apps/registry/registry.json` from the source and `components.meta.json`, runs
 `shadcn build` to produce `apps/registry/public/r/<name>.json`, and writes
 `apps/registry/public/llms.txt`. Package and registry dependencies are read from
-each component's imports.
+each component's imports. Tokens are read from `globals.css`: each component
+ships the ones its classes use that a stock `shadcn init` lacks (the
+`STOCK_TOKENS` list in the build script), and `@fibo/theme` ships all of them.
+
+`pnpm --filter registry smoke` installs every item into a fresh `shadcn init`
+app, builds it, and fails if a class in an installed file compiles to nothing.
+CI runs it on every pull request. Run it after adding a token or changing how
+the registry is built.
 
 The site is static. `vercel.json` runs `pnpm build:site`, which puts the
 built Storybook at the root of `dist/` with the registry at `dist/r/` and

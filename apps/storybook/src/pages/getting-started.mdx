@@ -51,9 +51,21 @@ export function Save() {
 
 <Tip>
   The installed file uses semantic tokens such as `bg-primary` and
-  `text-muted-foreground`. Copy the `:root` and `.dark` blocks from fibo's
-  `globals.css` if you want the parts to look the way they do here.
+  `text-muted-foreground`, so it follows your theme. Any token it needs that a
+  stock shadcn theme lacks, such as `--primary-hover` or `--ring-subtle`, is
+  added to your `globals.css` with it, and your existing tokens are left alone.
 </Tip>
+
+## Use fibo's theme
+
+To make the parts look the way they do here, add the full token set, light and
+dark:
+
+```bash
+pnpm dlx shadcn@latest add @fibo/theme
+```
+
+This replaces your `:root` and `.dark` colour values with fibo's.
 
 ## Theming
 
