@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react"
-import { MoonIcon, SunIcon } from "lucide-react"
+import {
+  ComponentIcon,
+  ContrastIcon,
+  DiamondIcon,
+  FileTextIcon,
+  FolderIcon,
+  HashIcon,
+  HexagonIcon,
+  MoonIcon,
+  SquareDashedIcon,
+  SunIcon,
+  TypeIcon,
+  type LucideIcon,
+} from "lucide-react"
 import { IconButton } from "storybook/internal/components"
 import { addons, types, type API } from "storybook/manager-api"
 
-import {
-  ComponentIcon,
-  FolderIcon,
-  FrameIcon,
-  GroupIcon,
-  InstanceIcon,
-  PageIcon,
-  PaintStyleIcon,
-  TextIcon,
-  VariablesIcon,
-  type FigmaIcon,
-} from "./figma-icons.js"
 import { darkTheme, lightTheme } from "./theme.js"
 import {
   readTheme,
@@ -29,29 +30,30 @@ import {
 // suffixes, so adding or dropping one never changes a docs URL.
 const STATUSES = ["new", "beta", "deprecated"]
 
-// Figma's layer icons stand in for Storybook's own sidebar icons, which are
-// hidden in manager-head.html, so the tree reads like the Figma file.
-// Foundations pages get the glyph for the kind of token they document; every
+// Lucide icons stand in for Storybook's own sidebar icons, which are hidden
+// in manager-head.html. They are picked to echo Figma's layers panel, so the
+// tree reads like the Figma file: frames, components and their instances.
+// Foundations pages get the icon for the kind of token they document; every
 // other entry gets one for its type.
-const ICON_BY_ID: Record<string, FigmaIcon> = {
-  "foundations-colors--docs": PaintStyleIcon,
-  "foundations-typography": TextIcon,
-  "foundations-theme-creator--docs": VariablesIcon,
+const ICON_BY_ID: Record<string, LucideIcon> = {
+  "foundations-colors--docs": ContrastIcon,
+  "foundations-typography": TypeIcon,
+  "foundations-theme-creator--docs": HexagonIcon,
 }
 
-const ICON_BY_TYPE: Record<string, FigmaIcon> = {
+const ICON_BY_TYPE: Record<string, LucideIcon> = {
   root: FolderIcon,
-  group: GroupIcon,
+  group: SquareDashedIcon,
   component: ComponentIcon,
-  docs: PageIcon,
-  story: InstanceIcon,
+  docs: FileTextIcon,
+  story: DiamondIcon,
 }
 
 // Top-level pages sit on the canvas like frames; a docs page under a
 // component or section is a page of that part.
 function iconFor(item: { id: string; type: string; parent?: string }) {
   if (ICON_BY_ID[item.id]) return ICON_BY_ID[item.id]
-  if (item.type === "docs" && !item.parent) return FrameIcon
+  if (item.type === "docs" && !item.parent) return HashIcon
   if (item.type === "group" && !item.parent) return FolderIcon
   return ICON_BY_TYPE[item.type]
 }
@@ -72,7 +74,9 @@ addons.setConfig({
       const Icon = iconFor(item)
       return (
         <span className="fibo-label">
-          {Icon ? <Icon className="fibo-icon" /> : null}
+          {Icon ? (
+            <Icon className="fibo-icon" size={16} strokeWidth={1.5} />
+          ) : null}
           {item.name}
           {status ? (
             <span className={`fibo-status fibo-status--${status}`}>
