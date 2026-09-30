@@ -27,6 +27,7 @@ Node 24 (pinned in `.nvmrc`).
 | `.agents/skills/`                  | Agent skills; `.claude/skills/` links here                           |
 | `.claude/agents/`                  | Claude Code subagents                                                |
 | `plans/`                           | Numbered design docs, see `plans/README.md`                          |
+| `brand/`                           | Brand kit source: the rabbit, logo, cards, posters, motion prototype |
 
 ## Commands
 

@@ -66,3 +66,9 @@ coverage
 __screenshots__
 .vitest-attachments
 build-storybook.log
+
+# brand kit renders and photos
+brand/out/
+brand/photos/*
+!brand/photos/README.md
+brand/kit/img/

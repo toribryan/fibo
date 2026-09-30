@@ -1,0 +1,331 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="fonts/fonts.css" />
+    <style>
+      body {
+        margin: 0;
+        background: #888;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        padding: 20px;
+      }
+    </style>
+    <script src="rabbit.js"></script>
+    <script src="mosaic-lib.js"></script>
+    <script src="texture-lib.js"></script>
+    <script src="logo.js"></script>
+  </head>
+  <body>
+    <script>
+      const INK = "#0a0a0a",
+        PAPER = "#f3f3f1",
+        PHI = (1 + Math.sqrt(5)) / 2
+      let seed = 55
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647
+      const W = 1080,
+        H = 1350,
+        R = { x: 34, y: 34, w: W - 68, h: H - 178 }
+      const CUT = R.x + R.w / PHI,
+        CELL = 13,
+        BAND = 78
+
+      const layer = () => {
+        const c = document.createElement("canvas")
+        c.width = W
+        c.height = H
+        const g = c.getContext("2d")
+        g.fillStyle = PAPER
+        g.fillRect(0, 0, W, H)
+        return [c, g]
+      }
+      // The two sides meet at the golden section through a band of pixel cells.
+      function join(ctx, a, b) {
+        ctx.drawImage(a, 0, 0)
+        for (let y = R.y; y < R.y + R.h; y += CELL)
+          for (let x = R.x; x < R.x + R.w; x += CELL) {
+            const cx = x + CELL / 2
+            const right =
+              cx > CUT + BAND ||
+              (cx > CUT - BAND && rnd() < (cx - CUT + BAND) / (2 * BAND))
+            if (right) ctx.drawImage(b, x, y, CELL, CELL, x, y, CELL, CELL)
+          }
+      }
+      function foot(ctx, left, right) {
+        ctx.fillStyle = PAPER
+        ctx.fillRect(0, R.y + R.h, W, H - R.y - R.h)
+        geistLockup(ctx, 34, H - 44, 3, 500)
+        ctx.fillStyle = INK
+        ctx.font = "400 21px 'Geist Mono'"
+        ctx.textBaseline = "alphabetic"
+        // The pair, with a drawn double arrow between.
+        const gap = 55,
+          lw = ctx.measureText(left).width
+        ctx.textAlign = "right"
+        ctx.fillText(left, W / 2 - gap / 2, H - 44)
+        ctx.textAlign = "left"
+        ctx.fillText(right, W / 2 + gap / 2, H - 44)
+        const ay = H - 51,
+          ax0 = W / 2 - gap / 2 + 9,
+          ax1 = W / 2 + gap / 2 - 9
+        ctx.fillRect(ax0, ay, ax1 - ax0, 2)
+        for (const [x, d] of [
+          [ax0, 1],
+          [ax1, -1],
+        ])
+          for (let k = 1; k <= 4; k++) {
+            ctx.fillRect(x + d * k * 2 - 1, ay - k * 2 + 1, 2, 2)
+            ctx.fillRect(x + d * k * 2 - 1, ay + k * 2 - 1, 2, 2)
+          }
+        ctx.textAlign = "right"
+        ctx.fillText("fibo.toribryan.com", W - 34, H - 44)
+        ctx.textAlign = "left"
+      }
+      const card = (id) => {
+        const c = document.createElement("canvas")
+        c.width = W
+        c.height = H
+        c.id = id
+        document.body.appendChild(c)
+        const x = c.getContext("2d")
+        x.fillStyle = PAPER
+        x.fillRect(0, 0, W, H)
+        return x
+      }
+      const spriteAt = (g, rows, cx, cy, s) =>
+        sprite(
+          g,
+          rows,
+          Math.round(cx - (rows[0].length * s) / 2),
+          Math.round(cy - (rows.length * s) / 2),
+          s
+        )
+      function squares(g, x0, y0, u, ink, lw = 2) {
+        const sq = [
+          [8, 0, 0],
+          [5, 8, 0],
+          [3, 10, 5],
+          [2, 8, 6],
+          [1, 8, 5],
+          [1, 9, 5],
+        ]
+        g.strokeStyle = ink
+        g.lineWidth = lw
+        for (const [s, x, y] of sq)
+          g.strokeRect(x0 + x * u, y0 + y * u, s * u, s * u)
+        g.beginPath()
+        for (const [x, y, r, a0, a1] of [
+          [8, 8, 8, Math.PI, 1.5 * Math.PI],
+          [8, 5, 5, 1.5 * Math.PI, 2 * Math.PI],
+          [10, 5, 3, 0, 0.5 * Math.PI],
+          [10, 6, 2, 0.5 * Math.PI, Math.PI],
+          [9, 6, 1, Math.PI, 1.5 * Math.PI],
+        ]) {
+          const cx = x0 + x * u,
+            cy = y0 + y * u
+          g.moveTo(cx + r * u * Math.cos(a0), cy + r * u * Math.sin(a0))
+          g.arc(cx, cy, r * u, a0, a1)
+        }
+        g.lineWidth = lw + 1
+        g.stroke()
+      }
+
+      async function main() {
+        for (const f of [
+          "500 20px Geist",
+          "400 20px 'Geist Mono'",
+          "500 20px 'Geist Mono'",
+        ])
+          await document.fonts.load(f)
+        const rabbitImg = await loadImage("photos/u-rabbit.jpg")
+        const bun = RABBIT
+        const photo = (img, crop) => {
+          const r = { ...R, ...crop }
+          const ph = photoLayer(img, r)
+          return [ph, r]
+        }
+
+        // 1. Hard ↔ soft: the pixel rabbit, and the painted one.
+        {
+          const ctx = card("hard-soft")
+          const [a, ga] = layer(),
+            [b, gb] = layer()
+          spriteAt(ga, bun, R.x + R.w * 0.42, R.y + R.h * 0.5, 34)
+          const [ph, r] = photo(rabbitImg, { fx: 0.62, fy: 0.3 })
+          dreamy(gb, ph, r)
+          join(ctx, a, b)
+          foot(ctx, "hard", "soft")
+          grain(ctx, W, H, 22, 0.45)
+        }
+        // 2. Mathematical ↔ organic: seeds placed by the golden angle, in white,
+        // laid over the real seed head they describe.
+        {
+          const ctx = card("math-organic")
+          const sun = await loadImage("photos/sunflower.jpg")
+          // The seed head sits at (785, 840) in the photo with a radius of about 275.
+          const HEAD = { x: 785, y: 840, r: 275 },
+            target = { x: R.x + R.w / 2, y: R.y + R.h * 0.46, r: 377 }
+          const scale = target.r / HEAD.r
+          const r = {
+            ...R,
+            scale,
+            imgX: target.x - HEAD.x * scale,
+            imgY: target.y - HEAD.y * scale,
+          }
+          const ph = photoLayer(sun, r)
+          dreamy(ctx, ph, r)
+          // 610 seeds, each turned 137.5° from the last, filling the head exactly.
+          const GA = Math.PI * (3 - Math.sqrt(5)),
+            N = 610,
+            c = (target.r * 0.97) / Math.sqrt(N)
+          ctx.fillStyle = "#fafafa"
+          for (let n = 1; n <= N; n++) {
+            const rr = c * Math.sqrt(n),
+              t = n * GA,
+              d = 4 + Math.round((n / N) * 5)
+            ctx.fillRect(
+              Math.round((target.x + rr * Math.cos(t)) / 3) * 3 - d / 2,
+              Math.round((target.y + rr * Math.sin(t)) / 3) * 3 - d / 2,
+              d,
+              d
+            )
+          }
+          foot(ctx, "mathematical", "organic")
+          grain(ctx, W, H, 22, 0.45)
+        }
+        // 3. Analog ↔ digital: one picture, grain on one side and 1-bit on the other.
+        {
+          const ctx = card("analog-digital")
+          const [ph, r] = photo(rabbitImg, { fx: 0.5, fy: 0.25 })
+          const [a, ga] = layer(),
+            [b, gb] = layer()
+          dreamy(ga, ph, r)
+          grain(ga, W, H, 60, 0.9)
+          dither(gb, ph, r, { cell: 4 })
+          join(ctx, a, b)
+          foot(ctx, "analog", "digital")
+          grain(ctx, W, H, 18, 0.35)
+        }
+        // 4. Ancient ↔ futuristic: the 1202 puzzle counted in rabbits, and the
+        // registry command that installs a part today.
+        {
+          const ctx = card("ancient-futuristic")
+          const [a, ga] = layer(),
+            [b, gb] = layer()
+          const F = [1, 1, 2, 3, 5, 8]
+          let y = R.y + 120
+          ga.fillStyle = INK
+          ga.font = "400 21px 'Geist Mono'"
+          F.forEach((n, i) => {
+            ga.fillText(String(n), R.x + 40, y + 44)
+            for (let k = 0; k < n; k++)
+              sprite(
+                ga,
+                k >= (F[i - 1] || 0) && i
+                  ? bun.map((r) => [...r].reverse().join(""))
+                  : bun,
+                R.x + 90 + k * 52,
+                y,
+                3
+              )
+            y += 150
+          })
+          ga.fillText("Liber Abaci, 1202", R.x + 40, R.y + R.h - 60)
+          gb.fillStyle = INK
+          gb.fillRect(R.x, R.y, R.w, R.h)
+          gb.fillStyle = PAPER
+          gb.font = "400 21px 'Geist Mono'"
+          const lines = [
+            "$ shadcn add",
+            "  @fibo/button",
+            "",
+            "✔ button.tsx",
+            "",
+            "$ curl",
+            "  /llms.txt",
+          ]
+          lines.forEach((l, i) =>
+            gb.fillText(l, CUT + BAND + 21, R.y + R.h * 0.36 + i * 34)
+          )
+          join(ctx, a, b)
+          foot(ctx, "ancient", "futuristic")
+          grain(ctx, W, H, 22, 0.45)
+        }
+        // 5. Precise ↔ whimsical: the golden rectangle drawn to the pixel, and the
+        // rabbit mid-hop.
+        {
+          const ctx = card("precise-whimsical")
+          const [a, ga] = layer(),
+            [b, gb] = layer()
+          const gw = CUT - BAND - R.x - 55,
+            gh = gw / PHI,
+            gx = R.x + 34,
+            gy = R.y + (R.h - gh) / 2
+          ga.strokeStyle = INK
+          ga.lineWidth = 2
+          ga.strokeRect(gx, gy, gw, gh)
+          ga.beginPath()
+          ga.moveTo(gx + gh, gy)
+          ga.lineTo(gx + gh, gy + gh)
+          ga.stroke()
+          ga.setLineDash([6, 6])
+          ga.beginPath()
+          ga.moveTo(gx, gy)
+          ga.lineTo(gx + gw, gy + gh)
+          ga.moveTo(gx + gh, gy)
+          ga.lineTo(gx, gy + gh)
+          ga.stroke()
+          ga.setLineDash([])
+          ga.fillStyle = INK
+          ga.font = "400 21px 'Geist Mono'"
+          ga.fillText("1", gx + gh / 2 - 5, gy + gh + 40)
+          ga.fillText("0.618", gx + gh + (gw - gh) / 2 - 30, gy + gh + 40)
+          ga.fillText("1 : 1.6180339887", gx, gy - 24)
+          // Mid-hop: tilted up, with the ground left behind as dots.
+          gb.save()
+          gb.translate(CUT + BAND + 150, R.y + R.h * 0.42)
+          gb.rotate(-0.26)
+          sprite(
+            gb,
+            bun.map((r) => [...r].reverse().join("")),
+            -10 * 9,
+            -10 * 9,
+            9
+          )
+          gb.restore()
+          gb.fillStyle = INK
+          for (let k = 0; k < 6; k++)
+            gb.fillRect(CUT + BAND + 30 + k * 34, R.y + R.h * 0.62, 8, 8)
+          join(ctx, a, b)
+          foot(ctx, "precise", "whimsical")
+          grain(ctx, W, H, 22, 0.45)
+        }
+        // 6. Black/white ↔ luminous colour: 1-bit on one side, glowing on the other.
+        {
+          const ctx = card("bw-luminous")
+          const [ph, r] = photo(rabbitImg, { fx: 0.5, fy: 0.35, zoom: 1.2 })
+          const [a, ga] = layer(),
+            [b, gb] = layer()
+          dither(ga, ph, r, { cell: 4 })
+          gb.save()
+          gb.filter = "saturate(1.5) brightness(1.08)"
+          gb.drawImage(ph.canvas, r.x, r.y)
+          gb.globalCompositeOperation = "screen"
+          gb.globalAlpha = 0.55
+          gb.filter = "blur(28px) saturate(1.8) brightness(1.2)"
+          gb.drawImage(ph.canvas, r.x, r.y)
+          gb.restore()
+          join(ctx, a, b)
+          foot(ctx, "black/white", "luminous colour")
+          grain(ctx, W, H, 22, 0.4)
+        }
+        document.title = "done"
+      }
+      main().catch((e) => {
+        document.title = "error " + e.message
+      })
+    </script>
+  </body>
+</html>
