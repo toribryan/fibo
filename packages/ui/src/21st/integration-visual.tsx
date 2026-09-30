@@ -7,6 +7,7 @@ import {
   DatabaseIcon,
   GitBranchIcon,
   MessageSquareIcon,
+  RefreshCwIcon,
 } from "lucide-react"
 import {
   motion,
@@ -17,7 +18,6 @@ import {
   IntegrationVisual,
   type IntegrationItem,
 } from "@workspace/ui/components/integration-visual"
-import { PixelSnail } from "@workspace/ui/components/pixel-snail"
 
 const tools: IntegrationItem[] = [
   { title: "Database", icon: <DatabaseIcon /> },
@@ -54,7 +54,10 @@ function Shimmer({ children }: { children: string }) {
 function SyncThumbnail() {
   return (
     <div className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg bg-muted px-4">
-      <PixelSnail travel pace="fast" label="Syncing" />
+      <RefreshCwIcon
+        className="size-5 text-muted-foreground motion-safe:animate-spin"
+        aria-hidden
+      />
       <Shimmer>Syncing 6 sources</Shimmer>
     </div>
   )

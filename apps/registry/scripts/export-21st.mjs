@@ -7,7 +7,8 @@
 // one.
 //
 // A component is exported when it has a demo in packages/ui/src/21st. A demo
-// may use other fibo components; they are inlined into the demo too. Publish
+// may import only the component it shows, since 21st.dev's quality guidelines
+// keep logic in the component file and the demo to props and content. Publish
 // with the commands this prints; each opens a review page in the browser.
 import process from "node:process"
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
@@ -189,9 +190,9 @@ const cnHelper = {
   body: "function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs))\n}",
 }
 
-// Makes one self-contained file: `cn` and every fibo component the source
-// imports are copied in, except `own`, which a demo keeps as an import of the
-// component it shows.
+// Makes one self-contained file with `cn` copied in. A component also gets
+// every fibo component it imports; a demo, identified by `own`, keeps that as
+// an import of the component it shows and may import no other.
 async function assemble(source, file, own) {
   const { imports, body } = split(source)
   const kept = []
@@ -208,6 +209,10 @@ async function assemble(source, file, own) {
           `@/components/ui/${path.basename(own)}`
         ),
       })
+    } else if (own && statement.spec.startsWith("@workspace/ui/components/")) {
+      throw new Error(
+        `${file} imports ${statement.spec}. A demo may import only the component it shows; build the rest from plain elements.`
+      )
     } else if (statement.spec.startsWith("@workspace/ui/components/")) {
       const dep = await inlineComponent(statement.spec)
       usesCn ||= dep.imports.some((i) => i.spec === "@workspace/ui/lib/utils")
