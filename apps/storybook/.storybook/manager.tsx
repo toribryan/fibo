@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from "react"
 import {
-  BookmarkIcon,
-  BoxesIcon,
   ComponentIcon,
+  ContrastIcon,
+  DiamondIcon,
   FileTextIcon,
   FolderIcon,
-  GitPullRequestIcon,
-  HistoryIcon,
-  HouseIcon,
-  LayoutGridIcon,
+  HashIcon,
+  HexagonIcon,
   MoonIcon,
-  PaintbrushIcon,
-  PaletteIcon,
-  RabbitIcon,
-  RocketIcon,
-  SparklesIcon,
+  SquareDashedIcon,
   SunIcon,
-  SwatchBookIcon,
+  TypeIcon,
   type LucideIcon,
 } from "lucide-react"
 import { IconButton } from "storybook/internal/components"
@@ -37,32 +31,31 @@ import {
 const STATUSES = ["new", "beta", "deprecated"]
 
 // Lucide icons stand in for Storybook's own sidebar icons, which are hidden
-// in manager-head.html. Named pages and sections get their own icon; every
+// in manager-head.html. They are picked to echo Figma's layers panel, so the
+// tree reads like the Figma file: frames, components and their instances.
+// Foundations pages get the icon for the kind of token they document; every
 // other entry gets one for its type.
 const ICON_BY_ID: Record<string, LucideIcon> = {
-  "welcome--docs": HouseIcon,
-  "getting-started--docs": RocketIcon,
-  "catalog--docs": LayoutGridIcon,
-  "changelog--docs": HistoryIcon,
-  "contributing--docs": GitPullRequestIcon,
-  "design-skills--docs": SparklesIcon,
-  foundations: PaletteIcon,
-  "foundations-theme-creator--docs": PaintbrushIcon,
-  "base-components": BoxesIcon,
-  "special-components": RabbitIcon,
-}
-
-// Foundations pages document tokens rather than components.
-const ICON_BY_PARENT: Record<string, LucideIcon> = {
-  foundations: SwatchBookIcon,
+  "foundations-colors--docs": ContrastIcon,
+  "foundations-typography": TypeIcon,
+  "foundations-theme-creator--docs": HexagonIcon,
 }
 
 const ICON_BY_TYPE: Record<string, LucideIcon> = {
   root: FolderIcon,
-  group: FolderIcon,
+  group: SquareDashedIcon,
   component: ComponentIcon,
   docs: FileTextIcon,
-  story: BookmarkIcon,
+  story: DiamondIcon,
+}
+
+// Top-level pages sit on the canvas like frames; a docs page under a
+// component or section is a page of that part.
+function iconFor(item: { id: string; type: string; parent?: string }) {
+  if (ICON_BY_ID[item.id]) return ICON_BY_ID[item.id]
+  if (item.type === "docs" && !item.parent) return HashIcon
+  if (item.type === "group" && !item.parent) return FolderIcon
+  return ICON_BY_TYPE[item.type]
 }
 
 const initialTheme = readTheme()
@@ -78,16 +71,11 @@ addons.setConfig({
         item.type === "component"
           ? STATUSES.find((tag) => item.tags.includes(tag))
           : undefined
-      const Icon =
-        ICON_BY_ID[item.id] ??
-        (item.type === "component" && item.parent
-          ? ICON_BY_PARENT[item.parent]
-          : undefined) ??
-        ICON_BY_TYPE[item.type]
+      const Icon = iconFor(item)
       return (
         <span className="fibo-label">
           {Icon ? (
-            <Icon className="fibo-icon" size={16} strokeWidth={1.75} />
+            <Icon className="fibo-icon" size={16} strokeWidth={1.5} />
           ) : null}
           {item.name}
           {status ? (
