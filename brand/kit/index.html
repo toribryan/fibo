@@ -1,0 +1,2135 @@
+<title>fibo brand kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap"
+/>
+<style>
+  /* Layout: a drafting sheet. Dotted grid ground, one narrow reading column, hairline sections numbered along the Fibonacci sequence. */
+  :root {
+    --paper: #fafafa;
+    --ink: #0a0a0a;
+    --soft: #6b6b6b;
+    --line: #e5e5e5;
+    --dot: #dcdcdc;
+    --card: #ffffff;
+    --sans:
+      Geist, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Geist Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0a0a0a;
+      --ink: #fafafa;
+      --soft: #a3a3a3;
+      --line: #262626;
+      --dot: #2a2a2a;
+      --card: #141414;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0a0a0a;
+    --ink: #fafafa;
+    --soft: #a3a3a3;
+    --line: #262626;
+    --dot: #2a2a2a;
+    --card: #141414;
+    color-scheme: dark;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 16px/1.6 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    background-image: radial-gradient(
+      circle,
+      var(--dot) 1px,
+      transparent 1.2px
+    );
+    background-size: 24px 24px;
+  }
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 56px 96px;
+  }
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+    line-height: 1.05;
+  }
+  p {
+    margin: 0;
+    max-width: 64ch;
+  }
+  a {
+    color: inherit;
+  }
+  .mono {
+    font-family: var(--mono);
+  }
+  .soft {
+    color: var(--soft);
+  }
+  .hand {
+    font-family: var(--sans);
+    color: var(--soft);
+  }
+  .eyebrow {
+    font: 500 12px/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--soft);
+  }
+
+  header.hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.618fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: end;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--line);
+  }
+  header.hero h1 {
+    font-size: clamp(64px, 12vw, 132px);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 0.9;
+  }
+  header.hero .say {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    margin-top: 12px;
+    font: 400 20px var(--mono);
+    color: var(--soft);
+  }
+  header.hero p.lede {
+    margin-top: 24px;
+    font-size: 20px;
+    line-height: 1.45;
+    color: var(--soft);
+  }
+  header.hero p.lede b {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .mascot-hero {
+    justify-self: end;
+    width: min(100%, 280px);
+    color: var(--ink);
+  }
+  .mascot-hero svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  section {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 24px;
+    padding-block: 48px;
+    border-bottom: 1px solid var(--line);
+  }
+  section > .n {
+    font: 500 13px/1 var(--mono);
+    color: var(--soft);
+    padding-top: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  section h2 {
+    font-size: 36px;
+    font-weight: 700;
+  }
+  section .body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+  }
+
+  .grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .tile {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .tile h3 {
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+  .tile p {
+    font-size: 15px;
+    color: var(--soft);
+  }
+
+  .dodont {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+  }
+  .dodont > div {
+    padding: 16px 16px 16px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    min-width: 0;
+  }
+  .dodont > div:nth-child(even) {
+    padding-left: 16px;
+    border-left: 1px solid var(--line);
+  }
+  .dodont .tag {
+    display: block;
+    font: 500 11px/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-bottom: 8px;
+  }
+  .quote {
+    font: 500 15px/1.4 var(--mono);
+  }
+
+  .ramp {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    height: 96px;
+  }
+  .ramp span {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8px;
+    font: 500 11px var(--mono);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--card);
+    font: 500 13px var(--mono);
+  }
+  .chip i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .specimen {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .specimen .big {
+    font-size: 44px;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+
+  .assets {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+    gap: 16px;
+    align-items: start;
+  }
+  .assets figure,
+  .post figure {
+    margin: 0;
+  }
+  .assets img,
+  .post img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    max-width: 100%;
+  }
+  figcaption {
+    margin-top: 8px;
+    font: 400 12px var(--mono);
+    color: var(--soft);
+  }
+
+  .posts {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .post {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .post.wide {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .post .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: baseline;
+  }
+  .post h3 {
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .copy {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .tabs button {
+    font: 500 12px var(--mono);
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--soft);
+    cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .tabs button:focus-visible,
+  .copybtn:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .text {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    white-space: pre-wrap;
+    font-size: 15px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .count {
+    font: 400 12px var(--mono);
+    color: var(--soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .copybtn {
+    font: 500 13px var(--sans);
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .tablewrap {
+    overflow-x: auto;
+  }
+  th,
+  td {
+    text-align: left;
+    padding: 12px 12px 12px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    font: 500 11px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--soft);
+  }
+  td.d {
+    font-family: var(--mono);
+    font-size: 13px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ladder {
+    display: flex;
+    align-items: baseline;
+    gap: 13px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    overflow: hidden;
+  }
+  .tiling {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-width: 100%;
+  }
+  #seeds {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    background: var(--paper);
+    max-width: 100%;
+  }
+  .split {
+    display: grid;
+    grid-template-columns: 1.618fr 1fr;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 89px;
+    font: 500 12px var(--mono);
+    color: var(--soft);
+  }
+  .split span {
+    display: flex;
+    align-items: flex-end;
+    padding: 8px;
+  }
+  .split span + span {
+    border-left: 1px solid var(--line);
+    background: var(--card);
+  }
+  .cast {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .cast.two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cast.one {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 420px;
+  }
+  .logo-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    max-width: 100%;
+  }
+  .member .sprite svg {
+    image-rendering: pixelated;
+  }
+  .member .sprite {
+    height: 144px;
+    display: flex;
+    align-items: flex-end;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .member .sprite svg {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+  }
+
+  /* Dark grounds get the inverse drawing, not the light one recoloured. */
+  .sp-l,
+  .sp-d {
+    display: contents;
+  }
+  .sp-d {
+    display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .sp-l {
+      display: none;
+    }
+    :root:not([data-theme="light"]) .sp-d {
+      display: contents;
+    }
+  }
+  :root[data-theme="dark"] .sp-l {
+    display: none;
+  }
+  :root[data-theme="dark"] .sp-d {
+    display: contents;
+  }
+
+  .glyphs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 21px;
+    font: 500 12px var(--mono);
+    color: var(--soft);
+  }
+  .glyphs span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .glyphs i {
+    width: 13px;
+    height: 13px;
+    display: inline-block;
+    box-sizing: border-box;
+  }
+  .g1 {
+    background: var(--ink);
+  }
+  .g2 {
+    border: 3px solid var(--ink);
+  }
+  .g3 {
+    border: 3px solid var(--ink);
+    background: radial-gradient(var(--ink) 0 2px, transparent 2px) center / 13px
+      13px no-repeat;
+  }
+  .g4 {
+    background: linear-gradient(var(--ink), var(--ink)) center / 5px 5px
+      no-repeat;
+  }
+  .g5 {
+    background: linear-gradient(var(--ink), var(--ink)) center / 2px 2px
+      no-repeat;
+  }
+  .posters {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 16px;
+    align-items: start;
+  }
+  .posters.one {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 420px;
+  }
+  .arrow {
+    font-family: system-ui, sans-serif;
+    font-size: 1.15em;
+    padding-inline: 2px;
+  }
+  .pairs {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .pairs td {
+    padding: 13px 13px 13px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .pairs td:first-child {
+    font: 500 14px var(--mono);
+    white-space: nowrap;
+    color: var(--ink);
+  }
+  .pairs td:last-child {
+    color: var(--soft);
+  }
+  .tcards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .tcards figure {
+    margin: 0;
+    min-width: 0;
+  }
+  .tcards img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    max-width: 100%;
+  }
+  @media (max-width: 760px) {
+    .tcards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .posters figure {
+    margin: 0;
+    min-width: 0;
+  }
+  .posters img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    max-width: 100%;
+  }
+  @media (max-width: 900px) {
+    .posters {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .cast {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 760px) {
+    header.hero {
+      grid-template-columns: 1fr;
+    }
+    .mascot-hero {
+      justify-self: start;
+      width: 180px;
+    }
+    section {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .grid2,
+    .grid3,
+    .dodont,
+    .post,
+    .assets {
+      grid-template-columns: 1fr;
+    }
+    .dodont > div:nth-child(even) {
+      padding-left: 0;
+      border-left: 0;
+    }
+    .ramp span {
+      font-size: 9px;
+    }
+  }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <span class="eyebrow">Brand kit · v0.1</span>
+      <h1>fibo</h1>
+      <div class="say">
+        FEE-boh
+        <span class="hand" style="font-size: 15px">as in Fibonacci</span>
+      </div>
+      <p class="lede">
+        A library of parts for <b>experimental projects</b> and
+        <b>special components</b> that anyone can use. This page is the short
+        version of how fibo looks and talks, plus the first ten posts, ready to
+        go.
+      </p>
+    </div>
+    <div class="mascot-hero" role="img" aria-label="fibo, a pixel rabbit">
+      <svg viewBox="0 0 20 20" shape-rendering="crispEdges" aria-hidden="true">
+        <g fill="var(--paper)">
+          <rect x="1" y="1" width="1" height="1" />
+          <rect x="2" y="1" width="1" height="1" />
+          <rect x="3" y="1" width="1" height="1" />
+          <rect x="7" y="1" width="1" height="1" />
+          <rect x="8" y="1" width="1" height="1" />
+          <rect x="9" y="1" width="1" height="1" />
+          <rect x="1" y="2" width="1" height="1" />
+          <rect x="3" y="2" width="1" height="1" />
+          <rect x="7" y="2" width="1" height="1" />
+          <rect x="9" y="2" width="1" height="1" />
+          <rect x="1" y="3" width="1" height="1" />
+          <rect x="3" y="3" width="1" height="1" />
+          <rect x="7" y="3" width="1" height="1" />
+          <rect x="9" y="3" width="1" height="1" />
+          <rect x="2" y="4" width="1" height="1" />
+          <rect x="3" y="4" width="1" height="1" />
+          <rect x="7" y="4" width="1" height="1" />
+          <rect x="9" y="4" width="1" height="1" />
+          <rect x="2" y="5" width="1" height="1" />
+          <rect x="3" y="5" width="1" height="1" />
+          <rect x="7" y="5" width="1" height="1" />
+          <rect x="8" y="5" width="1" height="1" />
+          <rect x="3" y="6" width="1" height="1" />
+          <rect x="4" y="6" width="1" height="1" />
+          <rect x="5" y="6" width="1" height="1" />
+          <rect x="6" y="6" width="1" height="1" />
+          <rect x="7" y="6" width="1" height="1" />
+          <rect x="8" y="6" width="1" height="1" />
+          <rect x="9" y="6" width="1" height="1" />
+          <rect x="2" y="7" width="1" height="1" />
+          <rect x="3" y="7" width="1" height="1" />
+          <rect x="4" y="7" width="1" height="1" />
+          <rect x="5" y="7" width="1" height="1" />
+          <rect x="6" y="7" width="1" height="1" />
+          <rect x="7" y="7" width="1" height="1" />
+          <rect x="8" y="7" width="1" height="1" />
+          <rect x="9" y="7" width="1" height="1" />
+          <rect x="10" y="7" width="1" height="1" />
+          <rect x="1" y="8" width="1" height="1" />
+          <rect x="2" y="8" width="1" height="1" />
+          <rect x="3" y="8" width="1" height="1" />
+          <rect x="4" y="8" width="1" height="1" />
+          <rect x="5" y="8" width="1" height="1" />
+          <rect x="6" y="8" width="1" height="1" />
+          <rect x="7" y="8" width="1" height="1" />
+          <rect x="8" y="8" width="1" height="1" />
+          <rect x="9" y="8" width="1" height="1" />
+          <rect x="10" y="8" width="1" height="1" />
+          <rect x="1" y="9" width="1" height="1" />
+          <rect x="3" y="9" width="1" height="1" />
+          <rect x="4" y="9" width="1" height="1" />
+          <rect x="5" y="9" width="1" height="1" />
+          <rect x="6" y="9" width="1" height="1" />
+          <rect x="8" y="9" width="1" height="1" />
+          <rect x="9" y="9" width="1" height="1" />
+          <rect x="10" y="9" width="1" height="1" />
+          <rect x="1" y="10" width="1" height="1" />
+          <rect x="3" y="10" width="1" height="1" />
+          <rect x="4" y="10" width="1" height="1" />
+          <rect x="5" y="10" width="1" height="1" />
+          <rect x="6" y="10" width="1" height="1" />
+          <rect x="8" y="10" width="1" height="1" />
+          <rect x="9" y="10" width="1" height="1" />
+          <rect x="10" y="10" width="1" height="1" />
+          <rect x="1" y="11" width="1" height="1" />
+          <rect x="2" y="11" width="1" height="1" />
+          <rect x="3" y="11" width="1" height="1" />
+          <rect x="6" y="11" width="1" height="1" />
+          <rect x="7" y="11" width="1" height="1" />
+          <rect x="8" y="11" width="1" height="1" />
+          <rect x="9" y="11" width="1" height="1" />
+          <rect x="11" y="11" width="1" height="1" />
+          <rect x="12" y="11" width="1" height="1" />
+          <rect x="13" y="11" width="1" height="1" />
+          <rect x="14" y="11" width="1" height="1" />
+          <rect x="3" y="12" width="1" height="1" />
+          <rect x="4" y="12" width="1" height="1" />
+          <rect x="5" y="12" width="1" height="1" />
+          <rect x="6" y="12" width="1" height="1" />
+          <rect x="7" y="12" width="1" height="1" />
+          <rect x="10" y="12" width="1" height="1" />
+          <rect x="11" y="12" width="1" height="1" />
+          <rect x="12" y="12" width="1" height="1" />
+          <rect x="13" y="12" width="1" height="1" />
+          <rect x="14" y="12" width="1" height="1" />
+          <rect x="15" y="12" width="1" height="1" />
+          <rect x="3" y="13" width="1" height="1" />
+          <rect x="4" y="13" width="1" height="1" />
+          <rect x="5" y="13" width="1" height="1" />
+          <rect x="6" y="13" width="1" height="1" />
+          <rect x="7" y="13" width="1" height="1" />
+          <rect x="8" y="13" width="1" height="1" />
+          <rect x="9" y="13" width="1" height="1" />
+          <rect x="10" y="13" width="1" height="1" />
+          <rect x="11" y="13" width="1" height="1" />
+          <rect x="13" y="13" width="1" height="1" />
+          <rect x="14" y="13" width="1" height="1" />
+          <rect x="15" y="13" width="1" height="1" />
+          <rect x="16" y="13" width="1" height="1" />
+          <rect x="3" y="14" width="1" height="1" />
+          <rect x="4" y="14" width="1" height="1" />
+          <rect x="5" y="14" width="1" height="1" />
+          <rect x="6" y="14" width="1" height="1" />
+          <rect x="7" y="14" width="1" height="1" />
+          <rect x="8" y="14" width="1" height="1" />
+          <rect x="9" y="14" width="1" height="1" />
+          <rect x="10" y="14" width="1" height="1" />
+          <rect x="12" y="14" width="1" height="1" />
+          <rect x="13" y="14" width="1" height="1" />
+          <rect x="14" y="14" width="1" height="1" />
+          <rect x="15" y="14" width="1" height="1" />
+          <rect x="16" y="14" width="1" height="1" />
+          <rect x="3" y="15" width="1" height="1" />
+          <rect x="4" y="15" width="1" height="1" />
+          <rect x="5" y="15" width="1" height="1" />
+          <rect x="7" y="15" width="1" height="1" />
+          <rect x="8" y="15" width="1" height="1" />
+          <rect x="9" y="15" width="1" height="1" />
+          <rect x="11" y="15" width="1" height="1" />
+          <rect x="12" y="15" width="1" height="1" />
+          <rect x="13" y="15" width="1" height="1" />
+          <rect x="14" y="15" width="1" height="1" />
+          <rect x="15" y="15" width="1" height="1" />
+          <rect x="16" y="15" width="1" height="1" />
+          <rect x="18" y="15" width="1" height="1" />
+          <rect x="3" y="16" width="1" height="1" />
+          <rect x="4" y="16" width="1" height="1" />
+          <rect x="5" y="16" width="1" height="1" />
+          <rect x="7" y="16" width="1" height="1" />
+          <rect x="8" y="16" width="1" height="1" />
+          <rect x="10" y="16" width="1" height="1" />
+          <rect x="11" y="16" width="1" height="1" />
+          <rect x="12" y="16" width="1" height="1" />
+          <rect x="13" y="16" width="1" height="1" />
+          <rect x="14" y="16" width="1" height="1" />
+          <rect x="15" y="16" width="1" height="1" />
+          <rect x="16" y="16" width="1" height="1" />
+          <rect x="18" y="16" width="1" height="1" />
+          <rect x="3" y="17" width="1" height="1" />
+          <rect x="4" y="17" width="1" height="1" />
+          <rect x="5" y="17" width="1" height="1" />
+          <rect x="7" y="17" width="1" height="1" />
+          <rect x="8" y="17" width="1" height="1" />
+          <rect x="10" y="17" width="1" height="1" />
+          <rect x="11" y="17" width="1" height="1" />
+          <rect x="12" y="17" width="1" height="1" />
+          <rect x="13" y="17" width="1" height="1" />
+          <rect x="14" y="17" width="1" height="1" />
+          <rect x="15" y="17" width="1" height="1" />
+          <rect x="16" y="17" width="1" height="1" />
+          <rect x="3" y="18" width="1" height="1" />
+          <rect x="4" y="18" width="1" height="1" />
+          <rect x="7" y="18" width="1" height="1" />
+          <rect x="10" y="18" width="1" height="1" />
+          <rect x="11" y="18" width="1" height="1" />
+          <rect x="12" y="18" width="1" height="1" />
+          <rect x="13" y="18" width="1" height="1" />
+          <rect x="14" y="18" width="1" height="1" />
+          <rect x="15" y="18" width="1" height="1" />
+        </g>
+        <g fill="currentColor">
+          <rect x="1" y="0" width="1" height="1" />
+          <rect x="2" y="0" width="1" height="1" />
+          <rect x="3" y="0" width="1" height="1" />
+          <rect x="7" y="0" width="1" height="1" />
+          <rect x="8" y="0" width="1" height="1" />
+          <rect x="9" y="0" width="1" height="1" />
+          <rect x="0" y="1" width="1" height="1" />
+          <rect x="4" y="1" width="1" height="1" />
+          <rect x="6" y="1" width="1" height="1" />
+          <rect x="10" y="1" width="1" height="1" />
+          <rect x="0" y="2" width="1" height="1" />
+          <rect x="2" y="2" width="1" height="1" />
+          <rect x="4" y="2" width="1" height="1" />
+          <rect x="6" y="2" width="1" height="1" />
+          <rect x="8" y="2" width="1" height="1" />
+          <rect x="10" y="2" width="1" height="1" />
+          <rect x="0" y="3" width="1" height="1" />
+          <rect x="2" y="3" width="1" height="1" />
+          <rect x="4" y="3" width="1" height="1" />
+          <rect x="6" y="3" width="1" height="1" />
+          <rect x="8" y="3" width="1" height="1" />
+          <rect x="10" y="3" width="1" height="1" />
+          <rect x="1" y="4" width="1" height="1" />
+          <rect x="4" y="4" width="1" height="1" />
+          <rect x="6" y="4" width="1" height="1" />
+          <rect x="8" y="4" width="1" height="1" />
+          <rect x="10" y="4" width="1" height="1" />
+          <rect x="1" y="5" width="1" height="1" />
+          <rect x="4" y="5" width="1" height="1" />
+          <rect x="5" y="5" width="1" height="1" />
+          <rect x="6" y="5" width="1" height="1" />
+          <rect x="9" y="5" width="1" height="1" />
+          <rect x="2" y="6" width="1" height="1" />
+          <rect x="10" y="6" width="1" height="1" />
+          <rect x="1" y="7" width="1" height="1" />
+          <rect x="11" y="7" width="1" height="1" />
+          <rect x="0" y="8" width="1" height="1" />
+          <rect x="11" y="8" width="1" height="1" />
+          <rect x="0" y="9" width="1" height="1" />
+          <rect x="2" y="9" width="1" height="1" />
+          <rect x="7" y="9" width="1" height="1" />
+          <rect x="11" y="9" width="1" height="1" />
+          <rect x="0" y="10" width="1" height="1" />
+          <rect x="2" y="10" width="1" height="1" />
+          <rect x="7" y="10" width="1" height="1" />
+          <rect x="11" y="10" width="1" height="1" />
+          <rect x="12" y="10" width="1" height="1" />
+          <rect x="13" y="10" width="1" height="1" />
+          <rect x="14" y="10" width="1" height="1" />
+          <rect x="0" y="11" width="1" height="1" />
+          <rect x="4" y="11" width="1" height="1" />
+          <rect x="5" y="11" width="1" height="1" />
+          <rect x="10" y="11" width="1" height="1" />
+          <rect x="15" y="11" width="1" height="1" />
+          <rect x="1" y="12" width="1" height="1" />
+          <rect x="2" y="12" width="1" height="1" />
+          <rect x="8" y="12" width="1" height="1" />
+          <rect x="9" y="12" width="1" height="1" />
+          <rect x="16" y="12" width="1" height="1" />
+          <rect x="2" y="13" width="1" height="1" />
+          <rect x="12" y="13" width="1" height="1" />
+          <rect x="17" y="13" width="1" height="1" />
+          <rect x="2" y="14" width="1" height="1" />
+          <rect x="11" y="14" width="1" height="1" />
+          <rect x="17" y="14" width="1" height="1" />
+          <rect x="18" y="14" width="1" height="1" />
+          <rect x="19" y="14" width="1" height="1" />
+          <rect x="2" y="15" width="1" height="1" />
+          <rect x="6" y="15" width="1" height="1" />
+          <rect x="10" y="15" width="1" height="1" />
+          <rect x="17" y="15" width="1" height="1" />
+          <rect x="19" y="15" width="1" height="1" />
+          <rect x="2" y="16" width="1" height="1" />
+          <rect x="6" y="16" width="1" height="1" />
+          <rect x="9" y="16" width="1" height="1" />
+          <rect x="17" y="16" width="1" height="1" />
+          <rect x="19" y="16" width="1" height="1" />
+          <rect x="2" y="17" width="1" height="1" />
+          <rect x="6" y="17" width="1" height="1" />
+          <rect x="9" y="17" width="1" height="1" />
+          <rect x="17" y="17" width="1" height="1" />
+          <rect x="18" y="17" width="1" height="1" />
+          <rect x="1" y="18" width="1" height="1" />
+          <rect x="2" y="18" width="1" height="1" />
+          <rect x="5" y="18" width="1" height="1" />
+          <rect x="6" y="18" width="1" height="1" />
+          <rect x="8" y="18" width="1" height="1" />
+          <rect x="9" y="18" width="1" height="1" />
+          <rect x="16" y="18" width="1" height="1" />
+          <rect x="1" y="19" width="1" height="1" />
+          <rect x="2" y="19" width="1" height="1" />
+          <rect x="3" y="19" width="1" height="1" />
+          <rect x="4" y="19" width="1" height="1" />
+          <rect x="5" y="19" width="1" height="1" />
+          <rect x="6" y="19" width="1" height="1" />
+          <rect x="7" y="19" width="1" height="1" />
+          <rect x="8" y="19" width="1" height="1" />
+          <rect x="9" y="19" width="1" height="1" />
+          <rect x="10" y="19" width="1" height="1" />
+          <rect x="11" y="19" width="1" height="1" />
+          <rect x="12" y="19" width="1" height="1" />
+          <rect x="13" y="19" width="1" height="1" />
+          <rect x="14" y="19" width="1" height="1" />
+          <rect x="15" y="19" width="1" height="1" />
+          <rect x="16" y="19" width="1" height="1" />
+        </g>
+      </svg>
+    </div>
+  </header>
+
+  <section>
+    <span class="n">01</span>
+    <div class="body">
+      <h2>What fibo is</h2>
+      <p>
+        An achromatic design system on shadcn/ui and Base UI. Every part is
+        documented in Storybook and installs from a shadcn registry, so it lands
+        in your project as source and belongs to you.
+      </p>
+      <div class="grid3">
+        <div class="tile">
+          <span class="eyebrow">Who it's for</span>
+          <h3>Designers who ship code</h3>
+          <p>
+            People building side projects, prototypes and odd little interfaces
+            who want parts they can bend.
+          </p>
+        </div>
+        <div class="tile">
+          <span class="eyebrow">The promise</span>
+          <h3>Copy it in. It's yours.</h3>
+          <p>
+            No package to upgrade and no theme to fight. One command, then the
+            file is yours to change.
+          </p>
+        </div>
+        <div class="tile">
+          <span class="eyebrow">What's different</span>
+          <h3>Two shelves</h3>
+          <p>
+            A plain base set, and a shelf of special components built for one
+            moment: a chapter scrubber, reactions, a pixel snail loader.
+          </p>
+        </div>
+      </div>
+      <p class="soft">
+        One line for bios:
+        <span class="mono" style="color: var(--ink)"
+          >An achromatic design system for experimental projects. shadcn
+          registry, Base UI, Storybook.</span
+        >
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <span class="n">01</span>
+    <div class="body">
+      <h2>Tensions</h2>
+      <p>
+        fibo sits between opposites and never settles on one side. Six pairs set
+        the character of everything it makes. Each image holds both sides of a
+        pair, split on the golden section and joined through a ragged band of
+        pixel cells, so the two trade places cell by cell instead of meeting at
+        a line.
+      </p>
+      <table class="pairs">
+        <tbody>
+          <tr>
+            <td>hard <span class="arrow">↔</span> soft</td>
+            <td>
+              Crisp pixel edges against soft focus. The rabbit is drawn to the
+              pixel; the photos are grainy, pale and blurred.
+            </td>
+          </tr>
+          <tr>
+            <td>mathematical <span class="arrow">↔</span> organic</td>
+            <td>
+              Every layout is cut on 0.618, sizes follow the sequence, and the
+              subjects are grown things. Here, 610 seeds placed by the golden
+              angle, laid in white over the real seed head they describe.
+            </td>
+          </tr>
+          <tr>
+            <td>analog <span class="arrow">↔</span> digital</td>
+            <td>
+              Film grain and 1-bit dither in the same picture. Photos keep their
+              grain; the texture is pure on or off.
+            </td>
+          </tr>
+          <tr>
+            <td>ancient <span class="arrow">↔</span> futuristic</td>
+            <td>
+              A puzzle from 1202 and a design system installed from a registry.
+              The rabbit is from Liber Abaci; the parts install with one
+              command.
+            </td>
+          </tr>
+          <tr>
+            <td>precise <span class="arrow">↔</span> whimsical</td>
+            <td>
+              The ratio to ten places, and a rabbit mid-hop. The brand speaks
+              exactly; the rabbit gets the jokes.
+            </td>
+          </tr>
+          <tr>
+            <td>black/white <span class="arrow">↔</span> luminous colour</td>
+            <td>
+              The system is ink and paper, with no brand hue. Colour arrives
+              only as light in a photograph, and when it does it glows.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tcards">
+        <figure>
+          <img
+            src="img/t-hard-soft.png"
+            alt="A card split on the golden section: hard on the larger side, soft on the smaller, meeting through a ragged band of pixel cells."
+            width="1080"
+            height="1350"
+            loading="lazy"
+          />
+          <figcaption>hard <span class="arrow">↔</span> soft</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="img/t-math-organic.png"
+            alt="A card split on the golden section: mathematical on the larger side, organic on the smaller, meeting through a ragged band of pixel cells."
+            width="1080"
+            height="1350"
+            loading="lazy"
+          />
+          <figcaption>
+            mathematical <span class="arrow">↔</span> organic
+          </figcaption>
+        </figure>
+        <figure>
+          <img
+            src="img/t-analog-digital.png"
+            alt="A card split on the golden section: analog on the larger side, digital on the smaller, meeting through a ragged band of pixel cells."
+            width="1080"
+            height="1350"
+            loading="lazy"
+          />
+          <figcaption>analog <span class="arrow">↔</span> digital</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="img/t-ancient-futuristic.png"
+            alt="A card split on the golden section: ancient on the larger side, futuristic on the smaller, meeting through a ragged band of pixel cells."
+            width="1080"
+            height="1350"
+            loading="lazy"
+          />
+          <figcaption>
+            ancient <span class="arrow">↔</span> futuristic
+          </figcaption>
+        </figure>
+        <figure>
+          <img
+            src="img/t-precise-whimsical.png"
+            alt="A card split on the golden section: precise on the larger side, whimsical on the smaller, meeting through a ragged band of pixel cells."
+            width="1080"
+            height="1350"
+            loading="lazy"
+          />
+          <figcaption>
+            precise <span class="arrow">↔</span> whimsical
+          </figcaption>
+        </figure>
+        <figure>
+          <img
+            src="img/t-bw-luminous.png"
+            alt="A card split on the golden section: black/white on the larger side, luminous colour on the smaller, meeting through a ragged band of pixel cells."
+            width="1080"
+            height="1350"
+            loading="lazy"
+          />
+          <figcaption>
+            black/white <span class="arrow">↔</span> luminous colour
+          </figcaption>
+        </figure>
+      </div>
+      <p class="soft">
+        Sections here are numbered along the sequence, which starts 1, 1: that
+        is why there are two 01s.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <span class="n">02</span>
+    <div class="body">
+      <h2>How fibo talks</h2>
+      <p>
+        There are two voices. The brand speaks plainly in sentence case: short
+        sentences, concrete nouns, no hype. fibo the rabbit speaks in lowercase
+        deadpan one-liners, usually about being poked or about multiplying. Keep
+        them apart: the brand explains, the rabbit heckles.
+      </p>
+      <div class="dodont">
+        <div>
+          <span class="tag">Brand says</span>Installing a part copies its source
+          into your project.
+        </div>
+        <div>
+          <span class="tag">Not</span>Supercharge your workflow with
+          blazing-fast, next-gen components!
+        </div>
+        <div>
+          <span class="tag">Brand says</span>There is no brand hue. Colour only
+          carries meaning.
+        </div>
+        <div>
+          <span class="tag">Not</span>A bold, vibrant palette that pops.
+        </div>
+        <div>
+          <span class="tag">fibo says</span
+          ><span class="quote"
+            >there were two of us in 1202. it got out of hand.</span
+          >
+        </div>
+        <div>
+          <span class="tag">fibo says</span
+          ><span class="quote"
+            >this isn't a button. well, i guess it is now.</span
+          >
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="tile">
+          <h3>Rules</h3>
+          <p>
+            Sentence case everywhere. No emojis, in posts or replies. One
+            hashtag at most, and only where the platform needs it. Link to the
+            docs, not a landing page.
+          </p>
+        </div>
+        <div class="tile">
+          <h3>Numbering</h3>
+          <p>
+            Posts are numbered along the sequence: No. 1, 2, 3, 5, 8, 13, 21 and
+            on. It's the same trick the principles on the welcome page use, and
+            the numbers get big fast, which is part of the joke. This page's
+            sections are numbered the same way.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="n">03</span>
+    <div class="body">
+      <h2>How fibo looks</h2>
+      <div class="grid2">
+        <div class="specimen tile">
+          <span class="eyebrow">Display and body · Geist</span>
+          <span class="big">Copy it in. It's yours.</span>
+          <p>
+            Bold at display sizes with tight tracking (−4.5%). Regular for body,
+            with the important words lifted to ink and the rest left grey.
+          </p>
+        </div>
+        <div class="specimen tile">
+          <span class="eyebrow">Utility · Geist Mono · Notes · Geist</span>
+          <span class="mono" style="font-size: 20px">@fibo/button</span>
+          <span class="hand" style="font-size: 15px"
+            >φ = 1.618 · golden ratio</span
+          >
+          <p>
+            Mono for commands, tokens, eyebrows and post numbers. Margin notes
+            are Geist Regular, small and grey, like a label on a drawing.
+          </p>
+        </div>
+      </div>
+      <div class="ramp" aria-label="Neutral ramp, 50 to 950">
+        <span style="background: #fafafa; color: #525252">50</span
+        ><span style="background: #f5f5f5; color: #525252">100</span
+        ><span style="background: #e5e5e5; color: #525252">200</span
+        ><span style="background: #d4d4d4; color: #525252">300</span
+        ><span style="background: #a3a3a3; color: #262626">400</span
+        ><span style="background: #737373; color: #fafafa">500</span
+        ><span style="background: #525252; color: #fafafa">600</span
+        ><span style="background: #404040; color: #fafafa">700</span
+        ><span style="background: #262626; color: #fafafa">800</span
+        ><span style="background: #171717; color: #fafafa">900</span
+        ><span style="background: #0a0a0a; color: #fafafa">950</span>
+      </div>
+      <div class="chips">
+        <span class="chip"><i style="background: #b91c1c"></i>destructive</span>
+        <span class="chip"><i style="background: #15803d"></i>success</span>
+        <span class="chip"><i style="background: #b45309"></i>warning</span>
+        <span class="chip"><i style="background: #1d4ed8"></i>info</span>
+        <span class="soft" style="font-size: 14px; align-self: center"
+          >Only in posts that are about status colour.</span
+        >
+      </div>
+      <div class="grid3">
+        <div class="tile">
+          <h3>The construction</h3>
+          <p>
+            The golden rectangle as hairlines: the cuts, the squares and the
+            dashed diagonals, with no curve drawn through them. Always behind
+            the copy, never over the headline at full strength.
+          </p>
+        </div>
+        <div class="tile">
+          <h3>The dotted grid</h3>
+          <p>
+            Every card sits on the same dot grid as the docs. It makes a post
+            read as fibo before anyone reads a word.
+          </p>
+        </div>
+        <div class="tile">
+          <h3>The rabbit</h3>
+          <p>
+            20 × 20 pixels, one colour, a one-pixel line with a white fill. On
+            dark grounds he turns solid light with his lines cut in. Scale by
+            whole multiples. Never smooth him, thicken his lines or give him a
+            colour.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="n">05</span>
+    <div class="body">
+      <h2>The golden system</h2>
+      <p>
+        The name comes from Fibonacci, so the content leans on the maths. Four
+        devices, each used on purpose rather than as decoration.
+      </p>
+      <div class="grid2">
+        <div class="tile">
+          <span class="eyebrow">Sizes on the sequence</span>
+          <h3>Every size is a Fibonacci number</h3>
+          <div class="ladder" aria-label="Type sizes 13 to 89">
+            <span style="font-size: 13px">13</span
+            ><span style="font-size: 21px">21</span
+            ><span style="font-size: 34px">34</span
+            ><span style="font-size: 55px">55</span
+            ><span style="font-size: 89px">89</span>
+          </div>
+          <p>
+            Type on cards runs 21, 34, 55, 89, 144, 233. Gaps run 8 to 89. Pixel
+            characters scale by 3, 5, 8, 13 or 21. Each step is about 1.618
+            times the last, so it's a golden-ratio scale in whole pixels.
+          </p>
+        </div>
+        <div class="tile">
+          <span class="eyebrow">The tiling</span>
+          <h3>Squares of 1, 1, 2, 3, 5, 8</h3>
+          <svg
+            class="tiling"
+            viewBox="-0.1 -0.1 13.2 8.2"
+            role="img"
+            aria-label="Fibonacci squares tiled into a golden rectangle"
+          >
+            <g fill="none" stroke="var(--line)" stroke-width="0.05">
+              <rect x="0" y="0" width="8" height="8" />
+              <rect x="8" y="0" width="5" height="5" />
+              <rect x="10" y="5" width="3" height="3" />
+              <rect x="8" y="6" width="2" height="2" />
+              <rect x="8" y="5" width="1" height="1" />
+              <rect x="9" y="5" width="1" height="1" />
+            </g>
+            <g
+              fill="var(--soft)"
+              font-family="Geist Mono, monospace"
+              font-size="0.55"
+            >
+              <text x="0.3" y="0.8">8</text>
+              <text x="8.3" y="0.8">5</text>
+              <text x="10.3" y="5.8">3</text>
+              <text x="8.2" y="6.7">2</text>
+            </g>
+          </svg>
+          <p>
+            A layout grid for cards with more than one thing in them. The
+            biggest idea gets the 8, the next the 5, and so on down.
+          </p>
+        </div>
+        <div class="tile">
+          <span class="eyebrow">The golden angle</span>
+          <h3>137.5°, as a texture</h3>
+          <canvas
+            id="seeds"
+            width="560"
+            height="300"
+            aria-label="Seeds laid out at the golden angle"
+            role="img"
+          ></canvas>
+          <p>
+            Square pixel seeds, each turned 137.5° from the last. It's the
+            alternative to the dot grid: use it behind one card in a set, never
+            behind text.
+          </p>
+        </div>
+        <div class="tile">
+          <span class="eyebrow">The golden split</span>
+          <h3>1 to 0.618</h3>
+          <div class="split" aria-hidden="true">
+            <span>1</span><span>0.618</span>
+          </div>
+          <p>
+            When a card has copy on one side and a picture on the other, split
+            it 1 to 0.618 like the hero on the docs, with a dimension line drawn
+            in the margin to show it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="n">08</span>
+    <div class="body">
+      <h2>Logo and mascot</h2>
+      <img
+        class="logo-img"
+        src="img/logo.png"
+        alt="The fibo logo: the pixel rabbit standing on the baseline of the wordmark set in Geist Medium, shown large, at small sizes, and reversed on black."
+        width="1600"
+        height="900"
+      />
+      <p>
+        The wordmark is Geist Medium at its own spacing. Its ascender, the top
+        of the f and b, is the rabbit's height divided by 1.618, so the name
+        holds its own beside the rabbit's dense pixels. The rabbit stands on the
+        wordmark's baseline.
+      </p>
+      <p>
+        fibo is a rabbit: the name comes from Fibonacci, and the sequence came
+        from rabbits. One colour, crisp pixels, whole-number scaling. The brand
+        stays plain; the rabbit gets the jokes.
+      </p>
+      <div class="cast one">
+        <div class="tile member">
+          <div class="sprite">
+            <svg
+              viewBox="0 0 20 20"
+              shape-rendering="crispEdges"
+              aria-hidden="true"
+            >
+              <g fill="var(--paper)">
+                <rect x="1" y="1" width="1" height="1" />
+                <rect x="2" y="1" width="1" height="1" />
+                <rect x="3" y="1" width="1" height="1" />
+                <rect x="7" y="1" width="1" height="1" />
+                <rect x="8" y="1" width="1" height="1" />
+                <rect x="9" y="1" width="1" height="1" />
+                <rect x="1" y="2" width="1" height="1" />
+                <rect x="3" y="2" width="1" height="1" />
+                <rect x="7" y="2" width="1" height="1" />
+                <rect x="9" y="2" width="1" height="1" />
+                <rect x="1" y="3" width="1" height="1" />
+                <rect x="3" y="3" width="1" height="1" />
+                <rect x="7" y="3" width="1" height="1" />
+                <rect x="9" y="3" width="1" height="1" />
+                <rect x="2" y="4" width="1" height="1" />
+                <rect x="3" y="4" width="1" height="1" />
+                <rect x="7" y="4" width="1" height="1" />
+                <rect x="9" y="4" width="1" height="1" />
+                <rect x="2" y="5" width="1" height="1" />
+                <rect x="3" y="5" width="1" height="1" />
+                <rect x="7" y="5" width="1" height="1" />
+                <rect x="8" y="5" width="1" height="1" />
+                <rect x="3" y="6" width="1" height="1" />
+                <rect x="4" y="6" width="1" height="1" />
+                <rect x="5" y="6" width="1" height="1" />
+                <rect x="6" y="6" width="1" height="1" />
+                <rect x="7" y="6" width="1" height="1" />
+                <rect x="8" y="6" width="1" height="1" />
+                <rect x="9" y="6" width="1" height="1" />
+                <rect x="2" y="7" width="1" height="1" />
+                <rect x="3" y="7" width="1" height="1" />
+                <rect x="4" y="7" width="1" height="1" />
+                <rect x="5" y="7" width="1" height="1" />
+                <rect x="6" y="7" width="1" height="1" />
+                <rect x="7" y="7" width="1" height="1" />
+                <rect x="8" y="7" width="1" height="1" />
+                <rect x="9" y="7" width="1" height="1" />
+                <rect x="10" y="7" width="1" height="1" />
+                <rect x="1" y="8" width="1" height="1" />
+                <rect x="2" y="8" width="1" height="1" />
+                <rect x="3" y="8" width="1" height="1" />
+                <rect x="4" y="8" width="1" height="1" />
+                <rect x="5" y="8" width="1" height="1" />
+                <rect x="6" y="8" width="1" height="1" />
+                <rect x="7" y="8" width="1" height="1" />
+                <rect x="8" y="8" width="1" height="1" />
+                <rect x="9" y="8" width="1" height="1" />
+                <rect x="10" y="8" width="1" height="1" />
+                <rect x="1" y="9" width="1" height="1" />
+                <rect x="3" y="9" width="1" height="1" />
+                <rect x="4" y="9" width="1" height="1" />
+                <rect x="5" y="9" width="1" height="1" />
+                <rect x="6" y="9" width="1" height="1" />
+                <rect x="8" y="9" width="1" height="1" />
+                <rect x="9" y="9" width="1" height="1" />
+                <rect x="10" y="9" width="1" height="1" />
+                <rect x="1" y="10" width="1" height="1" />
+                <rect x="3" y="10" width="1" height="1" />
+                <rect x="4" y="10" width="1" height="1" />
+                <rect x="5" y="10" width="1" height="1" />
+                <rect x="6" y="10" width="1" height="1" />
+                <rect x="8" y="10" width="1" height="1" />
+                <rect x="9" y="10" width="1" height="1" />
+                <rect x="10" y="10" width="1" height="1" />
+                <rect x="1" y="11" width="1" height="1" />
+                <rect x="2" y="11" width="1" height="1" />
+                <rect x="3" y="11" width="1" height="1" />
+                <rect x="6" y="11" width="1" height="1" />
+                <rect x="7" y="11" width="1" height="1" />
+                <rect x="8" y="11" width="1" height="1" />
+                <rect x="9" y="11" width="1" height="1" />
+                <rect x="11" y="11" width="1" height="1" />
+                <rect x="12" y="11" width="1" height="1" />
+                <rect x="13" y="11" width="1" height="1" />
+                <rect x="14" y="11" width="1" height="1" />
+                <rect x="3" y="12" width="1" height="1" />
+                <rect x="4" y="12" width="1" height="1" />
+                <rect x="5" y="12" width="1" height="1" />
+                <rect x="6" y="12" width="1" height="1" />
+                <rect x="7" y="12" width="1" height="1" />
+                <rect x="10" y="12" width="1" height="1" />
+                <rect x="11" y="12" width="1" height="1" />
+                <rect x="12" y="12" width="1" height="1" />
+                <rect x="13" y="12" width="1" height="1" />
+                <rect x="14" y="12" width="1" height="1" />
+                <rect x="15" y="12" width="1" height="1" />
+                <rect x="3" y="13" width="1" height="1" />
+                <rect x="4" y="13" width="1" height="1" />
+                <rect x="5" y="13" width="1" height="1" />
+                <rect x="6" y="13" width="1" height="1" />
+                <rect x="7" y="13" width="1" height="1" />
+                <rect x="8" y="13" width="1" height="1" />
+                <rect x="9" y="13" width="1" height="1" />
+                <rect x="10" y="13" width="1" height="1" />
+                <rect x="11" y="13" width="1" height="1" />
+                <rect x="13" y="13" width="1" height="1" />
+                <rect x="14" y="13" width="1" height="1" />
+                <rect x="15" y="13" width="1" height="1" />
+                <rect x="16" y="13" width="1" height="1" />
+                <rect x="3" y="14" width="1" height="1" />
+                <rect x="4" y="14" width="1" height="1" />
+                <rect x="5" y="14" width="1" height="1" />
+                <rect x="6" y="14" width="1" height="1" />
+                <rect x="7" y="14" width="1" height="1" />
+                <rect x="8" y="14" width="1" height="1" />
+                <rect x="9" y="14" width="1" height="1" />
+                <rect x="10" y="14" width="1" height="1" />
+                <rect x="12" y="14" width="1" height="1" />
+                <rect x="13" y="14" width="1" height="1" />
+                <rect x="14" y="14" width="1" height="1" />
+                <rect x="15" y="14" width="1" height="1" />
+                <rect x="16" y="14" width="1" height="1" />
+                <rect x="3" y="15" width="1" height="1" />
+                <rect x="4" y="15" width="1" height="1" />
+                <rect x="5" y="15" width="1" height="1" />
+                <rect x="7" y="15" width="1" height="1" />
+                <rect x="8" y="15" width="1" height="1" />
+                <rect x="9" y="15" width="1" height="1" />
+                <rect x="11" y="15" width="1" height="1" />
+                <rect x="12" y="15" width="1" height="1" />
+                <rect x="13" y="15" width="1" height="1" />
+                <rect x="14" y="15" width="1" height="1" />
+                <rect x="15" y="15" width="1" height="1" />
+                <rect x="16" y="15" width="1" height="1" />
+                <rect x="18" y="15" width="1" height="1" />
+                <rect x="3" y="16" width="1" height="1" />
+                <rect x="4" y="16" width="1" height="1" />
+                <rect x="5" y="16" width="1" height="1" />
+                <rect x="7" y="16" width="1" height="1" />
+                <rect x="8" y="16" width="1" height="1" />
+                <rect x="10" y="16" width="1" height="1" />
+                <rect x="11" y="16" width="1" height="1" />
+                <rect x="12" y="16" width="1" height="1" />
+                <rect x="13" y="16" width="1" height="1" />
+                <rect x="14" y="16" width="1" height="1" />
+                <rect x="15" y="16" width="1" height="1" />
+                <rect x="16" y="16" width="1" height="1" />
+                <rect x="18" y="16" width="1" height="1" />
+                <rect x="3" y="17" width="1" height="1" />
+                <rect x="4" y="17" width="1" height="1" />
+                <rect x="5" y="17" width="1" height="1" />
+                <rect x="7" y="17" width="1" height="1" />
+                <rect x="8" y="17" width="1" height="1" />
+                <rect x="10" y="17" width="1" height="1" />
+                <rect x="11" y="17" width="1" height="1" />
+                <rect x="12" y="17" width="1" height="1" />
+                <rect x="13" y="17" width="1" height="1" />
+                <rect x="14" y="17" width="1" height="1" />
+                <rect x="15" y="17" width="1" height="1" />
+                <rect x="16" y="17" width="1" height="1" />
+                <rect x="3" y="18" width="1" height="1" />
+                <rect x="4" y="18" width="1" height="1" />
+                <rect x="7" y="18" width="1" height="1" />
+                <rect x="10" y="18" width="1" height="1" />
+                <rect x="11" y="18" width="1" height="1" />
+                <rect x="12" y="18" width="1" height="1" />
+                <rect x="13" y="18" width="1" height="1" />
+                <rect x="14" y="18" width="1" height="1" />
+                <rect x="15" y="18" width="1" height="1" />
+              </g>
+              <g fill="currentColor">
+                <rect x="1" y="0" width="1" height="1" />
+                <rect x="2" y="0" width="1" height="1" />
+                <rect x="3" y="0" width="1" height="1" />
+                <rect x="7" y="0" width="1" height="1" />
+                <rect x="8" y="0" width="1" height="1" />
+                <rect x="9" y="0" width="1" height="1" />
+                <rect x="0" y="1" width="1" height="1" />
+                <rect x="4" y="1" width="1" height="1" />
+                <rect x="6" y="1" width="1" height="1" />
+                <rect x="10" y="1" width="1" height="1" />
+                <rect x="0" y="2" width="1" height="1" />
+                <rect x="2" y="2" width="1" height="1" />
+                <rect x="4" y="2" width="1" height="1" />
+                <rect x="6" y="2" width="1" height="1" />
+                <rect x="8" y="2" width="1" height="1" />
+                <rect x="10" y="2" width="1" height="1" />
+                <rect x="0" y="3" width="1" height="1" />
+                <rect x="2" y="3" width="1" height="1" />
+                <rect x="4" y="3" width="1" height="1" />
+                <rect x="6" y="3" width="1" height="1" />
+                <rect x="8" y="3" width="1" height="1" />
+                <rect x="10" y="3" width="1" height="1" />
+                <rect x="1" y="4" width="1" height="1" />
+                <rect x="4" y="4" width="1" height="1" />
+                <rect x="6" y="4" width="1" height="1" />
+                <rect x="8" y="4" width="1" height="1" />
+                <rect x="10" y="4" width="1" height="1" />
+                <rect x="1" y="5" width="1" height="1" />
+                <rect x="4" y="5" width="1" height="1" />
+                <rect x="5" y="5" width="1" height="1" />
+                <rect x="6" y="5" width="1" height="1" />
+                <rect x="9" y="5" width="1" height="1" />
+                <rect x="2" y="6" width="1" height="1" />
+                <rect x="10" y="6" width="1" height="1" />
+                <rect x="1" y="7" width="1" height="1" />
+                <rect x="11" y="7" width="1" height="1" />
+                <rect x="0" y="8" width="1" height="1" />
+                <rect x="11" y="8" width="1" height="1" />
+                <rect x="0" y="9" width="1" height="1" />
+                <rect x="2" y="9" width="1" height="1" />
+                <rect x="7" y="9" width="1" height="1" />
+                <rect x="11" y="9" width="1" height="1" />
+                <rect x="0" y="10" width="1" height="1" />
+                <rect x="2" y="10" width="1" height="1" />
+                <rect x="7" y="10" width="1" height="1" />
+                <rect x="11" y="10" width="1" height="1" />
+                <rect x="12" y="10" width="1" height="1" />
+                <rect x="13" y="10" width="1" height="1" />
+                <rect x="14" y="10" width="1" height="1" />
+                <rect x="0" y="11" width="1" height="1" />
+                <rect x="4" y="11" width="1" height="1" />
+                <rect x="5" y="11" width="1" height="1" />
+                <rect x="10" y="11" width="1" height="1" />
+                <rect x="15" y="11" width="1" height="1" />
+                <rect x="1" y="12" width="1" height="1" />
+                <rect x="2" y="12" width="1" height="1" />
+                <rect x="8" y="12" width="1" height="1" />
+                <rect x="9" y="12" width="1" height="1" />
+                <rect x="16" y="12" width="1" height="1" />
+                <rect x="2" y="13" width="1" height="1" />
+                <rect x="12" y="13" width="1" height="1" />
+                <rect x="17" y="13" width="1" height="1" />
+                <rect x="2" y="14" width="1" height="1" />
+                <rect x="11" y="14" width="1" height="1" />
+                <rect x="17" y="14" width="1" height="1" />
+                <rect x="18" y="14" width="1" height="1" />
+                <rect x="19" y="14" width="1" height="1" />
+                <rect x="2" y="15" width="1" height="1" />
+                <rect x="6" y="15" width="1" height="1" />
+                <rect x="10" y="15" width="1" height="1" />
+                <rect x="17" y="15" width="1" height="1" />
+                <rect x="19" y="15" width="1" height="1" />
+                <rect x="2" y="16" width="1" height="1" />
+                <rect x="6" y="16" width="1" height="1" />
+                <rect x="9" y="16" width="1" height="1" />
+                <rect x="17" y="16" width="1" height="1" />
+                <rect x="19" y="16" width="1" height="1" />
+                <rect x="2" y="17" width="1" height="1" />
+                <rect x="6" y="17" width="1" height="1" />
+                <rect x="9" y="17" width="1" height="1" />
+                <rect x="17" y="17" width="1" height="1" />
+                <rect x="18" y="17" width="1" height="1" />
+                <rect x="1" y="18" width="1" height="1" />
+                <rect x="2" y="18" width="1" height="1" />
+                <rect x="5" y="18" width="1" height="1" />
+                <rect x="6" y="18" width="1" height="1" />
+                <rect x="8" y="18" width="1" height="1" />
+                <rect x="9" y="18" width="1" height="1" />
+                <rect x="16" y="18" width="1" height="1" />
+                <rect x="1" y="19" width="1" height="1" />
+                <rect x="2" y="19" width="1" height="1" />
+                <rect x="3" y="19" width="1" height="1" />
+                <rect x="4" y="19" width="1" height="1" />
+                <rect x="5" y="19" width="1" height="1" />
+                <rect x="6" y="19" width="1" height="1" />
+                <rect x="7" y="19" width="1" height="1" />
+                <rect x="8" y="19" width="1" height="1" />
+                <rect x="9" y="19" width="1" height="1" />
+                <rect x="10" y="19" width="1" height="1" />
+                <rect x="11" y="19" width="1" height="1" />
+                <rect x="12" y="19" width="1" height="1" />
+                <rect x="13" y="19" width="1" height="1" />
+                <rect x="14" y="19" width="1" height="1" />
+                <rect x="15" y="19" width="1" height="1" />
+                <rect x="16" y="19" width="1" height="1" />
+              </g>
+            </svg>
+          </div>
+          <h3>fibo</h3>
+          <span class="eyebrow">Rabbit · 20 × 20</span>
+          <p>
+            fibo is a rabbit, from the pair in Fibonacci's 1202 puzzle that
+            started the sequence. Tall ears with inner lines, a round face, a
+            haunch and a tail loop, in a one-pixel line.
+          </p>
+          <span class="quote"
+            >there were two of us in 1202. it got out of hand.</span
+          >
+        </div>
+      </div>
+      <p class="soft">
+        Nature that follows the golden ratio, like spirals in stone, shells and
+        seed heads, appears in photographs, not as characters. The pixel snail
+        stays in the design system as a loading animation, but the brand is the
+        rabbit’s.
+      </p>
+    </div>
+  </section>
+  <section>
+    <span class="n">13</span>
+    <div class="body">
+      <h2>Image treatment</h2>
+      <p>
+        Pixel texture and dither laid over dreamy photographs of nature, cut
+        along the golden ratio. The pictures are soft and pale, like the painted
+        rabbit. The texture is sampled from each picture's own light, kept light
+        over the image, and thins out until it becomes the paper of the frame,
+        so there is no edge between picture and page.
+      </p>
+      <div class="glyphs" aria-label="The two textures">
+        <span><i class="g1"></i>pixel texture: glyph cells, 13px</span
+        ><span><i class="g4"></i>dither: 1-bit dots, 4px</span>
+      </div>
+      <div class="posters one">
+        <figure>
+          <img
+            src="img/p4-window.png"
+            alt="A soft painted rabbit rendered as 1-bit dither, with one golden rectangle left in colour over its eye, and the fibo logo in the foot."
+            width="1080"
+            height="1350"
+            loading="lazy"
+          />
+          <figcaption>Golden window · 1080 × 1350</figcaption>
+        </figure>
+      </div>
+      <div class="grid3">
+        <div class="tile">
+          <h3>Colour comes from the photo</h3>
+          <p>
+            There is still no brand hue. Texture is ink on paper; the only
+            colour is the picture, graded soft and pale.
+          </p>
+        </div>
+        <div class="tile">
+          <h3>Cut on the ratio</h3>
+          <p>
+            Where the texture starts and stops is always a golden cut: a 0.618
+            line, a golden rectangle, the Fibonacci squares, or bands in
+            proportion.
+          </p>
+        </div>
+        <div class="tile">
+          <h3>The signature</h3>
+          <p>
+            Every poster carries fibo and the address in the foot. Some add one
+            character, small, in the middle of the foot.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="n">21</span>
+    <div class="body">
+      <h2>Profile assets</h2>
+      <p>
+        The rabbit alone is the avatar. The banner carries the wordmark, the
+        line, the golden-rectangle hairlines and the rabbit.
+      </p>
+      <div class="assets">
+        <figure>
+          <img
+            src="img/avatar.png"
+            alt="fibo, the pixel rabbit, on a dotted grid"
+            width="800"
+            height="800"
+          />
+          <figcaption>avatar.png · 800 × 800</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="img/banner.png"
+            alt="Banner: the fibo wordmark and tagline over golden-rectangle hairlines, with fibo the rabbit"
+            width="1500"
+            height="500"
+          />
+          <figcaption>banner.png · 1500 × 500 · X, LinkedIn</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="n">34</span>
+    <div class="body">
+      <h2>The first ten posts</h2>
+      <p>
+        Each card has copy for the short platforms (X, Bluesky, Threads) and the
+        long ones (LinkedIn, Instagram). Portrait cards are 1080 × 1350; the
+        install card is 1600 × 900 for link-style feeds.
+      </p>
+      <div class="posts" id="posts"></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="n">55</span>
+    <div class="body">
+      <h2>Four weeks of posting</h2>
+      <p>
+        Two posts a week, Tuesday and Thursday mornings. The first fortnight
+        introduces fibo and the system; the second brings in the tensions and
+        the maths behind the name.
+      </p>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Post</th>
+              <th>Why then</th>
+            </tr>
+          </thead>
+          <tbody id="schedule"></tbody>
+        </table>
+      </div>
+      <div class="tile">
+        <h3>After the first six</h3>
+        <p>
+          One post per component, using its catalog description as the headline
+          and a screen recording of its Default story. One post per fibo line
+          (there are six). One post per release, drawn from the changelog. That
+          is roughly a month of material already sitting in the repo.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  ;(function () {
+    const c = document.getElementById("seeds")
+    if (!c) return
+    const ctx = c.getContext("2d")
+    const ink =
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--ink")
+        .trim() || "#0a0a0a"
+    const GA = Math.PI * (3 - Math.sqrt(5)),
+      dot = 5
+    ctx.fillStyle = ink
+    for (let i = 1; i <= 377; i++) {
+      const r = 7.2 * Math.sqrt(i),
+        a = i * GA
+      const x = Math.round((280 + r * Math.cos(a)) / dot) * dot,
+        y = Math.round((150 + r * Math.sin(a)) / dot) * dot
+      ctx.fillRect(x, y, dot, dot)
+    }
+  })()
+
+  const URL_DOCS = "https://fibo.toribryan.com"
+  const POSTS = [
+    {
+      n: 1,
+      img: "01-launch.png",
+      w: 1080,
+      h: 1350,
+      title: "Launch",
+      alt: "The fibo wordmark with its pronunciation, FEE-boh, over golden-rectangle hairlines, with the pixel rabbit at the bottom.",
+      short: `fibo is out. It's an achromatic design system for experimental projects, built on shadcn/ui and Base UI.
+
+Every part installs from a shadcn registry, so it copies into your project as source and is yours to change.
+
+${URL_DOCS}`,
+      long: `fibo (FEE-boh) is out.
+
+It's a design system for experimental projects: side projects, prototypes, the odd interfaces that don't fit a product library. It's built on shadcn/ui and Base UI, documented in Storybook, and published as a shadcn registry.
+
+That last part matters most. You don't install a package and fight its theme. You run one command and the component's source lands in your project, using your tokens, ready to change.
+
+There are two shelves. Base components are the plain set: buttons, inputs, checkboxes, selects. Special components are built for one moment: a chapter scrubber, a reactions bar, a pixel snail that crawls while things load.
+
+It's MIT licensed. Docs, install and the Figma library: ${URL_DOCS}`,
+    },
+    {
+      n: 2,
+      img: "02-meet-fibo.png",
+      w: 1080,
+      h: 1350,
+      title: "Meet fibo",
+      alt: "The pixel rabbit, solid white on black, with a speech bubble reading: there were two of us in 1202. it got out of hand.",
+      short: `This is fibo. The name comes from Fibonacci, and the Fibonacci sequence started as a puzzle about rabbits. So fibo is a rabbit.
+
+${URL_DOCS}`,
+      long: `This is fibo.
+
+The design system is named after Fibonacci. In 1202 he asked how fast a pair of rabbits would multiply, and the answer was the sequence: 1, 1, 2, 3, 5, 8. So the mascot is a rabbit.
+
+He's drawn in one colour, 20 by 20 pixels, with a one-pixel line: tall ears, a round face, a tail. On dark backgrounds he turns solid white with his lines cut in.
+
+${URL_DOCS}`,
+    },
+    {
+      n: 3,
+      img: "03-no-brand-hue.png",
+      w: 1080,
+      h: 1350,
+      title: "There is no brand hue",
+      alt: "A neutral ramp from 50 to 950 above four status chips: destructive, success, warning and info.",
+      short: `fibo has no brand colour. Primary is a neutral.
+
+Colour only shows up when it means something: destructive, success, warning, info. Everything else is the neutral ramp, so your project's colour is the only one on the page.`,
+      long: `fibo has no brand colour, on purpose.
+
+Primary is a neutral. The only hues in the system are the four status tones, and each one carries meaning: destructive, success, warning, info. They sit on the 700 step so text on them clears WCAG AA, on solid fills and on their own tints, in both themes.
+
+Why bother? Because these parts end up in other people's projects. An achromatic base means your colour is the only colour on the page, and you add it where you want it.
+
+Colour tokens and the ramp: ${URL_DOCS}`,
+    },
+    {
+      n: 5,
+      img: "04-one-name.png",
+      w: 1080,
+      h: 1350,
+      title: "One name on both sides",
+      alt: "A Figma variable named destructive-subtle beside the Tailwind class bg-destructive-subtle, with bg-destructive/10 struck through.",
+      short: `Figma can't bind opacity to a variable. So fibo never writes bg-destructive/10.
+
+The tints get names instead: -subtle, -hover, -ring. Figma and code use the same one, and handoff stops being a translation job.`,
+      long: `A small rule in fibo that saves a lot of back and forth: no opacity modifiers on token colours.
+
+In Tailwind it's tempting to write bg-destructive/10. But Figma can't bind opacity to a variable, so the design file ends up with a hard-coded tint that nobody can trace back to a token.
+
+So every tint in fibo has a name: -subtle for a tinted fill, -hover for the pointer step, -ring for focus. The Figma variable and the CSS token are spelled the same. When a designer says destructive-subtle, the developer searches for destructive-subtle and finds it.
+
+The full token list: ${URL_DOCS}`,
+    },
+    {
+      n: 8,
+      img: "05-install.png",
+      w: 1600,
+      h: 900,
+      title: "Copy it in",
+      wide: true,
+      alt: "A terminal running pnpm dlx shadcn@latest add @fibo/button, with the pixel rabbit beside it.",
+      short: `Add the registry to components.json once, then any fibo part is one command away:
+
+pnpm dlx shadcn@latest add @fibo/button
+
+Anything it depends on comes with it.`,
+      long: `How to get a fibo part into your project.
+
+Add the registry to your components.json once:
+
+"registries": { "@fibo": "https://fibo.toribryan.com/r/{name}.json" }
+
+Then add parts by name:
+
+pnpm dlx shadcn@latest add @fibo/button
+
+The source lands in your components folder, anything it depends on comes with it, and it reads your tokens. There's also an llms.txt listing every part and its install command, if you build with an agent.
+
+${URL_DOCS}`,
+    },
+    {
+      n: 13,
+      img: "06-bruise.png",
+      w: 1080,
+      h: 1350,
+      title: "Don't poke the rabbit",
+      alt: "The pixel rabbit under a speech bubble that reads: careful, i bruise in 8-bit.",
+      short: `fibo has a line for every poke, and none of them are polite.
+
+careful, i bruise in 8-bit.`,
+      long: `fibo, the rabbit, has a voice of his own, kept apart from the brand's.
+
+The brand explains, in plain sentences. The rabbit heckles, in lowercase: about being poked, about empty space being treated as a button, about how many of him there were by the end of 1202.
+
+careful, i bruise in 8-bit.
+
+${URL_DOCS}`,
+    },
+    {
+      n: 21,
+      img: "t-hard-soft.png",
+      w: 1080,
+      h: 1350,
+      title: "Hard and soft",
+      alt: "A card split on the golden section: the hard pixel rabbit on the left dissolving through pixel cells into a soft painted rabbit on the right.",
+      short: `fibo sits between opposites: hard and soft, mathematical and organic, analog and digital, ancient and futuristic, precise and whimsical, black and white and luminous colour.
+
+Every picture holds both, split on the golden section.`,
+      long: `Six pairs set the character of fibo.
+
+Hard and soft. Mathematical and organic. Analog and digital. Ancient and futuristic. Precise and whimsical. Black and white, and luminous colour.
+
+It never settles on one side. Every picture holds both halves of a pair, split at 0.618 and joined through a band of pixel cells, so they trade places cell by cell. This one is hard and soft: the pixel rabbit, and a painted one.
+
+${URL_DOCS}`,
+    },
+    {
+      n: 34,
+      img: "08-rabbits.png",
+      w: 1080,
+      h: 1350,
+      title: "It started with rabbits",
+      alt: "Rows of pixel rabbits by month: 1, 1, 2, 3, 5 and 8, with the newborn pairs in each row facing left.",
+      short: `The Fibonacci sequence started as a puzzle about rabbits.
+
+In 1202, Leonardo of Pisa asked how many pairs you'd have if every grown pair had a new pair each month. Count them month by month: 1, 1, 2, 3, 5, 8.`,
+      long: `The Fibonacci sequence started as a word problem about rabbits.
+
+In Liber Abaci, written in 1202, Leonardo of Pisa sets up a pair of rabbits. A new pair takes a month to grow up, and from then on every grown pair has a new pair each month. How many pairs after a year?
+
+Count month by month and each total is the sum of the two before it: 1, 1, 2, 3, 5, 8, 13. On this card one rabbit stands for a pair, and the newborns face the other way, so you can see where each new row comes from.
+
+It's where fibo got his name, and why fibo is a rabbit.
+
+${URL_DOCS}`,
+    },
+    {
+      n: 55,
+      img: "09-golden-angle.png",
+      w: 1080,
+      h: 1350,
+      title: "137.5°",
+      alt: "The number 137.5 degrees above a field of square pixel seeds spiralling out at the golden angle.",
+      short: `137.5° is the golden angle: a full turn split in the golden ratio.
+
+A sunflower turns each new seed by it, so no two seeds line up and the head fills without gaps. Count the spirals and you usually get neighbouring Fibonacci numbers.`,
+      long: `137.5° is the golden angle. Split a full turn in the golden ratio and the smaller part is about 137.5°.
+
+Sunflowers place each new seed that far round from the last. Because the golden ratio is as far from a simple fraction as a number can be, no seed ever lands in line with an earlier one, and the head packs evenly out to the edge.
+
+Count the spirals running each way and you usually get two neighbouring Fibonacci numbers, like 34 and 55.
+
+The field on this card is 233 square pixels placed the same way. It's also fibo's second background pattern, next to the dot grid.
+
+${URL_DOCS}`,
+    },
+    {
+      n: 89,
+      img: "10-scale.png",
+      w: 1080,
+      h: 1350,
+      title: "Every size is on the sequence",
+      alt: "The word fibo set at 13, 21, 34, 55, 89 and 144 pixels, above squares of 8 to 89 pixels.",
+      short: `Every size on these posts is a Fibonacci number. Type at 21, 34, 55, 89, 144. Gaps from 8 to 89.
+
+Each step is about 1.618 times the last, so it's a golden-ratio scale that lands on whole pixels.`,
+      long: `A small rule behind these posts: every size is a Fibonacci number.
+
+Type runs 21, 34, 55, 89, 144 and 233. Gaps run 8, 13, 21, 34, 55, 89. The pixel characters scale by 3, 5, 8 or 21.
+
+Each Fibonacci number is about 1.618 times the one before, so this is a golden-ratio type scale. The difference from multiplying by 1.618 yourself is that every step lands on a whole pixel.
+
+It also saves decisions. When something needs to be bigger, it goes up one step.
+
+${URL_DOCS}`,
+    },
+  ]
+
+  const SCHEDULE = [
+    [
+      "Tue 6 Oct",
+      1,
+      "Open with the release, while the changelog still says 0.1.0.",
+    ],
+    [
+      "Thu 8 Oct",
+      2,
+      "Put a face to the name early. The rabbit is the most shareable thing fibo has.",
+    ],
+    [
+      "Tue 13 Oct",
+      3,
+      "The first principle. Short, opinionated, easy to argue with, which helps reach.",
+    ],
+    [
+      "Thu 15 Oct",
+      8,
+      "The practical one. People who liked the first three now want to try it.",
+    ],
+    ["Tue 20 Oct", 5, "For designers who hand off to code. Good for LinkedIn."],
+    [
+      "Thu 22 Oct",
+      13,
+      "End the fortnight on a joke that sends people back to the docs.",
+    ],
+    [
+      "Tue 27 Oct",
+      21,
+      "Introduce the six tensions once the audience knows fibo.",
+    ],
+    ["Thu 29 Oct", 34, "The origin story. History posts get saved and shared."],
+    [
+      "Tue 3 Nov",
+      55,
+      "The most striking image of the set. Good for Instagram.",
+    ],
+    [
+      "Thu 5 Nov",
+      89,
+      "Close on how the posts are made, for the designers following along.",
+    ],
+  ]
+
+  const esc = (s) =>
+    s.replace(
+      /[&<>"]/g,
+      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]
+    )
+  const host = document.getElementById("posts")
+  POSTS.forEach((p, i) => {
+    const el = document.createElement("article")
+    el.className = "post" + (p.wide ? " wide" : "")
+    el.innerHTML = `
+    <figure><img src="img/${p.img}" alt="${esc(p.alt)}" width="${p.w}" height="${p.h}" loading="lazy"><figcaption>${p.img} · ${p.w} × ${p.h}</figcaption></figure>
+    <div class="copy">
+      <div class="meta"><span class="eyebrow">No. ${p.n}</span><h3>${esc(p.title)}</h3></div>
+      <div class="tabs" role="tablist" aria-label="Platform">
+        <button role="tab" id="t${i}s" aria-selected="true" data-k="short">X · Bluesky · Threads</button>
+        <button role="tab" id="t${i}l" aria-selected="false" data-k="long">LinkedIn · Instagram</button>
+        <button role="tab" id="t${i}a" aria-selected="false" data-k="alt">Alt text</button>
+      </div>
+      <div class="text" role="tabpanel"></div>
+      <div class="row"><span class="count"></span><button class="copybtn" type="button">Copy text</button></div>
+    </div>`
+    const text = el.querySelector(".text"),
+      count = el.querySelector(".count")
+    let key = "short"
+    const show = () => {
+      const t = p[key]
+      text.textContent = t
+      count.textContent =
+        key === "short"
+          ? `${[...t].length} / 280 characters`
+          : `${[...t].length} characters`
+    }
+    el.querySelectorAll(".tabs button").forEach((b) =>
+      b.addEventListener("click", () => {
+        key = b.dataset.k
+        el.querySelectorAll(".tabs button").forEach((o) =>
+          o.setAttribute("aria-selected", String(o === b))
+        )
+        show()
+      })
+    )
+    const btn = el.querySelector(".copybtn")
+    btn.addEventListener("click", () => {
+      const done = () => {
+        btn.textContent = "Copied"
+        setTimeout(() => (btn.textContent = "Copy text"), 1400)
+      }
+      navigator.clipboard.writeText(p[key]).then(done, () => {
+        const range = document.createRange()
+        range.selectNodeContents(text)
+        const sel = getSelection()
+        sel.removeAllRanges()
+        sel.addRange(range)
+        btn.textContent = "Selected, press copy"
+      })
+    })
+    show()
+    host.appendChild(el)
+  })
+
+  const byN = Object.fromEntries(POSTS.map((p) => [p.n, p]))
+  document.getElementById("schedule").innerHTML = SCHEDULE.map(
+    ([d, n, why]) =>
+      `<tr><td class="d">${d}</td><td><span class="mono soft">No. ${n}</span> ${esc(byN[n].title)}</td><td class="soft">${esc(why)}</td></tr>`
+  ).join("")
+</script>

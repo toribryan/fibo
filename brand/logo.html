@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="fonts/fonts.css" />
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+    <script src="rabbit.js"></script>
+    <script src="logo.js"></script>
+  </head>
+  <body>
+    <canvas id="logo" width="1600" height="900"></canvas>
+    <script>
+      ;(async () => {
+        await document.fonts.load("500 40px Geist")
+        const ctx = document.getElementById("logo").getContext("2d"),
+          INK = "#0a0a0a",
+          PAPER = "#f3f3f1"
+        ctx.fillStyle = PAPER
+        ctx.fillRect(0, 0, 1000, 900)
+        ctx.fillStyle = INK
+        ctx.fillRect(1000, 0, 600, 900)
+        geistLockup(ctx, 89, 377, 13, 500)
+        geistLockup(ctx, 89, 610, 5, 500)
+        geistLockup(ctx, 89, 760, 3, 500)
+        geistLockup(ctx, 450, 760, 2, 500)
+        geistMark(ctx, 1089, 377, (20 * 13) / 1.618, 500, PAPER)
+        geistLockup(ctx, 1089, 610, 5, 500, PAPER, INK)
+        document.title = "done"
+      })()
+    </script>
+  </body>
+</html>
