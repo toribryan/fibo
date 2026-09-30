@@ -520,7 +520,7 @@ function Reactions({
                 }
                 onKeyDown={rove}
                 className={cn(
-                  "flex origin-(--transform-origin) items-center gap-0.5 rounded-full bg-popover-overlay p-1 transition-[opacity,transform] duration-200 ease-out outline-none motion-reduce:transition-none",
+                  "flex origin-(--transform-origin) items-center gap-0.5 rounded-full bg-popover-overlay p-1 outline-hidden transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none",
                   SURFACE,
                   "data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0",
                   "data-[side=bottom]:data-ending-style:-translate-y-2 data-[side=bottom]:data-starting-style:-translate-y-2 data-[side=top]:data-ending-style:translate-y-2 data-[side=top]:data-starting-style:translate-y-2"
