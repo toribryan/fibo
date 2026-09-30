@@ -11,10 +11,6 @@ import {
 import { ArrowRightIcon, Volume2Icon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
-import {
-  PixelSnailSprite,
-  type PixelSnailLook,
-} from "@workspace/ui/components/pixel-snail"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -29,6 +25,11 @@ import {
 import { DocLink } from "./doc-link.js"
 import { createHeckle, FIBO_LINES, type FiboLine } from "./lines.js"
 import { LINKS } from "./links.js"
+import {
+  PixelRabbitSprite,
+  type RabbitAction,
+  type RabbitLook,
+} from "./pixel-rabbit.js"
 import { listenForUnlock, sfx } from "./sounds.js"
 
 /*
@@ -36,7 +37,7 @@ import { listenForUnlock, sfx } from "./sounds.js"
  * large square holds the copy, a few hairlines marking the cuts, and a
  * spiral from the pole out past the frame. `wide` is the landscape frame;
  * `tall` turns it upright for narrow containers. fibo adds the motion: the
- * spiral draws outward from the pole, and fibo, a pixel snail, builds up on
+ * spiral draws outward from the pole, and fibo, a pixel rabbit, builds up on
  * a line clear of it and dances there.
  */
 type Geometry = {
@@ -283,14 +284,14 @@ const FIBO_SCALE = 2
 const FIBO_ASSEMBLE_MS = 1200
 // Art pixels from his origin to his eyes, and how far the pointer must be
 // from them before he looks that way.
-const FIBO_EYES = { x: 6, y: -11 }
+const FIBO_EYES = { x: 5, y: -10 }
 const FIBO_GLANCE = 1.5
 // How far past his middle the pointer must go before he turns round. The
 // gap between the two sides keeps him from flipping back and forth.
 const FIBO_TURN = 4
 // How far round him, in art pixels from his origin, a click counts as being
 // on him: his outline plus a margin so a click beside him still lands.
-const FIBO_REACH = { left: 19, right: 21, top: 24, bottom: 8 }
+const FIBO_REACH = { left: 16, right: 16, top: 28, bottom: 8 }
 
 const FIBO_HELLO_MS = 1000
 const FIBO_TYPE_MS = 35
@@ -364,10 +365,11 @@ function glance(offset: number): -1 | 0 | 1 {
 }
 
 /*
- * fibo builds up from coarse blocks once the spiral has drawn, then dances.
- * With the pointer anywhere in the hero he stops and turns to it: eyes, head
- * and neck follow, and he turns round when it goes behind him. Clicking him
- * earns a remark; his click area is padded so a click beside him counts.
+ * fibo builds up from coarse blocks once the spiral has drawn, then idles:
+ * blinks, ear twitches and the odd hop. With the pointer anywhere in the
+ * hero he turns to it, eyes following and ears up, and turns round when it
+ * goes behind him. Clicking him earns a remark and a reaction; his click
+ * area is padded so a click beside him counts.
  */
 function Fibo({
   geometry,
@@ -378,15 +380,24 @@ function Fibo({
   area: RefObject<HTMLElement | null>
 }) {
   const svg = useRef<SVGSVGElement>(null)
-  const [look, setLook] = useState<PixelSnailLook | null>(null)
+  const [look, setLook] = useState<RabbitLook | null>(null)
+  const [action, setAction] = useState<{
+    kind: RabbitAction
+    id: number
+  } | null>(null)
   const { speaking, text, typed, speak } = useSpeech(usePrefersReducedMotion())
   const pixel = geometry.stroke * FIBO_SCALE
   const { x, y } = geometry.fibo
   const [, , width = 1, height = 1] = geometry.viewBox.split(" ").map(Number)
   const opensRight = x < width / 2
-  const reply = useRef(speak)
+  // Each reply is a line and something to do with it.
+  const act = (line: FiboLine, kind: RabbitAction) => {
+    speak(line)
+    setAction((last) => ({ kind, id: (last?.id ?? 0) + 1 }))
+  }
+  const reply = useRef(act)
   useEffect(() => {
-    reply.current = speak
+    reply.current = act
   })
 
   // A click anywhere in the hero gets a line, bar the buttons and links,
@@ -405,7 +416,13 @@ function Fibo({
         at.dx <= FIBO_REACH.right &&
         at.dy >= -FIBO_REACH.top &&
         at.dy <= FIBO_REACH.bottom
-      reply.current(heckle({ onHim, at: performance.now() }))
+      const line = heckle({ onHim, at: performance.now() })
+      // Rage clicks frighten him; a poke makes him flinch; a click beside
+      // him leaves him puzzled.
+      reply.current(
+        line,
+        line === "rage" ? "thump" : onHim ? "flinch" : "wonder"
+      )
     }
     node.addEventListener("click", respond)
     return () => node.removeEventListener("click", respond)
@@ -421,7 +438,7 @@ function Fibo({
     const arrive = () => {
       cancel()
       wait = window.setTimeout(() => {
-        if (isShown(svg.current)) reply.current("hello")
+        if (isShown(svg.current)) reply.current("hello", "hello")
       }, FIBO_HELLO_MS)
     }
     node.addEventListener("pointerenter", arrive)
@@ -473,17 +490,20 @@ function Fibo({
         viewBox={geometry.viewBox}
         aria-hidden="true"
       >
-        <PixelSnailSprite
+        <PixelRabbitSprite
           className="text-foreground"
           transform={`translate(${x} ${y})`}
           pixel={pixel}
-          mode="dance"
           look={look}
+          action={action}
           assembleDelay={FIBO_ASSEMBLE_MS}
           onAssemble={(step) => {
             if (!isShown(svg.current)) return
             if (step === "whole") sfx.settle()
             else sfx.pixels(step)
+          }}
+          onSound={(sound) => {
+            if (isShown(svg.current)) sfx[sound]()
           }}
         />
         <rect
@@ -508,7 +528,7 @@ function Fibo({
             ...(opensRight
               ? { left: `${((x - 12 * pixel) / width) * 100}%` }
               : { right: `${(1 - (x + 12 * pixel) / width) * 100}%` }),
-            bottom: `${(1 - (y - 18 * pixel) / height) * 100}%`,
+            bottom: `${(1 - (y - 25 * pixel) / height) * 100}%`,
           }}
         >
           {text.slice(0, typed)}

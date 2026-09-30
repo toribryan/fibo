@@ -56,7 +56,8 @@ function useGreeting(reduced: boolean) {
 }
 
 /**
- * The cover for the Pixel snail page: fibo dancing, saying hello on a loop.
+ * The cover for the Pixel snail page: the snail dancing, saying hello on a
+ * loop.
  */
 function SnailCover() {
   const reduced = useSyncExternalStore(
@@ -69,7 +70,7 @@ function SnailCover() {
   return (
     <figure
       role="img"
-      aria-label={`fibo dancing and saying "${LINE}"`}
+      aria-label={`The pixel snail dancing and saying "${LINE}"`}
       className="my-6 flex h-72 flex-col items-center justify-end gap-3 rounded-xl border border-border bg-card pb-12"
     >
       {/* The bubble keeps its place between greetings, and the untyped rest

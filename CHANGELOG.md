@@ -8,8 +8,17 @@ has the same history with links into the docs.
 
 ## [Unreleased]
 
+### Added
+
+- A `brand/` folder with the brand kit's source: the rabbit, the logo,
+  the social card and poster generators, and the motion prototype.
+
 ### Changed
 
+- fibo's mascot is now a pixel rabbit. The Welcome page hero, the sidebar
+  logo and the favicon use him; he idles, hops, watches the pointer and
+  reacts to clicks with new lines. The Pixel snail component is unchanged
+  and stays as the loading indicator.
 - The shelves are renamed Base components and Special components, formerly
   Components and Niche. Docs pages move to `base-components-<name>` and
   `special-components-<name>`; links to the old pages redirect.

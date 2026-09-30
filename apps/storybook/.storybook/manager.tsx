@@ -12,8 +12,8 @@ import {
   MoonIcon,
   PaintbrushIcon,
   PaletteIcon,
+  RabbitIcon,
   RocketIcon,
-  SnailIcon,
   SparklesIcon,
   SunIcon,
   SwatchBookIcon,
@@ -49,7 +49,7 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   foundations: PaletteIcon,
   "foundations-theme-creator--docs": PaintbrushIcon,
   "base-components": BoxesIcon,
-  "special-components": SnailIcon,
+  "special-components": RabbitIcon,
 }
 
 // Foundations pages document tokens rather than components.
