@@ -30,6 +30,13 @@
     "tier": "base-components",
     "group": "Forms"
   },
+  "command-menu": {
+    "title": "Command menu",
+    "description": "A Cmd+K dialog that searches grouped commands and runs the one you pick.",
+    "tier": "base-components",
+    "group": "Navigation",
+    "status": "new"
+  },
   "filter-menu": {
     "title": "Filter menu",
     "description": "A filter menu of fields and values that turns into a search as you type.",

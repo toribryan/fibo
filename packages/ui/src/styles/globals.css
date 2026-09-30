@@ -20,6 +20,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover-overlay: var(--popover-overlay);
+  --color-backdrop: var(--backdrop);
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -116,6 +117,7 @@
   --popover: var(--color-white);
   --popover-foreground: var(--color-neutral-950);
   --popover-overlay: color-mix(in oklch, var(--color-white) 85%, transparent);
+  --backdrop: color-mix(in oklch, var(--color-neutral-950) 20%, transparent);
 
   --primary: var(--color-neutral-900);
   --primary-foreground: var(--color-neutral-50);
@@ -209,6 +211,7 @@
     var(--color-neutral-900) 85%,
     transparent
   );
+  --backdrop: color-mix(in oklch, var(--color-black) 60%, transparent);
 
   --primary: var(--color-neutral-50);
   --primary-foreground: var(--color-neutral-900);

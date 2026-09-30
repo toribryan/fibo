@@ -1,0 +1,317 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/command-menu.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Command menu
+
+A search dialog of grouped commands. Cmd+K on macOS or Ctrl+K elsewhere
+opens it from anywhere on the page, typing narrows every group at once, and
+Enter runs the highlighted command.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Opens from its search button or from a keyboard shortcut, Cmd+K or Ctrl+K
+  by default, which also closes it.
+- Searches labels and hidden keywords across every group, and hides groups
+  with no matches.
+- The first match is always highlighted, so typing and pressing Enter is
+  enough.
+- Items can show an icon and a shortcut, and can be disabled.
+
+## Installation
+
+<Install
+  name="command-menu"
+  exports={["CommandMenu", "type CommandMenuGroup", "type CommandMenuItem"]}
+/>
+
+It installs the Button and Kbd components too, and the `--backdrop` token.
+
+## Usage
+
+```tsx
+import { useRouter } from "next/navigation"
+import {
+  CommandMenu,
+  type CommandMenuGroup,
+} from "@/components/ui/command-menu"
+
+export function AppCommands() {
+  const router = useRouter()
+  const groups: CommandMenuGroup[] = [
+    {
+      label: "Go to",
+      items: [
+        {
+          value: "inbox",
+          label: "Inbox",
+          onSelect: () => router.push("/inbox"),
+        },
+        {
+          value: "settings",
+          label: "Settings",
+          shortcut: ["⌘", ","],
+          onSelect: () => router.push("/settings"),
+        },
+      ],
+    },
+  ]
+  return <CommandMenu groups={groups} />
+}
+```
+
+Each item runs its own `onSelect`, then the menu's `onSelect` gets the item,
+and the menu closes. Give every item a `value` that is unique across the
+whole menu.
+
+```ts
+type CommandMenuGroup = {
+  label: string
+  items: {
+    value: string
+    label: string
+    icon?: React.ReactNode
+    shortcut?: string[]
+    keywords?: string[]
+    disabled?: boolean
+    onSelect?: () => void
+  }[]
+}
+```
+
+Render one command menu per page. Its shortcut listens on the whole
+document, so two menus with the same `hotkey` would both open.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "CommandMenu",
+    note: "Renders the trigger, and the dialog while it's open.",
+    children: [
+      {
+        name: "trigger",
+        slot: "command-menu-trigger",
+        note: "The search button, unless trigger is null.",
+      },
+      {
+        name: "backdrop",
+        slot: "command-menu-backdrop",
+        note: "In a portal on the body.",
+      },
+      {
+        name: "dialog",
+        slot: "command-menu",
+        note: "In a portal on the body.",
+        children: [
+          {
+            name: "search",
+            slot: "command-menu-search",
+            note: "The search box, with an icon.",
+          },
+          {
+            name: "list",
+            slot: "command-menu-list",
+            children: [
+              {
+                name: "group",
+                slot: "command-menu-group",
+                children: [
+                  {
+                    name: "group label",
+                    slot: "command-menu-group-label",
+                  },
+                  {
+                    name: "item",
+                    slot: "command-menu-item",
+                    children: [
+                      {
+                        name: "shortcut",
+                        slot: "command-menu-shortcut",
+                        note: "When the item has one.",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            name: "empty",
+            slot: "command-menu-empty",
+            note: "Shows emptyText when a search matches nothing.",
+          },
+          {
+            name: "hints",
+            slot: "command-menu-hints",
+            note: "The keyboard hints, unless hints is false.",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use it for moving around an app and running actions people would otherwise hunt for in menus.",
+    "Start labels with a verb for actions (New file, Toggle theme) and use the plain name for places (Inbox, Settings).",
+    "Put the commands people use most in the first group, and keep groups to a handful of items each.",
+    "Add keywords for the words people might type instead: dark mode for Toggle theme, create for New file.",
+    "Don't make it the only way to reach something. It speeds up people who know it's there.",
+  ]}
+/>
+
+<Tip>
+  A shortcut on an item is only a label. Wire the same keys up in your app, or
+  leave `shortcut` off.
+</Tip>
+
+## Examples
+
+### Default
+
+The search button shows the shortcut for the platform. Cmd+K or Ctrl+K opens
+the menu from anywhere on the page too.
+
+<Canvas of={Stories.Default} />
+
+### No matches
+
+A search with no results says so, using `emptyText`.
+
+<Canvas of={Stories.NoMatches} />
+
+### Without hints
+
+`hints={false}` drops the row of keyboard hints, for apps where people
+already know the keys.
+
+<Canvas of={Stories.WithoutHints} />
+
+### Custom trigger
+
+`trigger` swaps the search button for your own element.
+
+<Canvas of={Stories.CustomTrigger} />
+
+### Controlled
+
+`trigger={null}` renders no trigger, and `open` with `onOpenChange` puts the
+state in your hands, here opened by a button elsewhere on the page or the
+shortcut.
+
+<Canvas of={Stories.Controlled} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">New file</span>
+            <span className="font-medium">Toggle theme</span>
+            <span className="font-medium">Settings</span>
+          </div>
+        ),
+        description:
+          "Write short labels that start with what happens or where it goes.",
+      },
+      negative: {
+        component: (
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Click here to make a new file</span>
+            <span className="font-medium">Theme</span>
+            <span className="font-medium">Go to the settings page</span>
+          </div>
+        ),
+        description:
+          "Don't write sentences or mix styles. People scan the list as they type.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="command-menu-trigger"',
+      element: "The trigger",
+      when: (
+        <>
+          Unless <code>trigger</code> is <code>null</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="command-menu"',
+      element: "The dialog",
+      when: "While it's open.",
+    },
+    {
+      attribute: 'data-slot="command-menu-item"',
+      element: "A command",
+      when: "It matches the search.",
+    },
+    {
+      attribute: "data-highlighted",
+      element: "A command",
+      when: "The keyboard or pointer is on it.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "A command",
+      when: (
+        <>
+          It has <code>disabled</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-open, data-closed",
+      element: "The dialog and backdrop",
+      when: "While opening or closing, for the fade and zoom.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "It's a modal dialog named by label. Focus moves to the search box when it opens, stays inside while it's open, and returns to the trigger when it closes.",
+    "The search box is a combobox that points at the highlighted command with aria-activedescendant, so screen readers read each one as the arrows move.",
+    "Groups are labelled, so a screen reader says which group a command is in.",
+    "Escape closes the menu without running anything. The keyboard hints are hidden from screen readers, which announce the combobox's keys themselves.",
+    "The shortcut is Cmd+K on macOS and Ctrl+K elsewhere. Pick another letter with hotkey if K is taken, or turn it off with hotkey={null}.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Filter menu", "Kbd", "Select"]} />
+
+## References
+
+- [Base UI Dialog](https://base-ui.com/react/components/dialog), for the modal
+- [Base UI Autocomplete](https://base-ui.com/react/components/autocomplete), for the search and list
+- [WAI-ARIA combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)
