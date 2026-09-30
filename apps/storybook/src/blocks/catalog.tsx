@@ -6,6 +6,7 @@ import {
   CircleCheckIcon,
   ListFilterIcon,
   PlusIcon,
+  SearchIcon,
   XIcon,
 } from "lucide-react"
 
@@ -252,6 +253,33 @@ const PREVIEWS: Record<string, ReactNode> = {
     >
       <PixelSnailSprite mode="rest" />
     </svg>
+  ),
+  "command-menu": (
+    <span className="flex w-48 flex-col overflow-hidden rounded-lg border border-border bg-popover text-xs shadow-md">
+      <span className="flex h-7 items-center gap-1.5 border-b border-border px-2 text-muted-foreground">
+        <SearchIcon className="size-3" />
+        Search…
+      </span>
+      <span className="flex flex-col p-1">
+        {["New file", "Go to inbox", "Preferences"].map((label, index) => (
+          <span
+            key={label}
+            className={cn(
+              "flex h-6 items-center justify-between rounded-sm px-1.5",
+              index === 0 && "bg-accent"
+            )}
+          >
+            {label}
+            {index === 0 ? (
+              <KbdGroup>
+                <Kbd>⌘</Kbd>
+                <Kbd>N</Kbd>
+              </KbdGroup>
+            ) : null}
+          </span>
+        ))}
+      </span>
+    </span>
   ),
   "filter-menu": (
     <div className="flex w-44 flex-col gap-1.5">
