@@ -54,6 +54,9 @@ apps/registry/registry.json
 apps/registry/public/r
 apps/registry/public/llms.txt
 
+# 21st.dev copies (rebuilt by apps/registry/scripts/export-21st.mjs)
+apps/registry/21st
+
 # caches
 .eslintcache
 .prettiercache

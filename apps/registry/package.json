@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-registry.mjs",
-    "lint": "eslint --max-warnings 0"
+    "lint": "eslint --max-warnings 0",
+    "export:21st": "node scripts/export-21st.mjs"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",

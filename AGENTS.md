@@ -22,6 +22,7 @@ Node 24 (pinned in `.nvmrc`).
 | `apps/storybook/src/components/`   | One `.mdx` docs page per component                                   |
 | `apps/storybook/src/blocks/`       | Docs blocks: anatomy, data attributes, guidelines, catalog, hero     |
 | `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                 |
+| `packages/ui/src/21st/`            | One demo per Special component published on 21st.dev                 |
 | `packages/eslint-config/`          | Shared ESLint flat configs                                           |
 | `packages/typescript-config/`      | Shared tsconfigs                                                     |
 | `.agents/skills/`                  | Agent skills; `.claude/skills/` links here                           |
@@ -38,6 +39,7 @@ pnpm dev              # every app in dev mode
 pnpm build            # the registry and Storybook
 pnpm build:site       # build, then assemble the deployable site in dist/
 pnpm registry:build   # registry only
+pnpm 21st:export      # self-contained copies for 21st.dev, see below
 pnpm lint             # ESLint in every workspace, zero warnings allowed
 pnpm typecheck        # tsc in every workspace; run build first on a clean tree
 pnpm test             # unit and story tests in Chromium, with axe checks
@@ -121,9 +123,17 @@ built Storybook at the root of `dist/` with the registry at `dist/r/` and
 docs live at `/?path=/docs/<tier>-<name>--docs`, and installs resolve
 `/r/<name>.json`. Nothing that needs a server at request time will work there.
 
+`pnpm 21st:export` writes a copy of each Special component that has a demo in
+`packages/ui/src/21st` to `apps/registry/21st/<name>`, with `cn` and any fibo
+component it uses inlined and named roles mapped to opacity modifiers, since
+21st.dev takes one file and a stock shadcn theme. It prints a `21st publish`
+command per component; each opens a review page before anything goes live.
+After changing a published component, re-run it and publish the update.
+
 ## Do not
 
 - Edit `apps/registry/registry`, `apps/registry/registry.json`,
-  `apps/registry/public` or `dist`. They are generated and gitignored.
+  `apps/registry/public`, `apps/registry/21st` or `dist`. They are generated
+  and gitignored.
 - Skip the husky pre-commit hook. If Prettier rejects a commit, fix the file.
 - Add a dependency to a Components-shelf part beyond the three listed above.
