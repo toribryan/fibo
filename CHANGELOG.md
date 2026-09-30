@@ -10,6 +10,9 @@ has the same history with links into the docs.
 
 ### Added
 
+- A Registry guide page in Storybook: a step-by-step walkthrough for
+  designers, with a picker that reads the live registry files to show what
+  each part brings into a project.
 - `@fibo/theme`, the full token set in light and dark, installable with
   `shadcn add @fibo/theme`.
 - An install check in CI: every registry item is added to a fresh
