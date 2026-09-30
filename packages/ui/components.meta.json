@@ -30,6 +30,13 @@
     "tier": "base-components",
     "group": "Forms"
   },
+  "command-menu": {
+    "title": "Command menu",
+    "description": "A Cmd+K palette with nested pages, recent commands, ranked search and a preview pane.",
+    "tier": "special-components",
+    "group": "Navigation",
+    "status": "new"
+  },
   "filter-menu": {
     "title": "Filter menu",
     "description": "A filter menu of fields and values that turns into a search as you type.",
