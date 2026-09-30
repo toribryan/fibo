@@ -625,7 +625,6 @@ function FileView({
       </span>
       <div className="flex shrink-0 items-center gap-1">
         <CopyFileButton path={path} />
-        <HeaderLink href={`${RAW_URL}/${ROOT}/${path}`}>Raw</HeaderLink>
         <HeaderLink href={githubUrl}>GitHub</HeaderLink>
       </div>
     </div>
