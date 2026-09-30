@@ -19,6 +19,8 @@ has the same history with links into the docs.
   logo and the favicon use him; he idles, hops, watches the pointer and
   reacts to clicks with new lines. The Pixel snail component is unchanged
   and stays as the loading indicator.
+- The Welcome page hero draws its golden construction without the spiral,
+  and its heading and drafting labels use Geist, matching the brand.
 - The shelves are renamed Base components and Special components, formerly
   Components and Niche. Docs pages move to `base-components-<name>` and
   `special-components-<name>`; links to the old pages redirect.
