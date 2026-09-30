@@ -1,6 +1,7 @@
 import type { StorybookConfig } from "@storybook/react-vite"
 
-import { dirname } from "path"
+import { existsSync } from "fs"
+import { dirname, resolve } from "path"
 import { fileURLToPath } from "url"
 
 /**
@@ -24,7 +25,17 @@ const config: StorybookConfig = {
     getAbsolutePath("@chromatic-com/storybook"),
   ],
   framework: getAbsolutePath("@storybook/react-vite"),
-  staticDirs: ["../public"],
+  // The built site gets the registry from `build:site`. In dev, serve it at the
+  // same path so the Registry guide's picker reads real files.
+  staticDirs: async (dirs, { configType }) => {
+    const registry = resolve(
+      dirname(fileURLToPath(import.meta.url)),
+      "../../registry/public/r"
+    )
+    return configType === "DEVELOPMENT" && existsSync(registry)
+      ? [...(dirs ?? []), "../public", { from: registry, to: "/r" }]
+      : [...(dirs ?? []), "../public"]
+  },
   core: {
     disableWhatsNewNotifications: true,
   },
