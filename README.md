@@ -41,9 +41,13 @@ Without the registry entry, the full URL works in any shadcn project:
 pnpm dlx shadcn@latest add https://fibo.toribryan.com/r/button.json
 ```
 
-To make the parts look the way they do in Storybook, copy the `:root` and
-`.dark` blocks from [`globals.css`](./packages/ui/src/styles/globals.css) into
-your own.
+Each part brings the tokens it uses that a stock shadcn theme lacks, such as
+`--primary-hover` and `--ring-subtle`, and leaves your existing tokens alone. To
+make everything look the way it does in Storybook, add the full theme too:
+
+```bash
+pnpm dlx shadcn@latest add @fibo/theme
+```
 
 ## What's inside
 
