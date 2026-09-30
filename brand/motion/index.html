@@ -1,0 +1,1102 @@
+<title>fibo in motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap"
+/>
+<style>
+  /* Layout: one stage where the rabbit lives, then a sheet of each behaviour looping on its own, with the snail's original beside it. */
+  :root {
+    --bg: #f3f3f1;
+    --ink: #0a0a0a;
+    --soft: #6b6b6b;
+    --line: #e2e2de;
+    --card: #fafaf8;
+    --fill: #ffffff;
+    --dot: #d8d8d4;
+    --sans:
+      Geist, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Geist Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a0a0a;
+      --ink: #f3f3f1;
+      --soft: #a3a3a3;
+      --line: #262626;
+      --card: #141414;
+      --fill: #0a0a0a;
+      --dot: #2a2a2a;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a0a0a;
+    --ink: #f3f3f1;
+    --soft: #a3a3a3;
+    --line: #262626;
+    --card: #141414;
+    --fill: #0a0a0a;
+    --dot: #2a2a2a;
+    color-scheme: dark;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 16px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 48px 89px;
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+  h1,
+  h2 {
+    margin: 0;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  h1 {
+    font-size: clamp(34px, 6vw, 55px);
+  }
+  h2 {
+    font-size: 21px;
+  }
+  p {
+    margin: 0;
+    max-width: 62ch;
+  }
+  .soft {
+    color: var(--soft);
+  }
+  .eyebrow {
+    font: 500 12px/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--soft);
+  }
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  .stage {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    overflow: hidden;
+    background-color: var(--card);
+    background-image: radial-gradient(
+      circle,
+      var(--dot) 1px,
+      transparent 1.3px
+    );
+    background-size: 21px 21px;
+    touch-action: manipulation;
+  }
+  .stage canvas {
+    display: block;
+    width: 100%;
+    height: 377px;
+    cursor: pointer;
+  }
+  .bubble {
+    position: absolute;
+    max-width: min(18rem, 80%);
+    padding: 8px 13px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--fill);
+    font: 400 14px/1.4 var(--mono);
+    color: var(--ink);
+    pointer-events: none;
+    transform: translate(-50%, -100%);
+    white-space: normal;
+  }
+  .bubble[hidden] {
+    display: none;
+  }
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 13px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .hint {
+    font: 400 13px var(--mono);
+    color: var(--soft);
+  }
+  .buttons {
+    display: flex;
+    gap: 8px;
+  }
+  button {
+    font: 500 13px var(--sans);
+    padding: 8px 13px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover {
+    border-color: var(--soft);
+  }
+  button:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  button[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  .sheet {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(233px, 1fr));
+    gap: 13px;
+  }
+  .beh {
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: var(--card);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .beh canvas {
+    display: block;
+    width: 100%;
+    height: 170px;
+    border-bottom: 1px solid var(--line);
+    background-image: radial-gradient(
+      circle,
+      var(--dot) 1px,
+      transparent 1.3px
+    );
+    background-size: 13px 13px;
+  }
+  .beh .txt {
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .beh h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .beh .was {
+    font: 400 12px var(--mono);
+    color: var(--soft);
+  }
+  .beh p {
+    font-size: 14px;
+    color: var(--soft);
+  }
+
+  .lines {
+    border-top: 1px solid var(--line);
+  }
+  .lines div {
+    display: grid;
+    grid-template-columns: 144px minmax(0, 1fr);
+    gap: 13px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .lines .k {
+    font: 400 12px var(--mono);
+    color: var(--soft);
+    padding-top: 2px;
+  }
+  .lines .v {
+    font-family: var(--mono);
+  }
+  @media (max-width: 560px) {
+    .lines div {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+    .stage canvas {
+      height: 300px;
+    }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">fibo · motion</span>
+    <h1>fibo in motion</h1>
+    <p class="soft">
+      Everything the snail did on the welcome page, redone for the rabbit. He
+      builds himself up, idles, hops, watches the pointer, and answers when
+      poked. The Pixel snail keeps its crawl as the loading component.
+    </p>
+  </header>
+
+  <section style="display: flex; flex-direction: column; gap: 13px">
+    <div class="stage" id="stage">
+      <canvas
+        id="main"
+        aria-label="fibo, a pixel rabbit. Move the pointer to have him watch it; click him or the space around him and he answers."
+        role="img"
+      ></canvas>
+      <div class="bubble" id="bubble" hidden aria-live="polite"></div>
+    </div>
+    <div class="bar">
+      <span class="hint"
+        >Move the pointer. Click him. Click the empty space. Click fast. Wait a
+        while.</span
+      >
+      <div class="buttons">
+        <button type="button" id="replay">Build him again</button>
+        <button type="button" id="sound" aria-pressed="true">Sound on</button>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 13px">
+    <h2>Each behaviour</h2>
+    <div class="sheet" id="sheet"></div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 13px">
+    <h2>What he says</h2>
+    <p class="soft">
+      Clicks on him and clicks beside him work down their own lines. Three quick
+      clicks skip to the last one, and he hides behind his ears and thumps.
+      Linger without clicking and he says hello.
+    </p>
+    <div class="lines" id="lines"></div>
+  </section>
+</div>
+
+<script>
+  // The rabbit, 20 × 20: 0 empty, 1 line, 2 fill. He faces left.
+  const BASE = [
+    "01110001110000000000",
+    "12221012221000000000",
+    "12121012121000000000",
+    "12121012121000000000",
+    "01221012121000000000",
+    "01221112210000000000",
+    "00122222221000000000",
+    "01222222222100000000",
+    "12222222222100000000",
+    "12122221222100000000",
+    "12122221222111100000",
+    "12221122221222210000",
+    "01122222112222221000",
+    "00122222222212222100",
+    "00122222222122222111",
+    "00122212221222222121",
+    "00122212212222222121",
+    "00122212212222222110",
+    "01122112112222221000",
+    "01111111111111111000",
+  ]
+  const TOP = 3 // headroom rows above his ears, for perked ears and hops
+
+  // Ears are rows 0-5 of the drawing plus the headroom; each pose replaces them.
+  const EARS = {
+    up: [
+      "",
+      "",
+      "",
+      ".###...###",
+      "#ooo#.#ooo#",
+      "#o#o#.#o#o#",
+      "#o#o#.#o#o#",
+      ".#oo#.#o#o#",
+      ".#oo###oo#",
+    ],
+    perk: [
+      "",
+      "",
+      ".###...###",
+      "#ooo#.#ooo#",
+      "#o#o#.#o#o#",
+      "#o#o#.#o#o#",
+      "#o#o#.#o#o#",
+      ".#oo#.#o#o#",
+      ".#oo###oo#",
+    ],
+    // Pinned back: both ears lie along his head, one over the other, sweeping
+    // away from his face.
+    down: [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ".......#####.",
+      "......#ooooo#",
+      "....#########",
+      "...#ooooooo#.",
+      "..#oo#####...",
+    ],
+    lean: [
+      "",
+      "",
+      "",
+      ".###......",
+      "#ooo#...###",
+      "#o#o#.##ooo#",
+      "#o#o#.#o#o#",
+      ".#oo#.#o#o#",
+      ".#oo###oo#",
+    ],
+  }
+  const EYES = [
+    [2, 9],
+    [2, 10],
+    [7, 9],
+    [7, 10],
+  ]
+
+  function compose(p = {}) {
+    const g = Array.from({ length: TOP }, () => Array(20).fill(0)).concat(
+      BASE.map((r) => [...r].map(Number))
+    )
+    const ears = EARS[p.ears] || EARS.up
+    const n = Math.max(9, ears.length),
+      shift = n - 9
+    for (let y = 0; y < n; y++) {
+      const l = (ears[y] || "").padEnd(13, ".")
+      for (let x = 0; x < 13; x++)
+        if (y - shift >= 0 || l[x] !== ".") {
+          const gy = y - shift
+          if (gy >= 0)
+            g[gy][x] =
+              l[x] === "#" ? 1 : l[x] === "o" ? 2 : x < 12 ? 0 : g[gy][x]
+        }
+    }
+    const at = (x, y, v) => {
+      g[y + TOP][x] = v
+    }
+    for (const [x, y] of EYES) at(x, y, 2)
+    if (p.eyes === "shut")
+      for (const [x, y] of [
+        [2, 10],
+        [3, 10],
+        [7, 10],
+        [8, 10],
+      ])
+        at(x, y, 1)
+    else {
+      const dx = p.dx || 0,
+        dy = p.dy || 0
+      for (const [x, y] of EYES) at(x + dx, y + dy, 1)
+    }
+    at(4, 11, 2)
+    at(5, 11, 2)
+    const m = p.mouth || 0
+    at(4 + m, 11, 1)
+    at(5 + m, 11, 1)
+    if (p.ears === "cover") {
+      // Scared: both ears flop forward over his eyes. Clear the upright ears,
+      // then lay the two flaps over his face.
+      for (let y = 0; y < TOP + 6; y++) for (let x = 0; x < 12; x++) g[y][x] = 0
+      const FLAPS = [
+        ".###.###....",
+        "#ooo#ooo#...",
+        "#ooo#ooo#...",
+        "#ooo#ooo#...",
+        "#ooo#ooo#...",
+        "#ooo#ooo#...",
+        "#ooo#ooo#...",
+        ".###.###....",
+      ]
+      FLAPS.forEach((l, i) => {
+        for (let x = 0; x < 12; x++)
+          if (l[x] !== ".") g[TOP + 4 + i][x] = l[x] === "#" ? 1 : 2
+      })
+    }
+    let rows = g
+    const leg = 16 + TOP
+    if (p.legs === "squash") rows = rows.filter((_, i) => i !== leg)
+    if (p.legs === "stretch")
+      rows = [...rows.slice(0, leg), rows[leg].slice(), ...rows.slice(leg)]
+    if (p.flip) rows = rows.map((r) => r.slice().reverse())
+    return rows
+  }
+
+  // On dark grounds he turns solid: his outline and fill go light, and only
+  // the inner lines stay dark.
+  function invert(rows) {
+    const h = rows.length,
+      w = rows[0].length,
+      out = rows.map((r) => r.map(() => false)),
+      st = []
+    for (let x = 0; x < w; x++) st.push([x, 0], [x, h - 1])
+    for (let y = 0; y < h; y++) st.push([0, y], [w - 1, y])
+    while (st.length) {
+      const [x, y] = st.pop()
+      if (x < 0 || y < 0 || x >= w || y >= h || out[y][x] || rows[y][x])
+        continue
+      out[y][x] = true
+      st.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1])
+    }
+    const outside = (x, y) => x < 0 || y < 0 || x >= w || y >= h || out[y][x]
+    return rows.map((r, y) =>
+      r.map((v, x) => {
+        if (!v) return 0
+        if (v === 2) return 2
+        for (let dy = -1; dy <= 1; dy++)
+          for (let dx = -1; dx <= 1; dx++)
+            if ((dx || dy) && outside(x + dx, y + dy)) return 2
+        return 1
+      })
+    )
+  }
+
+  const css = (n) =>
+    getComputedStyle(document.documentElement).getPropertyValue(n).trim()
+  const isDark = () => css("--bg").toLowerCase() === "#0a0a0a"
+
+  // Draws him with his feet on groundY, centred on cx. `build` is the
+  // build-up: coarse blocks, then finer, then whole.
+  function paint(ctx, rows, cx, groundY, s, build) {
+    const dark = isDark(),
+      R = dark ? invert(rows) : rows
+    const ink = dark ? css("--bg") : css("--ink"),
+      fill = dark ? css("--ink") : css("--fill")
+    const x0 = Math.round(cx - 10 * s),
+      y0 = Math.round(groundY - R.length * s)
+    if (build && build !== "whole") {
+      const b = build.block
+      for (let by = 0; by < R.length; by += b)
+        for (let bx = 0; bx < 20; bx += b) {
+          let any = 0,
+            lines = 0
+          for (let y = by; y < by + b && y < R.length; y++)
+            for (let x = bx; x < bx + b; x++) {
+              const v = R[y][x]
+              if (v) any++
+              if (v === 1 && !dark) lines++
+              if (v === 2 && dark) lines++
+            }
+          if (!any || hash(bx, by) > build.shown) continue
+          ctx.fillStyle =
+            lines * 2 >= any ? (dark ? fill : ink) : dark ? ink : fill
+          if (dark) ctx.fillStyle = fill
+          else ctx.fillStyle = ink
+          ctx.fillRect(x0 + bx * s, y0 + by * s, b * s, b * s)
+        }
+      return
+    }
+    R.forEach((r, y) =>
+      r.forEach((v, x) => {
+        if (!v) return
+        ctx.fillStyle = v === 1 ? ink : fill
+        ctx.fillRect(x0 + x * s, y0 + y * s, s, s)
+      })
+    )
+  }
+  const hash = (x, y) => {
+    const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453
+    return n - Math.floor(n)
+  }
+
+  // ---------- Sound: synthesised, only after the first click ----------
+  let audio = null,
+    soundOn = true
+  const unlock = () => {
+    audio ??= new (window.AudioContext || window.webkitAudioContext)()
+    audio.resume?.()
+  }
+  addEventListener("pointerdown", unlock, { once: true })
+  addEventListener("keydown", unlock, { once: true })
+  function tone(from, to, ms, vol = 0.05, wave = "square", at = 0) {
+    if (!audio || !soundOn) return
+    const t = audio.currentTime + at,
+      o = audio.createOscillator(),
+      g = audio.createGain()
+    o.type = wave
+    o.frequency.setValueAtTime(from, t)
+    o.frequency.exponentialRampToValueAtTime(Math.max(20, to), t + ms / 1000)
+    g.gain.setValueAtTime(vol, t)
+    g.gain.exponentialRampToValueAtTime(0.0001, t + ms / 1000)
+    o.connect(g).connect(audio.destination)
+    o.start(t)
+    o.stop(t + ms / 1000 + 0.02)
+  }
+  const sfx = {
+    blip: () => tone(880 + Math.random() * 180, 820, 28, 0.025),
+    hop: () => tone(330, 760, 110, 0.04),
+    land: () => tone(160, 90, 70, 0.05, "triangle"),
+    thump: () => {
+      tone(110, 45, 140, 0.16, "sine")
+      tone(70, 40, 90, 0.08, "square")
+    },
+    turn: () => tone(520, 430, 45, 0.025),
+    settle: () => {
+      tone(660, 660, 70, 0.03)
+      tone(990, 990, 110, 0.03, "square", 0.08)
+    },
+    tick: () => tone(1400 + Math.random() * 400, 1200, 18, 0.015),
+    flinch: () => tone(900, 300, 120, 0.035, "sawtooth"),
+  }
+
+  // ---------- Timelines: [pose, ms, { lift, sound, shake, dust }] ----------
+  // An 8-bit hop: three held frames on a 12 fps beat (83 ms), one jump
+  // height, no easing.
+  const HOP = [
+    [{ legs: "squash" }, 166],
+    [{ legs: "stretch", ears: "perk" }, 250, { lift: 4, sound: "hop" }],
+    [{ legs: "squash" }, 83, { lift: 0, sound: "land" }],
+    [{}, 250],
+  ]
+  const IDLE = [
+    [{}, 1800],
+    [{ eyes: "shut" }, 130],
+    [{}, 1300],
+    [{ ears: "lean" }, 520],
+    [{}, 600],
+    [{ ears: "lean" }, 160],
+    [{}, 900],
+    [{ mouth: 1 }, 110],
+    [{}, 110],
+    [{ mouth: 1 }, 110],
+    [{}, 1200],
+    [{ dx: -1 }, 900],
+    [{ dx: 1 }, 900],
+    [{ dx: 1, dy: -1 }, 600],
+    [{}, 700],
+    [{ eyes: "shut" }, 130],
+    [{}, 900],
+    ...HOP,
+    [{}, 1400],
+  ]
+  const BOUNCE = [
+    ...HOP,
+    [{ flip: true }, 250, { sound: "turn" }],
+    ...HOP.map(([p, ms, o]) => [{ ...p, flip: true }, ms, o]),
+    [{}, 250, { sound: "turn" }],
+  ]
+  const FLINCH = [
+    [
+      { ears: "down", eyes: "shut", legs: "squash" },
+      220,
+      { sound: "flinch", shake: 1 },
+    ],
+    [{ ears: "down" }, 260],
+    [{ ears: "down", dx: 1 }, 700],
+    [{}, 900],
+  ]
+  const THUMP = [
+    [{ ears: "cover" }, 200, { sound: "flinch" }],
+    [
+      { ears: "cover", legs: "squash" },
+      90,
+      { sound: "thump", shake: 2, dust: 1 },
+    ],
+    [{ ears: "cover" }, 160],
+    [
+      { ears: "cover", legs: "squash" },
+      90,
+      { sound: "thump", shake: 2, dust: 1 },
+    ],
+    [{ ears: "cover" }, 1900],
+    [{ ears: "down" }, 300],
+    [{}, 300],
+  ]
+  const HELLO = [
+    [{ ears: "perk" }, 260],
+    [{ ears: "lean" }, 200],
+    [{ ears: "perk" }, 200],
+    [{ ears: "lean" }, 200],
+    [{ ears: "perk", mouth: 1 }, 900],
+    [{}, 600],
+  ]
+  const LOOK = [
+    [{ dx: -1 }, 700],
+    [{ dx: -1, dy: -1 }, 500],
+    [{ dx: 1, dy: -1 }, 600],
+    [{ flip: true, dx: -1 }, 900, { sound: "turn" }],
+    [{ flip: true, dx: -1, ears: "perk" }, 900],
+    [{}, 700, { sound: "turn" }],
+  ]
+  const HOVER = [
+    [{ ears: "lean", dx: 1 }, 1100],
+    [{}, 600],
+  ]
+
+  // A player steps through a timeline on a clock, looping or once.
+  function player(tl, loop = true) {
+    let i = 0,
+      t = 0,
+      done = false
+    return {
+      step(dt) {
+        if (done) return tl[tl.length - 1]
+        t += dt
+        let fired = null
+        while (t >= tl[i][1]) {
+          t -= tl[i][1]
+          i++
+          if (i >= tl.length) {
+            if (loop) i = 0
+            else {
+              i = tl.length - 1
+              done = true
+              break
+            }
+          }
+          fired = tl[i]
+        }
+        return fired ? { ...tl[i], fired: true } : tl[i]
+      },
+      get done() {
+        return done
+      },
+      first() {
+        return tl[0]
+      },
+    }
+  }
+
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)")
+
+  // ---------- The stage ----------
+  const LINES = {
+    poke: "i thump for less than this.",
+    bruise: "careful, i bruise in 8-bit.",
+    rage: "keep clicking and there'll be eight of me by next month.",
+    button: "this isn't a button. well, i guess it is now.",
+    miss: "missed. i'm quicker than i look.",
+    hello: "oh, hi.",
+  }
+  const ORDER = {
+    on: ["poke", "bruise", "rage"],
+    off: ["button", "miss", "rage"],
+  }
+  function createHeckle() {
+    let clicks = { on: 0, off: 0 },
+      burst = 0,
+      last = -Infinity
+    const said = new Set()
+    return ({ onHim, at }) => {
+      if (at - last > 4000) clicks = { on: 0, off: 0 }
+      burst = at - last < 700 ? burst + 1 : 1
+      last = at
+      const track = onHim ? "on" : "off"
+      let line = ORDER[track][Math.min(clicks[track], 2)]
+      clicks[track]++
+      if (burst >= 3 || said.has(line)) line = "rage"
+      if (line === "rage") said.clear()
+      else said.add(line)
+      return line
+    }
+  }
+
+  const cv = document.getElementById("main"),
+    ctx = cv.getContext("2d"),
+    bubble = document.getElementById("bubble"),
+    stage = document.getElementById("stage")
+  let S = 12,
+    W = 0,
+    H = 0,
+    cx = 0,
+    ground = 0
+  function size() {
+    const r = cv.getBoundingClientRect(),
+      dpr = devicePixelRatio || 1
+    cv.width = r.width * dpr
+    cv.height = r.height * dpr
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    W = r.width
+    H = r.height
+    S = Math.max(6, Math.min(13, Math.floor((H * 0.62) / 23)))
+    cx = Math.round(W / 2 / S) * S
+    ground = Math.round((H * 0.8) / S) * S
+  }
+  addEventListener("resize", size)
+  size()
+
+  const heckle = createHeckle()
+  let facing = false // false: facing left, as drawn
+  let pointer = null,
+    lastMove = 0,
+    helloSaid = false,
+    lingerTimer = 0
+  let idle = player(IDLE),
+    action = null,
+    dust = [],
+    shake = 0
+  let build = { t: 0, on: true }
+  const BUILD = [
+    { block: 4, ms: 420, reveal: true },
+    { block: 4, ms: 140 },
+    { block: 2, ms: 180 },
+  ]
+  const BUILD_MS = BUILD.reduce((a, b) => a + b.ms, 0)
+  let lastTick = 0
+
+  function speak(key) {
+    const text = LINES[key]
+    let n = reduced.matches ? text.length : 0
+    bubble.hidden = false
+    clearInterval(speak.id)
+    clearTimeout(speak.hide)
+    const show = () => {
+      bubble.textContent = text.slice(0, n)
+    }
+    show()
+    speak.id = setInterval(() => {
+      if (n >= text.length) {
+        clearInterval(speak.id)
+        speak.hide = setTimeout(() => {
+          bubble.hidden = true
+        }, 2600)
+        return
+      }
+      n++
+      if (n % 2 === 0 && text[n - 1] !== " ") sfx.blip()
+      show()
+    }, 32)
+    if (reduced.matches) {
+      clearInterval(speak.id)
+      speak.hide = setTimeout(() => {
+        bubble.hidden = true
+      }, 3200)
+    }
+  }
+
+  function spriteBox() {
+    const h = (BASE.length + TOP) * S
+    return {
+      x: cx - 10 * S,
+      y: ground - h + TOP * S,
+      w: 20 * S,
+      h: h - TOP * S,
+    }
+  }
+
+  stage.addEventListener("pointermove", (e) => {
+    const r = cv.getBoundingClientRect()
+    pointer = { x: e.clientX - r.left, y: e.clientY - r.top }
+    lastMove = performance.now()
+    if (!helloSaid) {
+      clearTimeout(lingerTimer)
+      lingerTimer = setTimeout(() => {
+        if (pointer && !action && !build.on) {
+          helloSaid = true
+          action = { p: player(HELLO, false) }
+          speak("hello")
+        }
+      }, 2600)
+    }
+  })
+  stage.addEventListener("pointerleave", () => {
+    pointer = null
+    clearTimeout(lingerTimer)
+  })
+  cv.addEventListener("click", (e) => {
+    if (build.on) return
+    const r = cv.getBoundingClientRect(),
+      x = e.clientX - r.left,
+      y = e.clientY - r.top,
+      b = spriteBox()
+    const onHim = x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h
+    clearTimeout(lingerTimer)
+    helloSaid = true
+    const line = heckle({ onHim, at: performance.now() })
+    if (line === "rage") action = { p: player(THUMP, false) }
+    else if (onHim) action = { p: player(FLINCH, false) }
+    else {
+      const toRight = x > cx
+      action = { p: player(HOVER, false), face: toRight }
+    }
+    speak(line)
+  })
+  document.getElementById("replay").addEventListener("click", () => {
+    build = { t: 0, on: true }
+    action = null
+    bubble.hidden = true
+  })
+  const sb = document.getElementById("sound")
+  sb.addEventListener("click", () => {
+    soundOn = !soundOn
+    sb.setAttribute("aria-pressed", String(soundOn))
+    sb.textContent = soundOn ? "Sound on" : "Sound off"
+  })
+
+  let prev = performance.now()
+  function frame(now) {
+    const dt = Math.min(64, now - prev)
+    prev = now
+    ctx.clearRect(0, 0, W, H)
+    let pose = {},
+      lift = 0,
+      o = null,
+      still = reduced.matches
+
+    if (build.on) {
+      build.t += still ? BUILD_MS : dt
+      let rest = build.t,
+        stageNow = "whole"
+      for (const b of BUILD) {
+        if (rest < b.ms) {
+          stageNow = { block: b.block, shown: b.reveal ? rest / b.ms : 1 }
+          break
+        }
+        rest -= b.ms
+      }
+      if (stageNow === "whole") {
+        build.on = false
+        sfx.settle()
+      } else if (now - lastTick > 60) {
+        sfx.tick()
+        lastTick = now
+      }
+      paint(ctx, compose({}), cx, ground, S, stageNow)
+      requestAnimationFrame(frame)
+      return
+    }
+
+    if (action) {
+      const st = still ? action.p.first() : action.p.step(dt)
+      pose = { ...st[0] }
+      o = st[2] || null
+      if (st.fired !== false && o && st.fired) {
+        if (o.sound) sfx[o.sound]()
+        if (o.shake) shake = o.shake * 2
+        if (o.dust) dust.push({ t: 0 })
+      }
+      lift = o?.lift || 0
+      if (action.face !== undefined) facing = action.face
+      if (pose.back) pose.flip = !facing
+      else pose.flip = pose.flip ? !facing : facing
+      if (action.p.done || (still && now - (action.since ??= now) > 2400))
+        action = null
+    } else if (pointer) {
+      // Watch the pointer: eyes toward it, turn round when it passes him, ears
+      // up when it comes close.
+      const eyeY = ground - (BASE.length - 9) * S,
+        dxp = (pointer.x - cx) / S,
+        dyp = (pointer.y - eyeY) / S
+      const want = dxp > 3 ? true : dxp < -3 ? false : facing
+      if (want !== facing) {
+        facing = want
+        sfx.turn()
+      }
+      const sx = dxp > 3 ? 1 : dxp < -3 ? -1 : 0
+      pose = {
+        dx: facing ? -sx : sx,
+        dy: dyp < -5 ? -1 : dyp > 5 ? 1 : 0,
+        ears: Math.hypot(dxp, dyp) < 13 ? "perk" : "up",
+        flip: facing,
+      }
+    } else {
+      const st = still ? [{}, 0] : idle.step(dt)
+      pose = { ...st[0] }
+      o = st[2] || null
+      if (st.fired && o?.sound) sfx[o.sound]()
+      lift = o?.lift || 0
+      pose.flip = pose.flip ? !facing : facing
+    }
+
+    let sx = 0
+    if (shake > 0) {
+      sx = (shake % 2 ? 1 : -1) * Math.ceil(shake / 2)
+      shake -= dt / 40
+      if (shake < 0) shake = 0
+    }
+    // A shadow that shrinks as he leaves the ground.
+    ctx.fillStyle = css("--dot")
+    const sw = 16 * S
+    ctx.fillRect(cx - sw / 2, ground + S, sw, S)
+    paint(ctx, compose(pose), cx + Math.round(sx) * S, ground - lift * S, S)
+    // Dust from a thump: pixels kicked out behind his back foot.
+    const footX = cx + (pose.flip ? -9 : 9) * S
+    dust = dust.filter((d) => (d.t += dt) < 420)
+    ctx.fillStyle = css("--soft")
+    for (const d of dust) {
+      const k = d.t / 420,
+        off = Math.round(1 + k * 5)
+      for (const [ax, ay] of [
+        [1, -1],
+        [2, 0],
+        [1, -2],
+      ])
+        ctx.fillRect(
+          footX + (pose.flip ? -1 : 1) * (ax + off) * S,
+          ground - (ay + Math.round(k * 2)) * S,
+          S,
+          S
+        )
+    }
+
+    const b = spriteBox()
+    bubble.style.left = `${Math.min(W - 100, Math.max(100, cx))}px`
+    bubble.style.top = `${b.y - 8}px`
+    requestAnimationFrame(frame)
+  }
+  requestAnimationFrame(frame)
+
+  // ---------- The sheet: each behaviour looping on its own ----------
+  const SHEET = [
+    {
+      name: "Build-up",
+      was: "snail: built up from coarse blocks",
+      body: "Arrives as 4-pixel blocks, halves to 2, then settles whole with a two-note chime.",
+      kind: "build",
+    },
+    {
+      name: "Idle",
+      was: "snail: looked about, blinked, shuffled",
+      body: "Blinks, twitches an ear, sniffs, glances about, and every so often hops in place.",
+      tl: IDLE,
+    },
+    {
+      name: "Hop",
+      was: "snail: danced",
+      body: "Three held frames, like an 8-bit sprite: crouch, one jump height with his ears up, land. Turns and hops back.",
+      tl: BOUNCE,
+    },
+    {
+      name: "Watch",
+      was: "snail: eyes and head followed the pointer",
+      body: "Eyes follow the pointer; he turns round when it passes him, and his ears perk up when it comes close.",
+      tl: LOOK,
+    },
+    {
+      name: "Poked",
+      was: "snail: talked back",
+      body: "Ears flat, eyes shut, a squash and a shudder, then his line.",
+      tl: FLINCH,
+    },
+    {
+      name: "Rage clicks",
+      was: "snail: called out the rage clicks",
+      body: "Hides his eyes behind his ears and thumps his foot twice. Real rabbits thump when they are scared.",
+      tl: THUMP,
+    },
+    {
+      name: "Hello",
+      was: "snail: said hello to a lingering pointer",
+      body: "Ears perk and waggle, then: oh, hi.",
+      tl: HELLO,
+    },
+  ]
+  const sheet = document.getElementById("sheet"),
+    demos = []
+  for (const d of SHEET) {
+    const el = document.createElement("div")
+    el.className = "beh"
+    el.innerHTML = `<canvas role="img" aria-label="${d.name}: ${d.body}"></canvas><div class="txt"><h3>${d.name}</h3><span class="was">${d.was}</span><p>${d.body}</p></div>`
+    sheet.appendChild(el)
+    demos.push({
+      d,
+      c: el.querySelector("canvas"),
+      p: d.tl ? player(d.tl) : null,
+      t: 0,
+      shake: 0,
+      dust: [],
+    })
+  }
+  function sheetFrame(now) {
+    for (const m of demos) {
+      const c = m.c,
+        r = c.getBoundingClientRect(),
+        dpr = devicePixelRatio || 1
+      if (c.width !== Math.round(r.width * dpr)) {
+        c.width = r.width * dpr
+        c.height = r.height * dpr
+      }
+      const g = c.getContext("2d")
+      g.setTransform(dpr, 0, 0, dpr, 0, 0)
+      g.clearRect(0, 0, r.width, r.height)
+      const s = 5,
+        x = Math.round(r.width / 2 / s) * s,
+        gy = Math.round((r.height * 0.84) / s) * s
+      if (m.d.kind === "build") {
+        m.t = reduced.matches ? BUILD_MS + 1 : (m.t + 16) % (BUILD_MS + 1600)
+        let rest = m.t,
+          st = "whole"
+        for (const b of BUILD) {
+          if (rest < b.ms) {
+            st = { block: b.block, shown: b.reveal ? rest / b.ms : 1 }
+            break
+          }
+          rest -= b.ms
+        }
+        paint(g, compose({}), x, gy, s, st)
+        continue
+      }
+      const st = reduced.matches ? m.p.first() : m.p.step(16),
+        o = st[2] || null,
+        pose = { ...st[0] }
+      if (pose.back) pose.flip = true
+      if (st.fired && o?.shake) m.shake = o.shake * 2
+      if (st.fired && o?.dust) m.dust.push({ t: 0 })
+      let sx = 0
+      if (m.shake > 0) {
+        sx = m.shake % 2 ? 1 : -1
+        m.shake -= 0.4
+      }
+      const lift = o?.lift || 0
+      g.fillStyle = css("--dot")
+      const sw = 16 * s
+      g.fillRect(x - sw / 2, gy + s, sw, s)
+      paint(g, compose(pose), x + sx * s, gy - lift * s, s)
+      m.dust = m.dust.filter((d) => (d.t += 16) < 420)
+      g.fillStyle = css("--soft")
+      for (const d of m.dust) {
+        const k = d.t / 420,
+          off = Math.round(1 + k * 5),
+          fx = x + (pose.flip ? -9 : 9) * s
+        for (const [ax, ay] of [
+          [1, -1],
+          [2, 0],
+          [1, -2],
+        ])
+          g.fillRect(
+            fx + (pose.flip ? -1 : 1) * (ax + off) * s,
+            gy - (ay + Math.round(k * 2)) * s,
+            s,
+            s
+          )
+      }
+    }
+    requestAnimationFrame(sheetFrame)
+  }
+  requestAnimationFrame(sheetFrame)
+
+  // The lines table.
+  const LABEL = {
+    poke: "First poke",
+    bruise: "Second poke",
+    rage: "Rage clicks",
+    button: "First miss",
+    miss: "Second miss",
+    hello: "Lingering pointer",
+  }
+  document.getElementById("lines").innerHTML = Object.entries(LINES)
+    .map(
+      ([k, v]) =>
+        `<div><span class="k">${LABEL[k]}</span><span class="v">${v}</span></div>`
+    )
+    .join("")
+</script>

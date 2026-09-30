@@ -1,17 +1,18 @@
 /*
  * What fibo says. Clicks on him and clicks anywhere else in the hero each
  * work down their own lines, ending on the rage clicks: he complains about
- * being poked, and about empty space being treated as a button. Three clicks
+ * being poked, about empty space being treated as a button, and about how
+ * fast rabbits multiply. Three clicks
  * in a quick burst skip straight to the rage clicks, and so does any line he
  * would repeat before he has called them out; after that his lines can come
  * round again. A visitor who lingers without clicking gets a hello.
  */
 export const FIBO_LINES = {
-  poke: "do you always go around poking people? ...",
-  miss: "i'm not slow, i'm lazy loaded.",
+  poke: "i thump for less than this.",
+  miss: "missed. i'm quicker than i look.",
   button: "this isn't a button. well, i guess it is now.",
   bruise: "careful, i bruise in 8-bit.",
-  rage: "i can see those rage clicks. go poke around fibo instead?",
+  rage: "keep clicking and there'll be eight of me by next month.",
   hello: "oh, hi.",
 }
 
