@@ -32,8 +32,8 @@
   },
   "command-menu": {
     "title": "Command menu",
-    "description": "A Cmd+K dialog that searches grouped commands and runs the one you pick.",
-    "tier": "base-components",
+    "description": "A Cmd+K palette with nested pages, recent commands, ranked search and a preview pane.",
+    "tier": "special-components",
     "group": "Navigation",
     "status": "new"
   },
