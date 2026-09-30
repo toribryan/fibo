@@ -57,7 +57,6 @@ const preview: Preview = {
           "Registry guide",
           "Catalog",
           "Changelog",
-          "Contributing",
           "Design skills",
           "Foundations",
           ["Colors", "Typography", "Theme creator"],
