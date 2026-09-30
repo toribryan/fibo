@@ -31,12 +31,9 @@ export const FrameIcon = glyph(
   <path d="M5.5 2v12M10.5 2v12M2 5.5h12M2 10.5h12" />
 )
 
-/** A sidebar section, with the label tab Figma draws on its corner. */
-export const SectionIcon = glyph(
-  <>
-    <path d="M2.5 5.5v8h11v-11h-5" />
-    <rect x={2} y={2} width={6} height={3} fill="currentColor" stroke="none" />
-  </>
+/** A top-level section, drawn as a folder in the Figma file browser. */
+export const FolderIcon = glyph(
+  <path d="M1.5 2.5h5l1.5 1.5h6.5v9h-13ZM1.5 6h13" />
 )
 
 /** A group of entries inside a section. */

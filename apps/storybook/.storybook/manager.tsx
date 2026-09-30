@@ -5,12 +5,12 @@ import { addons, types, type API } from "storybook/manager-api"
 
 import {
   ComponentIcon,
+  FolderIcon,
   FrameIcon,
   GroupIcon,
   InstanceIcon,
   PageIcon,
   PaintStyleIcon,
-  SectionIcon,
   TextIcon,
   VariablesIcon,
   type FigmaIcon,
@@ -40,7 +40,7 @@ const ICON_BY_ID: Record<string, FigmaIcon> = {
 }
 
 const ICON_BY_TYPE: Record<string, FigmaIcon> = {
-  root: SectionIcon,
+  root: FolderIcon,
   group: GroupIcon,
   component: ComponentIcon,
   docs: PageIcon,
@@ -52,7 +52,7 @@ const ICON_BY_TYPE: Record<string, FigmaIcon> = {
 function iconFor(item: { id: string; type: string; parent?: string }) {
   if (ICON_BY_ID[item.id]) return ICON_BY_ID[item.id]
   if (item.type === "docs" && !item.parent) return FrameIcon
-  if (item.type === "group" && !item.parent) return SectionIcon
+  if (item.type === "group" && !item.parent) return FolderIcon
   return ICON_BY_TYPE[item.type]
 }
 
