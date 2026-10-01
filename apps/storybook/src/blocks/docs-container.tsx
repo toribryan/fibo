@@ -9,6 +9,7 @@ import { BugIcon } from "lucide-react"
 import { darkTheme, lightTheme } from "../../.storybook/theme.js"
 import { FigmaIcon } from "./brand-icons.js"
 import { LINKS } from "./links.js"
+import { SiteNav } from "./site-nav.js"
 
 function subscribe(onChange: () => void) {
   const observer = new MutationObserver(onChange)
@@ -92,6 +93,7 @@ function FiboDocsContainer({
           {children}
           <Footer />
         </div>
+        <SiteNav />
       </Unstyled>
     </DocsContainer>
   )

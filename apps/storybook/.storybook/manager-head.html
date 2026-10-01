@@ -236,6 +236,11 @@
     #storybook-explorer-searchfield {
       font-size: 16px;
     }
+    /* Docs pages bring their own floating nav (blocks/site-nav.tsx). */
+    :root[data-fibo-view="docs"]
+      header.sb-bar:has(button[aria-label="Open navigation menu"]) {
+      display: none;
+    }
   }
 </style>
 
