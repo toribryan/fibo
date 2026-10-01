@@ -4,9 +4,12 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
   CircleCheckIcon,
+  CompassIcon,
+  HouseIcon,
   ListFilterIcon,
   PlusIcon,
   SearchIcon,
+  UserIcon,
   XIcon,
 } from "lucide-react"
 
@@ -318,6 +321,22 @@ const PREVIEWS: Record<string, ReactNode> = {
         Semantic roles
       </span>
     </div>
+  ),
+  "floating-nav": (
+    <span className="flex items-center gap-1 rounded-full border border-border bg-popover p-1 shadow-md">
+      <span className="flex h-8 items-center gap-1.5 rounded-full bg-primary px-3 text-xs font-medium text-primary-foreground">
+        <HouseIcon className="size-4" />
+        Home
+      </span>
+      {[CompassIcon, SearchIcon, UserIcon].map((Icon, i) => (
+        <span
+          key={i}
+          className="flex size-8 items-center justify-center text-muted-foreground"
+        >
+          <Icon className="size-4" />
+        </span>
+      ))}
+    </span>
   ),
 }
 

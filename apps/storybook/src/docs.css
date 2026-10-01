@@ -17,6 +17,31 @@
   max-width: 60rem;
 }
 
+/* Storybook swaps docs pages with a hard cut. A short fade softens it. */
+.fibo-docs {
+  animation: fibo-page-in 0.24s ease-out;
+}
+
+@keyframes fibo-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fibo-docs {
+    animation: none;
+  }
+}
+
+/* Room for the floating nav to sit below the last line on phones. */
+@media (max-width: 599px) {
+  .sbdocs.sbdocs-wrapper {
+    padding-bottom: 8rem;
+  }
+}
+
 .sbdocs .docs-story,
 .sbdocs .sb-story {
   background: var(--background);
