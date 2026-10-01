@@ -44,6 +44,13 @@
     "group": "Navigation",
     "status": "new"
   },
+  "floating-nav": {
+    "title": "Floating nav",
+    "description": "A pill of destinations that floats above the bottom of a phone screen and steps aside while you scroll.",
+    "tier": "special-components",
+    "group": "Navigation",
+    "status": "new"
+  },
   "input": {
     "title": "Input",
     "description": "A single line of free text.",
