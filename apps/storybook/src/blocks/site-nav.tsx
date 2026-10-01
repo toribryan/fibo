@@ -52,6 +52,12 @@ function subscribeToQuery(onChange: () => void) {
   return () => query.removeEventListener("change", onChange)
 }
 
+// Storybook rebuilds the docs page, and this nav with it, on every
+// navigation, but the preview window stays. Remembering what the last nav
+// showed lets the new one start there and slide across, the way a nav that
+// never left would.
+let lastShown: string | undefined
+
 function SiteNav() {
   const mobile = useSyncExternalStore(
     subscribeToQuery,
@@ -67,13 +73,23 @@ function SiteNav() {
     return () => channel.off(DOCS_RENDERED, onRendered)
   }, [])
 
+  const target = itemFor(current) ?? ""
+  const [shown, setShown] = useState(() => lastShown ?? target)
+
+  // A frame on the old value first, so there's a layout to animate from.
+  useEffect(() => {
+    lastShown = target
+    const frame = requestAnimationFrame(() => setShown(target))
+    return () => cancelAnimationFrame(frame)
+  }, [target])
+
   if (!mobile) return null
 
   return (
     <FloatingNav
       aria-label="Site"
       items={ITEMS}
-      value={itemFor(current) ?? ""}
+      value={shown}
       hideOnScroll
       onValueChange={(value, event) => {
         if (event.metaKey || event.ctrlKey) return
