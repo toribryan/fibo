@@ -17,6 +17,13 @@
   max-width: 60rem;
 }
 
+/* Room for the floating nav to sit below the last line on phones. */
+@media (max-width: 599px) {
+  .sbdocs.sbdocs-wrapper {
+    padding-bottom: 8rem;
+  }
+}
+
 .sbdocs .docs-story,
 .sbdocs .sb-story {
   background: var(--background);

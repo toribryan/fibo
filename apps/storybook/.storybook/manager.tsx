@@ -8,14 +8,17 @@ import {
   HashIcon,
   HexagonIcon,
   MoonIcon,
+  RabbitIcon,
   SquareDashedIcon,
   SunIcon,
   TypeIcon,
   type LucideIcon,
 } from "lucide-react"
 import { IconButton } from "storybook/internal/components"
+import { STORY_CHANGED } from "storybook/internal/core-events"
 import { addons, types, type API } from "storybook/manager-api"
 
+import { OPEN_MENU } from "./site-nav-sync.js"
 import { darkTheme, lightTheme } from "./theme.js"
 import {
   readTheme,
@@ -36,6 +39,7 @@ const STATUSES = ["new", "beta", "deprecated"]
 // Foundations pages get the icon for the kind of token they document; every
 // other entry gets one for its type.
 const ICON_BY_ID: Record<string, LucideIcon> = {
+  "about-fibo--docs": RabbitIcon,
   "foundations-colors--docs": ContrastIcon,
   "foundations-typography": TypeIcon,
   "foundations-theme-creator--docs": HexagonIcon,
@@ -125,5 +129,29 @@ addons.register("fibo/theme", (api) => {
     type: types.TOOL,
     title: "Theme",
     render: () => <ThemeTool api={api} />,
+  })
+})
+
+// Docs pages carry the floating nav on phones, so Storybook's bottom bar is
+// hidden there (manager-head.html) and only returns for a story's canvas.
+function syncView() {
+  const path = new URL(window.location.href).searchParams.get("path") ?? ""
+  document.documentElement.dataset.fiboView = path.startsWith("/story/")
+    ? "story"
+    : "docs"
+}
+
+syncView()
+
+addons.register("fibo/site-nav", (api) => {
+  api.on(STORY_CHANGED, syncView)
+  // Storybook keeps the mobile menu's state to itself, so the nav's Menu
+  // item presses the hidden bar's own button.
+  api.on(OPEN_MENU, () => {
+    document
+      .querySelector<HTMLButtonElement>(
+        'button[aria-label="Open navigation menu"]'
+      )
+      ?.click()
   })
 })
