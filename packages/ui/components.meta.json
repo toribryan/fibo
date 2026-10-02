@@ -63,6 +63,13 @@
     "tier": "special-components",
     "group": "Diagrams"
   },
+  "jump-bar": {
+    "title": "Jump bar",
+    "description": "Takes people to unread messages, new messages or the present in a conversation.",
+    "tier": "base-components",
+    "group": "Actions",
+    "status": "new"
+  },
   "kbd": {
     "title": "Kbd",
     "description": "Shows a key or a keyboard shortcut in text.",

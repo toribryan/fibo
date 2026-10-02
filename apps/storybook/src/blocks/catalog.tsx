@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import {
+  ArrowDownIcon,
   ArrowUpRightIcon,
   ChevronDownIcon,
   ChevronRightIcon,
@@ -270,6 +271,12 @@ const PREVIEWS: Record<string, ReactNode> = {
       />
       <circle cx={80} cy={50} r={3} className="fill-foreground" />
     </svg>
+  ),
+  "jump-bar": (
+    <span className="flex h-8 items-center gap-1.5 rounded-full bg-primary px-3 text-xs font-medium text-primary-foreground shadow-md">
+      3 new messages
+      <ArrowDownIcon className="size-3.5" />
+    </span>
   ),
   "message-list": (
     <div className="flex w-56 flex-col gap-2 text-xs">
