@@ -1,0 +1,305 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/typing-indicator.stories"
+import { TypingIndicator } from "../../../../packages/ui/src/components/typing-indicator"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Typing indicator
+
+A typing indicator says who's writing a reply in a conversation. It names up
+to three people, then says "Several people are typing…".
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Takes people as data and leaves out the person looking at the screen.
+- One formatter builds the whole sentence, so it can be translated properly.
+  Names are joined with `Intl.ListFormat` for the locale.
+- Screen readers hear the sentence once it holds still for 1.5 seconds, and
+  hear nothing when everyone stops.
+- Keeps its height when nobody is typing, so the messages above don't jump.
+
+## Installation
+
+<Install
+  name="typing-indicator"
+  exports={["TypingIndicator", "formatTyping"]}
+/>
+
+## Usage
+
+```tsx
+import {
+  TypingIndicator,
+  type TypingPerson,
+} from "@/components/ui/typing-indicator"
+
+export function Channel({
+  typing,
+  me,
+}: {
+  typing: TypingPerson[]
+  me: string
+}) {
+  return (
+    <>
+      <MessageList />
+      <TypingIndicator people={typing} currentUserId={me} />
+      <Composer />
+    </>
+  )
+}
+```
+
+Pass everyone your typing events report, yourself included, and let the
+component leave you out. Drop a person once their typing event expires, which
+is 10 seconds on Discord.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "TypingIndicator",
+    slot: "typing-indicator",
+    note: "A fixed-height row, there even when nobody is typing.",
+    children: [
+      {
+        name: "dots",
+        slot: "typing-indicator-dots",
+        note: "Three dots, or one person's custom indicator. Hidden from screen readers.",
+      },
+      {
+        name: "text",
+        slot: "typing-indicator-text",
+        note: "The sentence, cut short with an ellipsis when it doesn't fit. Hidden from screen readers.",
+      },
+      {
+        name: "status",
+        slot: "typing-indicator-status",
+        note: "A visually hidden status region that announces the sentence.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Put it between the messages and the composer, where people look while they wait for a reply.",
+    "Keep it mounted for the life of the conversation. The status region has to be in the page before it changes, or screen readers miss the first announcement.",
+    "Name at most three people. Past that, a list of names is harder to read than a count.",
+    "In large rooms, consider turning it off. Teams does in chats of more than 20 people.",
+  ]}
+/>
+
+## Examples
+
+### One person
+
+The verb agrees with the count.
+
+<Canvas of={Stories.OnePerson} />
+
+### Three people
+
+Up to `maxNames` people are named, joined for the locale.
+
+<Canvas of={Stories.Three} />
+
+### Several people
+
+Past `maxNames`, nobody is named. This is what Discord does from four people
+on.
+
+<Canvas of={Stories.Several} />
+
+### Long names
+
+Each name is cut short at `maxNameLength` characters, so one long name can't
+push the others off the line. Screen readers still hear names in full.
+
+<Canvas of={Stories.LongNames} />
+
+### Custom indicator
+
+A person's `indicator` replaces the dots while they're the only one typing.
+With two or more people, everyone gets the dots again, as with Discord's
+custom typing indicators.
+
+<Canvas of={Stories.CustomIndicator} />
+
+### Translated
+
+A Spanish formatter with `locale="es"`. Each case is a whole sentence, and
+`Intl.ListFormat` supplies "y".
+
+<Canvas of={Stories.Translated} />
+
+`format` gets `{ count, names, list }` and returns the whole sentence.
+`names` is empty once `count` passes `maxNames`. Never build the sentence from
+fragments like `name + " and " + other`: Russian and Polish have four plural
+forms, Arabic six and Japanese one, and the verb and the word order change with
+them. Write one sentence per case, as an ICU message for instance:
+
+```
+{count, plural,
+  =0 {}
+  one {{list} is typing…}
+  other {{list} are typing…}
+}
+```
+
+with a separate message for "Several people are typing…" when `names` is
+empty. Pass the same `locale` the messages use, so the names are joined in that
+language.
+
+### In a conversation
+
+People start and stop typing below a short thread. The row keeps its height,
+so the messages stay put.
+
+<Canvas of={Stories.InAConversation} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <TypingIndicator
+            className="w-56"
+            people={[
+              { id: "a", name: "Ana" },
+              { id: "b", name: "Ben" },
+              { id: "c", name: "Cy" },
+              { id: "d", name: "Dara" },
+            ]}
+          />
+        ),
+        description: "Switch to “Several people” past three names.",
+      },
+      negative: {
+        component: (
+          <TypingIndicator
+            className="w-56"
+            maxNames={5}
+            people={[
+              { id: "a", name: "Ana" },
+              { id: "b", name: "Ben" },
+              { id: "c", name: "Cy" },
+              { id: "d", name: "Dara" },
+            ]}
+          />
+        ),
+        description:
+          "Don't list everyone. A long line of names gets cut off, and screen readers read the whole list.",
+      },
+    },
+    {
+      positive: {
+        component: (
+          <TypingIndicator
+            className="w-56"
+            people={[
+              { id: "a", name: "Ana" },
+              { id: "me", name: "You" },
+            ]}
+            currentUserId="me"
+          />
+        ),
+        description: "Pass currentUserId so people never see themselves.",
+      },
+      negative: {
+        component: (
+          <TypingIndicator
+            className="w-56"
+            people={[
+              { id: "a", name: "Ana" },
+              { id: "me", name: "You" },
+            ]}
+          />
+        ),
+        description: "Don't tell people that they're typing.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+TypingIndicator also takes every prop of a `div`, except `children`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="typing-indicator"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-active",
+      element: "The root",
+      when: "Someone other than the current person is typing.",
+    },
+    {
+      attribute: 'data-slot="typing-indicator-dots"',
+      element: "The dots or custom indicator",
+      when: "Someone is typing.",
+    },
+    {
+      attribute: 'data-slot="typing-indicator-text"',
+      element: "The sentence",
+      when: "Someone is typing.",
+    },
+    {
+      attribute: 'data-slot="typing-indicator-status"',
+      element: "The status region",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The sentence goes to a polite <code>role="status"</code> region that's in
+      the page from the start, outside the message log, so it doesn't mix with
+      new messages.
+    </>,
+    <>
+      Announcements wait for the sentence to hold still for{" "}
+      <code>announceDelay</code> milliseconds, 1.5 seconds by default, so a
+      burst of people starting and stopping is heard once.
+    </>,
+    "When everyone stops typing, the region empties without saying anything.",
+    "The dots and the visible text are hidden from screen readers, which hear the status region instead, with names in full.",
+    "The dots can run for longer than five seconds, so under reduced motion they hold still as a plain ellipsis (WCAG 2.2.2).",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Avatar", "Toast", "Progress"]} />
+
+## References
+
+- [Discord: typing start event](https://discord.com/developers/docs/events/gateway-events#typing-start), for the 10-second expiry
+- [WAI-ARIA status role](https://www.w3.org/TR/wai-aria-1.2/#status)
+- [WCAG 2.2.2 Pause, Stop, Hide](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html)
+- [ICU message format](https://unicode-org.github.io/icu/userguide/format_parse/messages/)
+- [Intl.ListFormat](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat)

@@ -11,6 +11,40 @@ Notable changes, newest first.
 - New **Tooltip** in Base components: a short label on hover or focus, for
   icon buttons and for saying why something is locked. It's the first part
   of the Data table work in plan 003.
+- New **Jump bar** in Base components: a bar for unread messages above, with
+  "Mark as read", a pill for new messages below, and a bar for getting back
+  to the present from history. Counts stop at 99+ on screen and are read out
+  in full, and jumping moves focus to the message, never leaving it on a bar
+  that has gone.
+- **Message list** marks where unread messages begin with `unreadFrom`: a red
+  line labelled "New" that breaks the group and shares a line with the date
+  when a day starts there.
+- New **Message list** in Base components: a conversation that groups each
+  person's messages under one heading. Every reason a group breaks (a new
+  author, a new day, a reply, a system or deleted message, a divider, the
+  time window) is a named rule, and the window can be rolling or fixed. The
+  whole list is one tab stop: arrow keys move between messages, Enter goes
+  into one, Escape comes back out.
+- New **Typing indicator** in Base components: says who's typing in a
+  conversation, naming up to three people before switching to "Several
+  people". It leaves out the person looking, takes its sentence from one
+  formatter you can translate, waits for typing to settle before a screen
+  reader hears it, and keeps its row when nobody is typing so the messages
+  don't jump.
+- **Property tokens** for the status colours: `text-success`,
+  `border-success` and `fill-success` now read `--success-text`,
+  `--success-border` and `--success-icon`, and the same for destructive,
+  warning and info. Class names don't change. Each is held to the contrast
+  its property needs, 4.5:1 for text and 3:1 for borders and icons, and a
+  unit test checks every one in both themes. The Colors page explains them.
+- New **Sticker avatar** in a new Display group of Special components: an
+  avatar cut out like a die-cut sticker. A transparent image gets a white
+  paper edge that follows its shape, a photo with a background becomes a round
+  sticker, and with no image the initials are the sticker. Each one tilts by a
+  stable angle from the name and lifts on hover, and status is a small sticker
+  of its own told apart by shape: present, away or offline. It adds
+  `--sticker-edge` and `--sticker-ink`, two tokens that keep their values in
+  dark mode on purpose.
 - The **Theme creator** is archived. fibo is about its components and their
   tokens, and a theme builder is a separate product. The page is off the
   site, links to it open Colors, and its code is kept in the repo under
