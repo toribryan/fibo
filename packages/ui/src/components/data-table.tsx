@@ -1,7 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { EllipsisIcon, LockIcon, Trash2Icon, XIcon } from "lucide-react"
+import {
+  EllipsisIcon,
+  LockIcon,
+  SlidersHorizontalIcon,
+  Trash2Icon,
+  XIcon,
+} from "lucide-react"
 
 import {
   Avatar,
@@ -24,6 +30,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import {
+  Sheet,
+  SheetBody,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@workspace/ui/components/sheet"
 import { cn } from "@workspace/ui/lib/utils"
 
 /** Selected row ids, or "all" for every row that matches, across pages. */
@@ -39,6 +53,9 @@ type DataTableCellType =
   | "status"
   | "numeric"
   | "actions"
+
+/** What a narrow table shows: the table, scrolling sideways, or a card per row. */
+type DataTableNarrowLayout = "scroll" | "cards"
 
 /** Which edge a column sticks to while the table scrolls sideways. */
 type DataTablePinned = "none" | "start" | "end"
@@ -61,6 +78,9 @@ type DataTableContextValue = {
   clear: () => void
   showSelectedOnly: boolean
   onShowSelectedOnlyChange?: (showSelectedOnly: boolean) => void
+  narrow: boolean
+  cards: boolean
+  narrowLayout: DataTableNarrowLayout
 }
 
 const DataTableContext = React.createContext<DataTableContextValue | null>(null)
@@ -114,6 +134,8 @@ type DataTableProps = Omit<React.ComponentProps<"div">, "defaultValue"> & {
   showSelectedOnly?: boolean
   /** Shows “Show selected only” while rows are selected; the app filters its rows. */
   onShowSelectedOnlyChange?: (showSelectedOnly: boolean) => void
+  /** Under 32rem: keep the table and scroll it, or show DataTableCards instead. */
+  narrowLayout?: DataTableNarrowLayout
 }
 
 function DataTable({
@@ -126,6 +148,7 @@ function DataTable({
   onValueChange,
   showSelectedOnly = false,
   onShowSelectedOnlyChange,
+  narrowLayout = "scroll",
   children,
   ...props
 }: DataTableProps) {
@@ -267,6 +290,24 @@ function DataTable({
     return () => root.removeEventListener("keydown", onKeyDown)
   }, [value, clear])
 
+  // Narrow is the root's own width under 32rem, the same line the container
+  // queries for pinning use, so a table in a sidebar is narrow on a desktop.
+  const [narrow, setNarrow] = React.useState(false)
+  React.useLayoutEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    const update = () => {
+      const rem =
+        parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+      setNarrow(root.getBoundingClientRect().width < 32 * rem)
+    }
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(root)
+    return () => observer.disconnect()
+  }, [])
+  const cards = narrow && narrowLayout === "cards"
+
   // When the focused control disappears (Clear, Select all matching, a row
   // hidden by Show selected only, a More menu whose trigger is gone), focus
   // would fall to the page. Send it to Clear, or to select all when idle.
@@ -293,7 +334,14 @@ function DataTable({
           '[data-slot="data-table-select-all"] [role="checkbox"]'
         )
       lastFocusedRef.current = null
-      target?.focus()
+      // The table and cards swapped: follow the row to its other form.
+      const rowId = last.closest("[data-row-id]")?.getAttribute("data-row-id")
+      const sameRow = rowId
+        ? root.querySelector<HTMLElement>(
+            `[data-row-id="${CSS.escape(rowId)}"] [role="checkbox"]`
+          )
+        : null
+      ;(sameRow ?? target)?.focus()
     }
     restore()
     // A closing menu hands focus back on the next frame, to a trigger that
@@ -321,8 +369,14 @@ function DataTable({
       clear,
       showSelectedOnly,
       onShowSelectedOnlyChange,
+      narrow,
+      cards,
+      narrowLayout,
     }),
     [
+      narrow,
+      cards,
+      narrowLayout,
       value,
       canSelectAllMatching,
       selectAllMatching,
@@ -348,6 +402,8 @@ function DataTable({
       <div
         ref={rootRef}
         data-slot="data-table"
+        data-narrow={narrow || undefined}
+        data-layout={cards ? "cards" : "table"}
         className={cn(
           "group/data-table @container/data-table flex w-full flex-col overflow-hidden rounded-lg border border-border bg-background",
           className
@@ -385,6 +441,8 @@ function DataTableToolbar({
     clear,
     showSelectedOnly,
     onShowSelectedOnlyChange,
+    narrow,
+    cards,
   } = useDataTable()
   const selecting = count > 0
 
@@ -400,6 +458,12 @@ function DataTableToolbar({
       )}
       {...props}
     >
+      {cards ? (
+        // Cards have no header row, so select all moves up here.
+        <span data-slot="data-table-select-all" className="flex px-2">
+          <SelectAllCheckbox />
+        </span>
+      ) : null}
       {selecting ? (
         <>
           <Button
@@ -419,7 +483,7 @@ function DataTableToolbar({
               ? `All ${countLabel(count, noun)} selected`
               : `${countLabel(count, noun)} selected`}
           </span>
-          {canSelectAllMatching ? (
+          {canSelectAllMatching && !narrow ? (
             <Button
               data-slot="data-table-select-all-matching"
               variant="link"
@@ -429,7 +493,7 @@ function DataTableToolbar({
               Select all {countLabel(matchingCount, noun)}
             </Button>
           ) : null}
-          {onShowSelectedOnlyChange ? (
+          {onShowSelectedOnlyChange && !narrow ? (
             <label
               data-slot="data-table-show-selected-only"
               className="ml-2 flex items-center gap-2 text-sm whitespace-nowrap text-foreground"
@@ -448,22 +512,135 @@ function DataTableToolbar({
   )
 }
 
-/** Search, sort, group and filters, on the left while nothing is selected. */
+/**
+ * Search, sort, group and filters, on the left while nothing is selected.
+ * Narrow, the search stays and everything else moves into a Filters sheet.
+ */
 function DataTableFilters({
   className,
+  search,
+  children,
   ...props
-}: React.ComponentProps<"div">) {
-  const { count } = useDataTable()
+}: React.ComponentProps<"div"> & {
+  /** The search field. It stays in the toolbar at every width. */
+  search?: React.ReactNode
+}) {
+  const { count, narrow } = useDataTable()
+  const [open, setOpen] = React.useState(false)
+  const filtersRef = React.useRef<HTMLDivElement>(null)
+  const wasOpen = React.useRef(false)
+
+  // Widening past 32rem takes the sheet away while it's open. Focus was in
+  // its portal, out of the table's sight, so bring it back to the filters.
+  React.useLayoutEffect(() => {
+    if (!narrow && wasOpen.current) {
+      setOpen(false)
+      const active = document.activeElement
+      if (!active || active === document.body) {
+        filtersRef.current
+          ?.querySelector<HTMLElement>("input, button, [role=combobox]")
+          ?.focus()
+      }
+    }
+    wasOpen.current = narrow && open
+  }, [narrow, open])
+
   if (count > 0) return null
+  const hasControls = React.Children.toArray(children).length > 0
   return (
     <div
       data-slot="data-table-filters"
       className={cn(
-        "flex min-w-0 flex-1 flex-wrap items-center gap-1.5",
+        "flex min-w-0 flex-1 flex-wrap items-center gap-1.5 data-narrow:flex-nowrap",
         className
       )}
+      data-narrow={narrow || undefined}
+      ref={filtersRef}
       {...props}
-    />
+    >
+      {search ? (
+        <div
+          data-slot="data-table-search"
+          data-narrow={narrow || undefined}
+          className="w-56 min-w-0 data-narrow:w-auto data-narrow:flex-1"
+        >
+          {search}
+        </div>
+      ) : null}
+      {hasControls && narrow ? (
+        <Sheet side="bottom" open={open} onOpenChange={setOpen}>
+          <SheetTrigger
+            data-slot="data-table-filters-trigger"
+            render={
+              <Button variant="outline" size="icon-sm" aria-label="Filters" />
+            }
+          >
+            <SlidersHorizontalIcon />
+          </SheetTrigger>
+          <SheetContent keepMounted>
+            <SheetHeader>
+              <SheetTitle>Filters</SheetTitle>
+            </SheetHeader>
+            <SheetBody
+              data-slot="data-table-filters-sheet"
+              className="flex flex-col items-start gap-3 pb-6 [&>[data-slot=input]]:w-full [&>[data-slot=select-trigger]]:w-full"
+            >
+              {children}
+            </SheetBody>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        children
+      )}
+    </div>
+  )
+}
+
+function textOf(node: React.ReactNode): string | undefined {
+  if (typeof node === "string" || typeof node === "number") return String(node)
+  if (Array.isArray(node)) {
+    const text = node.map(textOf).filter(Boolean).join(" ").trim()
+    return text || undefined
+  }
+  return undefined
+}
+
+/**
+ * A create action, such as Add agent. With an icon, it shrinks to the icon
+ * on a narrow table, and its label becomes the name and a tooltip.
+ */
+function DataTableAction({
+  icon,
+  children,
+  variant = "default",
+  ...props
+}: React.ComponentProps<typeof Button> & {
+  /** Shown before the label, and alone on a narrow table. */
+  icon?: React.ReactNode
+}) {
+  const { narrow } = useDataTable()
+  const label = textOf(children)
+  const iconOnly = narrow && Boolean(icon) && Boolean(label)
+  // One element tree at every width, so crossing 32rem doesn't remount the
+  // button and drop its focus.
+  return (
+    <Tooltip disabled={!iconOnly}>
+      <TooltipTrigger
+        render={
+          <Button
+            data-slot="data-table-action"
+            variant={variant}
+            size={iconOnly ? "icon-sm" : "sm"}
+            aria-label={iconOnly ? label : undefined}
+            {...props}
+          />
+        }
+      >
+        {icon}
+        {iconOnly ? null : children}
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   )
 }
 
@@ -502,7 +679,7 @@ function DataTableBulkActions({
   /** Delete's label, such as “Remove” or “Archive”. */
   deleteLabel?: string
 }) {
-  const { count } = useDataTable()
+  const { count, narrow } = useDataTable()
   if (count === 0) return null
   const hasOthers =
     React.Children.toArray(children).length > 0 || Boolean(moreActions)
@@ -534,15 +711,27 @@ function DataTableBulkActions({
           {hasOthers ? (
             <span aria-hidden="true" className="mx-1 h-5 w-px bg-border" />
           ) : null}
-          <Button
-            data-slot="data-table-delete"
-            variant="destructive"
-            size="sm"
-            onClick={onDelete}
-          >
-            <Trash2Icon data-icon="inline-start" />
-            {deleteLabel}
-          </Button>
+          {narrow ? (
+            <Button
+              data-slot="data-table-delete"
+              variant="destructive"
+              size="icon-sm"
+              aria-label={deleteLabel}
+              onClick={onDelete}
+            >
+              <Trash2Icon />
+            </Button>
+          ) : (
+            <Button
+              data-slot="data-table-delete"
+              variant="destructive"
+              size="sm"
+              onClick={onDelete}
+            >
+              <Trash2Icon data-icon="inline-start" />
+              {deleteLabel}
+            </Button>
+          )}
         </>
       ) : null}
     </div>
@@ -556,27 +745,34 @@ function DataTableBulkActions({
 function DataTableBulkAction({
   className,
   single = false,
+  icon,
   disabled,
+  children,
   "aria-describedby": describedBy,
   ...props
 }: React.ComponentProps<typeof Button> & {
   /** Works on one row at a time, such as Edit or Duplicate. */
   single?: boolean
+  /** Shown before the label, and alone on a narrow table. */
+  icon?: React.ReactNode
 }) {
-  const { count, noun } = useDataTable()
+  const { count, noun, narrow } = useDataTable()
   const reasonId = React.useId()
   const tooMany = single && count !== 1
   const reason = `Works on one ${noun.one} at a time`
+  const label = textOf(children)
+  const iconOnly = narrow && Boolean(icon) && Boolean(label)
   // Always inside the Tooltip, so crossing one selected row doesn't remount
   // the button and lose its focus.
   return (
-    <Tooltip disabled={!tooMany}>
+    <Tooltip disabled={!tooMany && !iconOnly}>
       <TooltipTrigger
         render={
           <Button
             data-slot="data-table-bulk-action"
             variant="outline"
-            size="sm"
+            size={iconOnly ? "icon-sm" : "sm"}
+            aria-label={iconOnly ? label : undefined}
             disabled={disabled || tooMany}
             focusableWhenDisabled={single}
             aria-describedby={
@@ -588,8 +784,17 @@ function DataTableBulkAction({
             {...props}
           />
         }
-      />
-      <TooltipContent>{reason}</TooltipContent>
+      >
+        {icon}
+        {iconOnly ? null : children}
+      </TooltipTrigger>
+      <TooltipContent>
+        {iconOnly && tooMany
+          ? `${label}: ${reason.toLowerCase()}`
+          : tooMany
+            ? reason
+            : label}
+      </TooltipContent>
       {tooMany ? (
         <span id={reasonId} hidden>
           {reason}
@@ -603,6 +808,7 @@ function DataTableContent({
   className,
   ...props
 }: React.ComponentProps<typeof Table>) {
+  const { cards, narrowLayout } = useDataTable()
   const tableRef = React.useRef<HTMLTableElement>(null)
 
   // Scroll shadows: mark the edges a pinned column covers while there's more
@@ -629,13 +835,23 @@ function DataTableContent({
       root.removeAttribute("data-scroll-start")
       root.removeAttribute("data-scroll-end")
     }
-  }, [])
+  }, [cards])
+
+  // Only one of the table and the cards is in the DOM, so screen readers
+  // never meet every row twice.
+  if (cards) return null
 
   return (
     <Table
       ref={tableRef}
       data-slot="data-table-content"
-      className={cn("table-fixed", className)}
+      className={cn(
+        "table-fixed",
+        // Before the first measurement, CSS keeps a narrow cards table from
+        // flashing its rows.
+        narrowLayout === "cards" && "@max-lg/data-table:hidden",
+        className
+      )}
       {...props}
     />
   )
@@ -655,12 +871,24 @@ const pinnedClasses: Record<DataTablePinned, string> = {
 const selectColumnClasses =
   "w-9 pr-0 pl-3 @lg/data-table:sticky @lg/data-table:left-0 @lg/data-table:z-10"
 
+function SelectAllCheckbox() {
+  const { pageState, hasSelectable, toggleAll, noun } = useDataTable()
+  return (
+    <Checkbox
+      aria-label={`Select all ${noun.other} on this page`}
+      checked={pageState === "all"}
+      indeterminate={pageState === "some"}
+      disabled={!hasSelectable}
+      onCheckedChange={() => toggleAll()}
+    />
+  )
+}
+
 function DataTableHeader({
   className,
   children,
   ...props
 }: React.ComponentProps<typeof TableHeader>) {
-  const { pageState, hasSelectable, toggleAll, noun } = useDataTable()
   return (
     <TableHeader data-slot="data-table-header" className={className} {...props}>
       <TableRow>
@@ -668,13 +896,7 @@ function DataTableHeader({
           data-slot="data-table-select-all"
           className={selectColumnClasses}
         >
-          <Checkbox
-            aria-label={`Select all ${noun.other} on this page`}
-            checked={pageState === "all"}
-            indeterminate={pageState === "some"}
-            disabled={!hasSelectable}
-            onCheckedChange={() => toggleAll()}
-          />
+          <SelectAllCheckbox />
         </TableHead>
         {children}
       </TableRow>
@@ -903,6 +1125,142 @@ function DataTableCell({
   )
 }
 
+/** The rows as cards, shown instead of the table when narrowLayout is "cards". */
+function DataTableCards({ className, ...props }: React.ComponentProps<"ul">) {
+  const { cards } = useDataTable()
+  if (!cards) return null
+  return (
+    <ul
+      data-slot="data-table-cards"
+      className={cn("flex flex-col", className)}
+      {...props}
+    />
+  )
+}
+
+function DataTableCard({
+  className,
+  id,
+  title,
+  avatar,
+  status,
+  lockedReason,
+  children,
+  ...props
+}: Omit<React.ComponentProps<"li">, "id" | "title"> & {
+  /** The row's id, the same one it has in rowIds and the selection. */
+  id: string
+  /** The row's name. It also names the card's checkbox. */
+  title: React.ReactNode
+  /** The person's photo, for a row that's a person. */
+  avatar?: { src?: string; fallback: string }
+  /** A status Badge, at the end of the heading. */
+  status?: React.ReactNode
+  /** Why the row can't be selected. Setting it locks the card. */
+  lockedReason?: React.ReactNode
+}) {
+  const { isSelected, toggle, registerLocked } = useDataTable()
+  const labelId = React.useId()
+  const selectId = React.useId()
+  const reasonId = React.useId()
+  const locked = lockedReason !== undefined && lockedReason !== null
+  const selected = isSelected(id)
+
+  React.useLayoutEffect(
+    () => registerLocked(id, locked),
+    [id, locked, registerLocked]
+  )
+
+  const row = React.useMemo(
+    () => ({ id, labelId, reasonId, lockedReason }),
+    [id, labelId, reasonId, lockedReason]
+  )
+
+  return (
+    <DataTableRowContext.Provider value={row}>
+      <li
+        data-slot="data-table-card"
+        data-row-id={id}
+        data-selected={selected || undefined}
+        data-locked={locked || undefined}
+        className={cn(
+          "group/row flex gap-3 border-b border-border bg-background p-3 last:border-b-0 data-selected:bg-muted",
+          className
+        )}
+        {...props}
+      >
+        <span className="flex pt-0.5">
+          <Checkbox
+            aria-labelledby={`${selectId} ${labelId}`}
+            aria-describedby={locked ? reasonId : undefined}
+            checked={selected}
+            disabled={locked}
+            onCheckedChange={(_checked, details) =>
+              toggle(
+                id,
+                "shiftKey" in details.event && details.event.shiftKey === true
+              )
+            }
+          />
+          <span id={selectId} hidden>
+            Select
+          </span>
+          {locked ? (
+            <span id={reasonId} hidden>
+              {lockedReason}
+            </span>
+          ) : null}
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
+          <div className="flex min-h-6 items-center gap-2">
+            {avatar ? (
+              <Avatar size="sm">
+                {avatar.src ? <AvatarImage src={avatar.src} alt="" /> : null}
+                <AvatarFallback>{avatar.fallback}</AvatarFallback>
+              </Avatar>
+            ) : null}
+            <span id={labelId} className="truncate text-sm font-medium">
+              {title}
+            </span>
+            <DataTableLock />
+            {status ? (
+              <span className="ml-auto inline-flex shrink-0 rounded-full bg-background">
+                {status}
+              </span>
+            ) : null}
+          </div>
+          {children ? (
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5">{children}</dl>
+          ) : null}
+        </div>
+      </li>
+    </DataTableRowContext.Provider>
+  )
+}
+
+function DataTableCardField({
+  className,
+  label,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  /** What the value is, such as “Team”. */
+  label: React.ReactNode
+}) {
+  return (
+    <div
+      data-slot="data-table-card-field"
+      className={cn("flex min-w-0 flex-col", className)}
+      {...props}
+    >
+      <dt className="truncate text-xs text-muted-foreground group-data-selected/row:text-foreground">
+        {label}
+      </dt>
+      <dd className="truncate text-sm">{children}</dd>
+    </div>
+  )
+}
+
 function DataTableFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -935,10 +1293,14 @@ function DataTableSelectionCount({
 
 export {
   DataTable,
+  DataTableAction,
   DataTableActions,
   DataTableBody,
   DataTableBulkAction,
   DataTableBulkActions,
+  DataTableCard,
+  DataTableCardField,
+  DataTableCards,
   DataTableCell,
   DataTableContent,
   DataTableFilters,
@@ -952,6 +1314,7 @@ export {
 }
 export type {
   DataTableCellType,
+  DataTableNarrowLayout,
   DataTableNoun,
   DataTablePinned,
   DataTableProps,
