@@ -66,45 +66,170 @@ const PLACES: Place[] = [
   },
 ]
 
+// The minor street grid, in the map's 640 by 400 view box.
+const STREETS_X = [70, 140, 205, 265, 400, 465, 530, 595]
+const STREETS_Y = [38, 150, 205]
+
+// A fixed seed, so the city looks the same on every render and in every
+// visual snapshot.
+function seeded(seed: number) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+// Building footprints filling each block between the streets, a few to a
+// block, in varied sizes like a real city's.
+const PARK =
+  "M232 228 C260 218 330 214 368 222 C378 248 380 272 372 292 C330 300 282 302 246 296 C236 274 230 250 232 228Z"
+const RIVER =
+  "M640 232 C590 244 540 290 470 300 C400 310 330 318 270 326 C200 336 110 330 0 340 V376 C110 368 200 372 276 362 C340 354 410 346 480 336 C556 324 600 284 640 270Z"
+
+const BUILDINGS = (() => {
+  const random = seeded(1618)
+  const xs = [0, ...STREETS_X, 640]
+  const ys = [0, ...STREETS_Y, 90, 400].sort((a, b) => a - b)
+  const out: { x: number; y: number; w: number; h: number }[] = []
+  for (let i = 0; i < xs.length - 1; i++) {
+    for (let j = 0; j < ys.length - 1; j++) {
+      const left = xs[i]! + 7
+      const right = xs[i + 1]! - 7
+      const top = ys[j]! + 7
+      const bottom = ys[j + 1]! - 7
+      let y = top
+      while (y < bottom - 6) {
+        let x = left
+        const h = Math.min(8 + random() * 14, bottom - y)
+        while (x < right - 6) {
+          const w = Math.min(8 + random() * 18, right - x)
+          if (random() > 0.18) out.push({ x, y, w: w - 2, h: h - 2 })
+          x += w
+        }
+        y += h
+      }
+    }
+  }
+  return out
+})()
+
 /**
- * A stand-in for a map library's canvas: streets, a park and water drawn
- * with fibo's tokens. Markers sit on it at percentages, the way a map
- * library places them at coordinates.
+ * A stand-in for a map library's canvas: a small city of streets, building
+ * footprints, a park and a river, drawn with fibo's tokens so it follows
+ * light and dark. Markers sit on it at percentages, the way a map library
+ * places them at coordinates.
  */
 function StandInMap({ children }: { children?: ReactNode }) {
   return (
-    <div className="relative aspect-[16/10] w-[40rem] max-w-full overflow-hidden rounded-xl border border-border bg-muted">
+    <div className="relative aspect-[16/10] w-[40rem] max-w-full overflow-hidden rounded-xl border border-border bg-muted dark:bg-card">
       <svg
         aria-hidden="true"
         viewBox="0 0 640 400"
         preserveAspectRatio="xMidYMid slice"
         className="absolute inset-0 size-full"
+        fill="none"
+        strokeLinecap="round"
       >
-        <path
-          d="M0 300 C120 280 180 340 300 330 S520 300 640 330 V400 H0Z"
-          className="fill-info-subtle"
-        />
-        <rect
-          x="230"
-          y="220"
-          width="160"
-          height="90"
-          rx="18"
-          className="fill-success-subtle"
-        />
-        <g className="stroke-background" strokeWidth="14" fill="none">
-          <path d="M0 120 H640" />
-          <path d="M0 210 H640" />
-          <path d="M150 0 V400" />
-          <path d="M420 0 V400" />
-          <path d="M40 0 L620 400" strokeWidth="8" />
+        {/* Minor streets, a darker casing under a lighter fill. */}
+        <g className="stroke-border">
+          {STREETS_X.map((x) => (
+            <path key={x} d={`M${x} 0V400`} strokeWidth="8" />
+          ))}
+          {STREETS_Y.map((y) => (
+            <path key={y} d={`M0 ${y}H640`} strokeWidth="8" />
+          ))}
         </g>
-        <g className="fill-card">
-          <rect x="30" y="20" width="100" height="80" rx="6" />
-          <rect x="170" y="20" width="230" height="80" rx="6" />
-          <rect x="440" y="20" width="170" height="80" rx="6" />
-          <rect x="30" y="140" width="100" height="50" rx="6" />
-          <rect x="440" y="140" width="170" height="50" rx="6" />
+        <g className="stroke-background dark:stroke-muted">
+          {STREETS_X.map((x) => (
+            <path key={x} d={`M${x} 0V400`} strokeWidth="6" />
+          ))}
+          {STREETS_Y.map((y) => (
+            <path key={y} d={`M0 ${y}H640`} strokeWidth="6" />
+          ))}
+        </g>
+
+        <g className="fill-border dark:fill-secondary">
+          {BUILDINGS.map((b, i) => (
+            <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} rx="1.5" />
+          ))}
+        </g>
+
+        {/* The park covers the streets inside it, with paths of its own. The
+            tints are translucent, so each sits on a land-coloured base. */}
+        <path d={PARK} className="fill-muted dark:fill-card" />
+        <path
+          d={PARK}
+          className="fill-success-subtle stroke-border"
+          strokeWidth="1"
+        />
+        <path
+          d="M246 290 C270 262 300 252 330 246 S362 236 368 226 M300 300 C296 280 304 260 330 246"
+          className="stroke-background dark:stroke-muted"
+          strokeWidth="2"
+          strokeDasharray="3 3"
+        />
+        <circle
+          cx="318"
+          cy="258"
+          r="9"
+          className="fill-info-subtle stroke-border"
+        />
+
+        {/* The river, wider than any street, winding under the bridges. */}
+        <path d={RIVER} className="fill-muted dark:fill-card" />
+        <path
+          d={RIVER}
+          className="fill-info-subtle stroke-border"
+          strokeWidth="1"
+        />
+
+        {/* The main roads, drawn last so they bridge the river. */}
+        <g className="stroke-border">
+          <path d="M0 92 C160 86 320 98 640 88" strokeWidth="14" />
+          <path d="M332 0 C328 120 340 240 330 400" strokeWidth="14" />
+          <path
+            d="M0 250 C120 236 200 198 300 170 S520 120 640 132"
+            strokeWidth="12"
+          />
+        </g>
+        <g className="stroke-background dark:stroke-muted">
+          <path d="M0 92 C160 86 320 98 640 88" strokeWidth="11" />
+          <path d="M332 0 C328 120 340 240 330 400" strokeWidth="11" />
+          <path
+            d="M0 250 C120 236 200 198 300 170 S520 120 640 132"
+            strokeWidth="9"
+          />
+        </g>
+
+        <g
+          className="fill-muted-foreground font-sans"
+          fontSize="8.5"
+          fontWeight="500"
+          letterSpacing="0.04em"
+        >
+          <text x="420" y="84">
+            Fibonacci Ave
+          </text>
+          <text x="40" y="232" transform="rotate(-9 40 232)">
+            Golden Blvd
+          </text>
+          <text x="342" y="40" transform="rotate(90 342 40)">
+            Spiral St
+          </text>
+          <text
+            x="520"
+            y="296"
+            className="fill-info"
+            fontStyle="italic"
+            transform="rotate(-14 520 296)"
+          >
+            River Phi
+          </text>
+          <text x="262" y="240" className="fill-success">
+            Sunflower Park
+          </text>
         </g>
       </svg>
       {children}
