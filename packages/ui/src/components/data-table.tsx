@@ -47,12 +47,7 @@ type DataTableNoun = { one: string; other: string }
 
 /** What a column holds, which sets its alignment and what the cell renders. */
 type DataTableCellType =
-  | "primary"
-  | "text"
-  | "person"
-  | "status"
-  | "numeric"
-  | "actions"
+  "primary" | "text" | "person" | "status" | "numeric" | "actions"
 
 /** What a narrow table shows: the table, scrolling sideways, or a card per row. */
 type DataTableNarrowLayout = "scroll" | "cards"
