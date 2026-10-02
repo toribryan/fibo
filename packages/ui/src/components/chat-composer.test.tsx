@@ -5,13 +5,12 @@ import { render } from "vitest-browser-react"
 import {
   ComposerAttachButton,
   ComposerAttachments,
+  ComposerDropZone,
   ComposerFrame,
   ComposerInput,
   ComposerProvider,
   ComposerSubmit,
   LocalComposerProvider,
-  formatBytes,
-  matchesAccept,
   useComposer,
   type ComposerActions,
 } from "./chat-composer.js"
@@ -204,21 +203,63 @@ describe("Chat composer", () => {
     await expect.element(page.getByRole("textbox")).toHaveFocus()
   })
 
-  it("matches files against an accept string", () => {
-    const png = new File([""], "shot.PNG", { type: "image/png" })
-    const pdf = new File([""], "spec.pdf", { type: "application/pdf" })
-    expect(matchesAccept(png, undefined)).toBe(true)
-    expect(matchesAccept(png, "image/*")).toBe(true)
-    expect(matchesAccept(png, ".png")).toBe(true)
-    expect(matchesAccept(pdf, "image/*")).toBe(false)
-    expect(matchesAccept(pdf, "image/*, application/pdf")).toBe(true)
+  it("keeps only dropped files that match accept", async () => {
+    const screen = await render(
+      <LocalComposerProvider>
+        <ComposerDropZone accept="image/*, .pdf" data-testid="zone">
+          <ComposerFrame>
+            <ComposerAttachments />
+            <ComposerInput />
+          </ComposerFrame>
+        </ComposerDropZone>
+      </LocalComposerProvider>
+    )
+    const data = new DataTransfer()
+    for (const [name, type] of [
+      ["shot.PNG", "image/png"],
+      ["spec.pdf", "application/pdf"],
+      ["notes.txt", "text/plain"],
+    ] as const)
+      data.items.add(new File([""], name, { type }))
+    const zone = screen.getByTestId("zone").element()
+    zone.dispatchEvent(
+      new DragEvent("dragenter", { bubbles: true, dataTransfer: data })
+    )
+    zone.dispatchEvent(
+      new DragEvent("drop", { bubbles: true, dataTransfer: data })
+    )
+    const list = screen.getByRole("list", { name: "Attachments" })
+    await expect.element(list).toHaveTextContent("shot.PNG")
+    await expect.element(list).toHaveTextContent("spec.pdf")
+    expect(list.element().textContent).not.toContain("notes.txt")
   })
 
-  it("formats sizes in the units people read", () => {
-    expect(formatBytes(512)).toBe("512 B")
-    expect(formatBytes(1024)).toBe("1 KB")
-    expect(formatBytes(1536)).toBe("1.5 KB")
-    expect(formatBytes(482_000)).toBe("471 KB")
-    expect(formatBytes(1_830_000)).toBe("1.7 MB")
+  it("shows sizes in the units people read", async () => {
+    const sizes = [512, 1024, 1536, 482_000, 1_830_000]
+    const screen = await render(
+      <ComposerProvider
+        state={{
+          value: "",
+          attachments: sizes.map((size, i) => ({
+            id: String(i),
+            name: `file-${i}`,
+            size,
+          })),
+        }}
+        actions={{
+          setValue() {},
+          addAttachments() {},
+          removeAttachment() {},
+          submit() {},
+        }}
+      >
+        <ComposerAttachments />
+      </ComposerProvider>
+    )
+    const text = screen
+      .getByRole("list", { name: "Attachments" })
+      .element().textContent
+    for (const label of ["512 B", "1 KB", "1.5 KB", "471 KB", "1.7 MB"])
+      expect(text).toContain(label)
   })
 })
