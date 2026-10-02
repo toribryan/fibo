@@ -321,7 +321,7 @@ function MembersTable({
 }
 
 const meta: Meta<typeof DataTable> = {
-  title: "Base components/Data table",
+  title: "Base components/Display/Data table",
   component: DataTable,
   subcomponents: {
     DataTableContent,

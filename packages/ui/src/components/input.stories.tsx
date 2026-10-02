@@ -5,7 +5,7 @@ import { Input } from "./input.js"
 import { Label } from "./label.js"
 
 const meta: Meta<typeof Input> = {
-  title: "Base components/Input",
+  title: "Base components/Forms/Input",
   component: Input,
   argTypes: {
     size: { control: "inline-radio", options: ["sm", "default"] },

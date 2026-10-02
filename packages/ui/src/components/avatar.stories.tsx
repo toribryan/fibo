@@ -13,7 +13,7 @@ import {
 import bonzo from "../assets/bonzo.webp"
 
 const meta: Meta<typeof Avatar> = {
-  title: "Base components/Avatar",
+  title: "Base components/Display/Avatar",
   component: Avatar,
   subcomponents: {
     AvatarImage,

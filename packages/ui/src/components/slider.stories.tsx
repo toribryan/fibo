@@ -5,7 +5,7 @@ import { expect, fn } from "storybook/test"
 import { Slider } from "./slider.js"
 
 const meta: Meta<typeof Slider> = {
-  title: "Base components/Slider",
+  title: "Base components/Forms/Slider",
   component: Slider,
   argTypes: {
     min: { control: "number" },

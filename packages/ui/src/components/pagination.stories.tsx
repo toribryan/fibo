@@ -5,7 +5,7 @@ import { expect, fn } from "storybook/test"
 import { Pagination } from "./pagination.js"
 
 const meta: Meta<typeof Pagination> = {
-  title: "Base components/Pagination",
+  title: "Base components/Navigation/Pagination",
   component: Pagination,
   argTypes: {
     pageCount: { control: { type: "number", min: 1 } },

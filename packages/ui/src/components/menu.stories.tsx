@@ -34,7 +34,7 @@ type MenuStoryArgs = React.ComponentProps<typeof MenuContent> & {
 }
 
 const meta: Meta<MenuStoryArgs> = {
-  title: "Base components/Menu",
+  title: "Base components/Overlays/Menu",
   component: MenuContent,
   subcomponents: {
     Menu,

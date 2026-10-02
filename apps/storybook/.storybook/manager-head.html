@@ -91,6 +91,53 @@
     margin-bottom: 16px !important;
   }
 
+  /* Shelves are section headings that read like the pages above them: the
+     same Geist, size and icon column. They always stay open (manager.tsx), so
+     they show no chevron, no expand-all toggle and no hover. */
+  #storybook-explorer-menu .sidebar-subheading {
+    margin-left: -6px;
+    width: calc(100% + 6px);
+  }
+  #storybook-explorer-menu .sidebar-subheading:hover {
+    background: none !important;
+  }
+  #storybook-explorer-menu
+    .sidebar-subheading
+    button[data-action="collapse-root"]:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  #storybook-explorer-menu
+    .sidebar-subheading
+    button[data-action="collapse-root"] {
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-start;
+    /* The icon in the same column as the pages' and groups' icons. */
+    padding-left: 28px;
+    cursor: default;
+    background: none !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 16px !important;
+    font-weight: 500 !important;
+    color: var(--fibo-muted);
+  }
+  #storybook-explorer-menu
+    .sidebar-subheading
+    button[data-action="collapse-root"]
+    > div,
+  #storybook-explorer-menu .sidebar-subheading-action {
+    display: none !important;
+  }
+  /* The collapse button names itself in a tooltip; with nothing to collapse,
+     it would only repeat the heading. Other tooltips stay. */
+  body:has(.sidebar-subheading button:hover) .react-aria-Tooltip {
+    display: none;
+  }
+
   #storybook-explorer-menu a,
   #storybook-explorer-menu button {
     font-family: Geist, ui-sans-serif, system-ui, sans-serif;

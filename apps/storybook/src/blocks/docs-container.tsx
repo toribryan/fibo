@@ -98,7 +98,7 @@ const META = componentsMeta as unknown as Record<
 
 /*
  * The Figma page for the component a docs page is about, found from the
- * page's title ("Special components/Map pin") and the part's `figma` node in
+ * page's title ("Special components/Display/Map pin") and the part's `figma` node in
  * components.meta.json. Pages that aren't about a component, and parts with
  * no Figma page yet, get nothing.
  */
@@ -111,7 +111,10 @@ function figmaUrl(context: Context) {
     return undefined
   }
   if (!title) return undefined
-  const [shelf, name] = title.split("/")
+  // Shelf first and name last; the group between them only sorts the sidebar.
+  const parts = title.split("/")
+  const shelf = parts[0]
+  const name = parts.at(-1)
   const tier = shelf?.trim().toLowerCase().replace(/\s+/g, "-")
   const part = Object.values(META).find(
     (info) => info.tier === tier && info.title === name?.trim()

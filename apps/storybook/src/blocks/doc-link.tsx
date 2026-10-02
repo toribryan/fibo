@@ -3,7 +3,7 @@ import { SELECT_STORY } from "storybook/internal/core-events"
 import { addons } from "storybook/preview-api"
 
 type DocLinkProps = Omit<ComponentProps<"a">, "href"> & {
-  /** A docs or story id, such as `base-components-button--docs`. */
+  /** A docs or story id, such as `base-components-actions-button--docs`. */
   to: string
 }
 
