@@ -15,11 +15,11 @@ parts and four supporting ones, over several pull requests:
 
 ## Why now
 
-The Figma file documents one table for every list in a product, drawn from
-an audit of 15 tables and 44 screens. It found five places for bulk actions,
-five ways to word a count, rows from 33 to 110px, and select all that stopped
-at the page. The Figma page settles each of those once. Until the code does
-too, every team rebuilds the table and the inconsistencies come back.
+The Figma file documents one table for every list in a product: where bulk
+actions go, how a count is worded, how tall a row is, and whether select all
+stops at the page. Those are the details tables most often disagree on, and
+the Figma page settles each of them once. Until the code does too, every team
+rebuilds the table and the differences come back.
 `pnpm figma:drift` already reports Data table as in Figma with no component
 in code.
 
@@ -53,7 +53,7 @@ would rebuild TanStack's surface and fights the copy-and-own registry model.
   onValueChange={setSelected}
   rowIds={page.map((a) => a.id)}
   totalCount={248}
-  noun={{ one: "agent", other: "agents" }}
+  noun={{ one: "member", other: "members" }}
 >
   <DataTableToolbar>
     <DataTableFilters>...</DataTableFilters>
@@ -63,17 +63,17 @@ would rebuild TanStack's surface and fights the copy-and-own registry model.
   <DataTableContent>
     <DataTableHeader>
       <DataTableHead type="primary" pinned="start">
-        Agent
+        Member
       </DataTableHead>
       <DataTableHead type="status" pinned="end">
         Status
       </DataTableHead>
     </DataTableHeader>
     <DataTableBody>
-      {page.map((agent) => (
-        <DataTableRow key={agent.id} id={agent.id} lockedReason={agent.lock}>
+      {page.map((member) => (
+        <DataTableRow key={member.id} id={member.id} lockedReason={member.lock}>
           <DataTableCell type="primary" pinned="start">
-            {agent.name}
+            {member.name}
           </DataTableCell>
           <DataTableCell type="status" pinned="end">
             ...
@@ -105,11 +105,11 @@ roving focus and arrow keys in every cell; here the controls are checkboxes
 and buttons that work as plain Tab stops.
 
 - Row checkboxes are named by the row's primary cell ("Select Maya Okafor"),
-  the header one by its scope ("Select all agents on this page").
+  the header one by its scope ("Select all members on this page").
 - Selected rows carry `data-selected`, not `aria-selected`, which only means
   something in a grid.
-- A `role="status"` region at the root announces "3 agents selected", "All
-  248 agents selected" and "Selection cleared".
+- A `role="status"` region at the root announces "3 members selected", "All
+  248 members selected" and "Selection cleared".
 - When the toolbar swaps back to idle, focus moves to the select all
   checkbox, so it is never lost with the removed Clear button.
 - Escape clears the selection; Shift+click selects a range.
