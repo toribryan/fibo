@@ -2,12 +2,41 @@
 
 import * as React from "react"
 import { cva } from "class-variance-authority"
-import { CheckIcon, CopyIcon, XIcon } from "lucide-react"
+import { CheckIcon, CopyIcon, FileDownIcon, XIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-type VoiceMemoProps = Omit<React.ComponentProps<"div">, "onChange"> & {
+type VoiceMemoSegment = {
+  /** Milliseconds from the start, when the phrase was settled. Unknown for text from your own service. */
+  at?: number
+  /** The phrase. */
+  text: string
+}
+
+type VoiceMemoResult = {
+  /** The memo's title, the Markdown heading. */
+  title: string
+  /** The whole transcript as one string. */
+  transcript: string
+  /** The transcript a phrase at a time, with when each was said. */
+  segments: VoiceMemoSegment[]
+  /** When listening started. */
+  startedAt: Date
+  /** Milliseconds spent listening. */
+  duration: number
+  /** The transcript as a Markdown document, ready to save as a .md file. */
+  markdown: string
+  /** A file name for it, such as voice-memo-2026-10-02-1405.md. */
+  filename: string
+}
+
+type VoiceMemoProps = Omit<
+  React.ComponentProps<"div">,
+  "onChange" | "title"
+> & {
+  /** The memo's name, used as the Markdown heading and the file name. */
+  title?: string
   /** Whether it's listening, when controlled. */
   recording?: boolean
   /** Whether an uncontrolled device starts listening. */
@@ -20,8 +49,8 @@ type VoiceMemoProps = Omit<React.ComponentProps<"div">, "onChange"> & {
   interim?: string
   /** Called as each phrase is settled, with the whole transcript so far. */
   onTranscriptChange?: (transcript: string) => void
-  /** Called once listening stops, with the finished transcript. */
-  onComplete?: (transcript: string) => void
+  /** Called once listening stops, with the finished transcript and the memo, Markdown included. */
+  onComplete?: (transcript: string, memo: VoiceMemoResult) => void
   /** The language spoken, as a BCP 47 tag, for the browser's recogniser. */
   lang?: string
   /** Text to speak in place of a microphone, a word at a time. For previews and demos. */
@@ -94,13 +123,68 @@ function countWords(text: string) {
   return text.split(/\s+/).filter(Boolean).length
 }
 
+function slugify(text: string) {
+  return (
+    text
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "voice-memo"
+  )
+}
+
 /**
- * A brushed aluminium recorder that writes down what you say. Press it and a
+ * Writes a memo as Markdown: the title, a line saying when and how long, then
+ * a paragraph per phrase, each led by when it was said if that's known.
+ */
+function transcriptToMarkdown(
+  memo: Pick<VoiceMemoResult, "title" | "segments" | "startedAt" | "duration">,
+  locale = "en-US"
+) {
+  const when = new Intl.DateTimeFormat(locale, {
+    dateStyle: "long",
+    timeStyle: "short",
+  }).format(memo.startedAt)
+  const words = countWords(memo.segments.map((s) => s.text).join(" "))
+  const body = memo.segments.length
+    ? memo.segments
+        .map((segment) =>
+          segment.at === undefined
+            ? segment.text
+            : `**${formatElapsed(segment.at)}** ${segment.text}`
+        )
+        .join("\n\n")
+    : "_Nothing was heard._"
+  return `# ${memo.title}\n\n${when} · ${formatElapsed(memo.duration)} · ${words} ${words === 1 ? "word" : "words"}\n\n${body}\n`
+}
+
+function memoFilename(title: string, startedAt: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0")
+  const date = `${startedAt.getFullYear()}-${pad(startedAt.getMonth() + 1)}-${pad(startedAt.getDate())}`
+  const time = `${pad(startedAt.getHours())}${pad(startedAt.getMinutes())}`
+  return `${slugify(title)}-${date}-${time}.md`
+}
+
+function download(markdown: string, filename: string) {
+  const url = URL.createObjectURL(
+    new Blob([markdown], { type: "text/markdown;charset=utf-8" })
+  )
+  const link = document.createElement("a")
+  link.href = url
+  link.download = filename
+  link.click()
+  // Revoked a beat later; Safari cancels a download whose URL goes at once.
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+/**
+ * A bead-blasted aluminium recorder that writes down what you say. Press it and a
  * transcript opens beside it, filling in as you talk; press it again and the
  * transcript stays, ready to copy. It uses the browser's own speech
  * recognition, or shows text from your own service through `transcript`.
  */
 function VoiceMemo({
+  title = "Voice memo",
   recording: recordingProp,
   defaultRecording = false,
   onRecordingChange,
@@ -140,7 +224,10 @@ function VoiceMemo({
       ? "Transcription isn't available in this browser."
       : "")
   const [announcement, setAnnouncement] = React.useState("")
-  const open = recording || (!dismissed && (transcript !== "" || error !== ""))
+  const [memo, setMemo] = React.useState<VoiceMemoResult | null>(null)
+  const open =
+    recording ||
+    (!dismissed && (memo !== null || transcript !== "" || error !== ""))
 
   // The latest text, for handlers that outlive the render they were made in.
   const latest = React.useRef({ transcript, interim })
@@ -153,10 +240,21 @@ function VoiceMemo({
     onTranscriptChange?.(text)
   })
 
+  // Each settled phrase and when it came, for the timestamps in the file.
+  const segments = React.useRef<VoiceMemoSegment[]>([])
+  const started = React.useRef({ at: 0, date: new Date(0) })
+  const elapsed = React.useCallback(
+    () => performance.now() - started.current.at,
+    []
+  )
+
   const setRecording = (next: boolean) => {
     if (recordingProp === undefined) setUncontrolled(next)
     onRecordingChange?.(next)
     if (next) {
+      segments.current = []
+      started.current = { at: performance.now(), date: new Date() }
+      setMemo(null)
       setHeard("")
       setGuess("")
       setFailure("")
@@ -172,7 +270,28 @@ function VoiceMemo({
           ? `Transcript ready, ${countWords(final)} words`
           : "Stopped, nothing heard"
       )
-      onComplete?.(final)
+      // Text the phrases don't cover, from your own service or a last guess,
+      // goes in as one more phrase.
+      const covered = join(...segments.current.map((s) => s.text))
+      const rest = final.startsWith(covered)
+        ? final.slice(covered.length).trim()
+        : final
+      const all = final.startsWith(covered) ? [...segments.current] : []
+      if (rest) all.push({ at: external ? undefined : elapsed(), text: rest })
+      const base = {
+        title,
+        transcript: final,
+        segments: all,
+        startedAt: started.current.date,
+        duration: elapsed(),
+      }
+      const result: VoiceMemoResult = {
+        ...base,
+        markdown: transcriptToMarkdown(base, lang),
+        filename: memoFilename(title, base.startedAt),
+      }
+      setMemo(result)
+      onComplete?.(final, result)
     }
   }
 
@@ -190,8 +309,11 @@ function VoiceMemo({
       let pending = ""
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i]!
-        if (result.isFinal) settled = join(settled, result[0]!.transcript)
-        else pending = join(pending, result[0]!.transcript)
+        if (result.isFinal) {
+          const text = result[0]!.transcript.trim()
+          settled = join(settled, text)
+          if (text) segments.current.push({ at: elapsed(), text })
+        } else pending = join(pending, result[0]!.transcript)
       }
       settle(settled)
       setGuess(pending)
@@ -202,7 +324,11 @@ function VoiceMemo({
       setFailure(
         event.error === "not-allowed" || event.error === "service-not-allowed"
           ? "Allow the microphone to transcribe."
-          : "Transcription stopped. Press the device to try again."
+          : event.error === "audio-capture"
+            ? "No microphone was found."
+            : event.error === "network"
+              ? "Transcription needs a connection. Press the device to try again."
+              : "Transcription stopped. Press the device to try again."
       )
     }
     // Recognisers end on their own after a silence; a device that's still
@@ -211,26 +337,40 @@ function VoiceMemo({
       if (!stopped) recogniser.start()
     }
     recogniser.start()
+    // Aborted rather than stopped: a stop sends one last result after
+    // onComplete has already had the text. The guess on screen stands in.
     return () => {
       stopped = true
+      recogniser.onresult = null
+      recogniser.onerror = null
       recogniser.onend = null
-      recogniser.stop()
+      recogniser.abort()
     }
-  }, [recording, usesRecogniser, lang])
+  }, [recording, usesRecogniser, lang, elapsed])
 
   // A script spoken a word at a time, the newest word still a guess.
   React.useEffect(() => {
     if (!recording || external || simulate === undefined) return
     const words = simulate.split(/\s+/).filter(Boolean)
     let index = 0
+    let from = 0
     const id = window.setInterval(() => {
       if (index > words.length) return
-      settle(words.slice(0, Math.max(0, index - 1)).join(" "))
+      const done = Math.max(0, index - 1)
+      // A sentence settles as a phrase, as the browser's recogniser would.
+      if (done > from && /[.?!]$/.test(words[done - 1]!)) {
+        segments.current.push({
+          at: elapsed(),
+          text: words.slice(from, done).join(" "),
+        })
+        from = done
+      }
+      settle(words.slice(0, done).join(" "))
       setGuess(index > 0 ? (words[index - 1] ?? "") : "")
       index++
     }, 240)
     return () => window.clearInterval(id)
-  }, [recording, external, simulate])
+  }, [recording, external, simulate, elapsed])
 
   // The clock is written straight to the page, so it costs no renders.
   const clock = React.useRef<HTMLSpanElement>(null)
@@ -346,6 +486,17 @@ function VoiceMemo({
                     {copied ? <CheckIcon /> : <CopyIcon />}
                   </Button>
                 ) : null}
+                {memo && transcript ? (
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    aria-label="Download as Markdown"
+                    data-slot="voice-memo-download"
+                    onClick={() => download(memo.markdown, memo.filename)}
+                  >
+                    <FileDownIcon />
+                  </Button>
+                ) : null}
                 <Button
                   variant="ghost"
                   size="icon-xs"
@@ -416,7 +567,8 @@ function Device({
 }) {
   const id = React.useId()
   const ids = {
-    brush: `${id}-brush`,
+    pits: `${id}-pits`,
+    glints: `${id}-glints`,
     shade: `${id}-shade`,
     sheen: `${id}-sheen`,
     clip: `${id}-clip`,
@@ -442,21 +594,35 @@ function Device({
         className="absolute inset-0 size-full overflow-visible"
       >
         <defs>
-          {/* Noise stretched along the length reads as brushing. Its red
-              channel becomes alpha, so the streaks take the fill's colour. */}
-          <filter id={ids.brush} x="0" y="0" width="100%" height="100%">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.012 0.9"
-              numOctaves="2"
-              seed="4"
-            />
-            <feColorMatrix
-              type="matrix"
-              values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.4 0 0 0 -0.45"
-            />
-            <feComposite in="SourceGraphic" operator="in" />
-          </filter>
+          {/* Bead-blasted grain: fine noise, the same in every direction,
+              pushed hard so only its peaks survive as specks. The red
+              channel becomes alpha, so the specks take the fill's colour.
+              Two seeds give dark pits and bright glints that don't line up. */}
+          {[
+            { id: ids.pits, seed: 4 },
+            { id: ids.glints, seed: 11 },
+          ].map((grain) => (
+            <filter
+              key={grain.id}
+              id={grain.id}
+              x="0"
+              y="0"
+              width="100%"
+              height="100%"
+            >
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="1.6"
+                numOctaves="2"
+                seed={grain.seed}
+              />
+              <feColorMatrix
+                type="matrix"
+                values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.2 0 0 0 -1.45"
+              />
+              <feComposite in="SourceGraphic" operator="in" />
+            </filter>
+          ))}
           {/* Lit from the top left. In user space, so the wordmark picks up
               the same shading as the face it's raised from. */}
           <linearGradient
@@ -528,30 +694,9 @@ function Device({
           rx={radius}
           fill={`url(#${ids.shade})`}
         />
-        <rect
-          width={width}
-          height={height}
-          rx={radius}
-          filter={`url(#${ids.brush})`}
-          className="fill-foreground opacity-10"
-        />
-
-        {/* The reflection slides along as the device lifts, the way light
-            moves across metal you tilt. */}
-        <g clipPath={`url(#${ids.clip})`}>
-          <rect
-            x={-20}
-            y={-height}
-            width={36}
-            height={height * 3}
-            fill={`url(#${ids.sheen})`}
-            transform={`rotate(24 ${width / 2} ${height / 2})`}
-            className="transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover/device:translate-x-[60px]"
-          />
-        </g>
-
         {/* Raised lettering: a lit edge above, a shadow below, and the face
-            itself in the body's own shading. */}
+            itself in the body's own shading. Drawn before the grey and the
+            grain, which cover it like the rest of the metal. */}
         <g fontSize={50} className="font-serif">
           {[
             { dy: -0.9, className: "fill-background opacity-90" },
@@ -570,6 +715,62 @@ function Device({
           <text x={14} y={height - 16} fill={`url(#${ids.shade})`}>
             {wordmark}
           </text>
+        </g>
+        {/* Anodised aluminium is a mid grey; the muted role alone is near
+            white in the light theme. */}
+        <rect
+          width={width}
+          height={height}
+          rx={radius}
+          className="fill-foreground opacity-[0.12] dark:opacity-0"
+        />
+        <rect
+          width={width}
+          height={height}
+          rx={radius}
+          filter={`url(#${ids.pits})`}
+          className="fill-foreground opacity-30"
+        />
+        <rect
+          width={width}
+          height={height}
+          rx={radius}
+          filter={`url(#${ids.glints})`}
+          className="fill-background opacity-55"
+        />
+
+        {/* The lettering's edges again, over the grain: speckle would
+            otherwise break up the only thing that says the letters are
+            raised. */}
+        <g fontSize={50} fill="none" strokeWidth={0.7} className="font-serif">
+          <text
+            x={14}
+            y={height - 16.5}
+            className="stroke-background opacity-80"
+          >
+            {wordmark}
+          </text>
+          <text
+            x={14}
+            y={height - 15.5}
+            className="stroke-foreground opacity-25"
+          >
+            {wordmark}
+          </text>
+        </g>
+
+        {/* The reflection slides along as the device lifts, the way light
+            moves across metal you tilt. */}
+        <g clipPath={`url(#${ids.clip})`}>
+          <rect
+            x={-20}
+            y={-height}
+            width={36}
+            height={height * 3}
+            fill={`url(#${ids.sheen})`}
+            transform={`rotate(24 ${width / 2} ${height / 2})`}
+            className="transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover/device:translate-x-[60px]"
+          />
         </g>
 
         {/* A machined chamfer: a bright line just inside the edge, a dark
@@ -624,4 +825,12 @@ function Device({
   )
 }
 
-export { VoiceMemo, voiceMemoVariants, formatElapsed, type VoiceMemoProps }
+export {
+  VoiceMemo,
+  voiceMemoVariants,
+  formatElapsed,
+  transcriptToMarkdown,
+  type VoiceMemoProps,
+  type VoiceMemoResult,
+  type VoiceMemoSegment,
+}
