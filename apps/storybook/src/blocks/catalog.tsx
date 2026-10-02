@@ -1,7 +1,9 @@
 import type { ReactNode } from "react"
 import {
   ArrowDownIcon,
+  ArrowUpIcon,
   ArrowUpRightIcon,
+  AtSignIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -9,6 +11,7 @@ import {
   CompassIcon,
   HouseIcon,
   ListFilterIcon,
+  PaperclipIcon,
   PlusIcon,
   SearchIcon,
   UserIcon,
@@ -109,6 +112,20 @@ const PREVIEWS: Record<string, ReactNode> = {
     </div>
   ),
   textarea: <Textarea placeholder="Leave a note" className="w-52" />,
+  "chat-composer": (
+    <div className="flex w-60 flex-col rounded-2xl border border-input bg-input-subtle">
+      <span className="px-3 pt-3 pb-2 text-sm text-muted-foreground">
+        Message #design
+      </span>
+      <div className="flex items-center gap-2 px-2 pb-2 text-muted-foreground">
+        <PaperclipIcon className="ml-1.5 size-4" />
+        <AtSignIcon className="size-4" />
+        <span className="ml-auto flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
+          <ArrowUpIcon className="size-4" />
+        </span>
+      </div>
+    </div>
+  ),
   switch: (
     <div className="flex items-center gap-3">
       {[true, false].map((on) => (

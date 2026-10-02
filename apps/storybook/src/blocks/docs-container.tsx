@@ -1,4 +1,9 @@
-import { useSyncExternalStore, type ReactNode } from "react"
+import {
+  useMemo,
+  useSyncExternalStore,
+  type ReactNode,
+  type RefObject,
+} from "react"
 import {
   DocsContainer,
   Unstyled,
@@ -8,6 +13,7 @@ import { BugIcon } from "lucide-react"
 
 import { darkTheme, lightTheme } from "../../.storybook/theme.js"
 import { FigmaIcon } from "./brand-icons.js"
+import { DocTabsContext, useDocTabsState } from "./doc-tabs.js"
 import { LINKS } from "./links.js"
 import { SiteNav } from "./site-nav.js"
 
@@ -81,21 +87,74 @@ function Footer() {
   )
 }
 
+type Context = DocsContainerProps["context"]
+
+/*
+ * Storybook builds "On this page" from the headings that don't match its
+ * ignore selector, and rebuilds it when that selector changes. So the context
+ * handed to DocsContainer adds the headings of every doc tab but the open
+ * one. It goes by which panel a heading sits in, not whether it's visible,
+ * because the list rebuilds before the old panel is hidden; and it matches
+ * nothing on a page without tabs. The context object itself stays stable,
+ * so switching tabs never re-renders the stories.
+ */
+function useTabAwareContext(
+  context: Context,
+  tabRef: RefObject<string | null>
+) {
+  return useMemo(() => {
+    const proxy: Context = Object.create(context)
+    proxy.resolveOf = ((...args: Parameters<Context["resolveOf"]>) => {
+      const resolved = context.resolveOf(...args)
+      // Only the container asks for "meta" by name; blocks pass a module,
+      // and keep getting Storybook's own answer.
+      if (args[0] !== "meta" || !("preparedMeta" in resolved)) return resolved
+      const parameters = resolved.preparedMeta.parameters
+      const toc = parameters?.docs?.toc
+      if (!toc) return resolved
+      const tab = tabRef.current
+      // With no tab chosen yet, DocTabs opens the first.
+      const others = tab
+        ? `[data-doc-tab]:not([data-doc-tab="${tab}"]) *`
+        : "[data-doc-tab] ~ [data-doc-tab] *"
+      const ignoreSelector = `${toc.ignoreSelector ?? ".docs-story *, .skip-toc"}, ${others}`
+      return {
+        ...resolved,
+        preparedMeta: {
+          ...resolved.preparedMeta,
+          parameters: {
+            ...parameters,
+            docs: { ...parameters.docs, toc: { ...toc, ignoreSelector } },
+          },
+        },
+      }
+    }) as Context["resolveOf"]
+    return proxy
+  }, [context, tabRef])
+}
+
 function FiboDocsContainer({
   children,
   context,
 }: DocsContainerProps & { children: ReactNode }) {
   const dark = useIsDark()
+  const tabs = useDocTabsState()
+  const tabAwareContext = useTabAwareContext(context, tabs.tabRef)
   return (
-    <DocsContainer context={context} theme={dark ? darkTheme : lightTheme}>
-      <Unstyled>
-        <div className="fibo-docs font-sans text-foreground antialiased">
-          {children}
-          <Footer />
-        </div>
-        <SiteNav />
-      </Unstyled>
-    </DocsContainer>
+    <DocTabsContext value={tabs}>
+      <DocsContainer
+        context={tabAwareContext}
+        theme={dark ? darkTheme : lightTheme}
+      >
+        <Unstyled>
+          <div className="fibo-docs font-sans text-foreground antialiased">
+            {children}
+            <Footer />
+          </div>
+          <SiteNav />
+        </Unstyled>
+      </DocsContainer>
+    </DocTabsContext>
   )
 }
 
