@@ -151,6 +151,15 @@ const PREVIEWS: Record<string, ReactNode> = {
       ))}
     </div>
   ),
+  sheet: (
+    <div className="relative h-28 w-44 overflow-hidden rounded-md border border-border bg-muted">
+      <div className="absolute inset-y-0 right-0 flex w-24 flex-col gap-1.5 border-l border-border bg-background p-2">
+        <span className="h-2 w-12 rounded-full bg-foreground" />
+        <span className="h-2 w-16 rounded-full bg-border" />
+        <span className="mt-auto h-5 rounded-sm bg-primary" />
+      </div>
+    </div>
+  ),
   menu: (
     <div className="flex w-36 flex-col rounded-lg border border-border bg-popover p-1 text-sm shadow-md">
       <span className="rounded-md bg-accent px-2 py-1.5">Edit</span>
