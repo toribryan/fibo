@@ -154,5 +154,12 @@
     "description": "Walks a colour token from raw value to primitive to semantic role.",
     "tier": "special-components",
     "group": "Diagrams"
+  },
+  "typing-indicator": {
+    "title": "Typing indicator",
+    "description": "Says who's typing in a conversation, naming up to three people.",
+    "tier": "base-components",
+    "group": "Feedback",
+    "status": "new"
   }
 }
