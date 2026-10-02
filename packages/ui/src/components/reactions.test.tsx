@@ -107,7 +107,7 @@ describe("Reactions", () => {
 
   it("reads out the floating total, and hides it with showCounts off", async () => {
     const screen = await render(
-      <Reactions variant="floating" particles={0} defaultReactions={[heart]} />
+      <Reactions type="floating" particles={0} defaultReactions={[heart]} />
     )
     await expect
       .element(screen.getByText("3 reactions", { exact: true }))
@@ -121,7 +121,7 @@ describe("Reactions", () => {
 
     screen.rerender(
       <Reactions
-        variant="floating"
+        type="floating"
         particles={0}
         showCounts={false}
         defaultReactions={[heart]}

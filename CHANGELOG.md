@@ -10,6 +10,19 @@ has the same history with links into the docs.
 
 ### Added
 
+- A Figma drift check: the `figma-drift` agent skill reads the Figma library
+  into `figma/snapshot.json`, and `pnpm figma:drift` reports where its colour
+  variables, radii and component variant properties differ from the code.
+  CI runs it on every pull request.
+- Badge `success`, `warning` and `info` variants, tinted like `destructive`.
+- Input `size`, `sm` or `default`, to match Select and Button in dense forms.
+- Floating nav `size`, `sm` or `default`: `sm` gives 36px items and 16px icons
+  for a compact pill.
+- A way to retire a part: a `deprecated` entry in `components.meta.json`
+  drives a docs banner, a sidebar and catalog pill, a notice printed on
+  `shadcn add`, a line in `llms.txt`, and a codemod served at
+  `/codemods/<name>.js`. See `plans/002-retiring-a-component.md`.
+- A `retire-component` agent skill for taking a part through it.
 - A Registry guide page in Storybook: a step-by-step walkthrough for
   designers, with a picker that reads the live registry files to show what
   each part brings into a project.
@@ -21,6 +34,13 @@ has the same history with links into the docs.
 - A `brand/` folder with the brand kit's source: the rabbit, the logo,
   the social card and poster generators, and the motion prototype.
 
+### Removed
+
+- **Breaking:** Integration visual's `size` prop. Tiles and the hub keep the
+  former `default` size.
+- **Breaking:** Chapter scrubber's `preview="none"`. Every rail previews the
+  chapter at the crest, as a `card` or a `label`.
+
 ### Fixed
 
 - Registry parts now bring the tokens they use that a stock shadcn theme
@@ -30,7 +50,22 @@ has the same history with links into the docs.
 - Registry parts depend on shadcn's `utils`, so `cn` is installed in a project
   that never ran `shadcn init`.
 
+### Deprecated
+
+- **Spinner**, added as the first part through the retirement path. Use an
+  indeterminate Progress; the `spinner-to-progress` codemod migrates a
+  project. Removed in 0.3.0.
+
 ### Changed
+
+- **Breaking:** Reactions' `variant` prop is now `type` (`inline` or
+  `floating`), and its root carries `data-type` instead of `data-variant`,
+  matching the Figma property.
+- Light-mode `--success-subtle`, `--warning-subtle` and `--info-subtle` tint
+  at 6% instead of 8%. Success text on the old tint measured 4.43:1 at badge
+  size, under AA.
+- Size options are listed smallest first everywhere, starting with Button.
+  Values are unchanged.
 
 - fibo's mascot is now a pixel rabbit. The Welcome page hero, the sidebar
   logo and the favicon use him; he idles, hops, watches the pointer and

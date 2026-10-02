@@ -21,6 +21,7 @@ import { Kbd, KbdGroup } from "@workspace/ui/components/kbd"
 import { Label } from "@workspace/ui/components/label"
 import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Spinner } from "@workspace/ui/components/spinner"
 import {
   StickerAvatar,
   StickerAvatarCount,
@@ -34,6 +35,7 @@ import componentsMeta from "@workspace/ui/components.meta.json" with { type: "js
 import { DocLink } from "./doc-link.js"
 
 type Tier = "base-components" | "special-components"
+type Status = "new" | "beta" | "deprecated"
 
 type Entry = {
   name: string
@@ -41,7 +43,7 @@ type Entry = {
   description: string
   tier: Tier
   group: string
-  status?: "new" | "beta"
+  status?: Status
   preview: ReactNode
 }
 
@@ -80,6 +82,7 @@ const PREVIEWS: Record<string, ReactNode> = {
     </div>
   ),
   input: <Input placeholder="you@example.com" className="w-48" />,
+  spinner: <Spinner size="lg" label="Spinner preview" />,
   label: (
     <div className="flex w-48 flex-col gap-1.5">
       <Label>Email</Label>
@@ -362,7 +365,7 @@ type Meta = {
   description: string
   tier: Tier
   group: string
-  status?: "new" | "beta"
+  status?: Status
 }
 
 const META = Object.entries(componentsMeta).filter(
@@ -402,7 +405,14 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
         <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
           {entry.name}
           {entry.status ? (
-            <span className="rounded-full border border-success px-1.5 py-0.5 font-mono text-[10px] leading-none text-success uppercase">
+            <span
+              className={cn(
+                "rounded-full border px-1.5 py-0.5 font-mono text-[10px] leading-none uppercase",
+                entry.status === "deprecated"
+                  ? "border-destructive text-destructive"
+                  : "border-success text-success"
+              )}
+            >
               {entry.status}
             </span>
           ) : null}
@@ -421,8 +431,13 @@ function Catalog({ tier }: { tier: Tier }) {
   return (
     <div className="my-8 flex flex-col gap-12">
       {groups.map((group) => {
+        // Deprecated parts sink to the end so new work starts elsewhere.
         const entries = ENTRIES.filter(
           (entry) => entry.tier === tier && entry.group === group
+        ).sort(
+          (a, b) =>
+            Number(a.status === "deprecated") -
+            Number(b.status === "deprecated")
         )
         if (entries.length === 0) return null
         return (

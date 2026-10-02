@@ -16,6 +16,23 @@ Notable changes, newest first.
   of its own told apart by shape: present, away or offline. It adds
   `--sticker-edge` and `--sticker-ink`, two tokens that keep their values in
   dark mode on purpose.
+- **Floating nav** has a compact size: `size="sm"` gives 36px items and
+  16px icons, for sites where the bar should take less of the screen.
+- **Badge** has `success`, `warning` and `info` variants, and **Input** has a
+  `size` prop with `sm` for dense forms, both matching the Figma library.
+- **Reactions** takes `type="inline"` or `type="floating"` in place of
+  `variant`, the name the Figma component uses.
+- **Integration visual** drops its `size` prop, and **Chapter scrubber** drops
+  `preview="none"`. Neither had a Figma counterpart.
+- The success, warning and info tints are lighter in light mode, so their
+  text clears AA contrast at badge size.
+- fibo can now **retire a part** without surprising anyone who installed it.
+  A deprecated part carries a red pill in the sidebar and catalog, a banner
+  on its docs page with what to use instead, a notice when it's installed,
+  and a codemod that rewrites a project for you.
+- **Spinner** is the first through it: it ships deprecated in favour of an
+  indeterminate **Progress**, and is removed in 0.3.0. Run the codemod on its
+  page to migrate.
 - New **Floating nav** in Special components: a pill of destinations that
   floats above the bottom of a phone screen. The current item slides open to
   show its name, and the bar can step aside while the page scrolls down.

@@ -1,5 +1,3 @@
-import type { ReactNode } from "react"
-
 const PLATES = {
   bunny: {
     alt: "A soft photograph of a white rabbit's eye in a small window, with a dithered pixel rabbit building out around it.",
@@ -42,20 +40,15 @@ function Plate({ name }: { name: keyof typeof PLATES }) {
   )
 }
 
-/** Copy beside a plate, the columns cut on the golden section. */
-function Split({
-  plate,
-  children,
-}: {
-  plate: keyof typeof PLATES
-  children: ReactNode
-}) {
+/** Plates side by side under the copy, stacked on phones. */
+function Plates({ names }: { names: (keyof typeof PLATES)[] }) {
   return (
-    <div className="grid items-start gap-8 sm:grid-cols-[1.618fr_1fr] sm:gap-10">
-      <div className="min-w-0 [&>p:first-child]:mt-0">{children}</div>
-      <Plate name={plate} />
+    <div className="my-8 grid gap-8 sm:grid-cols-2 sm:gap-6">
+      {names.map((name) => (
+        <Plate key={name} name={name} />
+      ))}
     </div>
   )
 }
 
-export { Plate, Split }
+export { Plate, Plates }

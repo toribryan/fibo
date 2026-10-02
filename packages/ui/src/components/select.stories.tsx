@@ -42,7 +42,7 @@ const meta: Meta<Args> = {
   argTypes: {
     size: {
       control: "inline-radio",
-      options: ["default", "sm"],
+      options: ["sm", "default"],
       description: "The trigger's height: 36 pixels, or 32 for dense forms.",
       table: { category: "SelectTrigger" },
     },

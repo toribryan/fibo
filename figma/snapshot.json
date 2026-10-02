@@ -1,0 +1,379 @@
+{
+  "$comment": "What the Figma library held when it was last read. Regenerate with the figma-drift skill; compare with `pnpm figma:drift`.",
+  "file": {
+    "key": "LJZ5Tt4Ba7NPPi8Xnq8i0e",
+    "name": "Fibo-DS"
+  },
+  "readAt": "2026-10-01",
+  "variables": {
+    "Color": {
+      "background": {
+        "Light": "base/white",
+        "Dark": "neutral/950"
+      },
+      "foreground": {
+        "Light": "neutral/950",
+        "Dark": "neutral/50"
+      },
+      "card": {
+        "Light": "base/white",
+        "Dark": "neutral/900"
+      },
+      "card-foreground": {
+        "Light": "neutral/950",
+        "Dark": "neutral/50"
+      },
+      "popover": {
+        "Light": "base/white",
+        "Dark": "neutral/900"
+      },
+      "popover-foreground": {
+        "Light": "neutral/950",
+        "Dark": "neutral/50"
+      },
+      "primary": {
+        "Light": "neutral/900",
+        "Dark": "neutral/50"
+      },
+      "primary-foreground": {
+        "Light": "neutral/50",
+        "Dark": "neutral/900"
+      },
+      "secondary": {
+        "Light": "neutral/100",
+        "Dark": "neutral/800"
+      },
+      "secondary-foreground": {
+        "Light": "neutral/900",
+        "Dark": "neutral/50"
+      },
+      "muted": {
+        "Light": "neutral/100",
+        "Dark": "neutral/800"
+      },
+      "muted-foreground": {
+        "Light": "neutral/500",
+        "Dark": "neutral/400"
+      },
+      "accent": {
+        "Light": "neutral/100",
+        "Dark": "neutral/800"
+      },
+      "accent-foreground": {
+        "Light": "neutral/900",
+        "Dark": "neutral/50"
+      },
+      "destructive": {
+        "Light": "red/700",
+        "Dark": "red/400"
+      },
+      "destructive-foreground": {
+        "Light": "neutral/50",
+        "Dark": "neutral/950"
+      },
+      "destructive-subtle": {
+        "Light": "alpha/red-700/8",
+        "Dark": "alpha/red-400/20"
+      },
+      "success": {
+        "Light": "green/700",
+        "Dark": "green/400"
+      },
+      "success-foreground": {
+        "Light": "neutral/50",
+        "Dark": "neutral/950"
+      },
+      "success-subtle": {
+        "Light": "alpha/green-700/6",
+        "Dark": "alpha/green-400/20"
+      },
+      "warning": {
+        "Light": "amber/700",
+        "Dark": "amber/400"
+      },
+      "warning-foreground": {
+        "Light": "neutral/50",
+        "Dark": "neutral/950"
+      },
+      "warning-subtle": {
+        "Light": "alpha/amber-700/6",
+        "Dark": "alpha/amber-400/20"
+      },
+      "info": {
+        "Light": "blue/700",
+        "Dark": "blue/400"
+      },
+      "info-foreground": {
+        "Light": "neutral/50",
+        "Dark": "neutral/950"
+      },
+      "info-subtle": {
+        "Light": "alpha/blue-700/6",
+        "Dark": "alpha/blue-400/20"
+      },
+      "border": {
+        "Light": "neutral/200",
+        "Dark": "alpha/white/10"
+      },
+      "input": {
+        "Light": "neutral/200",
+        "Dark": "alpha/white/15"
+      },
+      "ring": {
+        "Light": "neutral/400",
+        "Dark": "neutral/500"
+      },
+      "chart-1": {
+        "Light": "neutral/300",
+        "Dark": "neutral/300"
+      },
+      "chart-2": {
+        "Light": "neutral/500",
+        "Dark": "neutral/500"
+      },
+      "chart-3": {
+        "Light": "neutral/600",
+        "Dark": "neutral/600"
+      },
+      "chart-4": {
+        "Light": "neutral/700",
+        "Dark": "neutral/700"
+      },
+      "chart-5": {
+        "Light": "neutral/800",
+        "Dark": "neutral/800"
+      },
+      "sidebar": {
+        "Light": "neutral/50",
+        "Dark": "neutral/900"
+      },
+      "sidebar-foreground": {
+        "Light": "neutral/950",
+        "Dark": "neutral/50"
+      },
+      "sidebar-primary": {
+        "Light": "neutral/900",
+        "Dark": "neutral/50"
+      },
+      "sidebar-primary-foreground": {
+        "Light": "neutral/50",
+        "Dark": "neutral/900"
+      },
+      "sidebar-accent": {
+        "Light": "neutral/100",
+        "Dark": "neutral/800"
+      },
+      "sidebar-accent-foreground": {
+        "Light": "neutral/900",
+        "Dark": "neutral/50"
+      },
+      "sidebar-border": {
+        "Light": "neutral/200",
+        "Dark": "alpha/white/10"
+      },
+      "sidebar-ring": {
+        "Light": "neutral/400",
+        "Dark": "neutral/500"
+      },
+      "ring-subtle": {
+        "Light": "alpha/neutral-400/50",
+        "Dark": "alpha/neutral-500/50"
+      },
+      "destructive-ring": {
+        "Light": "alpha/red-700/20",
+        "Dark": "alpha/red-400/40"
+      },
+      "input-subtle": {
+        "Light": "alpha/neutral-200/20",
+        "Dark": "alpha/white/05"
+      },
+      "input-subtle-hover": {
+        "Light": "alpha/neutral-200/50",
+        "Dark": "alpha/white/10"
+      },
+      "primary-hover": {
+        "Light": "alpha/neutral-900/80",
+        "Dark": "alpha/neutral-50/80"
+      },
+      "secondary-hover": {
+        "Light": "neutral/200",
+        "Dark": "alpha/neutral-700/100"
+      },
+      "destructive-subtle-hover": {
+        "Light": "alpha/red-700/16",
+        "Dark": "alpha/red-400/30"
+      },
+      "primary-subtle": {
+        "Light": "alpha/neutral-900/10",
+        "Dark": "alpha/neutral-50/20"
+      },
+      "popover-overlay": {
+        "Light": "alpha/white/85",
+        "Dark": "alpha/neutral-900/85"
+      },
+      "backdrop": {
+        "Light": "alpha/neutral-950/20",
+        "Dark": "alpha/black/60"
+      }
+    },
+    "Border": {
+      "radius/none": 0,
+      "radius/sm": 4,
+      "radius/md": 6,
+      "radius/lg": 8,
+      "radius/xl": 12,
+      "radius/2xl": 16,
+      "radius/3xl": 20,
+      "radius/4xl": 24,
+      "radius/full": 9999,
+      "stroke/none": 0,
+      "stroke/thin": 1,
+      "stroke/thick": 2,
+      "stroke/focus": 3
+    }
+  },
+  "components": {
+    "Avatar": {
+      "initials": "TEXT",
+      "size": ["sm", "default", "lg"],
+      "type": ["image", "initials"]
+    },
+    "Badge": {
+      "label": "TEXT",
+      "variant": [
+        "default",
+        "secondary",
+        "destructive",
+        "outline",
+        "success",
+        "warning",
+        "info"
+      ]
+    },
+    "Button": {
+      "label": "TEXT",
+      "iconStart": "BOOLEAN",
+      "iconEnd": "BOOLEAN",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "iconEndSwap": "INSTANCE_SWAP",
+      "variant": [
+        "default",
+        "outline",
+        "secondary",
+        "ghost",
+        "destructive",
+        "link"
+      ],
+      "size": [
+        "xs",
+        "sm",
+        "default",
+        "lg",
+        "icon-xs",
+        "icon-sm",
+        "icon",
+        "icon-lg"
+      ]
+    },
+    "Checkbox": {
+      "checked": ["unchecked", "checked", "indeterminate"],
+      "state": ["default", "focused", "invalid", "disabled"]
+    },
+    "Input": {
+      "value": "TEXT",
+      "iconStart": "BOOLEAN",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "size": ["sm", "default"],
+      "state": ["default", "filled", "focused", "invalid", "disabled"]
+    },
+    "Kbd": {
+      "label": "TEXT"
+    },
+    "Label": {
+      "text": "TEXT",
+      "state": ["default", "disabled"]
+    },
+    "Select": {
+      "value": "TEXT",
+      "iconStart": "BOOLEAN",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "size": ["sm", "default"],
+      "state": ["default", "focused", "disabled"]
+    },
+    "Textarea": {
+      "value": "TEXT",
+      "state": ["default", "filled", "focused", "invalid", "disabled"]
+    },
+    "Data table": {
+      "rows": "SLOT",
+      "cards": "SLOT",
+      "footer": "BOOLEAN",
+      "selection": ["none", "some", "page", "all matching"],
+      "width": ["narrow", "default"],
+      "narrowLayout": ["scroll", "cards"]
+    },
+    "Chat composer": {
+      "parts": "SLOT",
+      "dropLabel": "TEXT",
+      "state": ["default", "focused", "disabled", "dragging"]
+    },
+    "Chapter scrubber": {
+      "orientation": ["vertical", "horizontal"],
+      "variant": ["tick", "dot"],
+      "state": ["rest", "scrubbing"]
+    },
+    "Chapter preview": {
+      "meta": "TEXT",
+      "title": "TEXT",
+      "description": "TEXT",
+      "showMeta": "BOOLEAN",
+      "preview": ["card", "label"]
+    },
+    "Command menu": {
+      "hints": "BOOLEAN",
+      "view": ["home", "results", "page"],
+      "preview": ["false", "true"]
+    },
+    "Command menu item": {
+      "label": "TEXT",
+      "iconStart": "BOOLEAN",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "showContext": "BOOLEAN",
+      "context": "TEXT",
+      "shortcut": "BOOLEAN",
+      "opensPage": "BOOLEAN",
+      "state": ["default", "highlighted", "disabled"]
+    },
+    "Command menu trigger": {
+      "label": "TEXT"
+    },
+    "Reaction Pill": {
+      "emoji": "TEXT",
+      "count": "TEXT",
+      "state": ["default", "hover", "active"]
+    },
+    "Reactions Trigger": {
+      "type": ["inline", "floating"],
+      "state": ["default", "hover", "open"]
+    },
+    "Reactions Panel": {},
+    "Integration visual": {
+      "layout": ["corners", "orbit", "sides"]
+    },
+    "Integration tile": {
+      "icon": "INSTANCE_SWAP",
+      "status": ["active", "idle"]
+    },
+    "Integration hub": {
+      "icon": "INSTANCE_SWAP",
+      "text": "TEXT",
+      "content": ["icon", "text"]
+    },
+    "Token flow": {
+      "showUse": ["false", "true"]
+    },
+    "Token chip": {
+      "label": "TEXT"
+    }
+  }
+}

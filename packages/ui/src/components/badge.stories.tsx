@@ -8,7 +8,15 @@ const meta: Meta<typeof Badge> = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "secondary", "destructive", "outline"],
+      options: [
+        "default",
+        "secondary",
+        "destructive",
+        "outline",
+        "success",
+        "warning",
+        "info",
+      ],
     },
   },
   args: {
@@ -25,13 +33,21 @@ export const Default: Story = {}
 export const AllVariants: Story = {
   render: (args: ComponentProps<typeof Badge>) => (
     <div className="flex flex-wrap items-center gap-3">
-      {(["default", "secondary", "destructive", "outline"] as const).map(
-        (variant) => (
-          <Badge key={variant} {...args} variant={variant}>
-            {variant}
-          </Badge>
-        )
-      )}
+      {(
+        [
+          "default",
+          "secondary",
+          "destructive",
+          "outline",
+          "success",
+          "warning",
+          "info",
+        ] as const
+      ).map((variant) => (
+        <Badge key={variant} {...args} variant={variant}>
+          {variant}
+        </Badge>
+      ))}
     </div>
   ),
 }

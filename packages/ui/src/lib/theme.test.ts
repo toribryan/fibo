@@ -48,17 +48,13 @@ describe("theme", () => {
     expect(dark["--border"]).toBe("oklch(100% 0 0 / 10%)")
   })
 
-  it("finds only the two known gaps in fibo's own theme", () => {
-    // Both are in light mode and just under 4.5:1: muted text on the muted
-    // fill (parts use full-strength text there instead), and success text
-    // on its tint.
+  it("finds only the one known gap in fibo's own theme", () => {
+    // Muted text on the muted fill, just under 4.5:1 in light mode. Parts use
+    // full-strength text there instead.
     const failures = checkContrast(DEFAULT_THEME)
       .filter((c) => !c.pass)
       .map((c) => `${c.mode}: ${c.label}`)
-    expect(failures).toEqual([
-      "light: Muted text on a muted fill",
-      "light: Success text on its tint",
-    ])
+    expect(failures).toEqual(["light: Muted text on a muted fill"])
   })
 
   it("keeps a status role's dark hue offset when its hue moves", () => {
