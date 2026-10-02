@@ -1,14 +1,16 @@
 "use client"
 
 import * as React from "react"
-import { LockIcon } from "lucide-react"
+import { EllipsisIcon, LockIcon, Trash2Icon, XIcon } from "lucide-react"
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@workspace/ui/components/avatar"
+import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
+import { Menu, MenuContent, MenuTrigger } from "@workspace/ui/components/menu"
 import {
   Table,
   TableBody,
@@ -50,8 +52,15 @@ type DataTableContextValue = {
   hasSelectable: boolean
   count: number
   totalCount: number
+  matchingCount: number
   noun: DataTableNoun
   registerLocked: (id: string, locked: boolean) => () => void
+  isAll: boolean
+  canSelectAllMatching: boolean
+  selectAllMatching: () => void
+  clear: () => void
+  showSelectedOnly: boolean
+  onShowSelectedOnlyChange?: (showSelectedOnly: boolean) => void
 }
 
 const DataTableContext = React.createContext<DataTableContextValue | null>(null)
@@ -101,6 +110,10 @@ type DataTableProps = Omit<React.ComponentProps<"div">, "defaultValue"> & {
   defaultValue?: DataTableSelection
   /** Called with the new selection whenever it changes. */
   onValueChange?: (value: DataTableSelection) => void
+  /** Whether the app is showing only the selected rows. */
+  showSelectedOnly?: boolean
+  /** Shows “Show selected only” while rows are selected; the app filters its rows. */
+  onShowSelectedOnlyChange?: (showSelectedOnly: boolean) => void
 }
 
 function DataTable({
@@ -111,6 +124,8 @@ function DataTable({
   value: valueProp,
   defaultValue,
   onValueChange,
+  showSelectedOnly = false,
+  onShowSelectedOnlyChange,
   children,
   ...props
 }: DataTableProps) {
@@ -135,9 +150,12 @@ function DataTable({
     [value, locked]
   )
 
+  // Locked rows on other pages aren't known here; totalCount should leave
+  // them out if there are any.
+  const matching = Math.max(0, total - locked.size)
   const count =
     value === "all"
-      ? total - locked.size
+      ? matching
       : rowIds.filter((id) => value.has(id) && !locked.has(id)).length +
         [...value].filter((id) => !rowIds.includes(id)).length
 
@@ -153,8 +171,11 @@ function DataTable({
     (next: DataTableSelection) => {
       if (valueProp === undefined) setUncontrolled(next)
       onValueChange?.(next)
+      if (next !== "all" && next.size === 0 && showSelectedOnly) {
+        onShowSelectedOnlyChange?.(false)
+      }
       if (next === "all") {
-        setAnnouncement(`All ${countLabel(total - locked.size, noun)} selected`)
+        setAnnouncement(`All ${countLabel(matching, noun)} selected`)
       } else if (next.size === 0) {
         setAnnouncement("Selection cleared")
       } else {
@@ -162,7 +183,15 @@ function DataTable({
         setAnnouncement(`${countLabel(selected, noun)} selected`)
       }
     },
-    [valueProp, onValueChange, total, locked, noun]
+    [
+      valueProp,
+      onValueChange,
+      matching,
+      locked,
+      noun,
+      showSelectedOnly,
+      onShowSelectedOnlyChange,
+    ]
   )
 
   // Leaving "all" for a set keeps everything on this page but the change;
@@ -208,6 +237,11 @@ function DataTable({
     commit(next)
   }, [asSet, pageState, selectable, commit])
 
+  const clear = React.useCallback(() => commit(new Set()), [commit])
+  const selectAllMatching = React.useCallback(() => commit("all"), [commit])
+  const canSelectAllMatching =
+    value !== "all" && pageState === "all" && count < matching
+
   const registerLocked = React.useCallback((id: string, isLocked: boolean) => {
     if (!isLocked) return () => {}
     setLocked((current) => new Set(current).add(id))
@@ -227,11 +261,46 @@ function DataTable({
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape" || event.defaultPrevented) return
       if (value !== "all" && value.size === 0) return
-      commit(new Set())
+      clear()
     }
     root.addEventListener("keydown", onKeyDown)
     return () => root.removeEventListener("keydown", onKeyDown)
-  }, [value, commit])
+  }, [value, clear])
+
+  // When the focused control disappears (Clear, Select all matching, a row
+  // hidden by Show selected only, a More menu whose trigger is gone), focus
+  // would fall to the page. Send it to Clear, or to select all when idle.
+  const lastFocusedRef = React.useRef<Element | null>(null)
+  React.useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    const onFocusIn = (event: FocusEvent) => {
+      lastFocusedRef.current = event.target as Element
+    }
+    root.addEventListener("focusin", onFocusIn)
+    return () => root.removeEventListener("focusin", onFocusIn)
+  }, [])
+  React.useLayoutEffect(() => {
+    const restore = () => {
+      const root = rootRef.current
+      const last = lastFocusedRef.current
+      if (!root || !last || last.isConnected) return
+      const active = document.activeElement
+      if (active && active !== document.body && active.isConnected) return
+      const target =
+        root.querySelector<HTMLElement>('[data-slot="data-table-clear"]') ??
+        root.querySelector<HTMLElement>(
+          '[data-slot="data-table-select-all"] [role="checkbox"]'
+        )
+      lastFocusedRef.current = null
+      target?.focus()
+    }
+    restore()
+    // A closing menu hands focus back on the next frame, to a trigger that
+    // may be gone by then.
+    const frame = requestAnimationFrame(restore)
+    return () => cancelAnimationFrame(frame)
+  })
 
   const context = React.useMemo<DataTableContextValue>(
     () => ({
@@ -243,10 +312,23 @@ function DataTable({
       hasSelectable: selectable.length > 0,
       count,
       totalCount: total,
+      matchingCount: matching,
       noun,
       registerLocked,
+      isAll: value === "all",
+      canSelectAllMatching,
+      selectAllMatching,
+      clear,
+      showSelectedOnly,
+      onShowSelectedOnlyChange,
     }),
     [
+      value,
+      canSelectAllMatching,
+      selectAllMatching,
+      clear,
+      showSelectedOnly,
+      onShowSelectedOnlyChange,
       isSelected,
       locked,
       toggle,
@@ -255,6 +337,7 @@ function DataTable({
       selectable,
       count,
       total,
+      matching,
       noun,
       registerLocked,
     ]
@@ -277,6 +360,242 @@ function DataTable({
         </span>
       </div>
     </DataTableContext.Provider>
+  )
+}
+
+/*
+ * One row for every action. A labelled group, not role="toolbar": that
+ * promises arrow keys between controls, and its search field needs them.
+ * Idle, it holds filters and create actions;
+ * while rows are selected it swaps, in place, to the selection and bulk
+ * actions. Nothing else on the page acts on the selection.
+ */
+function DataTableToolbar({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div">) {
+  const {
+    count,
+    matchingCount,
+    noun,
+    isAll,
+    canSelectAllMatching,
+    selectAllMatching,
+    clear,
+    showSelectedOnly,
+    onShowSelectedOnlyChange,
+  } = useDataTable()
+  const selecting = count > 0
+
+  return (
+    <div
+      role="group"
+      aria-label={selecting ? "Bulk actions" : "Filters and actions"}
+      data-slot="data-table-toolbar"
+      data-selecting={selecting || undefined}
+      className={cn(
+        "flex min-h-12 items-center gap-2 border-b border-border px-3 py-2 data-selecting:gap-1 data-selecting:bg-muted data-selecting:pl-1",
+        className
+      )}
+      {...props}
+    >
+      {selecting ? (
+        <>
+          <Button
+            data-slot="data-table-clear"
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Clear selection"
+            onClick={clear}
+          >
+            <XIcon />
+          </Button>
+          <span
+            data-slot="data-table-selected-label"
+            className="text-sm font-medium whitespace-nowrap tabular-nums"
+          >
+            {isAll
+              ? `All ${countLabel(count, noun)} selected`
+              : `${countLabel(count, noun)} selected`}
+          </span>
+          {canSelectAllMatching ? (
+            <Button
+              data-slot="data-table-select-all-matching"
+              variant="link"
+              size="sm"
+              onClick={selectAllMatching}
+            >
+              Select all {countLabel(matchingCount, noun)}
+            </Button>
+          ) : null}
+          {onShowSelectedOnlyChange ? (
+            <label
+              data-slot="data-table-show-selected-only"
+              className="ml-2 flex items-center gap-2 text-sm whitespace-nowrap text-foreground"
+            >
+              <Checkbox
+                checked={showSelectedOnly}
+                onCheckedChange={(checked) => onShowSelectedOnlyChange(checked)}
+              />
+              Show selected only
+            </label>
+          ) : null}
+        </>
+      ) : null}
+      {children}
+    </div>
+  )
+}
+
+/** Search, sort, group and filters, on the left while nothing is selected. */
+function DataTableFilters({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  const { count } = useDataTable()
+  if (count > 0) return null
+  return (
+    <div
+      data-slot="data-table-filters"
+      className={cn(
+        "flex min-w-0 flex-1 flex-wrap items-center gap-1.5",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+/** Create actions, such as Add agent, on the right while nothing is selected. */
+function DataTableActions({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  const { count } = useDataTable()
+  if (count > 0) return null
+  return (
+    <div
+      data-slot="data-table-actions"
+      className={cn("ml-auto flex items-center gap-1.5", className)}
+      {...props}
+    />
+  )
+}
+
+/*
+ * The order never changes: your actions, then More, then Delete behind a
+ * divider. That's what makes every table's bulk actions read the same.
+ */
+function DataTableBulkActions({
+  className,
+  children,
+  moreActions,
+  onDelete,
+  deleteLabel = "Delete",
+  ...props
+}: React.ComponentProps<"div"> & {
+  /** Menu items for actions that don't earn a button of their own. */
+  moreActions?: React.ReactNode
+  /** Shows Delete, last and destructive, and runs this when it's pressed. */
+  onDelete?: () => void
+  /** Delete's label, such as “Remove” or “Archive”. */
+  deleteLabel?: string
+}) {
+  const { count } = useDataTable()
+  if (count === 0) return null
+  const hasOthers =
+    React.Children.toArray(children).length > 0 || Boolean(moreActions)
+  return (
+    <div
+      data-slot="data-table-bulk-actions"
+      className={cn("ml-auto flex items-center gap-1.5", className)}
+      {...props}
+    >
+      {children}
+      {moreActions ? (
+        <Menu>
+          <MenuTrigger
+            render={
+              <Button
+                variant="outline"
+                size="icon-sm"
+                aria-label="More actions"
+              />
+            }
+          >
+            <EllipsisIcon />
+          </MenuTrigger>
+          <MenuContent align="end">{moreActions}</MenuContent>
+        </Menu>
+      ) : null}
+      {onDelete ? (
+        <>
+          {hasOthers ? (
+            <span aria-hidden="true" className="mx-1 h-5 w-px bg-border" />
+          ) : null}
+          <Button
+            data-slot="data-table-delete"
+            variant="destructive"
+            size="sm"
+            onClick={onDelete}
+          >
+            <Trash2Icon data-icon="inline-start" />
+            {deleteLabel}
+          </Button>
+        </>
+      ) : null}
+    </div>
+  )
+}
+
+/**
+ * A bulk action button. With `single`, it only works on one row: it stays in
+ * place, dimmed, while more than one is selected.
+ */
+function DataTableBulkAction({
+  className,
+  single = false,
+  disabled,
+  "aria-describedby": describedBy,
+  ...props
+}: React.ComponentProps<typeof Button> & {
+  /** Works on one row at a time, such as Edit or Duplicate. */
+  single?: boolean
+}) {
+  const { count, noun } = useDataTable()
+  const reasonId = React.useId()
+  const tooMany = single && count !== 1
+  const reason = `Works on one ${noun.one} at a time`
+  // Always inside the Tooltip, so crossing one selected row doesn't remount
+  // the button and lose its focus.
+  return (
+    <Tooltip disabled={!tooMany}>
+      <TooltipTrigger
+        render={
+          <Button
+            data-slot="data-table-bulk-action"
+            variant="outline"
+            size="sm"
+            disabled={disabled || tooMany}
+            focusableWhenDisabled={single}
+            aria-describedby={
+              [describedBy, tooMany ? reasonId : undefined]
+                .filter(Boolean)
+                .join(" ") || undefined
+            }
+            className={cn("data-disabled:opacity-50", className)}
+            {...props}
+          />
+        }
+      />
+      <TooltipContent>{reason}</TooltipContent>
+      {tooMany ? (
+        <span id={reasonId} hidden>
+          {reason}
+        </span>
+      ) : null}
+    </Tooltip>
   )
 }
 
@@ -616,14 +935,19 @@ function DataTableSelectionCount({
 
 export {
   DataTable,
+  DataTableActions,
   DataTableBody,
+  DataTableBulkAction,
+  DataTableBulkActions,
   DataTableCell,
   DataTableContent,
+  DataTableFilters,
   DataTableFooter,
   DataTableHead,
   DataTableHeader,
   DataTableRow,
   DataTableSelectionCount,
+  DataTableToolbar,
   useDataTableSelection,
 }
 export type {

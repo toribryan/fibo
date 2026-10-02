@@ -1,7 +1,12 @@
 import * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
+  CheckIcon,
+  DownloadIcon,
   EllipsisIcon,
+  PlusIcon,
+  SearchIcon,
+  XIcon,
   FileTextIcon,
   PencilIcon,
   Trash2Icon,
@@ -12,6 +17,11 @@ import { Badge } from "./badge.js"
 import { Button } from "./button.js"
 import {
   DataTable,
+  DataTableActions,
+  DataTableBulkAction,
+  DataTableBulkActions,
+  DataTableFilters,
+  DataTableToolbar,
   DataTableBody,
   DataTableCell,
   DataTableContent,
@@ -29,6 +39,7 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "./menu.js"
+import { Input } from "./input.js"
 import { Pagination } from "./pagination.js"
 
 const STATUS = {
@@ -150,15 +161,51 @@ function RowActions({ name }: { name: string }) {
   )
 }
 
+function AgentsToolbar({
+  children,
+}: {
+  /** The bulk actions shown while rows are selected. */
+  children?: React.ReactNode
+}) {
+  return (
+    <DataTableToolbar>
+      <DataTableFilters>
+        <div className="relative w-48">
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            size="sm"
+            className="pl-8"
+            placeholder="Search 248 agents"
+            aria-label="Search agents"
+          />
+        </div>
+        <Button variant="ghost" size="sm">
+          <PlusIcon data-icon="inline-start" />
+          Add filter
+        </Button>
+      </DataTableFilters>
+      <DataTableActions>
+        <Button size="sm">
+          <PlusIcon data-icon="inline-start" />
+          Add agent
+        </Button>
+      </DataTableActions>
+      {children ?? <DataTableBulkActions onDelete={() => {}} />}
+    </DataTableToolbar>
+  )
+}
+
 function AgentsTable({
   agents = AGENTS,
   secondary = false,
   footer,
+  toolbar,
   ...props
 }: Partial<React.ComponentProps<typeof DataTable>> & {
   agents?: Agent[]
   secondary?: boolean
   footer?: React.ReactNode
+  toolbar?: React.ReactNode
 }) {
   return (
     <DataTable
@@ -167,6 +214,7 @@ function AgentsTable({
       noun={{ one: "agent", other: "agents" }}
       {...props}
     >
+      {toolbar}
       <DataTableContent>
         <DataTableHeader>
           <DataTableHead type="person" pinned="start" className="w-56">
@@ -227,6 +275,11 @@ const meta: Meta<typeof DataTable> = {
     DataTableCell,
     DataTableFooter,
     DataTableSelectionCount,
+    DataTableToolbar,
+    DataTableFilters,
+    DataTableActions,
+    DataTableBulkActions,
+    DataTableBulkAction,
   },
   tags: ["new"],
   argTypes: {
@@ -236,6 +289,8 @@ const meta: Meta<typeof DataTable> = {
     onValueChange: { control: false },
     noun: { control: false },
     children: { control: false },
+    showSelectedOnly: { control: false },
+    onShowSelectedOnlyChange: { control: false },
     totalCount: { control: { type: "number", min: 0 } },
   },
   parameters: {
@@ -247,11 +302,13 @@ const meta: Meta<typeof DataTable> = {
         "onValueChange",
         "noun",
         "children",
+        "showSelectedOnly",
+        "onShowSelectedOnlyChange",
       ],
     },
   },
   args: { onValueChange: fn() },
-  render: (args) => <AgentsTable {...args} />,
+  render: (args) => <AgentsTable {...args} toolbar={<AgentsToolbar />} />,
 }
 
 export default meta
@@ -269,6 +326,12 @@ export const Default: Story = {
       new Set(["priya"])
     )
     await expect(all).toHaveAttribute("aria-checked", "mixed")
+    await expect(
+      canvas.getByRole("group", { name: "Bulk actions" })
+    ).toHaveTextContent("1 agent selected")
+    await expect(
+      canvas.queryByRole("button", { name: "Add agent" })
+    ).not.toBeInTheDocument()
     await expect(canvas.getByRole("status")).toHaveTextContent(
       "1 agent selected"
     )
@@ -377,5 +440,129 @@ export const Picker: Story = {
         </DataTableFooter>
       </DataTable>
     )
+  },
+}
+
+export const BulkActionPatterns: Story = {
+  name: "Bulk action patterns",
+  render: (args) => (
+    <div className="flex flex-col gap-6">
+      {(
+        [
+          ["Delete only", <DataTableBulkActions key="a" onDelete={() => {}} />],
+          [
+            "Export",
+            <DataTableBulkActions key="b" onDelete={() => {}}>
+              <DataTableBulkAction>
+                <DownloadIcon data-icon="inline-start" />
+                Export
+              </DataTableBulkAction>
+            </DataTableBulkActions>,
+          ],
+          [
+            "Several",
+            <DataTableBulkActions
+              key="c"
+              onDelete={() => {}}
+              moreActions={
+                <>
+                  <MenuItem>Add skill</MenuItem>
+                  <MenuItem>Change shift</MenuItem>
+                </>
+              }
+            >
+              <DataTableBulkAction>Assign schedule</DataTableBulkAction>
+              <DataTableBulkAction>Change team</DataTableBulkAction>
+            </DataTableBulkActions>,
+          ],
+          [
+            "One item, with two selected",
+            <DataTableBulkActions key="d" onDelete={() => {}}>
+              <DataTableBulkAction single>
+                <PencilIcon data-icon="inline-start" />
+                Edit
+              </DataTableBulkAction>
+            </DataTableBulkActions>,
+          ],
+        ] as const
+      ).map(([label, bulk]) => (
+        <section key={label} aria-label={label} className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium">{label}</h3>
+          <AgentsTable
+            {...args}
+            agents={AGENTS.slice(0, 2)}
+            defaultValue={new Set(["maya", "priya"])}
+            toolbar={<AgentsToolbar>{bulk}</AgentsToolbar>}
+          />
+        </section>
+      ))}
+    </div>
+  ),
+}
+
+export const ReviewQueue: Story = {
+  name: "Review queue",
+  render: (args) => (
+    <AgentsTable
+      {...args}
+      secondary
+      defaultValue={new Set(["priya", "sam"])}
+      toolbar={
+        <AgentsToolbar>
+          <DataTableBulkActions>
+            <Button size="sm">
+              <CheckIcon data-icon="inline-start" />
+              Approve
+            </Button>
+            <Button variant="destructive" size="sm">
+              <XIcon data-icon="inline-start" />
+              Deny
+            </Button>
+          </DataTableBulkActions>
+        </AgentsToolbar>
+      }
+    />
+  ),
+}
+
+export const Directory: Story = {
+  render: function Render(args) {
+    const [showSelectedOnly, setShowSelectedOnly] = React.useState(false)
+    const [value, setValue] = React.useState<DataTableSelection>(new Set())
+    const agents = showSelectedOnly
+      ? AGENTS.filter((agent) => value === "all" || value.has(agent.id))
+      : AGENTS
+    return (
+      <AgentsTable
+        {...args}
+        agents={agents}
+        totalCount={248}
+        value={value}
+        onValueChange={setValue}
+        showSelectedOnly={showSelectedOnly}
+        onShowSelectedOnlyChange={setShowSelectedOnly}
+        toolbar={<AgentsToolbar />}
+      />
+    )
+  },
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(
+      canvas.getByRole("checkbox", { name: "Select all agents on this page" })
+    )
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Select all 247 agents" })
+    )
+    await expect(
+      canvas.getByRole("group", { name: "Bulk actions" })
+    ).toHaveTextContent("All 247 agents selected")
+
+    // By keyboard: focus landed on Clear when its neighbour went away, and
+    // Enter clears and hands focus to select all.
+    const clear = canvas.getByRole("button", { name: "Clear selection" })
+    await expect(clear).toHaveFocus()
+    await userEvent.keyboard("{Enter}")
+    await expect(
+      canvas.getByRole("checkbox", { name: "Select all agents on this page" })
+    ).toHaveFocus()
   },
 }
