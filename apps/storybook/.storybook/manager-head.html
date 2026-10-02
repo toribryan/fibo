@@ -91,29 +91,57 @@
     margin-bottom: 16px !important;
   }
 
-  /* Shelves are section headings, set like the brand kit's eyebrow: small
-     Geist Mono capitals, quieter than the parts beneath them. */
+  /* Shelves are section headings that read like the pages above them: the
+     same Geist, size and inset, and one highlight for the whole row rather
+     than for the collapse button inside it. */
+  #storybook-explorer-menu .sidebar-subheading {
+    margin-left: -6px;
+    width: calc(100% + 6px);
+    border-radius: 8px;
+  }
+  #storybook-explorer-menu .sidebar-subheading:hover {
+    background-color: var(--fibo-hover);
+  }
   #storybook-explorer-menu
     .sidebar-subheading
-    button[data-action="collapse-root"],
-  #storybook-explorer-menu
-    .sidebar-subheading
-    button[data-action="collapse-root"]
-    .fibo-label {
-    font-family: "Geist Mono", ui-monospace, monospace !important;
-    font-size: 11px !important;
+    button[data-action="collapse-root"] {
+    flex: 1;
+    min-width: 0;
+    /* Chevron and icon in the same columns as a group row's. */
+    justify-content: flex-start;
+    gap: 6px;
+    padding-left: 14px;
+    background: none !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif !important;
+    font-size: 16px !important;
     line-height: 16px !important;
     font-weight: 500 !important;
-    letter-spacing: 0.08em !important;
     color: var(--fibo-muted);
+  }
+  #storybook-explorer-menu
+    .sidebar-subheading
+    button[data-action="collapse-root"]:focus-visible {
+    outline: none;
+  }
+  #storybook-explorer-menu .sidebar-subheading:has(button:focus-visible) {
+    box-shadow: inset 0 0 0 2px var(--fibo-border);
   }
   #storybook-explorer-menu .sidebar-subheading-action {
     opacity: 0;
+    background: none !important;
     transition: opacity 150ms;
   }
   #storybook-explorer-menu .sidebar-subheading:hover .sidebar-subheading-action,
   #storybook-explorer-menu .sidebar-subheading-action:focus-visible {
     opacity: 1;
+  }
+  /* The heading's collapse button names itself in a tooltip, which repeats
+     what the chevron already shows. Other tooltips stay. */
+  body:has(.sidebar-subheading button:hover) .react-aria-Tooltip,
+  body:has(.sidebar-subheading button:focus-visible) .react-aria-Tooltip {
+    display: none;
   }
 
   #storybook-explorer-menu a,
