@@ -22,7 +22,10 @@
     "Avatar.type": "Code picks image or initials from whether src loads; designers pick it by hand.",
     "Checkbox.checked": "Base UI's checked and indeterminate props, not a fibo prop.",
     "Command menu.view": "Which page is open is internal state in code.",
-    "Command menu.preview": "Code shows the pane when an item has preview content; Figma toggles it."
+    "Command menu.preview": "Code shows the pane when an item has preview content; Figma toggles it.",
+    "Typing indicator.indicator": "Code shows a person's indicator from data when they're the only one typing; designers pick it by hand.",
+    "Message.type": "Code picks first, continuation, system or deleted from grouping rules and message data, not a prop.",
+    "Message divider.unread": "Code draws the unread divider above the message named by unreadFrom."
   },
   "codeOnlyProps": {
     "reactions.position": "Which viewport corner the floating bar pins to; Figma shows the bar on its own."
@@ -36,7 +39,9 @@
     "Reactions Panel": "reactions",
     "Integration tile": "integration-visual",
     "Integration hub": "integration-visual",
-    "Token chip": "token-flow"
+    "Token chip": "token-flow",
+    "Message": "message-list",
+    "Message divider": "message-list"
   },
   "codeOnlyComponents": {}
 }
