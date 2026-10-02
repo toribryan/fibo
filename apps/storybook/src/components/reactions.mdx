@@ -35,6 +35,45 @@ inline under the content or float in a corner of the page.
 
 No animation library: the burst and the pill motion use the Web Animations API.
 
+## Examples
+
+### Inline
+
+The default: pills under the content, with the picker's trigger at the end.
+
+<Canvas of={Stories.Default} />
+
+### No reactions yet
+
+With nothing on the item, only the trigger shows.
+
+<Canvas of={Stories.Empty} />
+
+### Busy post
+
+Counts past a thousand shorten, such as 1.2K, so the pills stay small.
+
+<Canvas of={Stories.BusyPost} />
+
+### Without counts
+
+`showCounts={false}` hides the numbers: the pill counts, and the total on the
+floating bar.
+
+<Canvas of={Stories.WithoutCounts} />
+
+### Floating
+
+`type="floating"` pins a bar to a viewport corner, chosen with `position`.
+
+<Canvas of={Stories.Floating} />
+
+### Controlled
+
+`reactions` and `onReactionsChange` hand the state to your data layer.
+
+<Canvas of={Stories.Controlled} />
+
 ## Usage
 
 ```tsx
@@ -136,45 +175,6 @@ The particles fly in one fixed layer, `reactions-particles`, added to
   state from your data layer. Without them the component keeps its own state,
   seeded from <code>defaultReactions</code>.
 </Tip>
-
-## Examples
-
-### Inline
-
-The default: pills under the content, with the picker's trigger at the end.
-
-<Canvas of={Stories.Default} />
-
-### No reactions yet
-
-With nothing on the item, only the trigger shows.
-
-<Canvas of={Stories.Empty} />
-
-### Busy post
-
-Counts past a thousand shorten, such as 1.2K, so the pills stay small.
-
-<Canvas of={Stories.BusyPost} />
-
-### Without counts
-
-`showCounts={false}` hides the numbers: the pill counts, and the total on the
-floating bar.
-
-<Canvas of={Stories.WithoutCounts} />
-
-### Floating
-
-`type="floating"` pins a bar to a viewport corner, chosen with `position`.
-
-<Canvas of={Stories.Floating} />
-
-### Controlled
-
-`reactions` and `onReactionsChange` hand the state to your data layer.
-
-<Canvas of={Stories.Controlled} />
 
 ## Do's and don'ts
 

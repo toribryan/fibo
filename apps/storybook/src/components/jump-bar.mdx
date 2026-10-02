@@ -31,6 +31,37 @@ back to the present from history.
 
 <Install name="jump-bar" exports={["JumpBar", "jumpTo", "useAtBottom"]} />
 
+## Examples
+
+### New messages below
+
+A pill over the bottom of the conversation, for messages that arrived while
+people were scrolled up.
+
+<Canvas of={Stories.NewBelow} />
+
+### Over 99
+
+The count stops at 99+ on screen. The button's name keeps those words and
+adds the full number, "99+ new messages (128)", so speech input can still say
+what's on screen.
+
+<Canvas of={Stories.Capped} />
+
+### Viewing history
+
+For when people have scrolled far from the present.
+
+<Canvas of={Stories.History} />
+
+### In a timeline
+
+A message list with an unread divider, both bars, a typing indicator and a
+composer. Scroll up and use "Ben sends a message" to see the pill. Escape on a
+message or in the composer marks the conversation read.
+
+<Canvas of={Stories.InATimeline} />
+
 ## Usage
 
 ```tsx
@@ -85,37 +116,6 @@ the scroll container, not inside the container itself.
     "Count a message as read only when the window has focus and the message is on screen.",
   ]}
 />
-
-## Examples
-
-### New messages below
-
-A pill over the bottom of the conversation, for messages that arrived while
-people were scrolled up.
-
-<Canvas of={Stories.NewBelow} />
-
-### Over 99
-
-The count stops at 99+ on screen. The button's name keeps those words and
-adds the full number, "99+ new messages (128)", so speech input can still say
-what's on screen.
-
-<Canvas of={Stories.Capped} />
-
-### Viewing history
-
-For when people have scrolled far from the present.
-
-<Canvas of={Stories.History} />
-
-### In a timeline
-
-A message list with an unread divider, both bars, a typing indicator and a
-composer. Scroll up and use "Ben sends a message" to see the pill. Escape on a
-message or in the composer marks the conversation read.
-
-<Canvas of={Stories.InATimeline} />
 
 ## Do's and don'ts
 

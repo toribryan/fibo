@@ -36,6 +36,33 @@ no photo or it fails to load.
 
 `AvatarBadge`, `AvatarGroup` and `AvatarGroupCount` are exported too.
 
+## Examples
+
+### Fallback
+
+When the photo fails to load, the initials stay.
+
+<Canvas of={Stories.Fallback} />
+
+### Sizes
+
+`size` is `sm`, `default` or `lg`.
+
+<Canvas of={Stories.Sizes} />
+
+### With badge
+
+AvatarBadge puts a dot in the corner. Here it uses the success colour for
+online.
+
+<Canvas of={Stories.WithBadge} />
+
+### Group
+
+AvatarGroup overlaps the avatars; AvatarGroupCount says how many more.
+
+<Canvas of={Stories.Group} />
+
 ## Usage
 
 ```tsx
@@ -94,33 +121,6 @@ In a stack, `AvatarGroup` (`avatar-group`) wraps the avatars and
     "Put the person's name next to the avatar wherever there's room. A face alone isn't enough to recognise someone.",
   ]}
 />
-
-## Examples
-
-### Fallback
-
-When the photo fails to load, the initials stay.
-
-<Canvas of={Stories.Fallback} />
-
-### Sizes
-
-`size` is `sm`, `default` or `lg`.
-
-<Canvas of={Stories.Sizes} />
-
-### With badge
-
-AvatarBadge puts a dot in the corner. Here it uses the success colour for
-online.
-
-<Canvas of={Stories.WithBadge} />
-
-### Group
-
-AvatarGroup overlaps the avatars; AvatarGroupCount says how many more.
-
-<Canvas of={Stories.Group} />
 
 ## Do's and don'ts
 

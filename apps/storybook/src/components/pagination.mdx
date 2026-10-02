@@ -31,6 +31,21 @@ are showing, such as “1 to 25 of 10,000 members”.
 
 It installs Button.
 
+## Examples
+
+### Controlled
+
+The parent owns the page. This one starts on the last page, where the range
+stops at the total.
+
+<Canvas of={Stories.Controlled} />
+
+### Pages only
+
+Without pageSize and totalCount, it shows the pages alone.
+
+<Canvas of={Stories.PagesOnly} />
+
 ## Usage
 
 ```tsx
@@ -83,21 +98,6 @@ type PaginationNoun = string | { one: string; other: string }
     "For a short list that fits on one screen, don't paginate it.",
   ]}
 />
-
-## Examples
-
-### Controlled
-
-The parent owns the page. This one starts on the last page, where the range
-stops at the total.
-
-<Canvas of={Stories.Controlled} />
-
-### Pages only
-
-Without pageSize and totalCount, it shows the pages alone.
-
-<Canvas of={Stories.PagesOnly} />
 
 ## Do's and don'ts
 

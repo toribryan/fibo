@@ -33,6 +33,27 @@ visible at once.
 
 <Install name="radio-group" exports={["RadioGroup", "RadioGroupItem"]} />
 
+## Examples
+
+### With descriptions
+
+A line under each label explains the option, linked with
+`aria-describedby`.
+
+<Canvas of={Stories.WithDescriptions} />
+
+### Horizontal
+
+A row, for two or three short options.
+
+<Canvas of={Stories.Horizontal} />
+
+### Disabled
+
+`disabled` on the group dims every option.
+
+<Canvas of={Stories.Disabled} />
+
 ## Usage
 
 ```tsx
@@ -93,27 +114,6 @@ Give every item a unique `value`. The group reports the chosen one through
     "Stack options in a column. Use a row only for two or three short labels.",
   ]}
 />
-
-## Examples
-
-### With descriptions
-
-A line under each label explains the option, linked with
-`aria-describedby`.
-
-<Canvas of={Stories.WithDescriptions} />
-
-### Horizontal
-
-A row, for two or three short options.
-
-<Canvas of={Stories.Horizontal} />
-
-### Disabled
-
-`disabled` on the group dims every option.
-
-<Canvas of={Stories.Disabled} />
 
 ## Do's and don'ts
 

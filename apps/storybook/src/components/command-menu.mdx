@@ -43,6 +43,49 @@ one.
 It installs the Button and Kbd components, the `motion` package, and the
 `--backdrop` token.
 
+## Examples
+
+### Default
+
+Change theme and Assign to open pages. Run something and reopen the menu to
+see it under Recent. Type to search across every page at once.
+
+<Canvas of={Stories.Default} />
+
+### With preview
+
+Files and people carry a `preview`, so the dialog widens and a pane follows
+the highlight. Actions without one show a placeholder.
+
+<Canvas of={Stories.WithPreview} />
+
+### With recents
+
+`defaultRecent` starts the menu with recent commands. A nested one names its
+page on the right.
+
+<Canvas of={Stories.WithRecents} />
+
+### No matches
+
+A search with no results says so, using `emptyText`.
+
+<Canvas of={Stories.NoMatches} />
+
+### Custom trigger
+
+`trigger` swaps the search button for your own element.
+
+<Canvas of={Stories.CustomTrigger} />
+
+### Controlled
+
+`trigger={null}` renders no trigger, and `open` with `onOpenChange` puts the
+state in your hands, here opened by a button elsewhere on the page or the
+shortcut.
+
+<Canvas of={Stories.Controlled} />
+
 ## Usage
 
 ```tsx
@@ -215,49 +258,6 @@ document, so two menus with the same `hotkey` would both open.
   A shortcut on an item is only a label. Wire the same keys up in your app, or
   leave `shortcut` off.
 </Tip>
-
-## Examples
-
-### Default
-
-Change theme and Assign to open pages. Run something and reopen the menu to
-see it under Recent. Type to search across every page at once.
-
-<Canvas of={Stories.Default} />
-
-### With preview
-
-Files and people carry a `preview`, so the dialog widens and a pane follows
-the highlight. Actions without one show a placeholder.
-
-<Canvas of={Stories.WithPreview} />
-
-### With recents
-
-`defaultRecent` starts the menu with recent commands. A nested one names its
-page on the right.
-
-<Canvas of={Stories.WithRecents} />
-
-### No matches
-
-A search with no results says so, using `emptyText`.
-
-<Canvas of={Stories.NoMatches} />
-
-### Custom trigger
-
-`trigger` swaps the search button for your own element.
-
-<Canvas of={Stories.CustomTrigger} />
-
-### Controlled
-
-`trigger={null}` renders no trigger, and `open` with `onOpenChange` puts the
-state in your hands, here opened by a button elsewhere on the page or the
-shortcut.
-
-<Canvas of={Stories.Controlled} />
 
 ## Do's and don'ts
 

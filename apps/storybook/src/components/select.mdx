@@ -49,6 +49,38 @@ list of choices down to one line until someone needs it.
 `SelectGroup`, `SelectLabel` and `SelectSeparator` are exported too, for
 grouped lists.
 
+## Examples
+
+### With label
+
+A visible Label, connected to the trigger with `htmlFor` and `id`.
+
+<Canvas of={Stories.WithLabel} />
+
+### Groups
+
+SelectGroup, SelectLabel and SelectSeparator break a list into sections.
+
+<Canvas of={Stories.Groups} />
+
+### Small
+
+`size="sm"` on the trigger matches dense forms.
+
+<Canvas of={Stories.Small} />
+
+### Invalid
+
+`aria-invalid` on the trigger turns its border destructive.
+
+<Canvas of={Stories.Invalid} />
+
+### Disabled
+
+`disabled` on the Select dims the trigger and stops it opening.
+
+<Canvas of={Stories.Disabled} />
+
 ## Usage
 
 ```tsx
@@ -164,38 +196,6 @@ raw value, before the list has ever opened.
   Set `alignItemWithTrigger={false}` on SelectContent to drop the list below the
   trigger instead of over it, as a menu would.
 </Tip>
-
-## Examples
-
-### With label
-
-A visible Label, connected to the trigger with `htmlFor` and `id`.
-
-<Canvas of={Stories.WithLabel} />
-
-### Groups
-
-SelectGroup, SelectLabel and SelectSeparator break a list into sections.
-
-<Canvas of={Stories.Groups} />
-
-### Small
-
-`size="sm"` on the trigger matches dense forms.
-
-<Canvas of={Stories.Small} />
-
-### Invalid
-
-`aria-invalid` on the trigger turns its border destructive.
-
-<Canvas of={Stories.Invalid} />
-
-### Disabled
-
-`disabled` on the Select dims the trigger and stops it opening.
-
-<Canvas of={Stories.Disabled} />
 
 ## Do's and don'ts
 

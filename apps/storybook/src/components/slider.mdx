@@ -30,6 +30,38 @@ track. It suits values where roughly right is right enough.
 
 <Install name="slider" exports={["Slider"]} />
 
+## Examples
+
+### Range
+
+Two thumbs pick a start and an end. Each has its own name.
+
+<Canvas of={Stories.Range} />
+
+### With label and value
+
+A controlled slider that shows its value beside the label.
+
+<Canvas of={Stories.WithLabelAndValue} />
+
+### Steps
+
+`step={10}` snaps to tens.
+
+<Canvas of={Stories.Steps} />
+
+### Vertical
+
+`orientation="vertical"` fills the height of its container.
+
+<Canvas of={Stories.Vertical} />
+
+### Disabled
+
+`disabled` dims the slider and blocks the pointer.
+
+<Canvas of={Stories.Disabled} />
+
 ## Usage
 
 ```tsx
@@ -99,38 +131,6 @@ to it. For a range, name each one with `thumbLabels`:
     </>,
   ]}
 />
-
-## Examples
-
-### Range
-
-Two thumbs pick a start and an end. Each has its own name.
-
-<Canvas of={Stories.Range} />
-
-### With label and value
-
-A controlled slider that shows its value beside the label.
-
-<Canvas of={Stories.WithLabelAndValue} />
-
-### Steps
-
-`step={10}` snaps to tens.
-
-<Canvas of={Stories.Steps} />
-
-### Vertical
-
-`orientation="vertical"` fills the height of its container.
-
-<Canvas of={Stories.Vertical} />
-
-### Disabled
-
-`disabled` dims the slider and blocks the pointer.
-
-<Canvas of={Stories.Disabled} />
 
 ## Do's and don'ts
 
