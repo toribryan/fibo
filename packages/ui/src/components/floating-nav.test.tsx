@@ -70,6 +70,23 @@ describe("FloatingNav", () => {
       .not.toHaveAttribute("data-hidden")
   })
 
+  it("shows every text item's label, current or not", async () => {
+    const screen = await render(
+      <FloatingNav
+        position="static"
+        defaultValue="home"
+        items={[
+          { value: "home", label: "Home" },
+          { value: "saved", label: "Saved" },
+        ]}
+      />
+    )
+    const saved = screen.getByRole("button", { name: "Saved" })
+    await expect.element(saved).not.toHaveAttribute("aria-current")
+    expect(saved.element().getBoundingClientRect().width).toBeGreaterThan(40)
+    expect(saved.element().querySelector("svg")).toBeNull()
+  })
+
   it("shrinks its items with size sm", async () => {
     const screen = await render(
       <>

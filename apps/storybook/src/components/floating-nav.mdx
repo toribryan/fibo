@@ -77,7 +77,7 @@ Each item takes:
 type FloatingNavItem = {
   value: string
   label: string
-  icon: React.ReactNode
+  icon?: React.ReactNode // leave out for a text item
   href?: string // renders a link; without it, a button
 }
 ```
@@ -150,6 +150,13 @@ when the icons alone would not say where they go.
 also shows a scroll-to-top button or a chat launcher.
 
 <Canvas of={Stories.Compact} />
+
+### Text items
+
+Leave out an item's `icon` and it shows its label as text, always. Use it when
+there are only two or three places and their names say more than icons.
+
+<Canvas of={Stories.TextItems} />
 
 ### Static
 

@@ -10,6 +10,8 @@ has the same history with links into the docs.
 
 ### Added
 
+- Floating nav text items: leave out an item's `icon` and it shows its label
+  as text, always.
 - A Figma drift check: the `figma-drift` agent skill reads the Figma library
   into `figma/snapshot.json`, and `pnpm figma:drift` reports where its colour
   variables, radii and component variant properties differ from the code.

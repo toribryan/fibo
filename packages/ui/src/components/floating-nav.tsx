@@ -11,8 +11,8 @@ type FloatingNavItem = {
   value: string
   /** Visible name of the destination. Also its accessible name. */
   label: string
-  /** An icon, usually a 20px Lucide icon. Hidden from screen readers. */
-  icon: React.ReactNode
+  /** An icon, usually a 20px Lucide icon. Hidden from screen readers. Leave it out for a text item, whose label always shows. */
+  icon?: React.ReactNode
   /** Renders the item as a link. Without it, the item is a button. */
   href?: string
 }
@@ -215,18 +215,22 @@ function FloatingNav({
                   className="absolute inset-0 rounded-full bg-primary"
                 />
               ) : null}
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "relative flex items-center justify-center [&_svg]:shrink-0",
-                  size === "sm"
-                    ? "size-4 [&_svg]:size-4"
-                    : "size-5 [&_svg]:size-5"
-                )}
-              >
-                {item.icon}
-              </span>
-              {labels === "always" ? (
+              {item.icon != null ? (
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "relative flex items-center justify-center [&_svg]:shrink-0",
+                    size === "sm"
+                      ? "size-4 [&_svg]:size-4"
+                      : "size-5 [&_svg]:size-5"
+                  )}
+                >
+                  {item.icon}
+                </span>
+              ) : null}
+              {item.icon == null ? (
+                <span className="relative whitespace-nowrap">{item.label}</span>
+              ) : labels === "always" ? (
                 <span className="relative">{item.label}</span>
               ) : (
                 // Kept in the DOM at zero width, so every item keeps its name
@@ -258,7 +262,10 @@ function FloatingNav({
             "data-current": current ? "" : undefined,
             "aria-current": current ? ("page" as const) : undefined,
             onClick: handleClick,
-            className: floatingNavItemVariants({ labels, size }),
+            className: cn(
+              floatingNavItemVariants({ labels, size }),
+              item.icon == null && (size === "sm" ? "px-3.5" : "px-4")
+            ),
           }
           return (
             <li key={item.value} className="flex">
