@@ -2,6 +2,7 @@ import { Meta } from "@storybook/addon-docs/blocks"
 
 import { DocLink } from "../blocks/doc-link"
 import { Plates } from "../blocks/about"
+import { RabbitFarm } from "../blocks/rabbit-farm"
 
 <Meta title="About fibo" />
 
@@ -13,15 +14,31 @@ and a screen.
 
 ## Where he comes from
 
-fibo is short for Fibonacci, and you say it FEE-boh. In _Liber Abaci_,
-Fibonacci posed a puzzle about rabbits. Every grown pair has a new pair each
-month, and no rabbit ever dies. Count the pairs month by month and you get 1,
-1, 2, 3, 5, 8: each number is the sum of the two before it. Divide any number
-by the one before it and the answer creeps toward 1.618, the golden ratio.
+fibo is short for Fibonacci, the Italian mathematician, and you say it
+FEE-boh. In 1202 he wrote a book called _Liber Abaci_, and tucked inside it is
+a puzzle about rabbits.
 
-So a rabbit started the sequence, and a rabbit became the mascot. He knows his
-history, too. Click him too many times on the Welcome page and he warns you
-there'll be eight of him by next month.
+The puzzle has four rules:
+
+1. Start with one pair of baby rabbits.
+2. A pair takes a month to grow up.
+3. From the month after that, it has one new baby pair every month.
+4. Nobody ever dies. (It's a math puzzle, not a farm.)
+
+How many pairs are there after a year? Below, each row is a month and each
+rabbit is a pair. A brace joins a pair to the baby pair it just had, and a
+single line follows a pair still too young. Watch the first six months play
+out.
+
+<RabbitFarm />
+
+## The sequence
+
+- Start with 1 and 1.
+- Add the last two numbers to get the next one.
+- 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, and on forever.
+- Divide any number by the one before it and you get closer and closer to
+  1.618, the golden ratio, φ.
 
 ## Organic and mechanical
 
@@ -42,4 +59,4 @@ fibo and his sequence hide all over the site. Look for these:
 - On the <DocLink to="welcome--docs" className="text-foreground underline underline-offset-4">Welcome</DocLink> page, fibo builds himself up pixel by pixel, idles and hops, and watches your pointer. Poke him and he flinches. Click too fast and he hides behind his ears.
 - The Welcome page numbers its principles 1, 2, 3, 5, and its hero is a golden rectangle.
 - The brand's cards and posters are cut on 0.618.
-- The site never draws a spiral. Spirals only appear where nature made them, in photographs.
+- fibo never draws a spiral. Spirals only appear where nature made them, in photographs.
