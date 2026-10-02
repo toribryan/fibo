@@ -172,7 +172,8 @@ as on a phone.
 
 Sheet takes Base UI's Drawer Root props, with `side` in place of
 `swipeDirection`. SheetContent takes the Popup's props plus
-`showCloseButton`, and the other parts take the props of the Base UI part or
+`showCloseButton`, and `keepMounted` to keep its controls' state while it's
+closed, and the other parts take the props of the Base UI part or
 element they wrap.
 
 <ArgTypes of={Stories.Default} />
