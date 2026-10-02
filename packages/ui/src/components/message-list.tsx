@@ -458,7 +458,7 @@ function MessageList({
                 }
               }}
               className={cn(
-                "group/message grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-3 rounded-md px-2 py-0.5 text-sm outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
+                "group/message grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-3 rounded-md px-2 py-0.5 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
                 starts
                   ? "mt-[var(--message-group-gap)] pt-1"
                   : "mt-[var(--message-gap)]",
