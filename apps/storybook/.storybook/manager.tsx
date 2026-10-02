@@ -50,7 +50,7 @@ const STATUSES = ["new", "beta", "deprecated"]
 const ICON_BY_ID: Record<string, LucideIcon> = {
   "about-fibo--docs": RabbitIcon,
   "foundations-colors--docs": ContrastIcon,
-  "foundations-typography": TypeIcon,
+  "foundations-typography--docs": TypeIcon,
 }
 
 // Each group inside a shelf has an icon for what its parts do.
