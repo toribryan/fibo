@@ -9,13 +9,15 @@ import {
   StickerAvatarGroup,
   type StickerAvatarStatus,
 } from "./sticker-avatar.js"
-import { ghostSrc, photoSrc, rabbitSrc } from "./sticker-avatar.fixtures.js"
+import { rabbitSrc } from "./sticker-avatar.fixtures.js"
+// A local image, so the stories load nothing from the network and Chromatic
+// snapshots stay stable.
+import bonzo from "../assets/bonzo.webp"
 
-const SUBJECTS = ["rabbit", "ghost", "photo", "initials"] as const
-const SRC: Record<(typeof SUBJECTS)[number], (() => string) | undefined> = {
-  rabbit: rabbitSrc,
-  ghost: ghostSrc,
-  photo: photoSrc,
+const SUBJECTS = ["bonzo", "rabbit", "initials"] as const
+const SRC: Record<(typeof SUBJECTS)[number], string | undefined> = {
+  bonzo,
+  rabbit: undefined,
   initials: undefined,
 }
 
@@ -53,18 +55,22 @@ const meta: Meta<Args> = {
     src: { control: false },
   },
   args: {
-    subject: "rabbit",
-    name: "fibo",
+    subject: "bonzo",
+    name: "Bonzo",
     size: 96,
     status: "present",
     statusColor: true,
     cutout: "auto",
     tilt: true,
     lift: true,
-    pixelated: true,
+    pixelated: false,
   },
   render: ({ subject, ...args }) => (
-    <StickerAvatar {...args} src={SRC[subject]?.()} />
+    <StickerAvatar
+      {...args}
+      // The rabbit is drawn on a canvas, so it's made on first render.
+      src={subject === "rabbit" ? rabbitSrc() : SRC[subject]}
+    />
   ),
 }
 
@@ -73,8 +79,8 @@ type Story = StoryObj<Args>
 
 export const Default: Story = {
   play: async ({ canvas }) => {
-    const sticker = canvas.getByRole("img", { name: "fibo, Present" })
-    await waitFor(() => expect(sticker).toHaveAttribute("data-shape", "cutout"))
+    const sticker = canvas.getByRole("img", { name: "Bonzo, Present" })
+    await waitFor(() => expect(sticker).toHaveAttribute("data-shape", "round"))
     await expect(
       sticker.querySelector('[data-slot="sticker-avatar-status"]')
     ).toHaveAttribute("data-status", "present")
@@ -115,12 +121,7 @@ export const Statuses: Story = {
     <div className="flex flex-wrap justify-center gap-8">
       {STATUSES.map((status) => (
         <div key={status} className="flex flex-col items-center gap-4">
-          <StickerAvatar
-            name="Ghost"
-            src={ghostSrc()}
-            size={64}
-            status={status}
-          />
+          <StickerAvatar name="Bonzo" src={bonzo} size={64} status={status} />
           {/* The sticker already says its status to screen readers. */}
           <Badge variant="outline" aria-hidden="true">
             {STATUS_NAMES[status]}
@@ -135,17 +136,17 @@ export const Shapes: Story = {
   name: "Cut-out, round and initials",
   render: () => (
     <div className="flex items-center gap-8">
-      <StickerAvatar name="Ghost" src={ghostSrc()} size={72} />
-      <StickerAvatar name="Ana Ruiz" src={photoSrc()} size={72} />
+      <StickerAvatar name="fibo" src={rabbitSrc()} pixelated size={72} />
+      <StickerAvatar name="Bonzo" src={bonzo} size={72} />
       <StickerAvatar name="Tori Bryan" size={72} />
     </div>
   ),
 }
 
 const PEOPLE = [
-  { name: "boo.exe", src: ghostSrc, status: "offline" },
+  { name: "Bonzo", src: () => bonzo, status: "away" },
   { name: "fibo", src: rabbitSrc, status: "present", pixelated: true },
-  { name: "Ana Ruiz", src: photoSrc, status: "away" },
+  { name: "Ana Ruiz", status: "offline" },
   { name: "Kofi Mensah", status: "present" },
 ] as const
 
@@ -184,7 +185,7 @@ export const DirectMessages: Story = {
 export const Group: Story = {
   name: "Stack",
   render: () => (
-    <StickerAvatarGroup aria-label="In this party: fibo, boo.exe, Ana Ruiz, Kofi Mensah and 3 others">
+    <StickerAvatarGroup aria-label="In this party: fibo, Bonzo, Ana Ruiz, Kofi Mensah and 3 others">
       <StickerAvatar
         aria-hidden="true"
         name="fibo"
@@ -192,18 +193,8 @@ export const Group: Story = {
         pixelated
         size={56}
       />
-      <StickerAvatar
-        aria-hidden="true"
-        name="boo.exe"
-        src={ghostSrc()}
-        size={56}
-      />
-      <StickerAvatar
-        aria-hidden="true"
-        name="Ana Ruiz"
-        src={photoSrc()}
-        size={56}
-      />
+      <StickerAvatar aria-hidden="true" name="Bonzo" src={bonzo} size={56} />
+      <StickerAvatar aria-hidden="true" name="Ana Ruiz" size={56} />
       <StickerAvatar aria-hidden="true" name="Kofi Mensah" size={56} />
       <StickerAvatarCount aria-hidden="true" count={3} size={56} />
     </StickerAvatarGroup>
