@@ -44,46 +44,49 @@ function Example({
   bulk?: React.ReactNode
   bulkActions?: React.ReactNode
 }) {
+  // Wide enough that the toolbar isn't in its narrow layout.
   return (
-    <DataTable
-      aria-label="Agents"
-      rowIds={AGENTS.map((agent) => agent.id)}
-      noun={{ one: "agent", other: "agents" }}
-      totalCount={totalCount}
-      onValueChange={onValueChange}
-      showSelectedOnly={showSelectedOnly}
-      onShowSelectedOnlyChange={onShowSelectedOnlyChange}
-    >
-      <DataTableToolbar>
-        <DataTableFilters>
-          <input aria-label="Search agents" />
-        </DataTableFilters>
-        <DataTableActions>
-          <Button size="sm">Add agent</Button>
-        </DataTableActions>
-        {bulkActions ?? (
-          <DataTableBulkActions onDelete={onDelete}>
-            {bulk}
-          </DataTableBulkActions>
-        )}
-      </DataTableToolbar>
-      <DataTableContent>
-        <DataTableHeader>
-          <DataTableHead type="primary">Agent</DataTableHead>
-        </DataTableHeader>
-        <DataTableBody>
-          {AGENTS.map((agent) => (
-            <DataTableRow
-              key={agent.id}
-              id={agent.id}
-              lockedReason={agent.lock}
-            >
-              <DataTableCell type="primary">{agent.name}</DataTableCell>
-            </DataTableRow>
-          ))}
-        </DataTableBody>
-      </DataTableContent>
-    </DataTable>
+    <div style={{ width: 800 }}>
+      <DataTable
+        aria-label="Agents"
+        rowIds={AGENTS.map((agent) => agent.id)}
+        noun={{ one: "agent", other: "agents" }}
+        totalCount={totalCount}
+        onValueChange={onValueChange}
+        showSelectedOnly={showSelectedOnly}
+        onShowSelectedOnlyChange={onShowSelectedOnlyChange}
+      >
+        <DataTableToolbar>
+          <DataTableFilters>
+            <input aria-label="Search agents" />
+          </DataTableFilters>
+          <DataTableActions>
+            <Button size="sm">Add agent</Button>
+          </DataTableActions>
+          {bulkActions ?? (
+            <DataTableBulkActions onDelete={onDelete}>
+              {bulk}
+            </DataTableBulkActions>
+          )}
+        </DataTableToolbar>
+        <DataTableContent>
+          <DataTableHeader>
+            <DataTableHead type="primary">Agent</DataTableHead>
+          </DataTableHeader>
+          <DataTableBody>
+            {AGENTS.map((agent) => (
+              <DataTableRow
+                key={agent.id}
+                id={agent.id}
+                lockedReason={agent.lock}
+              >
+                <DataTableCell type="primary">{agent.name}</DataTableCell>
+              </DataTableRow>
+            ))}
+          </DataTableBody>
+        </DataTableContent>
+      </DataTable>
+    </div>
   )
 }
 
