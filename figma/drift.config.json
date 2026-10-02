@@ -9,7 +9,9 @@
     "Command menu.view": "Which page is open is internal state in code.",
     "Command menu.preview": "Code shows the pane when an item has preview content; Figma toggles it."
   },
-  "codeOnlyProps": {},
+  "codeOnlyProps": {
+    "reactions.position": "Which viewport corner the floating bar pins to; Figma shows the bar on its own."
+  },
   "componentFiles": {
     "Chapter preview": "chapter-scrubber",
     "Command menu item": "command-menu",
