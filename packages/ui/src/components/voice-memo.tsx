@@ -618,7 +618,7 @@ function Device({
               />
               <feColorMatrix
                 type="matrix"
-                values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.2 0 0 0 -1.45"
+                values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.4 0 0 0 -1.05"
               />
               <feComposite in="SourceGraphic" operator="in" />
             </filter>
@@ -645,7 +645,7 @@ function Device({
               offset="1"
               style={{
                 stopColor: "var(--color-foreground)",
-                stopOpacity: 0.26,
+                stopOpacity: 0.13,
               }}
             />
           </linearGradient>
@@ -729,14 +729,14 @@ function Device({
           height={height}
           rx={radius}
           filter={`url(#${ids.pits})`}
-          className="fill-foreground opacity-30"
+          className="fill-foreground opacity-20"
         />
         <rect
           width={width}
           height={height}
           rx={radius}
           filter={`url(#${ids.glints})`}
-          className="fill-background opacity-55"
+          className="fill-background opacity-35"
         />
 
         {/* The lettering's edges again, over the grain: speckle would
