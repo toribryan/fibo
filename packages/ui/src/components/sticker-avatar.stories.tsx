@@ -14,7 +14,7 @@ import { rabbitSrc } from "./sticker-avatar.fixtures.js"
 // snapshots stay stable.
 import bonzo from "../assets/bonzo.webp"
 
-const SUBJECTS = ["bonzo", "rabbit", "initials"] as const
+const SUBJECTS = ["rabbit", "bonzo", "initials"] as const
 const SRC: Record<(typeof SUBJECTS)[number], string | undefined> = {
   bonzo,
   rabbit: undefined,
@@ -55,15 +55,15 @@ const meta: Meta<Args> = {
     src: { control: false },
   },
   args: {
-    subject: "bonzo",
-    name: "Bonzo",
+    subject: "rabbit",
+    name: "fibo",
     size: 96,
     status: "present",
     statusColor: true,
     cutout: "auto",
     tilt: true,
     lift: true,
-    pixelated: false,
+    pixelated: true,
   },
   render: ({ subject, ...args }) => (
     <StickerAvatar
@@ -79,8 +79,8 @@ type Story = StoryObj<Args>
 
 export const Default: Story = {
   play: async ({ canvas }) => {
-    const sticker = canvas.getByRole("img", { name: "Bonzo, Present" })
-    await waitFor(() => expect(sticker).toHaveAttribute("data-shape", "round"))
+    const sticker = canvas.getByRole("img", { name: "fibo, Present" })
+    await waitFor(() => expect(sticker).toHaveAttribute("data-shape", "cutout"))
     await expect(
       sticker.querySelector('[data-slot="sticker-avatar-status"]')
     ).toHaveAttribute("data-status", "present")
