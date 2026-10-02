@@ -21,8 +21,8 @@ Load the `figma-use` skill before the first `use_figma` call.
    [`read-variables.js`](read-variables.js). It returns `{ Color, Border }`.
 2. **Pages.** One read-only call:
    `return figma.root.children.map((p) => ({ id: p.id, name: p.name }))`.
-   Component pages are the `↳` pages under **Components** and **Niche**;
-   skip Icons and guide pages such as Table guide.
+   Component pages are the `↳` pages under **Base components** and
+   **Special components**; skip Icons and guide pages such as Table guide.
 3. **Components.** In one message, one `use_figma` call per component page
    running [`read-components.js`](read-components.js) with its `PAGE_ID`.
    Never loop over pages inside a single script.
