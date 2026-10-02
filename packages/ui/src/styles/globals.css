@@ -95,6 +95,22 @@
       transform: translateX(300%);
     }
   }
+
+  /* Typing indicator: each dot rises and brightens in turn. */
+  --animate-typing-dot: typing-dot 1.2s ease-in-out infinite;
+
+  @keyframes typing-dot {
+    0%,
+    60%,
+    100% {
+      opacity: 0.4;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+  }
 }
 
 /*
