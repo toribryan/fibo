@@ -10,6 +10,8 @@ has the same history with links into the docs.
 
 ### Added
 
+- Map marker: a dot or labelled marker for a point on a map, with a preview
+  card that opens on click or tap. Renders inside any map library's marker.
 - Floating nav text items: leave out an item's `icon` and it shows its label
   as text, always.
 - A Figma drift check: the `figma-drift` agent skill reads the Figma library

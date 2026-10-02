@@ -481,6 +481,21 @@ const PREVIEWS: Record<string, ReactNode> = {
       </span>
     </div>
   ),
+  "map-marker": (
+    <span className="relative block h-28 w-48 overflow-hidden rounded-lg border border-border bg-muted">
+      <span className="absolute inset-x-0 top-10 h-2 bg-background" />
+      <span className="absolute inset-y-0 left-20 w-2 bg-background" />
+      <span className="absolute top-[4.5rem] left-8 size-3 rounded-full bg-primary ring-2 ring-background" />
+      <span className="absolute top-3 left-28 inline-flex h-5 items-center rounded-full border border-border bg-background px-1.5 text-[10px] font-semibold">
+        $18
+      </span>
+      <span className="absolute right-3 bottom-3 flex w-24 flex-col gap-0.5 rounded-md border border-border bg-popover p-1.5 shadow-sm">
+        <span className="text-[8px] text-muted-foreground">Café</span>
+        <span className="text-[10px] font-medium">Blue Bottle</span>
+      </span>
+      <span className="absolute right-12 bottom-14 size-3 rounded-full bg-primary shadow-[0_0_0_4px_var(--color-primary-subtle)] ring-2 ring-background" />
+    </span>
+  ),
   "sticker-avatar": (
     <StickerAvatarGroup className="-space-x-2">
       <StickerAvatar
