@@ -8,7 +8,7 @@ const script =
   "Quick note for the design review. The token drift check passes in both themes, so the only open item is the empty state copy. Ask Ana whether we keep the illustration."
 
 const meta: Meta<typeof VoiceMemo> = {
-  title: "Special components/Forms/Voice memo",
+  title: "Special components/Voice memo",
   component: VoiceMemo,
   tags: ["new"],
   parameters: {

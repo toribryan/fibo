@@ -14,7 +14,7 @@ in order; each links to a file that already does it well, so copy that shape.
 - **Base components** (`Base components/<Group>/<Name>`): standard parts most interfaces need.
   Depend on nothing beyond Base UI, `class-variance-authority` and
   `lucide-react`. No animation libraries.
-- **Special components** (`Special components/<Group>/<Name>`): playful parts built for one kind of moment, such
+- **Special components** (`Special components/<Name>`): playful parts built for one kind of moment, such
   as a diagram, a reading rail or a reaction. May use `motion`.
 
 If unsure, it is a base component.
@@ -53,10 +53,10 @@ If unsure, it is a base component.
 `packages/ui/src/components/<name>.stories.tsx`. Model:
 `chapter-scrubber.stories.tsx`.
 
-- `title: "Base components/<Group>/<Name>"` or
-  `"Special components/<Group>/<Name>"`, where the group matches the part's
-  `group` in `components.meta.json`. A new group also goes in the `storySort`
-  order in `apps/storybook/.storybook/preview.tsx` and in `GROUPS` in
+- `title: "Base components/<Group>/<Name>"`, where the group matches the
+  part's `group` in `components.meta.json`, or `"Special components/<Name>"`.
+  A new base group also goes in the `storySort` order in
+  `apps/storybook/.storybook/preview.tsx`, and any new group in `GROUPS` in
   `blocks/catalog.tsx`, so the sidebar and the Catalog agree.
 - No `autodocs` tag; the MDX page is the docs. Add `tags: ["new"]` for a
   new part (it shows a pill in the sidebar). At most three parts are new at

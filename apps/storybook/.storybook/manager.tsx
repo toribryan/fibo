@@ -182,10 +182,12 @@ addons.register("fibo/site-nav", (api) => {
 })
 
 /*
- * Parts sat straight under their shelf until the sidebar grouped them, so
- * links from before (the portfolio, llms.txt, shared URLs) have no group in
- * their id: base-components-input--docs is now base-components-forms-input--docs.
- * A missing id of the old shape opens the entry with the same shelf and name.
+ * Links from before the sidebar's last change have the wrong shape for their
+ * shelf. Base parts gained a group (base-components-input--docs is now
+ * base-components-forms-input--docs); special parts had one for a while and
+ * lost it (special-components-display-map-pin--docs is now
+ * special-components-map-pin--docs). A missing id of either shape opens the
+ * entry with the same shelf and name.
  */
 function openMovedPart(api: API) {
   const { storyId, viewMode } = api.getUrlState()
@@ -194,13 +196,19 @@ function openMovedPart(api: API) {
   const entries = api.getIndex()?.entries
   const [, shelf, rest] = old ?? []
   if (!shelf || !rest || !entries) return false
-  const moved = Object.keys(entries).find(
+  const prefix = `${shelf}-components-`
+  const ids = Object.keys(entries)
+  // One group segment too few: find the entry with one more.
+  const grouped = ids.find(
     (id) =>
-      id.startsWith(`${shelf}-components-`) &&
+      id.startsWith(prefix) &&
       id.endsWith(`-${rest}`) &&
-      // Exactly one group segment between the shelf and the old name.
-      !id.slice(`${shelf}-components-`.length, -rest.length - 1).includes("-")
+      !id.slice(prefix.length, -rest.length - 1).includes("-")
   )
+  // One group segment too many: drop it.
+  const flat = `${prefix}${rest.slice(rest.indexOf("-") + 1)}`
+  const moved =
+    grouped ?? (shelf === "special" && entries[flat] ? flat : undefined)
   if (moved) api.navigate(`/${viewMode ?? "docs"}/${moved}`)
   return Boolean(moved)
 }
