@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { expect, fn, waitFor, within } from "storybook/test"
 import { useState, type ReactNode } from "react"
+import {
+  BookOpenIcon,
+  CoffeeIcon,
+  FlowerIcon,
+  ImageIcon,
+  MusicIcon,
+} from "lucide-react"
 
 import { Button } from "./button.js"
 import { MapMarker } from "./map-marker.js"
@@ -124,10 +131,17 @@ const meta: Meta<typeof MapMarker> = {
   tags: ["new"],
   parameters: {
     layout: "centered",
-    controls: { exclude: ["image", "children", "open", "onOpenChange"] },
+    controls: {
+      exclude: ["image", "icon", "children", "open", "onOpenChange"],
+    },
   },
   argTypes: {
-    type: { control: "inline-radio", options: ["dot", "label"] },
+    type: { control: "inline-radio", options: ["dot", "icon", "label"] },
+    variant: {
+      control: "inline-radio",
+      options: ["default", "success", "warning", "info", "destructive"],
+    },
+    icon: { control: false },
     size: { control: "inline-radio", options: ["sm", "default"] },
     side: {
       control: "inline-radio",
@@ -141,6 +155,7 @@ const meta: Meta<typeof MapMarker> = {
   args: {
     label: cafe.label,
     type: "dot",
+    variant: "default",
     size: "default",
     side: "top",
     image: { src: PHOTO, alt: "The café's front, with a striped awning" },
@@ -213,10 +228,16 @@ export const LabelMarkers: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <div className="flex items-center gap-6">
+    <div className="flex flex-col gap-6">
       {(["sm", "default"] as const).map((size) => (
-        <div key={size} className="flex items-center gap-4">
+        <div key={size} className="flex items-center gap-5">
           <MapMarker label={`Dot, ${size}`} size={size} />
+          <MapMarker
+            label={`Icon, ${size}`}
+            type="icon"
+            icon={<CoffeeIcon />}
+            size={size}
+          />
           <MapMarker
             label={`Label, ${size}`}
             type="label"
@@ -226,6 +247,89 @@ export const Sizes: Story = {
         </div>
       ))}
     </div>
+  ),
+}
+
+const ICONS: Record<string, ReactNode> = {
+  cafe: <CoffeeIcon />,
+  books: <BookOpenIcon />,
+  park: <FlowerIcon />,
+  studio: <ImageIcon />,
+}
+
+export const IconMarkers: Story = {
+  name: "Icon markers",
+  render: () => (
+    <StandInMap>
+      {PLACES.map((place) => (
+        <Pin key={place.id} place={place}>
+          <MapMarker
+            type="icon"
+            icon={ICONS[place.id]}
+            label={place.label}
+            meta={place.meta}
+            title={place.label}
+            description={place.description}
+          />
+        </Pin>
+      ))}
+    </StandInMap>
+  ),
+}
+
+// Colour only carries meaning: here, whether each place is open right now.
+const STATUS: Record<
+  string,
+  {
+    variant: "success" | "warning" | "destructive" | "info"
+    status: string
+  }
+> = {
+  cafe: { variant: "success", status: "Open now" },
+  books: { variant: "warning", status: "Closes in 20 min" },
+  park: { variant: "info", status: "Concert at 7pm" },
+  studio: { variant: "destructive", status: "Closed today" },
+}
+
+export const Colours: Story = {
+  render: () => (
+    <StandInMap>
+      {PLACES.map((place) => (
+        <Pin key={place.id} place={place}>
+          <MapMarker
+            type="icon"
+            variant={STATUS[place.id]!.variant}
+            icon={place.id === "park" ? <MusicIcon /> : ICONS[place.id]}
+            label={`${place.label}, ${STATUS[place.id]!.status}`}
+            meta={STATUS[place.id]!.status}
+            title={place.label}
+            description={place.description}
+          />
+        </Pin>
+      ))}
+    </StandInMap>
+  ),
+}
+
+export const LabelsWithIcons: Story = {
+  name: "Labels with icons",
+  render: () => (
+    <StandInMap>
+      {PLACES.map((place) => (
+        <Pin key={place.id} place={place}>
+          <MapMarker
+            type="label"
+            variant={STATUS[place.id]!.variant}
+            icon={ICONS[place.id]}
+            label={`${place.label}, ${STATUS[place.id]!.status}`}
+            text={place.price}
+            meta={STATUS[place.id]!.status}
+            title={place.label}
+            description={place.description}
+          />
+        </Pin>
+      ))}
+    </StandInMap>
   ),
 }
 
