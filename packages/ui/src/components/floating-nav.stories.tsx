@@ -49,7 +49,6 @@ function Feed() {
 const meta: Meta<typeof FloatingNav> = {
   title: "Special components/Floating nav",
   component: FloatingNav,
-  tags: ["new"],
   parameters: {
     layout: "centered",
     controls: { exclude: ["items", "value", "onValueChange"] },

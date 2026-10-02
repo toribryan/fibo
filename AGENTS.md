@@ -133,7 +133,9 @@ or a component's variants.
   changes what renders (Reactions inline or floating, Avatar image or
   initials). `pnpm figma:drift` checks both.
 - **Stories.** No `autodocs` tag: each component has an MDX docs page. New
-  parts take `tags: ["new"]`.
+  parts take `tags: ["new"]` and `"status": "new"`, at most three at once;
+  adding a fourth means taking both off the oldest. `pnpm registry:build`
+  enforces it.
 - **Writing.** Sentence case for headings and UI copy. Comments explain why,
   never what, and never describe removed code. No emojis in code, comments or
   commit messages.
