@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import {
+  ArrowDownIcon,
   ArrowUpRightIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -23,6 +24,11 @@ import { Label } from "@workspace/ui/components/label"
 import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Spinner } from "@workspace/ui/components/spinner"
+import {
+  StickerAvatar,
+  StickerAvatarCount,
+  StickerAvatarGroup,
+} from "@workspace/ui/components/sticker-avatar"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -53,11 +59,21 @@ const GROUPS: Record<Tier, string[]> = {
     "Overlays",
     "Feedback",
   ],
-  "special-components": ["Diagrams", "Navigation", "Feedback"],
+  "special-components": ["Diagrams", "Navigation", "Display", "Feedback"],
 }
 
 // The wave a Chapter scrubber makes under the pointer, frozen for a preview.
 const SCRUBBER_WAVE = [14, 14, 16, 24, 40, 56, 40, 24, 16, 14, 14, 14]
+
+// Two groups, the first with a continuation line, for the Message list card.
+const MESSAGE_PREVIEW = [
+  {
+    initials: "AR",
+    name: "Ana",
+    lines: ["Pushed the tokens.", "AA clears now."],
+  },
+  { initials: "BO", name: "Ben", lines: ["Looking now."] },
+]
 
 // Previews are inert: a catalog card is one link, so nothing inside it can
 // take focus or swallow the click. Everything else about an entry comes from
@@ -230,6 +246,16 @@ const PREVIEWS: Record<string, ReactNode> = {
       <XIcon className="size-3.5 text-muted-foreground" />
     </span>
   ),
+  "typing-indicator": (
+    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+      <span className="flex gap-0.5">
+        {[0, 1, 2].map((i) => (
+          <span key={i} className="size-1 rounded-full bg-current" />
+        ))}
+      </span>
+      Ana and Ben are typing…
+    </div>
+  ),
   "token-flow": (
     <div className="flex items-center gap-1.5 font-mono text-[10px]">
       {["oklch(0.205 0 0)", "neutral-900", "bg-primary"].map((label, index) => (
@@ -296,6 +322,31 @@ const PREVIEWS: Record<string, ReactNode> = {
       />
       <circle cx={80} cy={50} r={3} className="fill-foreground" />
     </svg>
+  ),
+  "jump-bar": (
+    <span className="flex h-8 items-center gap-1.5 rounded-full bg-primary px-3 text-xs font-medium text-primary-foreground shadow-md">
+      3 new messages
+      <ArrowDownIcon className="size-3.5" />
+    </span>
+  ),
+  "message-list": (
+    <div className="flex w-56 flex-col gap-2 text-xs">
+      {MESSAGE_PREVIEW.map(({ initials, name, lines }) => (
+        <div key={name} className="flex gap-2">
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-[10px]">
+            {initials}
+          </span>
+          <span className="flex flex-col gap-0.5">
+            <span className="font-semibold">{name}</span>
+            {lines.map((line) => (
+              <span key={line} className="text-muted-foreground">
+                {line}
+              </span>
+            ))}
+          </span>
+        </div>
+      ))}
+    </div>
   ),
   "pixel-snail": (
     <svg
@@ -370,6 +421,18 @@ const PREVIEWS: Record<string, ReactNode> = {
         Semantic roles
       </span>
     </div>
+  ),
+  "sticker-avatar": (
+    <StickerAvatarGroup className="-space-x-2">
+      <StickerAvatar
+        name="Tori Bryan"
+        size={52}
+        status="present"
+        lift={false}
+      />
+      <StickerAvatar name="Ana Ruiz" size={52} status="away" lift={false} />
+      <StickerAvatarCount count={4} size={52} />
+    </StickerAvatarGroup>
   ),
   "floating-nav": (
     <span className="flex items-center gap-1 rounded-full border border-border bg-popover p-1 shadow-md">
