@@ -1,6 +1,7 @@
 import * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
+  ArrowUpDownIcon,
   CheckIcon,
   DownloadIcon,
   EllipsisIcon,
@@ -11,13 +12,17 @@ import {
   PencilIcon,
   Trash2Icon,
 } from "lucide-react"
-import { expect, fn, waitFor } from "storybook/test"
+import { expect, fn, waitFor, within } from "storybook/test"
 
 import { Badge } from "./badge.js"
 import { Button } from "./button.js"
 import {
   DataTable,
+  DataTableAction,
   DataTableActions,
+  DataTableCard,
+  DataTableCardField,
+  DataTableCards,
   DataTableBulkAction,
   DataTableBulkActions,
   DataTableFilters,
@@ -41,6 +46,13 @@ import {
 } from "./menu.js"
 import { Input } from "./input.js"
 import { Pagination } from "./pagination.js"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./select.js"
 
 const STATUS = {
   "On shift": "success",
@@ -169,26 +181,44 @@ function AgentsToolbar({
 }) {
   return (
     <DataTableToolbar>
-      <DataTableFilters>
-        <div className="relative w-48">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            size="sm"
-            className="pl-8"
-            placeholder="Search 248 agents"
-            aria-label="Search agents"
-          />
-        </div>
+      <DataTableFilters
+        search={
+          <div className="relative w-full">
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              size="sm"
+              className="pl-8"
+              placeholder="Search 248 agents"
+              aria-label="Search agents"
+            />
+          </div>
+        }
+      >
+        <Select
+          defaultValue="name"
+          items={[
+            { value: "name", label: "Name" },
+            { value: "team", label: "Team" },
+          ]}
+        >
+          <SelectTrigger size="sm" aria-label="Sort by">
+            <ArrowUpDownIcon />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="name">Name</SelectItem>
+            <SelectItem value="team">Team</SelectItem>
+          </SelectContent>
+        </Select>
         <Button variant="ghost" size="sm">
           <PlusIcon data-icon="inline-start" />
           Add filter
         </Button>
       </DataTableFilters>
       <DataTableActions>
-        <Button size="sm">
-          <PlusIcon data-icon="inline-start" />
+        <DataTableAction icon={<PlusIcon data-icon="inline-start" />}>
           Add agent
-        </Button>
+        </DataTableAction>
       </DataTableActions>
       {children ?? <DataTableBulkActions onDelete={() => {}} />}
     </DataTableToolbar>
@@ -198,15 +228,19 @@ function AgentsToolbar({
 function AgentsTable({
   agents = AGENTS,
   secondary = false,
+  pinned = true,
   footer,
   toolbar,
   ...props
 }: Partial<React.ComponentProps<typeof DataTable>> & {
   agents?: Agent[]
   secondary?: boolean
+  pinned?: boolean
   footer?: React.ReactNode
   toolbar?: React.ReactNode
 }) {
+  const start = pinned ? "start" : "none"
+  const end = pinned ? "end" : "none"
   return (
     <DataTable
       aria-label="Agents"
@@ -217,7 +251,7 @@ function AgentsTable({
       {toolbar}
       <DataTableContent>
         <DataTableHeader>
-          <DataTableHead type="person" pinned="start" className="w-56">
+          <DataTableHead type="person" pinned={start} className="w-56">
             Agent
           </DataTableHead>
           <DataTableHead className="w-44">Team</DataTableHead>
@@ -225,7 +259,7 @@ function AgentsTable({
           <DataTableHead type="status">Status</DataTableHead>
           <DataTableHead type="numeric">Adherence</DataTableHead>
           <DataTableHead className="w-32">Shift</DataTableHead>
-          <DataTableHead type="actions" pinned="end">
+          <DataTableHead type="actions" pinned={end}>
             <span className="sr-only">Actions</span>
           </DataTableHead>
         </DataTableHeader>
@@ -238,7 +272,7 @@ function AgentsTable({
             >
               <DataTableCell
                 type="person"
-                pinned="start"
+                pinned={start}
                 avatar={{ fallback: agent.initials }}
                 secondary={secondary ? agent.email : undefined}
               >
@@ -251,13 +285,36 @@ function AgentsTable({
               </DataTableCell>
               <DataTableCell type="numeric">{agent.adherence}%</DataTableCell>
               <DataTableCell>{agent.shift}</DataTableCell>
-              <DataTableCell type="actions" pinned="end">
+              <DataTableCell type="actions" pinned={end}>
                 <RowActions name={agent.name} />
               </DataTableCell>
             </DataTableRow>
           ))}
         </DataTableBody>
       </DataTableContent>
+      <DataTableCards>
+        {agents.map((agent) => (
+          <DataTableCard
+            key={agent.id}
+            id={agent.id}
+            title={agent.name}
+            avatar={{ fallback: agent.initials }}
+            status={
+              <Badge variant={STATUS[agent.status]}>{agent.status}</Badge>
+            }
+            lockedReason={agent.lock}
+          >
+            <DataTableCardField label="Team">{agent.team}</DataTableCardField>
+            <DataTableCardField label="Shift">{agent.shift}</DataTableCardField>
+            <DataTableCardField label="Channels">
+              {agent.channels}
+            </DataTableCardField>
+            <DataTableCardField label="Adherence">
+              {agent.adherence}%
+            </DataTableCardField>
+          </DataTableCard>
+        ))}
+      </DataTableCards>
       {footer}
     </DataTable>
   )
@@ -280,6 +337,10 @@ const meta: Meta<typeof DataTable> = {
     DataTableActions,
     DataTableBulkActions,
     DataTableBulkAction,
+    DataTableAction,
+    DataTableCards,
+    DataTableCard,
+    DataTableCardField,
   },
   tags: ["new"],
   argTypes: {
@@ -291,7 +352,173 @@ const meta: Meta<typeof DataTable> = {
     children: { control: false },
     showSelectedOnly: { control: false },
     onShowSelectedOnlyChange: { control: false },
+    narrowLayout: { control: false },
     totalCount: { control: { type: "number", min: 0 } },
+  },
+  parameters: {
+    controls: {
+      exclude: [
+        "rowIds",
+        "value",
+        "defaultValue",
+        "onValueChange",
+        "noun",
+        "children",
+        "showSelectedOnly",
+        "onShowSelectedOnlyChange",
+        "narrowLayout",
+      ],
+    },
+  },
+  args: { onValueChange: fn() },
+  render: (args) => <AgentsTable {...args} toolbar={<AgentsToolbar />} />,
+}
+
+export default meta
+type Story = StoryObj<typeof DataTable>
+
+type BulkActionsPreset = "delete only" | "export" | "several" | "review"
+type FooterPreset = "none" | "pagination" | "selection count"
+
+type PlaygroundArgs = React.ComponentProps<typeof DataTable> & {
+  previewWidth: "100%" | "640px" | "375px"
+  showToolbar: boolean
+  bulkActions: BulkActionsPreset
+  footerContent: FooterPreset
+  secondaryText: boolean
+  lockedRow: boolean
+  pinnedColumns: boolean
+}
+
+function bulkActionsFor(preset: BulkActionsPreset) {
+  switch (preset) {
+    case "export":
+      return (
+        <DataTableBulkActions onDelete={() => {}}>
+          <DataTableBulkAction icon={<DownloadIcon data-icon="inline-start" />}>
+            Export
+          </DataTableBulkAction>
+        </DataTableBulkActions>
+      )
+    case "several":
+      return (
+        <DataTableBulkActions
+          onDelete={() => {}}
+          moreActions={<MenuItem>Add skill</MenuItem>}
+        >
+          <DataTableBulkAction>Assign schedule</DataTableBulkAction>
+          <DataTableBulkAction
+            single
+            icon={<PencilIcon data-icon="inline-start" />}
+          >
+            Edit
+          </DataTableBulkAction>
+        </DataTableBulkActions>
+      )
+    case "review":
+      return (
+        <DataTableBulkActions>
+          <DataTableBulkAction
+            variant="default"
+            icon={<CheckIcon data-icon="inline-start" />}
+          >
+            Approve
+          </DataTableBulkAction>
+          <DataTableBulkAction
+            variant="destructive"
+            icon={<XIcon data-icon="inline-start" />}
+          >
+            Deny
+          </DataTableBulkAction>
+        </DataTableBulkActions>
+      )
+    default:
+      return <DataTableBulkActions onDelete={() => {}} />
+  }
+}
+
+function footerFor(preset: FooterPreset, totalCount?: number) {
+  if (preset === "selection count") {
+    return (
+      <DataTableFooter>
+        <DataTableSelectionCount />
+      </DataTableFooter>
+    )
+  }
+  if (preset === "pagination") {
+    const total = totalCount ?? AGENTS.length
+    return (
+      <DataTableFooter className="justify-end">
+        <Pagination
+          pageCount={Math.max(1, Math.ceil(total / AGENTS.length))}
+          pageSize={AGENTS.length}
+          totalCount={total}
+          noun="agents"
+        />
+      </DataTableFooter>
+    )
+  }
+  return null
+}
+
+/*
+ * The playground. Its controls change what the story renders, such as the
+ * width it sits in, so narrowLayout has something to act on.
+ */
+export const Default: StoryObj<PlaygroundArgs> = {
+  args: {
+    previewWidth: "100%",
+    narrowLayout: "scroll",
+    showToolbar: true,
+    bulkActions: "delete only",
+    footerContent: "none",
+    secondaryText: false,
+    lockedRow: true,
+    pinnedColumns: true,
+  },
+  argTypes: {
+    previewWidth: {
+      name: "width",
+      description: "The width the table sits in. Under 32rem it goes narrow.",
+      control: "inline-radio",
+      options: ["100%", "640px", "375px"],
+    },
+    narrowLayout: {
+      control: "inline-radio",
+      options: ["scroll", "cards"],
+    },
+    showToolbar: {
+      name: "toolbar",
+      description: "Shows DataTableToolbar with filters and actions.",
+      control: "boolean",
+    },
+    bulkActions: {
+      name: "bulk actions",
+      description: "Which bulk actions show while rows are selected.",
+      control: "inline-radio",
+      options: ["delete only", "export", "several", "review"],
+    },
+    footerContent: {
+      name: "footer",
+      description: "What DataTableFooter holds, if anything.",
+      control: "inline-radio",
+      options: ["none", "pagination", "selection count"],
+    },
+    secondaryText: {
+      name: "secondary text",
+      description: "A second line under each name, making rows 52px.",
+      control: "boolean",
+    },
+    lockedRow: {
+      name: "locked row",
+      description: "Locks Elena's row with a reason.",
+      control: "boolean",
+    },
+    pinnedColumns: {
+      name: "pinned columns",
+      description: "Pins the name to the start and actions to the end.",
+      control: "boolean",
+    },
   },
   parameters: {
     controls: {
@@ -307,14 +534,35 @@ const meta: Meta<typeof DataTable> = {
       ],
     },
   },
-  args: { onValueChange: fn() },
-  render: (args) => <AgentsTable {...args} toolbar={<AgentsToolbar />} />,
-}
-
-export default meta
-type Story = StoryObj<typeof DataTable>
-
-export const Default: Story = {
+  render: ({
+    previewWidth,
+    showToolbar,
+    bulkActions,
+    footerContent,
+    secondaryText,
+    lockedRow,
+    pinnedColumns,
+    ...args
+  }) => (
+    <div style={{ width: previewWidth, maxWidth: "100%" }}>
+      <AgentsTable
+        {...args}
+        agents={
+          lockedRow
+            ? AGENTS
+            : AGENTS.map((agent) => ({ ...agent, lock: undefined }))
+        }
+        secondary={secondaryText}
+        pinned={pinnedColumns}
+        toolbar={
+          showToolbar ? (
+            <AgentsToolbar>{bulkActionsFor(bulkActions)}</AgentsToolbar>
+          ) : undefined
+        }
+        footer={footerFor(footerContent, args.totalCount)}
+      />
+    </div>
+  ),
   play: async ({ args, canvas, userEvent }) => {
     const all = canvas.getByRole("checkbox", {
       name: "Select all agents on this page",
@@ -453,8 +701,9 @@ export const BulkActionPatterns: Story = {
           [
             "Export",
             <DataTableBulkActions key="b" onDelete={() => {}}>
-              <DataTableBulkAction>
-                <DownloadIcon data-icon="inline-start" />
+              <DataTableBulkAction
+                icon={<DownloadIcon data-icon="inline-start" />}
+              >
                 Export
               </DataTableBulkAction>
             </DataTableBulkActions>,
@@ -478,8 +727,10 @@ export const BulkActionPatterns: Story = {
           [
             "One item, with two selected",
             <DataTableBulkActions key="d" onDelete={() => {}}>
-              <DataTableBulkAction single>
-                <PencilIcon data-icon="inline-start" />
+              <DataTableBulkAction
+                single
+                icon={<PencilIcon data-icon="inline-start" />}
+              >
                 Edit
               </DataTableBulkAction>
             </DataTableBulkActions>,
@@ -564,5 +815,63 @@ export const Directory: Story = {
     await expect(
       canvas.getByRole("checkbox", { name: "Select all agents on this page" })
     ).toHaveFocus()
+  },
+}
+
+export const NarrowScroll: Story = {
+  name: "Narrow, scroll",
+  render: (args) => (
+    <div className="w-[375px]">
+      <AgentsTable
+        {...args}
+        narrowLayout="scroll"
+        toolbar={<AgentsToolbar />}
+      />
+    </div>
+  ),
+}
+
+export const NarrowCards: Story = {
+  name: "Narrow, cards",
+  render: (args) => (
+    <div className="w-[375px]">
+      <AgentsTable
+        {...args}
+        narrowLayout="cards"
+        defaultValue={new Set(["priya"])}
+        toolbar={
+          <AgentsToolbar>
+            <DataTableBulkActions onDelete={() => {}}>
+              <DataTableBulkAction icon={<DownloadIcon />}>
+                Export
+              </DataTableBulkAction>
+            </DataTableBulkActions>
+          </AgentsToolbar>
+        }
+      />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    await expect(canvas.queryByRole("table")).not.toBeInTheDocument()
+    await expect(
+      canvas.getByRole("checkbox", { name: "Select Priya Raman" })
+    ).toBeChecked()
+
+    // The bulk actions are icon only here, named by their labels.
+    await expect(
+      canvas.getByRole("button", { name: "Export" })
+    ).not.toHaveTextContent("Export")
+
+    // Filters open in a sheet once the selection is cleared.
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Clear selection" })
+    )
+    await userEvent.click(canvas.getByRole("button", { name: "Filters" }))
+    const body = within(canvasElement.ownerDocument.body)
+    await expect(
+      await body.findByRole("dialog", { name: "Filters" })
+    ).toBeVisible()
+    await userEvent.keyboard("{Escape}")
+    await waitFor(() => expect(body.queryByRole("dialog")).toBeNull())
   },
 }

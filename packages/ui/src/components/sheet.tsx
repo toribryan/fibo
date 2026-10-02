@@ -44,13 +44,16 @@ function SheetContent({
   className,
   children,
   showCloseButton = true,
+  keepMounted = false,
   ...props
 }: SheetPrimitive.Popup.Props & {
   /** Shows a close button in the top corner. */
   showCloseButton?: boolean
+  /** Keeps the content in the page while closed, so its controls keep their state. */
+  keepMounted?: boolean
 }) {
   return (
-    <SheetPrimitive.Portal>
+    <SheetPrimitive.Portal keepMounted={keepMounted}>
       <SheetPrimitive.Backdrop
         data-slot="sheet-overlay"
         className="fixed inset-0 z-50 bg-backdrop opacity-[calc(1-var(--drawer-swipe-progress,0))] transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)] data-ending-style:opacity-0 data-ending-style:duration-[calc(var(--drawer-swipe-strength,1)*400ms)] data-starting-style:opacity-0 data-swiping:duration-0 motion-reduce:transition-none"

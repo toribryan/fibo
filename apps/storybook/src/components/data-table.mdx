@@ -30,6 +30,8 @@ either edge. It matches the Data table in the Figma library.
 - One toolbar row for every action: filters and create actions while idle,
   then the selection and bulk actions in the same place while rows are
   selected, with Select all matching for the rows on other pages.
+- Under 32rem it keeps working: the table scrolls under an icon-only
+  toolbar, or each row becomes a card. Sort and filters move into a sheet.
 
 ## Installation
 
@@ -50,11 +52,15 @@ either edge. It matches the Data table in the Figma library.
     "DataTableActions",
     "DataTableBulkActions",
     "DataTableBulkAction",
+    "DataTableAction",
+    "DataTableCards",
+    "DataTableCard",
+    "DataTableCardField",
     "useDataTableSelection",
   ]}
 />
 
-It installs Table, Checkbox, Avatar, Tooltip, Button and Menu.
+It installs Table, Checkbox, Avatar, Tooltip, Button, Menu and Sheet.
 
 ## Usage
 
@@ -214,6 +220,20 @@ everything is selected keeps this page's rows and drops the rest.
         ],
       },
       {
+        name: "DataTableCards",
+        slot: "data-table-cards",
+        note: "Instead of the table, narrow with narrowLayout=cards.",
+        children: [
+          {
+            name: "DataTableCard",
+            slot: "data-table-card",
+            children: [
+              { name: "DataTableCardField", slot: "data-table-card-field" },
+            ],
+          },
+        ],
+      },
+      {
         name: "DataTableFooter",
         slot: "data-table-footer",
         children: [
@@ -239,6 +259,8 @@ everything is selected keeps this page's rows and drops the rest.
     "Put every action in the toolbar. Don't add hover actions or a floating bar; they split actions across places.",
     "Keep the bulk action order: your actions, then More, then Delete. Approve comes before Deny.",
     "Give a bulk action that works on one row `single`, so it stays in place, dimmed, while more are selected.",
+    "Give actions an icon, so they still fit on a phone. Under 32rem they show the icon alone, with the label as their name and tooltip.",
+    'Use narrowLayout="cards" when a row reads better as a summary than as a line, such as people with a status. Keep scroll for data people compare across columns.',
   ]}
 />
 
@@ -297,6 +319,26 @@ Choosing rows for a form, with the count in the footer instead of actions.
 
 <Canvas of={Stories.Picker} />
 
+### Narrow, scroll
+
+The default under 32rem: the table scrolls sideways, pinning switches off,
+the search fills the toolbar, and sort and filters move behind Filters.
+
+<Canvas of={Stories.NarrowScroll} />
+
+### Narrow, cards
+
+`narrowLayout="cards"`: each row becomes a card, select all moves into the
+toolbar, and bulk actions show their icons. Cards need a DataTableToolbar,
+since that's where select all goes.
+
+Narrow, the toolbar keeps the count, Clear and bulk actions. Select all
+matching and Show selected only aren't offered, as in the Figma library.
+Keep filter values in state you own: the controls move between the toolbar
+and the Filters sheet as the width crosses 32rem.
+
+<Canvas of={Stories.NarrowCards} />
+
 ## Do's and don'ts
 
 <ComponentRules
@@ -333,7 +375,18 @@ DataTable takes the selection props below. Head and Cell take `type` and
 and `lockedReason`. Every part also takes the props of the element it
 renders.
 
-<ArgTypes of={Stories.Default} />
+<ArgTypes
+  of={Stories.Default}
+  exclude={[
+    "previewWidth",
+    "showToolbar",
+    "bulkActions",
+    "footerContent",
+    "secondaryText",
+    "lockedRow",
+    "pinnedColumns",
+  ]}
+/>
 
 ### Data attributes
 
@@ -343,6 +396,16 @@ renders.
       attribute: 'data-slot="data-table"',
       element: "Root",
       when: "Always.",
+    },
+    {
+      attribute: "data-narrow",
+      element: "Root",
+      when: "It's narrower than 32rem.",
+    },
+    {
+      attribute: 'data-layout="table" | "cards"',
+      element: "Root",
+      when: "Always: which of the table and the cards is showing.",
     },
     {
       attribute: "data-scroll-start, data-scroll-end",
@@ -362,6 +425,26 @@ renders.
     {
       attribute: 'data-slot="data-table-filters"',
       element: "Filters",
+      when: "Nothing is selected.",
+    },
+    {
+      attribute: 'data-slot="data-table-search"',
+      element: "Search slot",
+      when: "Filters has a search.",
+    },
+    {
+      attribute: 'data-slot="data-table-filters-trigger"',
+      element: "Filters button",
+      when: "Narrow, with sort or filter controls.",
+    },
+    {
+      attribute: 'data-slot="data-table-filters-sheet"',
+      element: "Filters sheet body",
+      when: "The Filters sheet is open.",
+    },
+    {
+      attribute: 'data-slot="data-table-action"',
+      element: "Create action",
       when: "Nothing is selected.",
     },
     {
@@ -480,6 +563,21 @@ renders.
       when: "The row is locked, on its primary or person cell.",
     },
     {
+      attribute: 'data-slot="data-table-cards"',
+      element: "Card list",
+      when: "Narrow with narrowLayout=cards.",
+    },
+    {
+      attribute: 'data-slot="data-table-card"',
+      element: "Card",
+      when: "Narrow with narrowLayout=cards.",
+    },
+    {
+      attribute: 'data-slot="data-table-card-field"',
+      element: "Card field",
+      when: "Narrow with narrowLayout=cards.",
+    },
+    {
       attribute: 'data-slot="data-table-footer"',
       element: "Footer",
       when: "Always.",
@@ -504,6 +602,8 @@ renders.
     "The toolbar is a group named “Filters and actions” or “Bulk actions”, not a toolbar role, so its controls stay ordinary Tab stops and arrow keys stay with the search field.",
     "When the focused control goes away, such as Clear or Select all matching, focus moves to Clear, or to select all when nothing is selected, instead of the page.",
     "A single-row action that's dimmed stays focusable and is described by why: “Works on one agent at a time”.",
+    "Only one of the table and the cards is ever in the page, so screen readers don't meet each row twice. Cards are a list, and each card's checkbox is named from its title.",
+    "Icon-only actions on a narrow table keep their label as their accessible name and show it as a tooltip.",
     "Status badges sit on the background, so their tints keep AA contrast on selected and hovered rows.",
   ]}
 />
