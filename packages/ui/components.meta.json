@@ -55,7 +55,6 @@
     "description": "A table for lists people work through: selection, cell types, locked rows and pinned columns.",
     "tier": "base-components",
     "group": "Display",
-    "status": "new",
     "figma": "230-2"
   },
   "filter-menu": {
@@ -247,5 +246,12 @@
     "tier": "base-components",
     "group": "Feedback",
     "figma": "567-9878"
+  },
+  "voice-memo": {
+    "title": "Voice memo",
+    "description": "An aluminium recorder that writes down what you say, with the transcript filling in beside it as you talk.",
+    "tier": "special-components",
+    "group": "Forms",
+    "status": "new"
   }
 }
