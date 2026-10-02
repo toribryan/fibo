@@ -10,6 +10,12 @@ has the same history with links into the docs.
 
 ### Added
 
+- A way to retire a part: a `deprecated` entry in `components.meta.json`
+  drives a docs banner, a sidebar and catalog pill, a notice printed on
+  `shadcn add`, a line in `llms.txt`, and a codemod served at
+  `/codemods/<name>.js`. See `plans/002-retiring-a-component.md`.
+- A `retire-component` agent skill for taking a part through it.
+
 - A Registry guide page in Storybook: a step-by-step walkthrough for
   designers, with a picker that reads the live registry files to show what
   each part brings into a project.
@@ -29,6 +35,12 @@ has the same history with links into the docs.
   styles silently disappeared.
 - Registry parts depend on shadcn's `utils`, so `cn` is installed in a project
   that never ran `shadcn init`.
+
+### Deprecated
+
+- **Spinner**, added as the first part through the retirement path. Use an
+  indeterminate Progress; the `spinner-to-progress` codemod migrates a
+  project. Removed in 0.3.0.
 
 ### Changed
 
