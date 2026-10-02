@@ -7,19 +7,19 @@ import { MapPinIcon } from "lucide-react"
 
 import { cn } from "@workspace/ui/lib/utils"
 
-type MapMarkerProps = Omit<
+type MapPinProps = Omit<
   React.ComponentProps<"button">,
   "type" | "title" | "children"
 > & {
-  /** The place's name. It's the marker's accessible name, and the text of a label marker unless `text` is set. */
+  /** The place's name. It's the pin's accessible name, and the text of a label pin unless `text` is set. */
   label: string
-  /** `dot` is a small point, `icon` a round marker with an icon, `label` a pill with text such as a price. */
+  /** `dot` is a small point, `icon` a round pin with an icon, `label` a pill with text such as a price. */
   type?: "dot" | "icon" | "label"
   /** What the colour says: `default` for plain places, or a status such as `success` for open or `destructive` for closed. */
   variant?: "default" | "success" | "warning" | "info" | "destructive"
-  /** The icon for an `icon` marker, or a leading icon in a `label` marker. An `icon` marker falls back to a map pin. */
+  /** The icon for an `icon` pin, or a leading icon in a `label` pin. An `icon` pin falls back to a map-pin icon. */
   icon?: React.ReactNode
-  /** What a label marker shows, when it differs from `label`, such as "$120". */
+  /** What a label pin shows, when it differs from `label`, such as "$120". */
   text?: React.ReactNode
   /** `sm` for dense maps. */
   size?: "sm" | "default"
@@ -39,15 +39,15 @@ type MapMarkerProps = Omit<
   defaultOpen?: boolean
   /** Called when the preview opens or closes. */
   onOpenChange?: (open: boolean) => void
-  /** Which side of the marker the preview opens on. It flips when there's no room. */
+  /** Which side of the pin the preview opens on. It flips when there's no room. */
   side?: "top" | "right" | "bottom" | "left"
-  /** Classes for the preview. It's portalled to the body, out of reach of the marker's selectors. */
+  /** Classes for the preview. It's portalled to the body, out of reach of the pin's selectors. */
   previewClassName?: string
 }
 
-type Variant = NonNullable<MapMarkerProps["variant"]>
+type Variant = NonNullable<MapPinProps["variant"]>
 
-// Filled markers, dots and icons, take the colour as their fill and grow a
+// Filled pins, dots and icons, take the colour as their fill and grow a
 // halo of it when open.
 const FILL: Record<Variant, string> = {
   default:
@@ -77,9 +77,9 @@ const OUTLINE: Record<Variant, string> = {
 
 const VARIANTS = Object.keys(FILL) as Variant[]
 
-const mapMarkerVariants = cva(
-  // The spring curve overshoots a little, so a marker settles into its open
-  // size rather than stopping dead. Hover lifts a marker part of the way to
+const mapPinVariants = cva(
+  // The spring curve overshoots a little, so a pin settles into its open
+  // size rather than stopping dead. Hover lifts a pin part of the way to
   // its open size, and stays off the open one so its selected look holds.
   "relative inline-flex shrink-0 cursor-pointer touch-manipulation items-center justify-center transition-[scale,translate,background-color,border-color,color,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] outline-none select-none hover:not-data-[popup-open]:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring-subtle motion-reduce:transition-none",
   {
@@ -126,11 +126,11 @@ const mapMarkerVariants = cva(
 )
 
 /**
- * A marker for a point on a map, with a preview that opens on click or tap.
+ * A pin for a point on a map, with a preview that opens on click or tap.
  * It brings no map of its own: render it inside your map library's marker,
  * which places it and moves it as the map pans and zooms.
  */
-function MapMarker({
+function MapPin({
   label,
   type = "dot",
   variant = "default",
@@ -149,7 +149,7 @@ function MapMarker({
   previewClassName,
   className,
   ...props
-}: MapMarkerProps) {
+}: MapPinProps) {
   const shown =
     type === "icon" ? (
       (icon ?? <MapPinIcon />)
@@ -160,15 +160,15 @@ function MapMarker({
       </>
     ) : null
 
-  const marker = (
+  const pin = (
     <button
       type="button"
-      data-slot="map-marker"
+      data-slot="map-pin"
       data-type={type}
       data-variant={variant}
       data-size={size}
       aria-label={type === "label" && text === undefined ? undefined : label}
-      className={cn(mapMarkerVariants({ type, variant, size }), className)}
+      className={cn(mapPinVariants({ type, variant, size }), className)}
       {...props}
     >
       {shown}
@@ -181,7 +181,7 @@ function MapMarker({
     description !== undefined ||
     meta !== undefined ||
     children !== undefined
-  if (!hasPreview) return marker
+  if (!hasPreview) return pin
 
   return (
     <PopoverPrimitive.Root
@@ -189,7 +189,7 @@ function MapMarker({
       defaultOpen={defaultOpen}
       onOpenChange={(next) => onOpenChange?.(next)}
     >
-      <PopoverPrimitive.Trigger render={marker} />
+      <PopoverPrimitive.Trigger render={pin} />
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Positioner
           side={side}
@@ -198,11 +198,11 @@ function MapMarker({
           className="isolate z-50"
         >
           <PopoverPrimitive.Popup
-            data-slot="map-marker-preview"
+            data-slot="map-pin-preview"
             aria-label={label}
             className={cn(
               "group/preview w-64 max-w-[calc(100vw-1rem)] origin-(--transform-origin) overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg outline-hidden",
-              // Grows out of the marker with a little overshoot, and leaves
+              // Grows out of the pin with a little overshoot, and leaves
               // faster than it came, so closing never holds anything up.
               "transition-[opacity,scale,translate] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] data-ending-style:duration-150 data-ending-style:ease-in",
               "data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-[0.85] data-starting-style:opacity-0",
@@ -213,7 +213,7 @@ function MapMarker({
           >
             {image ? (
               <img
-                data-slot="map-marker-image"
+                data-slot="map-pin-image"
                 src={image.src}
                 alt={image.alt}
                 className="block aspect-[16/9] w-full bg-muted object-cover"
@@ -224,7 +224,7 @@ function MapMarker({
             <div className="flex flex-col gap-1 p-3 transition-[opacity,translate] delay-75 duration-300 ease-out group-data-starting-style/preview:translate-y-1 group-data-starting-style/preview:opacity-0 motion-reduce:transition-none">
               {meta !== undefined ? (
                 <span
-                  data-slot="map-marker-meta"
+                  data-slot="map-pin-meta"
                   className="text-xs text-muted-foreground"
                 >
                   {meta}
@@ -232,7 +232,7 @@ function MapMarker({
               ) : null}
               {title !== undefined ? (
                 <span
-                  data-slot="map-marker-title"
+                  data-slot="map-pin-title"
                   className="text-sm font-medium text-foreground"
                 >
                   {title}
@@ -240,14 +240,14 @@ function MapMarker({
               ) : null}
               {description !== undefined ? (
                 <p
-                  data-slot="map-marker-description"
+                  data-slot="map-pin-description"
                   className="m-0 line-clamp-3 text-sm text-muted-foreground"
                 >
                   {description}
                 </p>
               ) : null}
               {children !== undefined ? (
-                <div data-slot="map-marker-content" className="mt-2">
+                <div data-slot="map-pin-content" className="mt-2">
                   {children}
                 </div>
               ) : null}
@@ -259,4 +259,4 @@ function MapMarker({
   )
 }
 
-export { MapMarker, mapMarkerVariants, type MapMarkerProps }
+export { MapPin, mapPinVariants, type MapPinProps }
