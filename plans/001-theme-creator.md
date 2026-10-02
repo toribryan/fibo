@@ -1,5 +1,11 @@
 # 001 Theme creator
 
+> **Archived in October 2026.** The page is off the site and its code lives in
+> `archive/theme-creator/`, unbuilt. fibo is about its components and their
+> tokens; a theme builder is a separate product, and keeping it in step with
+> every token change cost more than it gave. Old links to the page land on
+> Colors. The design below is kept as the record.
+
 ## What is changing
 
 A Theme creator page in the Storybook sidebar, beside Colour and Typography.
