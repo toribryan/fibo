@@ -1,0 +1,252 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/sticker-avatar.stories"
+import { StickerAvatar } from "../../../../packages/ui/src/components/sticker-avatar"
+import { ghostSrc } from "../../../../packages/ui/src/components/sticker-avatar.fixtures"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { Anatomy } from "../blocks/anatomy"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Sticker avatar
+
+An avatar cut out like a die-cut sticker. A white paper edge follows the
+shape of a transparent image, each sticker sits at its own slight angle, and
+status is a small sticker of its own on the corner.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Follows the image's own outline when its border is transparent, and turns a
+  photo with a background into a round sticker.
+- Draws the edge once on a canvas when the image loads, then shows a plain
+  image, so a list of fifty stickers costs no more than fifty avatars.
+- Tilts by a stable angle from the name and lifts on hover, or when a row with
+  `group/sticker` is hovered.
+- Tells status apart by shape: a dot, a crescent, a bar or a ring.
+
+## Installation
+
+<Install
+  name="sticker-avatar"
+  exports={[
+    "StickerAvatar",
+    "StickerAvatarGroup",
+    "StickerAvatarCount",
+    "type StickerAvatarStatus",
+  ]}
+/>
+
+It adds `--sticker-edge` and `--sticker-ink` to your theme.
+
+## Usage
+
+```tsx
+import { StickerAvatar } from "@/components/ui/sticker-avatar"
+
+export function Member({ user }: { user: User }) {
+  return (
+    <StickerAvatar
+      name={user.name}
+      src={user.cutoutUrl}
+      status={user.status}
+      size={40}
+    />
+  )
+}
+```
+
+Pass an image with its background already removed. Cutting a subject out in
+the browser takes a 40 to 170 MB model, so do it once on upload, on a server,
+or let people bring their own. Images on another host need CORS headers for
+the edge to be cut; without them the sticker falls back to round.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "StickerAvatar",
+    slot: "sticker-avatar",
+    note: "The layout box, at exactly size by size. Named with role img. Carries data-shape and data-status.",
+    children: [
+      {
+        name: "image",
+        slot: "sticker-avatar-image",
+        note: "The baked die-cut, drawn past the box by the edge width.",
+      },
+      {
+        name: "fallback",
+        slot: "sticker-avatar-fallback",
+        note: "Die-cut initials, when there is no image or it fails to load.",
+      },
+      {
+        name: "status",
+        slot: "sticker-avatar-status",
+        note: "A small sticker on the corner. Only with status.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use it where people and personality are the point: profiles, parties, member lists, a small group in a chat header.",
+    "Keep the layout box tight. The edge and tilt are drawn outside it, so leave a few pixels of room round stickers in a dense list.",
+    <>
+      Turn off <code>tilt</code> where stickers line up in a grid people scan,
+      such as a table of members. Keep it in stacks and profiles, where it reads
+      as hand-placed.
+    </>,
+    <>
+      Use <code>pixelated</code> for pixel art, so it scales with hard edges
+      instead of blurring.
+    </>,
+  ]}
+/>
+
+## Examples
+
+### Sizes
+
+The edge grows with the sticker: 2px up to 40, 4px at 64, 6px at 96.
+
+<Canvas of={Stories.Sizes} />
+
+### Status by shape
+
+Online, idle, do not disturb and offline. Each reads without colour.
+
+<Canvas of={Stories.Statuses} />
+
+### Cut-out, round and initials
+
+A transparent cut-out follows its shape. A photo with a background becomes
+round. With no image, the letters themselves are cut out.
+
+<Canvas of={Stories.Shapes} />
+
+### In a direct message list
+
+At 32px the edge and tilt are small enough for a dense list. Each row carries
+`group/sticker`, so hovering anywhere on it lifts the sticker.
+
+<Canvas of={Stories.DirectMessages} />
+
+### Stack
+
+StickerAvatarGroup overlaps stickers like a laptop lid, and
+StickerAvatarCount counts the rest.
+
+<Canvas of={Stories.Group} />
+
+### Without tilt or lift
+
+<Canvas of={Stories.Straight} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: <StickerAvatar name="Ghost" src={ghostSrc()} size={64} />,
+        description: "Give it an image with the background removed.",
+      },
+      negative: {
+        component: (
+          <StickerAvatar name="Ghost" src={ghostSrc()} size={64} edge={12} />
+        ),
+        description:
+          "Don't thicken the edge past the default. The paper swamps the subject.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="sticker-avatar"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-shape",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>cutout</code>, <code>round</code>, <code>initials</code>
+          , or <code>loading</code> while the edge is drawn.
+        </>
+      ),
+    },
+    {
+      attribute: "data-status",
+      element: "The root and the status sticker",
+      when: (
+        <>
+          With <code>status</code>. <code>online</code>, <code>idle</code>,{" "}
+          <code>dnd</code> or <code>offline</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "--sticker-edge",
+      element: "Any ancestor, or the root",
+      when: "Overrides the paper colour. Read when the edge is drawn.",
+    },
+  ]}
+/>
+
+## Tokens
+
+`--sticker-edge` is white and `--sticker-ink` is near-black in both themes.
+That is deliberate: a sticker is paper, and paper doesn't change colour when
+the room gets dark. A hairline and a shadow keep the white edge visible on a
+light page.
+
+Status has no colour option for the same reason. fibo's dark-theme status
+colours are tuned for dark surfaces, and on white paper they would fall
+under the 3:1 contrast that non-text marks need.
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The root is <code>role="img"</code>, named by <code>name</code> and the
+      status: “Ana Ruiz, Idle”. Pass <code>statusLabel</code> to translate the
+      status.
+    </>,
+    <>
+      Inside a row or button that already says the name, set{" "}
+      <code>aria-hidden</code> on the sticker so the name isn't read twice.
+    </>,
+    "Status never relies on colour. Each state has its own shape, and its label is in the accessible name.",
+    "The hit area and layout are the square box, not the cut, so an odd shape is no harder to click.",
+    "With reduced motion the sticker keeps its tilt and shadow but doesn't lift.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Avatar", "Badge"]} />
+
+## References
+
+- [Telegram sticker guidelines](https://core.telegram.org/stickers), which recommend a white stroke and a shadow
+- [WhatsApp sticker requirements](https://github.com/WhatsApp/stickers), which ask for an 8px white stroke on 512px
+- [WWDC23: Lift subjects from images in your app](https://developer.apple.com/videos/play/wwdc2023/10176/), for how Live Stickers cut the subject out
+- [WCAG 1.4.11 Non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html) and [1.4.1 Use of color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)
