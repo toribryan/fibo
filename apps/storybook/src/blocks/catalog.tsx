@@ -186,6 +186,21 @@ const PREVIEWS: Record<string, ReactNode> = {
       </span>
     </div>
   ),
+  table: (
+    <div className="w-48 overflow-hidden rounded-md border border-border text-xs">
+      <div className="flex h-6 items-center bg-muted px-2 font-medium">
+        Agent
+      </div>
+      {["Maya Okafor", "Priya Raman", "Sam Whitfield"].map((name) => (
+        <div
+          key={name}
+          className="flex h-7 items-center border-t border-border px-2"
+        >
+          {name}
+        </div>
+      ))}
+    </div>
+  ),
   sheet: (
     <div className="relative h-28 w-44 overflow-hidden rounded-md border border-border bg-muted">
       <div className="absolute inset-y-0 right-0 flex w-24 flex-col gap-1.5 border-l border-border bg-background p-2">
