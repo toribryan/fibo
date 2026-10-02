@@ -10,7 +10,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "./button.js"
-import { MapMarker } from "./map-marker.js"
+import { MapPin } from "./map-pin.js"
 
 // A stand-in photo, so the stories need no network.
 const PHOTO = `data:image/svg+xml,${encodeURIComponent(
@@ -118,7 +118,7 @@ const BUILDINGS = (() => {
 /**
  * A stand-in for a map library's canvas: a small city of streets, building
  * footprints, a park and a river, drawn with fibo's tokens so it follows
- * light and dark. Markers sit on it at percentages, the way a map library
+ * light and dark. Pins sit on it at percentages, the way a map library
  * places them at coordinates.
  */
 function StandInMap({ children }: { children?: ReactNode }) {
@@ -250,9 +250,9 @@ function Pin({ place, children }: { place: Place; children: ReactNode }) {
 
 const cafe = PLACES[0]!
 
-const meta: Meta<typeof MapMarker> = {
-  title: "Special components/Map marker",
-  component: MapMarker,
+const meta: Meta<typeof MapPin> = {
+  title: "Special components/Map pin",
+  component: MapPin,
   tags: ["new"],
   parameters: {
     layout: "centered",
@@ -292,22 +292,22 @@ const meta: Meta<typeof MapMarker> = {
   render: (args) => (
     <StandInMap>
       <Pin place={cafe}>
-        <MapMarker {...args} />
+        <MapPin {...args} />
       </Pin>
     </StandInMap>
   ),
 }
 
 export default meta
-type Story = StoryObj<typeof MapMarker>
+type Story = StoryObj<typeof MapPin>
 
 export const Default: Story = {
   play: async ({ canvas, canvasElement, args, step, userEvent }) => {
     const page = within(canvasElement.ownerDocument.body)
-    const marker = canvas.getByRole("button", { name: cafe.label })
+    const pin = canvas.getByRole("button", { name: cafe.label })
 
     await step("Pointer", async () => {
-      await userEvent.click(marker)
+      await userEvent.click(pin)
       const preview = await page.findByRole("dialog", { name: cafe.label })
       await expect(preview).toHaveTextContent(cafe.description)
       await expect(args.onOpenChange).toHaveBeenLastCalledWith(true)
@@ -315,7 +315,7 @@ export const Default: Story = {
       await waitFor(() =>
         expect(page.queryByRole("dialog")).not.toBeInTheDocument()
       )
-      await expect(marker).toHaveFocus()
+      await expect(pin).toHaveFocus()
     })
 
     await step("Keyboard", async () => {
@@ -331,13 +331,13 @@ export const Default: Story = {
   },
 }
 
-export const LabelMarkers: Story = {
-  name: "Label markers",
+export const LabelPins: Story = {
+  name: "Label pins",
   render: () => (
     <StandInMap>
       {PLACES.map((place) => (
         <Pin key={place.id} place={place}>
-          <MapMarker
+          <MapPin
             type="label"
             label={place.label}
             text={place.price}
@@ -356,14 +356,14 @@ export const Sizes: Story = {
     <div className="flex flex-col gap-6">
       {(["sm", "default"] as const).map((size) => (
         <div key={size} className="flex items-center gap-5">
-          <MapMarker label={`Dot, ${size}`} size={size} />
-          <MapMarker
+          <MapPin label={`Dot, ${size}`} size={size} />
+          <MapPin
             label={`Icon, ${size}`}
             type="icon"
             icon={<CoffeeIcon />}
             size={size}
           />
-          <MapMarker
+          <MapPin
             label={`Label, ${size}`}
             type="label"
             text="$120"
@@ -382,13 +382,13 @@ const ICONS: Record<string, ReactNode> = {
   studio: <ImageIcon />,
 }
 
-export const IconMarkers: Story = {
-  name: "Icon markers",
+export const IconPins: Story = {
+  name: "Icon pins",
   render: () => (
     <StandInMap>
       {PLACES.map((place) => (
         <Pin key={place.id} place={place}>
-          <MapMarker
+          <MapPin
             type="icon"
             icon={ICONS[place.id]}
             label={place.label}
@@ -421,7 +421,7 @@ export const Colours: Story = {
     <StandInMap>
       {PLACES.map((place) => (
         <Pin key={place.id} place={place}>
-          <MapMarker
+          <MapPin
             type="icon"
             variant={STATUS[place.id]!.variant}
             icon={place.id === "park" ? <MusicIcon /> : ICONS[place.id]}
@@ -442,7 +442,7 @@ export const LabelsWithIcons: Story = {
     <StandInMap>
       {PLACES.map((place) => (
         <Pin key={place.id} place={place}>
-          <MapMarker
+          <MapPin
             type="label"
             variant={STATUS[place.id]!.variant}
             icon={ICONS[place.id]}
@@ -463,7 +463,7 @@ export const CustomContent: Story = {
   render: () => (
     <StandInMap>
       <Pin place={PLACES[1]!}>
-        <MapMarker
+        <MapPin
           label={PLACES[1]!.label}
           meta={PLACES[1]!.meta}
           title={PLACES[1]!.label}
@@ -475,7 +475,7 @@ export const CustomContent: Story = {
               Save
             </Button>
           </div>
-        </MapMarker>
+        </MapPin>
       </Pin>
     </StandInMap>
   ),
@@ -502,7 +502,7 @@ function ControlledMap() {
       <StandInMap>
         {PLACES.map((place) => (
           <Pin key={place.id} place={place}>
-            <MapMarker
+            <MapPin
               label={place.label}
               meta={place.meta}
               title={place.label}
@@ -531,7 +531,7 @@ export const WithoutPreview: Story = {
     <StandInMap>
       {PLACES.map((place) => (
         <Pin key={place.id} place={place}>
-          <MapMarker label={place.label} />
+          <MapPin label={place.label} />
         </Pin>
       ))}
     </StandInMap>
