@@ -47,8 +47,7 @@ type MapMarkerProps = Omit<
 
 type Variant = NonNullable<MapMarkerProps["variant"]>
 
-// Filled markers, dots and icons, take the colour as their fill and grow a
-// halo of it when open.
+// A dot takes the colour as its fill and grows a halo of it when open.
 const FILL: Record<Variant, string> = {
   default:
     "bg-primary text-primary-foreground data-[popup-open]:shadow-[0_0_0_6px_var(--color-primary-subtle)]",
@@ -59,6 +58,20 @@ const FILL: Record<Variant, string> = {
   info: "bg-info text-info-foreground data-[popup-open]:shadow-[0_0_0_6px_var(--color-info-subtle)]",
   destructive:
     "bg-destructive text-destructive-foreground data-[popup-open]:shadow-[0_0_0_6px_var(--color-destructive-subtle)]",
+}
+
+// An icon pin is a head and a tail in one fill. The head carries the halo,
+// so it rings the round part rather than the pin's box.
+const PIN: Record<Variant, string> = {
+  default:
+    "[&>span]:bg-primary [&>span]:text-primary-foreground data-[popup-open]:[&>[data-slot=map-marker-head]]:shadow-[0_0_0_6px_var(--color-primary-subtle)]",
+  success:
+    "[&>span]:bg-success [&>span]:text-success-foreground data-[popup-open]:[&>[data-slot=map-marker-head]]:shadow-[0_0_0_6px_var(--color-success-subtle)]",
+  warning:
+    "[&>span]:bg-warning [&>span]:text-warning-foreground data-[popup-open]:[&>[data-slot=map-marker-head]]:shadow-[0_0_0_6px_var(--color-warning-subtle)]",
+  info: "[&>span]:bg-info [&>span]:text-info-foreground data-[popup-open]:[&>[data-slot=map-marker-head]]:shadow-[0_0_0_6px_var(--color-info-subtle)]",
+  destructive:
+    "[&>span]:bg-destructive [&>span]:text-destructive-foreground data-[popup-open]:[&>[data-slot=map-marker-head]]:shadow-[0_0_0_6px_var(--color-destructive-subtle)]",
 }
 
 // A label stays light on the map with its text in the colour, and fills in
@@ -81,15 +94,17 @@ const mapMarkerVariants = cva(
   // The spring curve overshoots a little, so a marker settles into its open
   // size rather than stopping dead. Hover lifts a marker part of the way to
   // its open size, and stays off the open one so its selected look holds.
-  "relative inline-flex shrink-0 cursor-pointer touch-manipulation items-center justify-center transition-[scale,translate,background-color,border-color,color,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] outline-none select-none hover:not-data-[popup-open]:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring-subtle motion-reduce:transition-none",
+  "relative inline-flex shrink-0 cursor-pointer touch-manipulation items-center justify-center transition-[scale,translate,background-color,border-color,color,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] outline-none select-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle motion-reduce:transition-none",
   {
     variants: {
       type: {
         // The dot is small to look at, so its press area reaches past it.
-        dot: "rounded-full shadow-sm ring-2 ring-background before:absolute before:-inset-2 before:rounded-full hover:not-data-[popup-open]:scale-110 data-[popup-open]:scale-125",
-        icon: "rounded-full shadow-sm ring-2 ring-background hover:not-data-[popup-open]:scale-105 data-[popup-open]:scale-110 [&_svg]:shrink-0",
+        dot: "rounded-full shadow-sm ring-2 ring-background before:absolute before:-inset-2 before:rounded-full hover:not-data-[popup-open]:scale-110 hover:not-data-[popup-open]:shadow-md data-[popup-open]:scale-125",
+        // A pin points at its place with its tail, so it scales from the tip
+        // and lifts off the map on hover rather than swelling in place.
+        icon: "origin-bottom flex-col justify-start drop-shadow-md hover:not-data-[popup-open]:-translate-y-0.5 focus-visible:ring-0 data-[popup-open]:scale-110 [&_svg]:shrink-0 focus-visible:[&>[data-slot=map-marker-head]]:shadow-[0_0_0_5px_var(--color-ring-subtle)]",
         label:
-          "gap-1 rounded-full border border-border bg-background font-semibold whitespace-nowrap shadow-sm hover:not-data-[popup-open]:scale-[1.03] hover:not-data-[popup-open]:bg-muted data-[popup-open]:scale-105 [&_svg]:shrink-0",
+          "gap-1 rounded-full border border-border bg-background font-semibold whitespace-nowrap shadow-sm hover:not-data-[popup-open]:scale-[1.03] hover:not-data-[popup-open]:bg-muted hover:not-data-[popup-open]:shadow-md data-[popup-open]:scale-105 [&_svg]:shrink-0",
       },
       variant: {
         default: "",
@@ -103,8 +118,18 @@ const mapMarkerVariants = cva(
     compoundVariants: [
       { type: "dot", size: "sm", className: "size-3" },
       { type: "dot", size: "default", className: "size-4" },
-      { type: "icon", size: "sm", className: "size-7 [&_svg]:size-3.5" },
-      { type: "icon", size: "default", className: "size-8 [&_svg]:size-4" },
+      {
+        type: "icon",
+        size: "sm",
+        className:
+          "h-[35px] w-7 [&_svg]:size-3.5 [&>[data-slot=map-marker-head]]:size-7",
+      },
+      {
+        type: "icon",
+        size: "default",
+        className:
+          "h-10 w-8 [&_svg]:size-4 [&>[data-slot=map-marker-head]]:size-8",
+      },
       {
         type: "label",
         size: "sm",
@@ -117,7 +142,7 @@ const mapMarkerVariants = cva(
       },
       ...VARIANTS.flatMap((variant) => [
         { type: "dot" as const, variant, className: FILL[variant] },
-        { type: "icon" as const, variant, className: FILL[variant] },
+        { type: "icon" as const, variant, className: PIN[variant] },
         { type: "label" as const, variant, className: OUTLINE[variant] },
       ]),
     ],
@@ -128,7 +153,8 @@ const mapMarkerVariants = cva(
 /**
  * A marker for a point on a map, with a preview that opens on click or tap.
  * It brings no map of its own: render it inside your map library's marker,
- * which places it and moves it as the map pans and zooms.
+ * which places it and moves it as the map pans and zooms. A dot or label is
+ * centred on its place; an icon marker is a pin, anchored by its tip.
  */
 function MapMarker({
   label,
@@ -152,7 +178,25 @@ function MapMarker({
 }: MapMarkerProps) {
   const shown =
     type === "icon" ? (
-      (icon ?? <MapPinIcon />)
+      <>
+        {/* The tail twice: outlined under the head, so the outline runs
+            round the whole pin, and bare over it, so no seam shows where
+            the two meet. */}
+        <span
+          aria-hidden="true"
+          className="absolute bottom-0.5 size-2.5 rotate-45 rounded-[2px] ring-2 ring-background"
+        />
+        <span
+          data-slot="map-marker-head"
+          className="relative flex items-center justify-center rounded-full ring-2 ring-background transition-shadow duration-300"
+        >
+          {icon ?? <MapPinIcon />}
+        </span>
+        <span
+          aria-hidden="true"
+          className="absolute bottom-0.5 size-2.5 rotate-45 rounded-[2px]"
+        />
+      </>
     ) : type === "label" ? (
       <>
         {icon}
