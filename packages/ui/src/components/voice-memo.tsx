@@ -79,8 +79,16 @@ const voiceMemoVariants = cva(
 // 85 by 55, a bank card's proportions, in a unit of 2.
 const DEVICE = { width: 170, height: 110, radius: 12 }
 
-// The parts of the Web Speech API this uses. TypeScript's DOM library
-// leaves the recogniser out, since only some browsers ship it.
+// The parts of the Web Speech API this uses, declared here: TypeScript's DOM
+// library leaves the recogniser out, since only some browsers ship it, and
+// older versions of the library lack its events too.
+type RecognitionEvent = {
+  resultIndex: number
+  results: ArrayLike<{ isFinal: boolean } & ArrayLike<{ transcript: string }>>
+}
+
+type RecognitionErrorEvent = { error: string }
+
 type Recogniser = {
   continuous: boolean
   interimResults: boolean
@@ -88,8 +96,8 @@ type Recogniser = {
   start: () => void
   stop: () => void
   abort: () => void
-  onresult: ((event: SpeechRecognitionEvent) => void) | null
-  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null
+  onresult: ((event: RecognitionEvent) => void) | null
+  onerror: ((event: RecognitionErrorEvent) => void) | null
   onend: (() => void) | null
 }
 
