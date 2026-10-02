@@ -209,3 +209,48 @@ addons.register("fibo/moved-parts", (api) => {
   api.on(SET_INDEX, () => openMovedPart(api))
   api.on(STORY_MISSING, () => openMovedPart(api))
 })
+
+/*
+ * The shelves are headings, not folders, so they always stay open. Storybook
+ * renders each one as a collapse button named "Collapse", so it becomes a
+ * level-two heading named by its text instead: out of the tab order, its
+ * clicks and Enter or Space stopped before Storybook sees them, and opened
+ * again if it was collapsed before (or by "Collapse all").
+ */
+const SHELF_TOGGLE = 'button[data-action="collapse-root"]'
+
+for (const type of ["click", "keydown"] as const) {
+  document.addEventListener(
+    type,
+    (event) => {
+      if (!event.isTrusted) return
+      if (!(event.target as Element | null)?.closest?.(SHELF_TOGGLE)) return
+      if (event instanceof KeyboardEvent && !["Enter", " "].includes(event.key))
+        return
+      event.preventDefault()
+      event.stopPropagation()
+    },
+    true
+  )
+}
+
+function settleShelf(toggle: HTMLButtonElement) {
+  if (toggle.getAttribute("aria-expanded") === "false") toggle.click()
+  if (toggle.tabIndex !== -1) toggle.tabIndex = -1
+  if (toggle.getAttribute("role") !== "heading")
+    toggle.setAttribute("role", "heading")
+  if (toggle.getAttribute("aria-level") !== "2")
+    toggle.setAttribute("aria-level", "2")
+  toggle.removeAttribute("aria-label")
+  toggle.removeAttribute("aria-expanded")
+}
+
+new MutationObserver(() => {
+  document
+    .querySelectorAll<HTMLButtonElement>(SHELF_TOGGLE)
+    .forEach(settleShelf)
+}).observe(document.body, {
+  childList: true,
+  subtree: true,
+  attributeFilter: ["aria-expanded", "aria-label", "role", "tabindex"],
+})
