@@ -1,0 +1,357 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/voice-memo.stories"
+import { VoiceMemo } from "../../../../packages/ui/src/components/voice-memo"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { Anatomy } from "../blocks/anatomy"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Voice memo
+
+A voice recorder modelled on the clip-on memo devices that stick to the back
+of a phone: an aluminium recorder docked on the edge, a running clock, a
+waveform that glides in from the right as you talk, and controls to mark a
+moment, pause and stop.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- A brushed aluminium device, docked against the left edge. Its pinhole
+  glows with your voice while recording. Hover and it lifts; click it to
+  record or pause; pull it out and let go, and it snaps back as if a magnet
+  caught it.
+- A waveform that glides in from the right and fades off the left into the
+  device, with silence drawn as dots so pauses in speech show as gaps.
+- Mark a moment while you talk. The mark lands as a tick on the bar it was
+  made over and scrolls away with it, and `onStop` hands back every mark's
+  time.
+- A clock to the hundredth of a second that leaves pauses out, with a
+  recording light: red while recording, amber while paused.
+- An optional status line for the device: connected, connecting or
+  disconnected, and its battery.
+- Draws in fibo's tokens, so the aluminium is silver in the light theme and
+  space grey in the dark.
+
+## Installation
+
+<Install
+  name="voice-memo"
+  exports={[
+    "VoiceMemo",
+    "voiceMemoVariants",
+    "formatElapsed",
+    "type VoiceMemoProps",
+    "type VoiceMemoState",
+    "type VoiceMemoResult",
+  ]}
+/>
+
+It installs `motion` for the device's drag and spring, `lucide-react` for
+the control icons and `class-variance-authority` for the sizes.
+
+## Usage
+
+The component draws and times a take; your code does the recording. Start a
+`MediaRecorder` when the state turns to `recording`, and pass its stream in
+so the waveform follows the voice:
+
+```tsx
+import { useRef, useState } from "react"
+
+import { VoiceMemo } from "@/components/ui/voice-memo"
+
+export function Recorder() {
+  const [stream, setStream] = useState<MediaStream | null>(null)
+  const recorder = useRef<MediaRecorder | null>(null)
+
+  return (
+    <VoiceMemo
+      stream={stream}
+      simulate={false}
+      onStateChange={async (state) => {
+        if (state === "recording" && !recorder.current) {
+          const media = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          })
+          recorder.current = new MediaRecorder(media)
+          recorder.current.start()
+          setStream(media)
+        }
+        if (state === "paused") recorder.current?.pause()
+        if (state === "recording") recorder.current?.resume()
+      }}
+      onStop={({ duration, marks }) => {
+        recorder.current?.stop()
+        recorder.current = null
+        setStream(null)
+      }}
+    />
+  )
+}
+```
+
+`onStop` receives `{ duration: number; marks: number[] }`, both in
+milliseconds. Set `simulate={false}` in production: it's on by default so a
+preview has a voice to draw before anything is wired up.
+
+## Anatomy
+
+Every part the component renders, with the `data-slot` it carries.
+
+<Anatomy
+  root={{
+    name: "VoiceMemo",
+    slot: "voice-memo",
+    note: "A group named by the title. Carries data-state and data-size.",
+    children: [
+      {
+        name: "header",
+        slot: "voice-memo-header",
+        children: [
+          { name: "title", slot: "voice-memo-title" },
+          { name: "light", slot: "voice-memo-light" },
+          {
+            name: "time",
+            slot: "voice-memo-time",
+            note: "The clock, a timer role.",
+          },
+        ],
+      },
+      {
+        name: "device",
+        slot: "voice-memo-device",
+        note: "The aluminium recorder, hidden from screen readers. Carries data-pressed while held and data-dragging while pulled.",
+      },
+      {
+        name: "waveform",
+        slot: "voice-memo-waveform",
+        note: "Hidden from screen readers.",
+        children: [
+          {
+            name: "bar",
+            slot: "voice-memo-bar",
+            note: "One per sample, newest on the right. Carries data-marked when a mark landed on it.",
+          },
+        ],
+      },
+      {
+        name: "controls",
+        slot: "voice-memo-controls",
+        children: [
+          { name: "mark", slot: "voice-memo-mark" },
+          {
+            name: "toggle",
+            slot: "voice-memo-toggle",
+            note: "Start, pause or resume.",
+          },
+          { name: "stop", slot: "voice-memo-stop" },
+        ],
+      },
+      {
+        name: "status",
+        slot: "voice-memo-status",
+        note: "Only with a connection.",
+      },
+      {
+        name: "announcer",
+        slot: "voice-memo-announcer",
+        note: "A visually hidden status region.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use it for quick spoken notes: one take, started and stopped in a tap. For long sessions with editing, use a full audio editor.",
+    "Name the memo with a title people will recognise later, such as the meeting or the day. The title also names the group for screen readers.",
+    "Wire marks to something people see afterwards, such as highlights in the transcript. A mark that leads nowhere teaches people to stop marking.",
+    "Show the status line only when a separate device does the recording. A phone's own microphone needs no connection or battery.",
+    "Turn simulate off once a stream or level is wired in.",
+    "Leave the device on when a separate recorder does the listening, and turn it off with device={false} for a phone's own microphone, where it would stand for nothing.",
+    "Keep the wordmark to one short word. It's stamped up the device's length and has room for about six letters.",
+  ]}
+/>
+
+## Examples
+
+### Recording
+
+`defaultState="recording"` starts the clock and the waveform at once, for a
+recorder opened by a hardware button.
+
+<Canvas of={Stories.Recording} />
+
+### Paused
+
+Paused, the waveform holds still in a quieter colour and the light turns
+amber. A mark lands on the last bar.
+
+<Canvas of={Stories.Paused} />
+
+### Small
+
+`size="sm"` fits a sheet or a sidebar, with fewer bars and smaller controls.
+
+<Canvas of={Stories.Small} />
+
+### Connection
+
+`connection` and `battery` describe a separate recording device. Leave both
+out for a phone's own microphone.
+
+<Canvas of={Stories.Connection} />
+
+### With a microphone
+
+Asks for the microphone, records with `MediaRecorder`, and passes the stream
+to the waveform. The clip plays back once saved.
+
+<Canvas of={Stories.WithMicrophone} />
+
+### Saving memos
+
+Each stopped take lands in a list with its length, and the next take is
+named after it.
+
+<Canvas of={Stories.SavingMemos} />
+
+### Without the device
+
+`device={false}` leaves the recorder out, for a phone's own microphone.
+
+<Canvas of={Stories.WithoutDevice} />
+
+### On a phone
+
+Dark and edge to edge, the way a memo device's app shows a take in progress.
+
+<Canvas of={Stories.OnAPhone} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="w-72">
+            <VoiceMemo size="sm" title="Standup, 2 October" simulate={false} />
+          </div>
+        ),
+        description: "Name a memo for what it holds.",
+      },
+      negative: {
+        component: (
+          <div className="w-72">
+            <VoiceMemo size="sm" title="Recording 47" simulate={false} />
+          </div>
+        ),
+        description:
+          "Don't fall back on a counter when there's something better to call it. Nobody finds Recording 47 a week later.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+Style the recorder by state, for example with
+`data-[state=recording]:border-destructive`.
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="voice-memo"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-state",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>idle</code>, <code>recording</code> or{" "}
+          <code>paused</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-size",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>sm</code> or <code>default</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="voice-memo-device"',
+      element: "The device",
+      when: "With device on.",
+    },
+    {
+      attribute: "data-pressed",
+      element: "The device",
+      when: "Held down without moving.",
+    },
+    {
+      attribute: "data-dragging",
+      element: "The device",
+      when: "Being pulled out.",
+    },
+    {
+      attribute: "data-marked",
+      element: "A bar",
+      when: "A mark landed on it.",
+    },
+    {
+      attribute: "data-connection",
+      element: "The status line",
+      when: (
+        <>
+          With a connection. <code>connected</code>, <code>connecting</code> or{" "}
+          <code>disconnected</code>.
+        </>
+      ),
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The recorder is a group named by its title. Each control is a button named for what it does: Start recording, Pause recording, Resume recording, Mark this moment, Stop and save.",
+    "The toggle keeps focus as it changes from pause to resume, so Space pauses and resumes without moving.",
+    "Starting, pausing, marking and saving are announced once in a status region, with the time in words. The clock itself isn't announced on every tick.",
+    "The waveform is decoration and hidden from screen readers; the state and time carry the same information.",
+    "The device is a pointer shortcut for the toggle, so it's hidden from screen readers and out of the tab order. Everything it does, the toggle does in words.",
+    "Mark and stop are disabled until a take starts.",
+    "With reduced motion, the waveform steps a few times a second instead of gliding, the device doesn't lift or press in, and it returns from a pull with a short ease instead of a spring.",
+    "The clock and the waveform are written straight to the page each frame, so React renders only when a new bar arrives, about eleven times a second.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Chat composer", "Progress", "Typing indicator"]} />
+
+## References
+
+- [MediaStream Recording API](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API), for recording the take
+- [`AnalyserNode`](https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode), for the waveform's loudness
+- [JPG card holder](https://chanhdai.com/components/jpg-card-holder) by
+  Chánh Đại, whose drag, rubber band and crossfaded shadows the device follows
+- [ARIA `timer` role](https://www.w3.org/TR/wai-aria-1.2/#timer), for the clock
