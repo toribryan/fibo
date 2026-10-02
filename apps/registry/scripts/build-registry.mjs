@@ -238,6 +238,33 @@ const files = (await readdir(componentsDir))
   .filter((f) => f.endsWith(".tsx") && !/\.(stories|test)\.tsx$/.test(f))
   .sort()
 
+// The "new" pill marks only the latest few parts, so it keeps meaning
+// something. It shows in the sidebar (a `new` story tag) and the catalog
+// (`"status": "new"`), and the two must agree. When a part is added, take
+// the pill off the oldest new one.
+const MAX_NEW = 3
+const fresh = []
+for (const file of files) {
+  const name = file.replace(/\.tsx$/, "")
+  const isNew = meta[name]?.status === "new"
+  if (isNew) fresh.push(name)
+  const stories = await readFile(
+    path.join(componentsDir, `${name}.stories.tsx`),
+    "utf8"
+  ).catch(() => "")
+  const tagged = /tags:\s*\[[^\]]*["']new["']/.test(stories)
+  if (tagged !== isNew) {
+    throw new Error(
+      `${name}: its stories ${tagged ? "have" : "lack"} the "new" tag but components.meta.json ${isNew ? "marks" : "doesn't mark"} it new. Make them match.`
+    )
+  }
+}
+if (fresh.length > MAX_NEW) {
+  throw new Error(
+    `${fresh.length} parts are marked new (${fresh.join(", ")}); at most ${MAX_NEW} may be. Take "new" off the oldest, in both components.meta.json and its stories.`
+  )
+}
+
 const items = []
 for (const file of files) {
   const name = file.replace(/\.tsx$/, "")
