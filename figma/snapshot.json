@@ -4,7 +4,7 @@
     "key": "LJZ5Tt4Ba7NPPi8Xnq8i0e",
     "name": "Fibo-DS"
   },
-  "readAt": "2026-10-01",
+  "readAt": "2026-10-02",
   "variables": {
     "Color": {
       "background": {
@@ -402,6 +402,35 @@
     },
     "Token chip": {
       "label": "TEXT"
+    },
+    "Floating nav": {
+      "labels": ["active", "always"],
+      "size": ["sm", "default"]
+    },
+    "Floating nav item": {
+      "label": "TEXT",
+      "icon": "INSTANCE_SWAP",
+      "type": ["icon", "text"],
+      "labels": ["active", "always"],
+      "size": ["sm", "default"],
+      "state": ["default", "current"]
+    },
+    "Map marker": {
+      "label": "TEXT",
+      "showIcon": "BOOLEAN",
+      "icon": "INSTANCE_SWAP",
+      "type": ["dot", "icon", "label"],
+      "variant": ["default", "success", "warning", "info", "destructive"],
+      "size": ["sm", "default"],
+      "state": ["rest", "open"]
+    },
+    "Map marker preview": {
+      "showImage": "BOOLEAN",
+      "showMeta": "BOOLEAN",
+      "meta": "TEXT",
+      "title": "TEXT",
+      "description": "TEXT",
+      "showContent": "BOOLEAN"
     }
   }
 }
