@@ -79,16 +79,17 @@ const VARIANTS = Object.keys(FILL) as Variant[]
 
 const mapMarkerVariants = cva(
   // The spring curve overshoots a little, so a marker settles into its open
-  // size rather than stopping dead.
-  "relative inline-flex shrink-0 cursor-pointer touch-manipulation items-center justify-center transition-[scale,translate,background-color,border-color,color,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] outline-none select-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle motion-reduce:transition-none",
+  // size rather than stopping dead. Hover lifts a marker part of the way to
+  // its open size, and stays off the open one so its selected look holds.
+  "relative inline-flex shrink-0 cursor-pointer touch-manipulation items-center justify-center transition-[scale,translate,background-color,border-color,color,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] outline-none select-none hover:not-data-[popup-open]:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring-subtle motion-reduce:transition-none",
   {
     variants: {
       type: {
         // The dot is small to look at, so its press area reaches past it.
-        dot: "rounded-full shadow-sm ring-2 ring-background before:absolute before:-inset-2 before:rounded-full data-[popup-open]:scale-125",
-        icon: "rounded-full shadow-sm ring-2 ring-background data-[popup-open]:scale-110 [&_svg]:shrink-0",
+        dot: "rounded-full shadow-sm ring-2 ring-background before:absolute before:-inset-2 before:rounded-full hover:not-data-[popup-open]:scale-110 data-[popup-open]:scale-125",
+        icon: "rounded-full shadow-sm ring-2 ring-background hover:not-data-[popup-open]:scale-105 data-[popup-open]:scale-110 [&_svg]:shrink-0",
         label:
-          "gap-1 rounded-full border border-border bg-background font-semibold whitespace-nowrap shadow-sm hover:bg-muted data-[popup-open]:scale-105 [&_svg]:shrink-0",
+          "gap-1 rounded-full border border-border bg-background font-semibold whitespace-nowrap shadow-sm hover:not-data-[popup-open]:scale-[1.03] hover:not-data-[popup-open]:bg-muted data-[popup-open]:scale-105 [&_svg]:shrink-0",
       },
       variant: {
         default: "",
