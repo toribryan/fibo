@@ -24,6 +24,18 @@ export const Checked: Story = {
   },
 }
 
+export const Indeterminate: Story = {
+  args: {
+    indeterminate: true,
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("checkbox")).toHaveAttribute(
+      "aria-checked",
+      "mixed"
+    )
+  },
+}
+
 export const Disabled: Story = {
   args: {
     disabled: true,

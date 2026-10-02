@@ -61,7 +61,7 @@ Every part the component renders, with the `data-slot` it carries.
       {
         name: "indicator",
         slot: "checkbox-indicator",
-        note: "The check icon. Renders while checked or indeterminate.",
+        note: "A check while checked, or a dash while indeterminate.",
       },
     ],
   }}
@@ -85,6 +85,13 @@ Every part the component renders, with the `data-slot` it carries.
 `defaultChecked` starts it ticked.
 
 <Canvas of={Stories.Checked} />
+
+### Indeterminate
+
+`indeterminate` shows a dash for a group that's partly on, such as a select
+all checkbox with some rows selected. Screen readers hear “mixed”.
+
+<Canvas of={Stories.Indeterminate} />
 
 ### Disabled
 
