@@ -1,15 +1,15 @@
 import { Meta } from "@storybook/addon-docs/blocks"
 
 import { DocLink } from "../blocks/doc-link"
-import { Split } from "../blocks/about"
+import { Plates } from "../blocks/about"
 
 <Meta title="About fibo" />
 
 # About fibo
 
 fibo is a rabbit made of pixels, and he gives this design system its name. His
-story starts with a math puzzle from 1202 and ends somewhere between a
-sunflower and a screen.
+story starts with a math puzzle from 1202 and ends somewhere between nature
+and a screen.
 
 ## Where he comes from
 
@@ -25,8 +25,6 @@ there'll be eight of him by next month.
 
 ## Organic and mechanical
 
-<Split plate="bunny">
-
 The golden ratio comes from nature. It's nature's own algorithm, and I'm using
 it to build something mechanical. While making fibo I found an accidental
 contrast at the center of the project: organic and mechanical, two opposites
@@ -35,21 +33,7 @@ in one place.
 That's why the rabbit is pixel art. He's an animal, a part of nature, rebuilt
 out of pixels.
 
-</Split>
-
-## The sunflower
-
-<Split plate="sunflower">
-
-A sunflower's seeds spiral out from the center in Fibonacci numbers, so the
-sunflower is the second face of fibo. Each image blends a photograph with a
-dithered pixel animation until the two read as one picture: nature on one
-side, the machine on the other, and me as the point where they meet.
-
-I call the look soft cyber eco-core. It grew out of my interest in
-cyberfeminism and, for fibo, turned softer and closer to nature.
-
-</Split>
+<Plates names={["bunny", "sunflower"]} />
 
 ## Where to find him
 
