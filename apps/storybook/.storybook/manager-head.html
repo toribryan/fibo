@@ -2,7 +2,7 @@
   // Rewrite old links to their new ids before Storybook reads the address.
   // The shelves were renamed from Components and Niche, and the Theme
   // creator was archived (plans/001-theme-creator.md), so its links land on
-  // Colors.
+  // Colors. Typography was a story before it became a docs page.
   ;(() => {
     const url = new URL(window.location.href)
     const path = url.searchParams.get("path")
@@ -15,6 +15,10 @@
       .replace(
         /^\/docs\/foundations-theme-creator--docs$/,
         "/docs/foundations-colors--docs"
+      )
+      .replace(
+        /^\/story\/foundations-typography--scale$/,
+        "/docs/foundations-typography--docs"
       )
     if (!moved || moved === path) return
     url.searchParams.set("path", moved)
