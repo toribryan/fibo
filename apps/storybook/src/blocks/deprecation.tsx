@@ -17,6 +17,7 @@ type Deprecated = {
 type Info = {
   title: string
   tier: string
+  group: string
   deprecated?: Deprecated
 }
 
@@ -52,7 +53,7 @@ function Deprecation({ name }: { name: string }) {
           <p className="m-0 font-semibold">
             Deprecated in {info.since}, removed in {info.removal}. Use{" "}
             <DocLink
-              to={`${replacement.tier}-${info.replacement}--docs`}
+              to={`${replacement.tier}-${replacement.group.toLowerCase()}-${info.replacement}--docs`}
               className="text-foreground underline underline-offset-4"
             >
               {replacement.title}

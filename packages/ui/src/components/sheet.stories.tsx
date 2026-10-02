@@ -25,7 +25,7 @@ import {
 } from "./sheet.js"
 
 const meta: Meta<typeof Sheet> = {
-  title: "Base components/Sheet",
+  title: "Base components/Overlays/Sheet",
   component: Sheet,
   subcomponents: {
     SheetTrigger,

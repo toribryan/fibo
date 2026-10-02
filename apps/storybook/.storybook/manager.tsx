@@ -8,13 +8,16 @@ import {
   HashIcon,
   MoonIcon,
   RabbitIcon,
-  SquareDashedIcon,
   SunIcon,
   TypeIcon,
   type LucideIcon,
 } from "lucide-react"
 import { IconButton } from "storybook/internal/components"
-import { STORY_CHANGED } from "storybook/internal/core-events"
+import {
+  SET_INDEX,
+  STORY_CHANGED,
+  STORY_MISSING,
+} from "storybook/internal/core-events"
 import { addons, types, type API } from "storybook/manager-api"
 
 import { OPEN_MENU } from "./site-nav-sync.js"
@@ -43,9 +46,10 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   "foundations-typography": TypeIcon,
 }
 
+// Shelves are section headings, so they take no icon; the groups inside them
+// are folders.
 const ICON_BY_TYPE: Record<string, LucideIcon> = {
-  root: FolderIcon,
-  group: SquareDashedIcon,
+  group: FolderIcon,
   component: ComponentIcon,
   docs: FileTextIcon,
   story: DiamondIcon,
@@ -56,7 +60,6 @@ const ICON_BY_TYPE: Record<string, LucideIcon> = {
 function iconFor(item: { id: string; type: string; parent?: string }) {
   if (ICON_BY_ID[item.id]) return ICON_BY_ID[item.id]
   if (item.type === "docs" && !item.parent) return HashIcon
-  if (item.type === "group" && !item.parent) return FolderIcon
   return ICON_BY_TYPE[item.type]
 }
 
@@ -67,7 +70,7 @@ addons.setConfig({
   theme: initialTheme === "dark" ? darkTheme : lightTheme,
   showToolbar: true,
   sidebar: {
-    showRoots: false,
+    showRoots: true,
     renderLabel: (item) => {
       const status =
         item.type === "component"
@@ -152,4 +155,33 @@ addons.register("fibo/site-nav", (api) => {
       )
       ?.click()
   })
+})
+
+/*
+ * Parts sat straight under their shelf until the sidebar grouped them, so
+ * links from before (the portfolio, llms.txt, shared URLs) have no group in
+ * their id: base-components-input--docs is now base-components-forms-input--docs.
+ * A missing id of the old shape opens the entry with the same shelf and name.
+ */
+function openMovedPart(api: API) {
+  const { storyId, viewMode } = api.getUrlState()
+  if (!storyId || api.resolveStory(storyId)) return false
+  const old = /^(base|special)-components-(.+)$/.exec(storyId)
+  const entries = api.getIndex()?.entries
+  const [, shelf, rest] = old ?? []
+  if (!shelf || !rest || !entries) return false
+  const moved = Object.keys(entries).find(
+    (id) =>
+      id.startsWith(`${shelf}-components-`) &&
+      id.endsWith(`-${rest}`) &&
+      // Exactly one group segment between the shelf and the old name.
+      !id.slice(`${shelf}-components-`.length, -rest.length - 1).includes("-")
+  )
+  if (moved) api.navigate(`/${viewMode ?? "docs"}/${moved}`)
+  return Boolean(moved)
+}
+
+addons.register("fibo/moved-parts", (api) => {
+  api.on(SET_INDEX, () => openMovedPart(api))
+  api.on(STORY_MISSING, () => openMovedPart(api))
 })

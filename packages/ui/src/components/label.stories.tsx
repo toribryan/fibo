@@ -5,7 +5,7 @@ import { Input } from "./input.js"
 import { Label } from "./label.js"
 
 const meta: Meta<typeof Label> = {
-  title: "Base components/Label",
+  title: "Base components/Forms/Label",
   component: Label,
   args: {
     children: "Email",

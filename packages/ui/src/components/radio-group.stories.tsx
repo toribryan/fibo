@@ -11,7 +11,7 @@ const PLANS = [
 ]
 
 const meta: Meta<typeof RadioGroup> = {
-  title: "Base components/Radio group",
+  title: "Base components/Forms/Radio group",
   component: RadioGroup,
   subcomponents: { RadioGroupItem },
   argTypes: {

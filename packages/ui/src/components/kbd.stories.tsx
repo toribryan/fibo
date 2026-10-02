@@ -4,7 +4,7 @@ import { ArrowUpIcon, CommandIcon } from "lucide-react"
 import { Kbd, KbdGroup } from "./kbd.js"
 
 const meta: Meta<typeof Kbd> = {
-  title: "Base components/Kbd",
+  title: "Base components/Display/Kbd",
   component: Kbd,
   subcomponents: { KbdGroup },
   argTypes: { children: { control: "text" } },

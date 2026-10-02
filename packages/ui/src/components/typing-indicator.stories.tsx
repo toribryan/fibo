@@ -34,7 +34,7 @@ function tuning({ maxNames, maxNameLength, announceDelay }: Args) {
 }
 
 const meta: Meta<Args> = {
-  title: "Base components/Typing indicator",
+  title: "Base components/Feedback/Typing indicator",
   component: TypingIndicator,
   argTypes: {
     typing: {
