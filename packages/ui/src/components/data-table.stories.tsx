@@ -228,15 +228,19 @@ function AgentsToolbar({
 function AgentsTable({
   agents = AGENTS,
   secondary = false,
+  pinned = true,
   footer,
   toolbar,
   ...props
 }: Partial<React.ComponentProps<typeof DataTable>> & {
   agents?: Agent[]
   secondary?: boolean
+  pinned?: boolean
   footer?: React.ReactNode
   toolbar?: React.ReactNode
 }) {
+  const start = pinned ? "start" : "none"
+  const end = pinned ? "end" : "none"
   return (
     <DataTable
       aria-label="Agents"
@@ -247,7 +251,7 @@ function AgentsTable({
       {toolbar}
       <DataTableContent>
         <DataTableHeader>
-          <DataTableHead type="person" pinned="start" className="w-56">
+          <DataTableHead type="person" pinned={start} className="w-56">
             Agent
           </DataTableHead>
           <DataTableHead className="w-44">Team</DataTableHead>
@@ -255,7 +259,7 @@ function AgentsTable({
           <DataTableHead type="status">Status</DataTableHead>
           <DataTableHead type="numeric">Adherence</DataTableHead>
           <DataTableHead className="w-32">Shift</DataTableHead>
-          <DataTableHead type="actions" pinned="end">
+          <DataTableHead type="actions" pinned={end}>
             <span className="sr-only">Actions</span>
           </DataTableHead>
         </DataTableHeader>
@@ -268,7 +272,7 @@ function AgentsTable({
             >
               <DataTableCell
                 type="person"
-                pinned="start"
+                pinned={start}
                 avatar={{ fallback: agent.initials }}
                 secondary={secondary ? agent.email : undefined}
               >
@@ -281,7 +285,7 @@ function AgentsTable({
               </DataTableCell>
               <DataTableCell type="numeric">{agent.adherence}%</DataTableCell>
               <DataTableCell>{agent.shift}</DataTableCell>
-              <DataTableCell type="actions" pinned="end">
+              <DataTableCell type="actions" pinned={end}>
                 <RowActions name={agent.name} />
               </DataTableCell>
             </DataTableRow>
@@ -373,7 +377,192 @@ const meta: Meta<typeof DataTable> = {
 export default meta
 type Story = StoryObj<typeof DataTable>
 
-export const Default: Story = {
+type BulkActionsPreset = "delete only" | "export" | "several" | "review"
+type FooterPreset = "none" | "pagination" | "selection count"
+
+type PlaygroundArgs = React.ComponentProps<typeof DataTable> & {
+  previewWidth: "100%" | "640px" | "375px"
+  showToolbar: boolean
+  bulkActions: BulkActionsPreset
+  footerContent: FooterPreset
+  secondaryText: boolean
+  lockedRow: boolean
+  pinnedColumns: boolean
+}
+
+function bulkActionsFor(preset: BulkActionsPreset) {
+  switch (preset) {
+    case "export":
+      return (
+        <DataTableBulkActions onDelete={() => {}}>
+          <DataTableBulkAction icon={<DownloadIcon data-icon="inline-start" />}>
+            Export
+          </DataTableBulkAction>
+        </DataTableBulkActions>
+      )
+    case "several":
+      return (
+        <DataTableBulkActions
+          onDelete={() => {}}
+          moreActions={<MenuItem>Add skill</MenuItem>}
+        >
+          <DataTableBulkAction>Assign schedule</DataTableBulkAction>
+          <DataTableBulkAction
+            single
+            icon={<PencilIcon data-icon="inline-start" />}
+          >
+            Edit
+          </DataTableBulkAction>
+        </DataTableBulkActions>
+      )
+    case "review":
+      return (
+        <DataTableBulkActions>
+          <DataTableBulkAction
+            variant="default"
+            icon={<CheckIcon data-icon="inline-start" />}
+          >
+            Approve
+          </DataTableBulkAction>
+          <DataTableBulkAction
+            variant="destructive"
+            icon={<XIcon data-icon="inline-start" />}
+          >
+            Deny
+          </DataTableBulkAction>
+        </DataTableBulkActions>
+      )
+    default:
+      return <DataTableBulkActions onDelete={() => {}} />
+  }
+}
+
+function footerFor(preset: FooterPreset, totalCount?: number) {
+  if (preset === "selection count") {
+    return (
+      <DataTableFooter>
+        <DataTableSelectionCount />
+      </DataTableFooter>
+    )
+  }
+  if (preset === "pagination") {
+    const total = totalCount ?? AGENTS.length
+    return (
+      <DataTableFooter className="justify-end">
+        <Pagination
+          pageCount={Math.max(1, Math.ceil(total / AGENTS.length))}
+          pageSize={AGENTS.length}
+          totalCount={total}
+          noun="agents"
+        />
+      </DataTableFooter>
+    )
+  }
+  return null
+}
+
+/*
+ * The playground. Its controls change what the story renders, such as the
+ * width it sits in, so narrowLayout has something to act on.
+ */
+export const Default: StoryObj<PlaygroundArgs> = {
+  args: {
+    previewWidth: "100%",
+    narrowLayout: "scroll",
+    showToolbar: true,
+    bulkActions: "delete only",
+    footerContent: "none",
+    secondaryText: false,
+    lockedRow: true,
+    pinnedColumns: true,
+  },
+  argTypes: {
+    previewWidth: {
+      name: "width",
+      description: "The width the table sits in. Under 32rem it goes narrow.",
+      control: "inline-radio",
+      options: ["100%", "640px", "375px"],
+    },
+    narrowLayout: {
+      control: "inline-radio",
+      options: ["scroll", "cards"],
+    },
+    showToolbar: {
+      name: "toolbar",
+      description: "Shows DataTableToolbar with filters and actions.",
+      control: "boolean",
+    },
+    bulkActions: {
+      name: "bulk actions",
+      description: "Which bulk actions show while rows are selected.",
+      control: "inline-radio",
+      options: ["delete only", "export", "several", "review"],
+    },
+    footerContent: {
+      name: "footer",
+      description: "What DataTableFooter holds, if anything.",
+      control: "inline-radio",
+      options: ["none", "pagination", "selection count"],
+    },
+    secondaryText: {
+      name: "secondary text",
+      description: "A second line under each name, making rows 52px.",
+      control: "boolean",
+    },
+    lockedRow: {
+      name: "locked row",
+      description: "Locks Elena's row with a reason.",
+      control: "boolean",
+    },
+    pinnedColumns: {
+      name: "pinned columns",
+      description: "Pins the name to the start and actions to the end.",
+      control: "boolean",
+    },
+  },
+  parameters: {
+    controls: {
+      exclude: [
+        "rowIds",
+        "value",
+        "defaultValue",
+        "onValueChange",
+        "noun",
+        "children",
+        "showSelectedOnly",
+        "onShowSelectedOnlyChange",
+      ],
+    },
+  },
+  render: ({
+    previewWidth,
+    showToolbar,
+    bulkActions,
+    footerContent,
+    secondaryText,
+    lockedRow,
+    pinnedColumns,
+    ...args
+  }) => (
+    <div style={{ width: previewWidth, maxWidth: "100%" }}>
+      <AgentsTable
+        {...args}
+        agents={
+          lockedRow
+            ? AGENTS
+            : AGENTS.map((agent) => ({ ...agent, lock: undefined }))
+        }
+        secondary={secondaryText}
+        pinned={pinnedColumns}
+        toolbar={
+          showToolbar ? (
+            <AgentsToolbar>{bulkActionsFor(bulkActions)}</AgentsToolbar>
+          ) : undefined
+        }
+        footer={footerFor(footerContent, args.totalCount)}
+      />
+    </div>
+  ),
   play: async ({ args, canvas, userEvent }) => {
     const all = canvas.getByRole("checkbox", {
       name: "Select all agents on this page",

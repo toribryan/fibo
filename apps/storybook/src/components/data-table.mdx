@@ -375,7 +375,18 @@ DataTable takes the selection props below. Head and Cell take `type` and
 and `lockedReason`. Every part also takes the props of the element it
 renders.
 
-<ArgTypes of={Stories.Default} />
+<ArgTypes
+  of={Stories.Default}
+  exclude={[
+    "previewWidth",
+    "showToolbar",
+    "bulkActions",
+    "footerContent",
+    "secondaryText",
+    "lockedRow",
+    "pinnedColumns",
+  ]}
+/>
 
 ### Data attributes
 
