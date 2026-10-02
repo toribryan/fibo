@@ -114,6 +114,13 @@ or a component's variants.
 - **Structure.** kebab-case files. A PascalCase component, plus a
   `<name>Variants` cva object when it has variants. `data-slot` on the root.
   A JSDoc line on every prop.
+- **Sizes and props.** One size scale everywhere: `xs`, `sm`, `default`,
+  `lg`, `xl`, plus `icon-<step>` for icon-only sizes, listed smallest first
+  in types, cva objects, story controls and Figma. A prop and its Figma
+  property share one camelCase name and one set of options. `variant` is for
+  a visual style (outline, ghost); `type` is for a structural kind that
+  changes what renders (Reactions inline or floating, Avatar image or
+  initials). `pnpm figma:drift` checks both.
 - **Stories.** No `autodocs` tag: each component has an MDX docs page. New
   parts take `tags: ["new"]`.
 - **Writing.** Sentence case for headings and UI copy. Comments explain why,

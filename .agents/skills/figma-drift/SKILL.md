@@ -37,6 +37,10 @@ is everything designers changed since the last check.
 
 ## 3. Run the check
 
+CI runs it on every pull request against the committed snapshot, so a code
+change that breaks parity fails there. A Figma change only shows up once the
+snapshot is refreshed.
+
 ```bash
 pnpm figma:drift          # human report, exit 1 on any error
 pnpm figma:drift --json   # the same findings for further processing
@@ -60,6 +64,11 @@ What it compares, and how:
   cva variant with no property, is a warning. `state` is ignored, since
   hover, focus and disabled are CSS states in code. Components on one side
   only are notes.
+- **Conventions.** Every `size` option, in code and in Figma, comes from
+  `xs`, `sm`, `default`, `lg`, `xl` or `icon-<step>`, listed smallest
+  first. Off-scale names are errors. Out-of-order options are errors in
+  code and warnings in Figma, because the Plugin API can't reorder variant
+  options: a person drags the values into order in the properties panel.
 
 ## 4. Triage
 
