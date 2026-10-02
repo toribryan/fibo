@@ -92,9 +92,9 @@
     "tier": "base-components",
     "group": "Forms"
   },
-  "map-marker": {
-    "title": "Map marker",
-    "description": "A marker for a point on a map, with a preview that opens on click or tap.",
+  "map-pin": {
+    "title": "Map pin",
+    "description": "A pin for a point on a map, with a preview that opens on click or tap.",
     "tier": "special-components",
     "group": "Display",
     "status": "new"

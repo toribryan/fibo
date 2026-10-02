@@ -10,7 +10,7 @@ has the same history with links into the docs.
 
 ### Added
 
-- Map marker: a dot, icon or labelled marker for a point on a map, in five
+- Map pin: a dot, icon or labelled pin for a point on a map, in five
   status colours, with a preview card that springs open on click or tap.
   Renders inside any map library's marker.
 - Floating nav text items: leave out an item's `icon` and it shows its label
