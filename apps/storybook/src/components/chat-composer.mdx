@@ -122,6 +122,66 @@ It installs Button with it. `ChatComposerProvider`, `useChatComposer`,
 `ChatComposerAttachButton`, `ChatComposerMentionButton` and `ChatComposerDropZone` are
 exported too.
 
+## Examples
+
+### With attachments
+
+Files picked or dropped show as chips in the header, each with its size and a
+remove button.
+
+<Canvas of={Stories.WithAttachments} />
+
+### Minimal
+
+A text box and a send button in one row, with no header, footer or drop zone.
+Leaving the parts out is the whole configuration.
+
+<Canvas of={Stories.Minimal} />
+
+### Disabled
+
+`disabled` on the provider turns off the text box and every action.
+
+<Canvas of={Stories.Disabled} />
+
+### Edit message
+
+Editing a sent message: a header says so, the footer swaps the actions for
+Cancel and Save, and Escape cancels through the text box's own `onKeyDown`.
+No `isEditing` prop.
+
+<Canvas of={Stories.EditMessage} />
+
+### Thread reply
+
+A reply in a thread, with a checkbox to also post it to the channel. The
+checkbox is ordinary JSX in the footer, and the story's `onSubmit` reads it.
+
+<Canvas of={Stories.ThreadReply} />
+
+### Submit outside the frame
+
+A forward dialog whose Forward button sits in the dialog's footer, outside
+the frame. It sends because it's inside the provider. The note is optional,
+so the provider's `canSubmit` lets an empty draft through.
+
+<Canvas of={Stories.SubmitOutsideTheFrame} />
+
+### Synced draft
+
+Two composers on one store, as a draft synced between a laptop and a phone
+would be. Type in either one. The parts are the same; only the provider
+changed.
+
+<Canvas of={Stories.SyncedDraft} />
+
+### In a chat
+
+Under a message list, with a pretend round trip so the send button shows its
+busy state.
+
+<Canvas of={Stories.InAChat} />
+
 ## Usage
 
 ```tsx
@@ -371,66 +431,6 @@ Every part, with the `data-slot` it carries. The providers render no element.
     </>,
   ]}
 />
-
-## Examples
-
-### With attachments
-
-Files picked or dropped show as chips in the header, each with its size and a
-remove button.
-
-<Canvas of={Stories.WithAttachments} />
-
-### Minimal
-
-A text box and a send button in one row, with no header, footer or drop zone.
-Leaving the parts out is the whole configuration.
-
-<Canvas of={Stories.Minimal} />
-
-### Disabled
-
-`disabled` on the provider turns off the text box and every action.
-
-<Canvas of={Stories.Disabled} />
-
-### Edit message
-
-Editing a sent message: a header says so, the footer swaps the actions for
-Cancel and Save, and Escape cancels through the text box's own `onKeyDown`.
-No `isEditing` prop.
-
-<Canvas of={Stories.EditMessage} />
-
-### Thread reply
-
-A reply in a thread, with a checkbox to also post it to the channel. The
-checkbox is ordinary JSX in the footer, and the story's `onSubmit` reads it.
-
-<Canvas of={Stories.ThreadReply} />
-
-### Submit outside the frame
-
-A forward dialog whose Forward button sits in the dialog's footer, outside
-the frame. It sends because it's inside the provider. The note is optional,
-so the provider's `canSubmit` lets an empty draft through.
-
-<Canvas of={Stories.SubmitOutsideTheFrame} />
-
-### Synced draft
-
-Two composers on one store, as a draft synced between a laptop and a phone
-would be. Type in either one. The parts are the same; only the provider
-changed.
-
-<Canvas of={Stories.SyncedDraft} />
-
-### In a chat
-
-Under a message list, with a pretend round trip so the send button shows its
-busy state.
-
-<Canvas of={Stories.InAChat} />
 
 ## Do's and don'ts
 

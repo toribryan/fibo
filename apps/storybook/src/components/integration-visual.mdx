@@ -44,6 +44,48 @@ hub opens a preview on hover.
 
 It installs `motion` with it, for the pulses and the halo.
 
+## Examples
+
+### Media preview
+
+Pass `{ src, alt }` to `preview` for an image, an animated image, or a video
+that plays muted on a loop. Media is 16:9 unless you set `aspectRatio`. Hover
+or focus the snail.
+
+<Canvas of={Stories.MediaPreview} />
+
+### Orbit
+
+Up to eight tools, evenly spaced on an ellipse with straight spokes.
+
+<Canvas of={Stories.Orbit} />
+
+### Sides
+
+A pipeline. Set `side` on each item to put it in the input or output column,
+and `pulse="through"` to run the pulses from inputs, through the hub, to
+outputs.
+
+<Canvas of={Stories.Sides} />
+
+### Idle items
+
+Every other tool is `idle`: its route stays, dimmed, and carries no pulse.
+
+<Canvas of={Stories.IdleItems} />
+
+### Plates
+
+The `background` prop sets the plate: `dots`, `grid` or `none`.
+
+<Canvas of={Stories.Plates} />
+
+### In a card
+
+A count in the hub and the claim in the card text below it.
+
+<Canvas of={Stories.InACard} />
+
 ## Usage
 
 ```tsx
@@ -150,48 +192,6 @@ Every part the component renders, with the `data-slot` it carries. You pass
   The preview is for looking at: keyboard users can't reach anything inside it,
   so link out from the card around the diagram instead.
 </Tip>
-
-## Examples
-
-### Media preview
-
-Pass `{ src, alt }` to `preview` for an image, an animated image, or a video
-that plays muted on a loop. Media is 16:9 unless you set `aspectRatio`. Hover
-or focus the snail.
-
-<Canvas of={Stories.MediaPreview} />
-
-### Orbit
-
-Up to eight tools, evenly spaced on an ellipse with straight spokes.
-
-<Canvas of={Stories.Orbit} />
-
-### Sides
-
-A pipeline. Set `side` on each item to put it in the input or output column,
-and `pulse="through"` to run the pulses from inputs, through the hub, to
-outputs.
-
-<Canvas of={Stories.Sides} />
-
-### Idle items
-
-Every other tool is `idle`: its route stays, dimmed, and carries no pulse.
-
-<Canvas of={Stories.IdleItems} />
-
-### Plates
-
-The `background` prop sets the plate: `dots`, `grid` or `none`.
-
-<Canvas of={Stories.Plates} />
-
-### In a card
-
-A count in the hub and the claim in the card text below it.
-
-<Canvas of={Stories.InACard} />
 
 ## Do's and don'ts
 

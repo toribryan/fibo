@@ -38,6 +38,49 @@ changes, the day changes, or enough time passes.
 
 It also installs [Avatar](?path=/docs/base-components-avatar--docs).
 
+## Examples
+
+### Rolling or fixed window
+
+Five messages, four minutes apart. Measured from the previous message, the
+window never runs out and they stay one group. Measured from the first, a new
+group starts once five minutes have passed since it began.
+
+<Canvas of={Stories.Window} />
+
+### Unread
+
+`unreadFrom` names the first unread message. The divider above it is red with
+a "New" label, so it doesn't rely on colour alone, and it breaks the group.
+Freeze the value when the conversation opens, so the line stays where it was
+while people read; clear it when they send a message, press Escape or mark
+the conversation read. Pair it with the
+[Jump bar](?path=/docs/base-components-jump-bar--docs).
+
+<Canvas of={Stories.Unread} />
+
+### With a divider
+
+`dividers` maps a message id to a label. The divider sits above that message,
+and the message starts a new group.
+
+<Canvas of={Stories.Divider} />
+
+### Custom spacing
+
+Space between groups and space within a group are two separate values,
+`--message-group-gap` and `--message-gap`. Change the first for a more open
+list without pulling a group's messages apart.
+
+<Canvas of={Stories.Spacing} />
+
+### Translated
+
+Times and dates follow `locale`. `strings` holds the list's name, the screen
+reader labels and the deleted message text.
+
+<Canvas of={Stories.Translated} />
+
 ## Usage
 
 ```ts
@@ -155,49 +198,6 @@ corners where bubbles meet.
     "Mark where unread messages begin with unreadFrom. Use dividers for other markers between messages; each one also breaks the group.",
   ]}
 />
-
-## Examples
-
-### Rolling or fixed window
-
-Five messages, four minutes apart. Measured from the previous message, the
-window never runs out and they stay one group. Measured from the first, a new
-group starts once five minutes have passed since it began.
-
-<Canvas of={Stories.Window} />
-
-### Unread
-
-`unreadFrom` names the first unread message. The divider above it is red with
-a "New" label, so it doesn't rely on colour alone, and it breaks the group.
-Freeze the value when the conversation opens, so the line stays where it was
-while people read; clear it when they send a message, press Escape or mark
-the conversation read. Pair it with the
-[Jump bar](?path=/docs/base-components-jump-bar--docs).
-
-<Canvas of={Stories.Unread} />
-
-### With a divider
-
-`dividers` maps a message id to a label. The divider sits above that message,
-and the message starts a new group.
-
-<Canvas of={Stories.Divider} />
-
-### Custom spacing
-
-Space between groups and space within a group are two separate values,
-`--message-group-gap` and `--message-gap`. Change the first for a more open
-list without pulling a group's messages apart.
-
-<Canvas of={Stories.Spacing} />
-
-### Translated
-
-Times and dates follow `locale`. `strings` holds the list's name, the screen
-reader labels and the deleted message text.
-
-<Canvas of={Stories.Translated} />
 
 ## Do's and don'ts
 
