@@ -3,74 +3,83 @@ import { render } from "vitest-browser-react"
 
 import { VoiceMemo, formatElapsed } from "./voice-memo.js"
 
-function root(container: HTMLElement) {
-  return container.querySelector<HTMLElement>('[data-slot="voice-memo"]')!
-}
-
 describe("formatElapsed", () => {
-  it("shows minutes, seconds and hundredths", () => {
-    expect(formatElapsed(0)).toBe("00:00.00")
-    expect(formatElapsed(22_330)).toBe("00:22.33")
-    expect(formatElapsed(61_005)).toBe("01:01.00")
+  it("shows minutes and seconds", () => {
+    expect(formatElapsed(0)).toBe("00:00")
+    expect(formatElapsed(22_330)).toBe("00:22")
+    expect(formatElapsed(61_005)).toBe("01:01")
   })
 
   it("never goes below zero", () => {
-    expect(formatElapsed(-50)).toBe("00:00.00")
+    expect(formatElapsed(-50)).toBe("00:00")
   })
 })
 
 describe("VoiceMemo", () => {
-  it("follows a controlled state and only asks to change it", async () => {
-    const onStateChange = vi.fn()
+  it("follows a controlled recording and only asks to change it", async () => {
+    const onRecordingChange = vi.fn()
     const screen = await render(
-      <VoiceMemo state="recording" onStateChange={onStateChange} />
+      <VoiceMemo
+        recording
+        transcript=""
+        onRecordingChange={onRecordingChange}
+      />
     )
-    await screen.getByRole("button", { name: "Pause recording" }).click()
-    expect(onStateChange).toHaveBeenLastCalledWith("paused")
-    // Still recording: the owner hasn't passed the new state down.
-    expect(root(screen.container).dataset.state).toBe("recording")
+    const device = screen.getByRole("button", { name: "Transcribe" })
+    await device.click()
+    expect(onRecordingChange).toHaveBeenLastCalledWith(false)
+    await expect.element(device).toHaveAttribute("aria-pressed", "true")
   })
 
-  it("keeps time across a pause and leaves the pause out", async () => {
-    const onStop = vi.fn()
+  it("shows text from your own service, the guess fainter", async () => {
     const screen = await render(
-      <VoiceMemo defaultState="recording" simulate={false} onStop={onStop} />
+      <VoiceMemo recording transcript="Ship it" interim="on Friday" />
     )
-    await new Promise((resolve) => setTimeout(resolve, 200))
-    await screen.getByRole("button", { name: "Pause recording" }).click()
-    await new Promise((resolve) => setTimeout(resolve, 300))
-    await screen.getByRole("button", { name: "Stop and save" }).click()
-    const { duration } = onStop.mock.calls[0]![0]
-    expect(duration).toBeGreaterThanOrEqual(150)
-    expect(duration).toBeLessThan(450)
+    const text = screen.getByRole("log")
+    await expect.element(text).toHaveTextContent("Ship it on Friday")
+    await expect
+      .element(screen.getByText("on Friday"))
+      .toHaveClass("text-muted-foreground")
   })
 
-  it("draws the level it's given", async () => {
+  it("keeps the unsettled words when it stops", async () => {
+    const onComplete = vi.fn()
     const screen = await render(
-      <VoiceMemo defaultState="recording" level={1} />
+      <VoiceMemo
+        defaultRecording
+        transcript="Ship it"
+        interim="on Friday"
+        onComplete={onComplete}
+      />
+    )
+    await screen.getByRole("button", { name: "Transcribe" }).click()
+    expect(onComplete).toHaveBeenCalledWith("Ship it on Friday")
+  })
+
+  it("settles a simulated script a word at a time", async () => {
+    const onTranscriptChange = vi.fn()
+    const screen = await render(
+      <VoiceMemo
+        defaultRecording
+        simulate="one two three"
+        onTranscriptChange={onTranscriptChange}
+      />
     )
     await expect
-      .poll(
-        () =>
-          Array.from(
-            root(screen.container).querySelectorAll<HTMLElement>(
-              '[data-slot="voice-memo-bar"]'
-            )
-          ).at(-1)?.style.height
-      )
-      .toBe("100%")
+      .element(screen.getByRole("log"))
+      .toHaveTextContent("one two three")
+    await expect
+      .poll(() => onTranscriptChange.mock.lastCall?.[0])
+      .toBe("one two")
   })
 
-  it("hides the status line until a connection is given", async () => {
-    const screen = await render(<VoiceMemo />)
-    expect(
-      root(screen.container).querySelector('[data-slot="voice-memo-status"]')
-    ).toBeNull()
-    await screen.rerender(<VoiceMemo connection="connected" battery={75} />)
-    await expect.element(screen.getByText("Connected")).toBeVisible()
-    expect(
-      root(screen.container).querySelector('[data-slot="voice-memo-status"]')
-        ?.textContent
-    ).toBe("Connected·75%battery")
+  it("keeps the transcript after stopping, until it's closed", async () => {
+    const screen = await render(
+      <VoiceMemo defaultRecording transcript="Hello" />
+    )
+    await screen.getByRole("button", { name: "Transcribe" }).click()
+    await expect.element(screen.getByRole("log")).toHaveTextContent("Hello")
+    await screen.getByRole("button", { name: "Close transcript" }).click()
+    await expect.element(screen.getByRole("log")).not.toBeInTheDocument()
   })
 })

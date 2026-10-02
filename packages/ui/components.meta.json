@@ -228,7 +228,7 @@
   },
   "voice-memo": {
     "title": "Voice memo",
-    "description": "A voice recorder with a running clock, a waveform that scrolls in as you talk, and controls to mark, pause and stop.",
+    "description": "A brushed aluminium recorder that writes down what you say, with the transcript filling in beside it as you talk.",
     "tier": "special-components",
     "group": "Forms",
     "status": "new"

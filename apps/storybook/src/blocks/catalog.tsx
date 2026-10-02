@@ -482,27 +482,22 @@ const PREVIEWS: Record<string, ReactNode> = {
     </div>
   ),
   "voice-memo": (
-    <span className="flex w-40 flex-col items-center gap-2 rounded-2xl border border-border bg-card px-3 py-3">
-      <span className="text-[11px] font-semibold">New memory</span>
-      <span className="flex items-center gap-1 font-mono text-[9px] text-muted-foreground tabular-nums">
-        <span className="size-1 rounded-full bg-destructive" />
-        00:22.33
+    <span className="flex items-start gap-2">
+      <span className="relative block h-[3.6rem] w-[5.6rem] rounded-[7%/11%] border border-border bg-muted shadow-sm">
+        <span className="absolute top-2 right-2 size-1 rounded-full bg-destructive" />
+        <span className="absolute bottom-1.5 left-2 font-serif text-lg leading-none text-muted-foreground">
+          fibo
+        </span>
       </span>
-      <span className="flex h-6 items-center gap-[2px]">
-        {[2, 4, 3, 7, 9, 5, 2, 2, 6, 10, 8, 4, 2, 5, 9, 7, 3, 2, 4, 6].map(
-          (h, i) => (
-            <span
-              key={i}
-              className="w-[2px] rounded-full bg-foreground"
-              style={{ height: h * 2 }}
-            />
-          )
-        )}
-      </span>
-      <span className="flex items-center gap-2">
-        <span className="size-4 rounded-full bg-secondary" />
-        <span className="size-6 rounded-full bg-primary" />
-        <span className="size-4 rounded-full bg-secondary" />
+      <span className="flex w-28 flex-col gap-1 rounded-lg border border-border bg-popover p-2 text-[9px] leading-snug shadow-sm">
+        <span className="flex items-center gap-1 text-muted-foreground">
+          <span className="size-1 rounded-full bg-destructive" />
+          Listening…
+        </span>
+        <span>
+          Quick note for the design review.{" "}
+          <span className="text-muted-foreground">The token</span>
+        </span>
       </span>
     </span>
   ),

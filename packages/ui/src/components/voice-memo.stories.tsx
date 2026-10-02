@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import { expect, fn, waitFor } from "storybook/test"
 
-import { Button } from "./button.js"
-import { VoiceMemo, formatElapsed, type VoiceMemoResult } from "./voice-memo.js"
+import { VoiceMemo } from "./voice-memo.js"
+
+const script =
+  "Quick note for the design review. The token drift check passes in both themes, so the only open item is the empty state copy. Ask Ana whether we keep the illustration."
 
 const meta: Meta<typeof VoiceMemo> = {
   title: "Special components/Voice memo",
@@ -13,53 +15,43 @@ const meta: Meta<typeof VoiceMemo> = {
     layout: "centered",
     controls: {
       exclude: [
-        "state",
-        "onStateChange",
-        "onStop",
-        "onMark",
-        "stream",
-        "level",
+        "recording",
+        "onRecordingChange",
+        "transcript",
+        "interim",
+        "onTranscriptChange",
+        "onComplete",
       ],
     },
   },
   argTypes: {
-    title: { control: "text" },
-    defaultState: {
-      control: "inline-radio",
-      options: ["idle", "recording", "paused"],
-    },
+    side: { control: "inline-radio", options: ["right", "bottom"] },
     size: { control: "inline-radio", options: ["sm", "default"] },
-    connection: {
-      control: "inline-radio",
-      options: ["connected", "connecting", "disconnected"],
-    },
-    battery: { control: { type: "range", min: 0, max: 100, step: 1 } },
-    simulate: { control: "boolean" },
-    device: { control: "boolean" },
     wordmark: { control: "text" },
-    state: { control: false },
-    onStateChange: { control: false },
-    onStop: { control: false },
-    onMark: { control: false },
-    stream: { control: false },
-    level: { control: false },
+    lang: { control: "text" },
+    simulate: { control: "text" },
+    defaultRecording: { control: "boolean" },
+    recording: { control: false },
+    onRecordingChange: { control: false },
+    transcript: { control: false },
+    interim: { control: false },
+    onTranscriptChange: { control: false },
+    onComplete: { control: false },
   },
   args: {
-    title: "New memory",
-    defaultState: "idle",
+    side: "right",
     size: "default",
-    connection: "connected",
-    battery: 75,
-    simulate: true,
-    device: true,
     wordmark: "fibo",
-    onStateChange: fn(),
-    onStop: fn(),
-    onMark: fn(),
+    lang: "en-US",
+    simulate: script,
+    defaultRecording: false,
+    onRecordingChange: fn(),
+    onTranscriptChange: fn(),
+    onComplete: fn(),
   },
   decorators: [
     (Story) => (
-      <div className="w-96">
+      <div className="flex min-h-64 w-[36rem] items-start">
         <Story />
       </div>
     ),
@@ -71,203 +63,132 @@ type Story = StoryObj<typeof VoiceMemo>
 
 export const Default: Story = {
   play: async ({ canvas, args, step, userEvent }) => {
+    const device = canvas.getByRole("button", { name: "Transcribe" })
+
     await step("Pointer", async () => {
-      await userEvent.click(
-        canvas.getByRole("button", { name: "Start recording" })
-      )
-      await expect(args.onStateChange).toHaveBeenLastCalledWith("recording")
-      await expect(canvas.getByRole("status")).toHaveTextContent("Recording")
-
-      await userEvent.click(
-        canvas.getByRole("button", { name: "Mark this moment" })
-      )
-      await expect(args.onMark).toHaveBeenCalledTimes(1)
-
-      await userEvent.click(
-        canvas.getByRole("button", { name: "Pause recording" })
-      )
-      await expect(args.onStateChange).toHaveBeenLastCalledWith("paused")
-      await expect(
-        canvas.getByRole("button", { name: "Resume recording" })
-      ).toHaveFocus()
+      await expect(canvas.queryByRole("region")).toBeNull()
+      await userEvent.click(device)
+      await expect(device).toHaveAttribute("aria-pressed", "true")
+      await expect(args.onRecordingChange).toHaveBeenLastCalledWith(true)
+      const transcript = canvas.getByRole("region", { name: "Transcript" })
+      await waitFor(() => expect(transcript).toHaveTextContent(/Quick note/))
     })
 
     await step("Keyboard", async () => {
+      await expect(device).toHaveFocus()
       await userEvent.keyboard(" ")
-      await expect(args.onStateChange).toHaveBeenLastCalledWith("recording")
+      await expect(device).toHaveAttribute("aria-pressed", "false")
+      await expect(args.onComplete).toHaveBeenCalledWith(
+        expect.stringMatching(/^Quick note/)
+      )
+      await expect(canvas.getByRole("status")).toHaveTextContent(
+        /^Transcript ready/
+      )
+      // The finished transcript stays until it's closed.
       await userEvent.tab()
       await expect(
-        canvas.getByRole("button", { name: "Stop and save" })
+        canvas.getByRole("button", { name: "Copy transcript" })
       ).toHaveFocus()
-      await userEvent.keyboard("{Enter}")
-      await expect(args.onStateChange).toHaveBeenLastCalledWith("idle")
-      await expect(args.onStop).toHaveBeenCalledWith(
-        expect.objectContaining({ marks: [expect.any(Number)] })
+      await userEvent.click(
+        canvas.getByRole("button", { name: "Close transcript" })
       )
-      await waitFor(() =>
-        expect(canvas.getByRole("status")).toHaveTextContent(/^Saved/)
-      )
-      await expect(
-        canvas.getByRole("button", { name: "Mark this moment" })
-      ).toBeDisabled()
+      await expect(canvas.queryByRole("region")).toBeNull()
     })
   },
 }
 
-export const Recording: Story = {
-  args: { defaultState: "recording" },
+export const Listening: Story = {
+  args: { defaultRecording: true },
 }
 
-export const Paused: Story = {
-  args: { defaultState: "paused" },
+export const Below: Story = {
+  args: { side: "bottom", defaultRecording: true },
 }
 
 export const Small: Story = {
-  args: { size: "sm", defaultState: "recording", title: "Standup notes" },
+  args: { size: "sm", defaultRecording: true },
 }
 
-export const WithoutDevice: Story = {
-  name: "Without the device",
-  args: { device: false, connection: undefined, battery: undefined },
-}
-
-export const Connection: Story = {
+export const Wordmark: Story = {
   render: (args) => (
-    <div className="flex flex-col gap-4">
-      <VoiceMemo {...args} connection="connecting" battery={undefined} />
-      <VoiceMemo
-        {...args}
-        connection="disconnected"
-        battery={12}
-        title="Last memory"
-      />
+    <div className="flex gap-4">
+      <VoiceMemo {...args} wordmark="Notes" />
+      <VoiceMemo {...args} wordmark="ana" />
     </div>
   ),
 }
 
 /*
- * The real thing: asks for the microphone, records with MediaRecorder, and
- * hands the stream to the waveform. The clip plays back once saved.
+ * Text from your own service, such as a speech-to-text API streaming over a
+ * socket. Passing `transcript` turns the browser's recogniser off.
  */
-function MicrophoneDemo() {
-  const [stream, setStream] = useState<MediaStream | null>(null)
-  const [error, setError] = useState("")
-  const [clip, setClip] = useState<{ url: string; memo: VoiceMemoResult }>()
-  const recorder = useRef<MediaRecorder | null>(null)
-  const chunks = useRef<Blob[]>([])
-
-  useEffect(() => () => stream?.getTracks().forEach((t) => t.stop()), [stream])
-
-  const begin = async () => {
-    try {
-      const media = await navigator.mediaDevices.getUserMedia({ audio: true })
-      chunks.current = []
-      const next = new MediaRecorder(media)
-      next.ondataavailable = (event) => chunks.current.push(event.data)
-      next.start()
-      recorder.current = next
-      setStream(media)
-      setError("")
-    } catch {
-      setError("The microphone isn't available here.")
-    }
-  }
+function OwnServiceDemo() {
+  const [recording, setRecording] = useState(false)
+  const [words, setWords] = useState(0)
+  const all = script.split(" ")
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-start gap-3">
       <VoiceMemo
-        stream={stream}
-        simulate={false}
-        connection={stream ? "connected" : "disconnected"}
-        onStateChange={(state) => {
-          if (state === "recording" && !recorder.current) void begin()
-          if (state === "paused") recorder.current?.pause()
-          if (state === "recording") recorder.current?.resume()
+        recording={recording}
+        onRecordingChange={(next) => {
+          setRecording(next)
+          if (next) setWords(0)
         }}
-        onStop={(memo) => {
-          const active = recorder.current
-          if (!active) return
-          active.onstop = () => {
-            const blob = new Blob(chunks.current, { type: active.mimeType })
-            setClip({ url: URL.createObjectURL(blob), memo })
-            setStream(null)
-          }
-          active.stop()
-          recorder.current = null
-        }}
+        transcript={all.slice(0, Math.max(0, words - 2)).join(" ")}
+        interim={all.slice(Math.max(0, words - 2), words).join(" ")}
       />
-      {error ? <p className="text-sm text-muted-foreground">{error}</p> : null}
-      {clip ? (
-        <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
-          <audio controls src={clip.url} aria-label="Your memo" />
-          <span>
-            {formatElapsed(clip.memo.duration)}, {clip.memo.marks.length}{" "}
-            {clip.memo.marks.length === 1 ? "mark" : "marks"}
-          </span>
-        </div>
-      ) : null}
+      <input
+        type="range"
+        aria-label="Words heard"
+        min={0}
+        max={all.length}
+        value={words}
+        disabled={!recording}
+        onChange={(event) => setWords(Number(event.target.value))}
+        className="w-56"
+      />
     </div>
   )
 }
 
-export const WithMicrophone: Story = {
-  name: "With a microphone",
-  render: () => <MicrophoneDemo />,
+export const OwnService: Story = {
+  name: "Your own service",
+  render: () => <OwnServiceDemo />,
 }
 
-function Library() {
-  const [memos, setMemos] = useState<VoiceMemoResult[]>([])
+export const Microphone: Story = {
+  name: "With the microphone",
+  args: { simulate: undefined },
+}
+
+function NotesDemo() {
+  const [notes, setNotes] = useState<string[]>([])
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col items-start gap-4">
       <VoiceMemo
-        title={`Memory ${memos.length + 1}`}
+        side="bottom"
         size="sm"
-        connection="connected"
-        battery={75}
-        onStop={(memo) => setMemos((list) => [memo, ...list])}
+        simulate={script}
+        onComplete={(text) => {
+          if (text) setNotes((list) => [text, ...list])
+        }}
       />
-      <ul aria-label="Saved memos" className="flex flex-col gap-1 text-sm">
-        {memos.length === 0 ? (
-          <li className="text-muted-foreground">Nothing saved yet.</li>
-        ) : null}
-        {memos.map((memo, index) => (
+      <ol aria-label="Saved notes" className="flex w-72 flex-col gap-2 pt-40">
+        {notes.map((note, index) => (
           <li
-            key={memos.length - index}
-            className="flex justify-between rounded-lg border border-border px-3 py-2"
+            key={notes.length - index}
+            className="rounded-lg border border-border p-3 text-sm"
           >
-            <span>Memory {memos.length - index}</span>
-            <span className="font-mono text-muted-foreground tabular-nums">
-              {formatElapsed(memo.duration)}
-            </span>
+            {note}
           </li>
         ))}
-      </ul>
-      {memos.length ? (
-        <Button size="sm" variant="outline" onClick={() => setMemos([])}>
-          Clear
-        </Button>
-      ) : null}
+      </ol>
     </div>
   )
 }
 
-export const SavingMemos: Story = {
-  name: "Saving memos",
-  render: () => <Library />,
-}
-
-// Dark, edge to edge on a phone, the way the clip-on device's app shows it.
-export const OnAPhone: Story = {
-  name: "On a phone",
-  render: (args) => (
-    <div className="dark">
-      <div className="flex h-[36rem] w-72 flex-col justify-end rounded-[2.5rem] border-8 border-border bg-background p-2 text-foreground">
-        <VoiceMemo
-          {...args}
-          defaultState="recording"
-          className="flex-1 justify-between rounded-[1.75rem] border-0"
-        />
-      </div>
-    </div>
-  ),
+export const SavingNotes: Story = {
+  name: "Saving notes",
+  render: () => <NotesDemo />,
 }
