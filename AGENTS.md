@@ -14,11 +14,10 @@ Node 24 (pinned in `.nvmrc`).
 | ---------------------------------- | -------------------------------------------------------------------- |
 | `packages/ui/src/components/`      | The components. One `.tsx` plus one `.stories.tsx` each              |
 | `packages/ui/components.meta.json` | Title, description, shelf and group for every component              |
-| `packages/ui/src/foundations/`     | Colour and typography stories                                        |
 | `packages/ui/src/styles/`          | `globals.css`: semantic tokens over Tailwind's ramps, light and dark |
 | `packages/ui/src/lib/`             | `cn` and other helpers                                               |
 | `apps/storybook/.storybook/`       | Storybook config: sidebar, theme toggle, docs container              |
-| `apps/storybook/src/pages/`        | Welcome, Getting started, Catalog, Changelog                         |
+| `apps/storybook/src/pages/`        | Welcome, Getting started, Catalog, Colors, Typography, Changelog     |
 | `apps/storybook/src/components/`   | One `.mdx` docs page per component                                   |
 | `apps/storybook/src/blocks/`       | Docs blocks: anatomy, data attributes, guidelines, catalog, hero     |
 | `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                 |
