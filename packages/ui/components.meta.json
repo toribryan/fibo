@@ -126,6 +126,13 @@
     "tier": "base-components",
     "group": "Forms"
   },
+  "sheet": {
+    "title": "Sheet",
+    "description": "A panel that slides in from an edge for a focused task.",
+    "tier": "base-components",
+    "group": "Overlays",
+    "status": "new"
+  },
   "skeleton": {
     "title": "Skeleton",
     "description": "A placeholder in the shape of content that's still loading.",
