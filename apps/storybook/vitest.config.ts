@@ -23,6 +23,10 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright({}),
+            // The Storybook addon no longer sets its 1200x900 viewport under
+            // Vitest 5, which falls back to 414x896 and turns wide parts such
+            // as Data table into their phone layouts.
+            viewport: { width: 1200, height: 900 },
             instances: [{ browser: "chromium" }],
           },
         },
