@@ -13,29 +13,24 @@ import {
   TableRow,
 } from "./table.js"
 
-const AGENTS = [
+const MEMBERS = [
+  { name: "Maya Okafor", team: "Design", status: "Active", projects: 12 },
+  { name: "Priya Raman", team: "Engineering", status: "Away", projects: 8 },
+  { name: "Jordan Alvarez", team: "Marketing", status: "Active", projects: 5 },
+  { name: "Sam Whitfield", team: "Support", status: "Invited", projects: 0 },
   {
-    name: "Maya Okafor",
-    team: "Tier 1 Support",
-    status: "On shift",
-    adherence: 97,
+    name: "Rosa Delgado",
+    team: "Engineering",
+    status: "Deactivated",
+    projects: 3,
   },
-  { name: "Priya Raman", team: "Billing", status: "On break", adherence: 91 },
-  {
-    name: "Jordan Alvarez",
-    team: "Tier 2 Escalations",
-    status: "On shift",
-    adherence: 88,
-  },
-  { name: "Sam Whitfield", team: "Chat", status: "Time off", adherence: 94 },
-  { name: "Rosa Delgado", team: "Phone", status: "Offline", adherence: 90 },
 ] as const
 
 const STATUS_VARIANT = {
-  "On shift": "success",
-  "On break": "warning",
-  "Time off": "info",
-  Offline: "secondary",
+  Active: "success",
+  Away: "warning",
+  Invited: "info",
+  Deactivated: "secondary",
 } as const
 
 const meta: Meta<typeof Table> = {
@@ -55,27 +50,27 @@ const meta: Meta<typeof Table> = {
   parameters: { controls: { exclude: ["children"] } },
   render: (args) => (
     <Table {...args}>
-      <TableCaption>Agents on the support floor today.</TableCaption>
+      <TableCaption>Members of the Acme workspace.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead>Agent</TableHead>
+          <TableHead>Member</TableHead>
           <TableHead>Team</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead className="text-right">Adherence</TableHead>
+          <TableHead className="text-right">Projects</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {AGENTS.map((agent) => (
-          <TableRow key={agent.name}>
-            <TableCell className="font-medium">{agent.name}</TableCell>
-            <TableCell>{agent.team}</TableCell>
+        {MEMBERS.map((member) => (
+          <TableRow key={member.name}>
+            <TableCell className="font-medium">{member.name}</TableCell>
+            <TableCell>{member.team}</TableCell>
             <TableCell>
-              <Badge variant={STATUS_VARIANT[agent.status]}>
-                {agent.status}
+              <Badge variant={STATUS_VARIANT[member.status]}>
+                {member.status}
               </Badge>
             </TableCell>
             <TableCell className="text-right text-muted-foreground tabular-nums">
-              {agent.adherence}%
+              {member.projects}
             </TableCell>
           </TableRow>
         ))}
@@ -131,7 +126,7 @@ export const Default: StoryObj<PlaygroundArgs> = {
     },
     showFooter: {
       name: "footer",
-      description: "Adds a TableFooter with the average.",
+      description: "Adds a TableFooter with the total.",
       control: "boolean",
     },
   },
@@ -143,41 +138,39 @@ export const Default: StoryObj<PlaygroundArgs> = {
     showFooter,
     ...args
   }) => {
-    const agents = AGENTS.slice(0, rows)
-    const average = Math.round(
-      agents.reduce((sum, agent) => sum + agent.adherence, 0) / agents.length
-    )
+    const members = MEMBERS.slice(0, rows)
+    const total = members.reduce((sum, member) => sum + member.projects, 0)
     return (
       <div style={{ width: previewWidth, maxWidth: "100%" }}>
-        <Table {...args} aria-label={showCaption ? undefined : "Agents"}>
+        <Table {...args} aria-label={showCaption ? undefined : "Members"}>
           {showCaption ? (
-            <TableCaption>Agents on the support floor today.</TableCaption>
+            <TableCaption>Members of the Acme workspace.</TableCaption>
           ) : null}
           <TableHeader>
             <TableRow>
-              <TableHead>Agent</TableHead>
+              <TableHead>Member</TableHead>
               <TableHead>Team</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">Adherence</TableHead>
+              <TableHead className="text-right">Projects</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {agents.map((agent, index) => (
+            {members.map((member, index) => (
               <TableRow
-                key={agent.name}
+                key={member.name}
                 data-selected={
                   selectedRow === String(index + 1) ? true : undefined
                 }
               >
-                <TableCell className="font-medium">{agent.name}</TableCell>
-                <TableCell>{agent.team}</TableCell>
+                <TableCell className="font-medium">{member.name}</TableCell>
+                <TableCell>{member.team}</TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[agent.status]}>
-                    {agent.status}
+                  <Badge variant={STATUS_VARIANT[member.status]}>
+                    {member.status}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
-                  {agent.adherence}%
+                  {member.projects}
                 </TableCell>
               </TableRow>
             ))}
@@ -185,9 +178,9 @@ export const Default: StoryObj<PlaygroundArgs> = {
           {showFooter ? (
             <TableFooter>
               <TableRow>
-                <TableCell colSpan={3}>Average</TableCell>
+                <TableCell colSpan={3}>Total</TableCell>
                 <TableCell className="text-right tabular-nums">
-                  {average}%
+                  {total}
                 </TableCell>
               </TableRow>
             </TableFooter>
@@ -205,23 +198,23 @@ export const WithFooter: Story = {
       <TableHeader>
         <TableRow>
           <TableHead>Team</TableHead>
-          <TableHead className="text-right">Agents</TableHead>
-          <TableHead className="text-right">Tickets today</TableHead>
+          <TableHead className="text-right">Members</TableHead>
+          <TableHead className="text-right">Storage (GB)</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {(
           [
-            ["Tier 1 Support", 42, 1280],
-            ["Tier 2 Escalations", 18, 312],
-            ["Billing", 11, 240],
+            ["Design", 14, 1280],
+            ["Engineering", 42, 312],
+            ["Marketing", 15, 240],
           ] as const
-        ).map(([team, agents, tickets]) => (
+        ).map(([team, members, storage]) => (
           <TableRow key={team}>
             <TableCell className="font-medium">{team}</TableCell>
-            <TableCell className="text-right tabular-nums">{agents}</TableCell>
+            <TableCell className="text-right tabular-nums">{members}</TableCell>
             <TableCell className="text-right tabular-nums">
-              {tickets.toLocaleString("en-US")}
+              {storage.toLocaleString("en-US")}
             </TableCell>
           </TableRow>
         ))}
@@ -242,15 +235,15 @@ export const Selected: Story = {
     <Table {...args}>
       <TableHeader>
         <TableRow>
-          <TableHead>Agent</TableHead>
+          <TableHead>Member</TableHead>
           <TableHead>Team</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {AGENTS.slice(0, 3).map((agent, index) => (
-          <TableRow key={agent.name} data-selected={index === 1 || undefined}>
-            <TableCell className="font-medium">{agent.name}</TableCell>
-            <TableCell>{agent.team}</TableCell>
+        {MEMBERS.slice(0, 3).map((member, index) => (
+          <TableRow key={member.name} data-selected={index === 1 || undefined}>
+            <TableCell className="font-medium">{member.name}</TableCell>
+            <TableCell>{member.team}</TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -264,22 +257,27 @@ export const Wide: Story = {
       <Table {...args}>
         <TableHeader>
           <TableRow>
-            {["Agent", "Team", "Channels", "Shift", "Occupancy", "CSAT"].map(
-              (label) => (
-                <TableHead key={label}>{label}</TableHead>
-              )
-            )}
+            {[
+              "Member",
+              "Team",
+              "Role",
+              "Last active",
+              "Projects",
+              "Storage",
+            ].map((label) => (
+              <TableHead key={label}>{label}</TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {AGENTS.map((agent) => (
-            <TableRow key={agent.name}>
-              <TableCell className="font-medium">{agent.name}</TableCell>
-              <TableCell>{agent.team}</TableCell>
-              <TableCell>Chat, Email</TableCell>
-              <TableCell>8:00 to 16:30</TableCell>
-              <TableCell>82%</TableCell>
-              <TableCell>4.8</TableCell>
+          {MEMBERS.map((member) => (
+            <TableRow key={member.name}>
+              <TableCell className="font-medium">{member.name}</TableCell>
+              <TableCell>{member.team}</TableCell>
+              <TableCell>Editor</TableCell>
+              <TableCell>Today</TableCell>
+              <TableCell>12</TableCell>
+              <TableCell>4.2 GB</TableCell>
             </TableRow>
           ))}
         </TableBody>

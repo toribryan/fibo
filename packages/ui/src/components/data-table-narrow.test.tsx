@@ -24,14 +24,14 @@ import {
   type DataTableSelection,
 } from "./data-table.js"
 
-const AGENTS = [
-  { id: "maya", name: "Maya Okafor", team: "Tier 1 Support" },
-  { id: "priya", name: "Priya Raman", team: "Billing" },
+const MEMBERS = [
+  { id: "maya", name: "Maya Okafor", team: "Design" },
+  { id: "priya", name: "Priya Raman", team: "Engineering" },
   {
     id: "elena",
     name: "Elena Marsh",
-    team: "Workforce Ops",
-    lock: "Admins can't be removed",
+    team: "Operations",
+    lock: "The workspace owner can't be removed",
   },
 ]
 
@@ -47,46 +47,48 @@ function Example({
   return (
     <div style={{ width }}>
       <DataTable
-        aria-label="Agents"
-        rowIds={AGENTS.map((agent) => agent.id)}
-        noun={{ one: "agent", other: "agents" }}
+        aria-label="Members"
+        rowIds={MEMBERS.map((member) => member.id)}
+        noun={{ one: "member", other: "members" }}
         narrowLayout={narrowLayout}
         onValueChange={onValueChange}
       >
         <DataTableToolbar>
-          <DataTableFilters search={<input aria-label="Search agents" />}>
+          <DataTableFilters search={<input aria-label="Search members" />}>
             <Button size="sm">Sort</Button>
           </DataTableFilters>
           <DataTableActions>
-            <DataTableAction icon={<PlusIcon />}>Add agent</DataTableAction>
+            <DataTableAction icon={<PlusIcon />}>Add member</DataTableAction>
           </DataTableActions>
           <DataTableBulkActions onDelete={() => {}} />
         </DataTableToolbar>
         <DataTableContent>
           <DataTableHeader>
-            <DataTableHead type="primary">Agent</DataTableHead>
+            <DataTableHead type="primary">Member</DataTableHead>
           </DataTableHeader>
           <DataTableBody>
-            {AGENTS.map((agent) => (
+            {MEMBERS.map((member) => (
               <DataTableRow
-                key={agent.id}
-                id={agent.id}
-                lockedReason={agent.lock}
+                key={member.id}
+                id={member.id}
+                lockedReason={member.lock}
               >
-                <DataTableCell type="primary">{agent.name}</DataTableCell>
+                <DataTableCell type="primary">{member.name}</DataTableCell>
               </DataTableRow>
             ))}
           </DataTableBody>
         </DataTableContent>
         <DataTableCards>
-          {AGENTS.map((agent) => (
+          {MEMBERS.map((member) => (
             <DataTableCard
-              key={agent.id}
-              id={agent.id}
-              title={agent.name}
-              lockedReason={agent.lock}
+              key={member.id}
+              id={member.id}
+              title={member.name}
+              lockedReason={member.lock}
             >
-              <DataTableCardField label="Team">{agent.team}</DataTableCardField>
+              <DataTableCardField label="Team">
+                {member.team}
+              </DataTableCardField>
             </DataTableCard>
           ))}
         </DataTableCards>
@@ -102,8 +104,8 @@ describe("DataTable at narrow widths", () => {
       .element(screen.getByRole("button", { name: "Sort" }))
       .toBeInTheDocument()
     await expect
-      .element(screen.getByRole("button", { name: "Add agent" }))
-      .toHaveTextContent("Add agent")
+      .element(screen.getByRole("button", { name: "Add member" }))
+      .toHaveTextContent("Add member")
     await expect.element(screen.getByRole("table")).toBeInTheDocument()
     await expect.element(screen.getByRole("list")).not.toBeInTheDocument()
   })
@@ -111,7 +113,7 @@ describe("DataTable at narrow widths", () => {
   it("moves filters into a sheet and keeps the search", async () => {
     const screen = await render(<Example width={360} />)
     await expect
-      .element(screen.getByRole("textbox", { name: "Search agents" }))
+      .element(screen.getByRole("textbox", { name: "Search members" }))
       .toBeInTheDocument()
     await expect
       .element(screen.getByRole("button", { name: "Sort" }))
@@ -126,9 +128,9 @@ describe("DataTable at narrow widths", () => {
 
   it("shrinks actions to their icons, named by their labels", async () => {
     const screen = await render(<Example width={360} />)
-    const add = screen.getByRole("button", { name: "Add agent" })
+    const add = screen.getByRole("button", { name: "Add member" })
     await expect.element(add).toBeInTheDocument()
-    await expect.element(add).not.toHaveTextContent("Add agent")
+    await expect.element(add).not.toHaveTextContent("Add member")
 
     await screen.getByRole("checkbox", { name: "Select Maya Okafor" }).click()
     const remove = screen.getByRole("button", { name: "Delete" })
@@ -153,7 +155,7 @@ describe("DataTable at narrow widths", () => {
       .toBeDisabled()
 
     await screen
-      .getByRole("checkbox", { name: "Select all agents on this page" })
+      .getByRole("checkbox", { name: "Select all members on this page" })
       .click()
     expect(onValueChange).toHaveBeenLastCalledWith(new Set(["maya", "priya"]))
     await expect

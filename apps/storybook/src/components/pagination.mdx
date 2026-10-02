@@ -12,7 +12,7 @@ import { Install } from "../blocks/install"
 # Pagination
 
 Pagination moves through a long list one page at a time, and says which rows
-are showing, such as “1 to 25 of 10,000 agents”.
+are showing, such as “1 to 25 of 10,000 members”.
 
 <Canvas of={Stories.Default} />
 
@@ -36,7 +36,7 @@ It installs Button.
 ```tsx
 import { Pagination } from "@/components/ui/pagination"
 
-export function AgentsFooter({ page, setPage }: Props) {
+export function MembersFooter({ page, setPage }: Props) {
   return (
     <Pagination
       page={page}
@@ -44,7 +44,7 @@ export function AgentsFooter({ page, setPage }: Props) {
       pageCount={400}
       pageSize={25}
       totalCount={10000}
-      noun={{ one: "agent", other: "agents" }}
+      noun={{ one: "member", other: "members" }}
     />
   )
 }
@@ -78,7 +78,7 @@ type PaginationNoun = string | { one: string; other: string }
   guidelines={[
     "Put it under the list it pages, aligned to the end.",
     "Show the range whenever the total is known, so people know how much there is.",
-    "Name the rows with noun, in the plural people would say: agents, articles, requests.",
+    "Name the rows with noun, in the plural people would say: members, documents, requests.",
     "Keep the page size the same from page to page.",
     "For a short list that fits on one screen, don't paginate it.",
   ]}
@@ -107,7 +107,7 @@ Without pageSize and totalCount, it shows the pages alone.
       positive: {
         component: (
           <span className="text-sm text-muted-foreground">
-            1 to 25 of 10,000 agents
+            1 to 25 of 10,000 members
           </span>
         ),
         description: "Say what the rows are and how many there are.",

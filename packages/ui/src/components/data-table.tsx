@@ -122,7 +122,7 @@ type DataTableProps = Omit<React.ComponentProps<"div">, "defaultValue"> & {
   rowIds: string[]
   /** How many rows match across every page. Defaults to the rows shown. */
   totalCount?: number
-  /** What a row is, for counts and labels: { one: "agent", other: "agents" }. */
+  /** What a row is, for counts and labels: { one: "member", other: "members" }. */
   noun?: DataTableNoun
   /** The selected rows. Pass it to control the selection. */
   value?: DataTableSelection
@@ -606,7 +606,7 @@ function textOf(node: React.ReactNode): string | undefined {
 }
 
 /**
- * A create action, such as Add agent. With an icon, it shrinks to the icon
+ * A create action, such as Add member. With an icon, it shrinks to the icon
  * on a narrow table, and its label becomes the name and a tooltip.
  */
 function DataTableAction({
@@ -644,7 +644,7 @@ function DataTableAction({
   )
 }
 
-/** Create actions, such as Add agent, on the right while nothing is selected. */
+/** Create actions, such as Add member, on the right while nothing is selected. */
 function DataTableActions({
   className,
   ...props
@@ -1274,7 +1274,7 @@ function DataTableFooter({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-/** “2 of 6 agents selected”, for a picker's footer. */
+/** “2 of 6 members selected”, for a picker's footer. */
 function DataTableSelectionCount({
   className,
   ...props
