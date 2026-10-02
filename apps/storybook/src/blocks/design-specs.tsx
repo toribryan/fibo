@@ -90,9 +90,13 @@ function AnatomyDiagram({
       {parts
         .filter((p) => p.side === side)
         .map(({ token, name }) => (
+          // A pointer shortcut only: the legend below carries the same parts
+          // for keyboards and screen readers, so each part is one tab stop.
           <button
             key={token}
             type="button"
+            tabIndex={-1}
+            aria-hidden="true"
             ref={(node) => {
               if (node) calloutNodes.current.set(token, node)
               else calloutNodes.current.delete(token)
