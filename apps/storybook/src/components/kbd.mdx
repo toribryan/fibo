@@ -28,6 +28,26 @@ command it triggers.
 
 <Install name="kbd" exports={["Kbd", "KbdGroup"]} />
 
+## Examples
+
+### Shortcut
+
+A combination in a KbdGroup, with the Command key drawn as an icon.
+
+<Canvas of={Stories.Shortcut} />
+
+### In text
+
+Keys and a combination inside a sentence.
+
+<Canvas of={Stories.InText} />
+
+### Keys
+
+Named keys, and a symbol key drawn with an icon.
+
+<Canvas of={Stories.Keys} />
+
 ## Usage
 
 ```tsx
@@ -61,26 +81,6 @@ elsewhere.
     "Don't use Kbd for code or for text people should type. Use code for those.",
   ]}
 />
-
-## Examples
-
-### Shortcut
-
-A combination in a KbdGroup, with the Command key drawn as an icon.
-
-<Canvas of={Stories.Shortcut} />
-
-### In text
-
-Keys and a combination inside a sentence.
-
-<Canvas of={Stories.InText} />
-
-### Keys
-
-Named keys, and a symbol key drawn with an icon.
-
-<Canvas of={Stories.Keys} />
 
 ## Do's and don'ts
 

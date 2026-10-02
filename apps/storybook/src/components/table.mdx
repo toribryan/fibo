@@ -42,6 +42,26 @@ compact density: 36 pixel headers and 40 pixel rows.
   ]}
 />
 
+## Examples
+
+### With footer
+
+Totals in a `tfoot`, separated by a border.
+
+<Canvas of={Stories.WithFooter} />
+
+### Selected
+
+`data-selected` on a row tints it. Data table sets it for you.
+
+<Canvas of={Stories.Selected} />
+
+### Wide
+
+Wider than its box, so it scrolls sideways. Tab to it and use the arrow keys.
+
+<Canvas of={Stories.Wide} />
+
 ## Usage
 
 ```tsx
@@ -134,26 +154,6 @@ For selection, pinned columns and bulk actions, use Data table.
     "Put totals in TableFooter, not as a last body row.",
   ]}
 />
-
-## Examples
-
-### With footer
-
-Totals in a `tfoot`, separated by a border.
-
-<Canvas of={Stories.WithFooter} />
-
-### Selected
-
-`data-selected` on a row tints it. Data table sets it for you.
-
-<Canvas of={Stories.Selected} />
-
-### Wide
-
-Wider than its box, so it scrolls sideways. Tab to it and use the arrow keys.
-
-<Canvas of={Stories.Wide} />
 
 ## Do's and don'ts
 
