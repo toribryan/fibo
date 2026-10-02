@@ -8,6 +8,13 @@ Notable changes, newest first.
 
 ## October 2026
 
+- **Property tokens** for the status colours: `text-success`,
+  `border-success` and `fill-success` now read `--success-text`,
+  `--success-border` and `--success-icon`, and the same for destructive,
+  warning and info. Class names don't change. Each is held to the contrast
+  its property needs, 4.5:1 for text and 3:1 for borders and icons, and a
+  unit test checks every one in both themes. The Colors page explains them,
+  and the Theme creator exports them.
 - **Floating nav** has a compact size: `size="sm"` gives 36px items and
   16px icons, for sites where the bar should take less of the screen.
 - **Badge** has `success`, `warning` and `info` variants, and **Input** has a
