@@ -188,18 +188,18 @@ export const Filters: Story = {
           <Select
             defaultValue="all"
             items={[
-              { value: "all", label: "All channels" },
-              { value: "chat", label: "Chat" },
-              { value: "email", label: "Email" },
+              { value: "all", label: "All roles" },
+              { value: "admin", label: "Admin" },
+              { value: "editor", label: "Editor" },
             ]}
           >
-            <SelectTrigger className="w-full" aria-label="Channel">
+            <SelectTrigger className="w-full" aria-label="Role">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All channels</SelectItem>
-              <SelectItem value="chat">Chat</SelectItem>
-              <SelectItem value="email">Email</SelectItem>
+              <SelectItem value="all">All roles</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="editor">Editor</SelectItem>
             </SelectContent>
           </Select>
         </SheetBody>

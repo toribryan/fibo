@@ -21,7 +21,7 @@ type PaginationProps = Omit<React.ComponentProps<"nav">, "onChange"> & {
   pageSize?: number
   /** How many rows there are across every page. */
   totalCount?: number
-  /** What the rows are, after the range: “agents”, or { one, other } for one row. */
+  /** What the rows are, after the range: “members”, or { one, other } for one row. */
   noun?: PaginationNoun
 }
 
