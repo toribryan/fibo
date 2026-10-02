@@ -27,8 +27,8 @@ status is a small sticker of its own on the corner.
   image, so a list of fifty stickers costs no more than fifty avatars.
 - Tilts by a stable angle from the name and lifts on hover, or when a row with
   `group/sticker` is hovered.
-- Tells status apart by shape: a dot for present, a crescent for away and a
-  ring for offline.
+- Tells status apart by shape, a dot for present, a crescent for away and a
+  ring for offline, and colours it with fibo's status tokens.
 
 ## Installation
 
@@ -121,8 +121,9 @@ The edge grows with the sticker: 2px up to 40, 4px at 64, 6px at 96.
 
 ### Status by shape
 
-Present, away and offline, each labelled. Each shape reads without colour:
-a solid dot, a crescent and a ring.
+Present, away and offline, each labelled and coloured with the success,
+warning and muted tokens. Each shape still reads without colour: a solid dot,
+a crescent and a ring.
 
 <Canvas of={Stories.Statuses} />
 
@@ -219,9 +220,12 @@ That is deliberate: a sticker is paper, and paper doesn't change colour when
 the room gets dark. A hairline and a shadow keep the white edge visible on a
 light page.
 
-Status has no colour option for the same reason. fibo's dark-theme status
-colours are tuned for dark surfaces, and on white paper they would fall
-under the 3:1 contrast that non-text marks need.
+The status sticker is the exception. Its disc is the page colour, not paper,
+because it is coloured with fibo's semantic tokens: `success` for present,
+`warning` for away and `muted-foreground` for offline. Those tokens are tuned
+for the page in each theme, so on the page colour they clear the 3:1 that
+non-text marks need. On white paper the dark-theme ones would not. Set
+`statusColor={false}` to draw the marks in the foreground colour instead.
 
 ## Accessibility
 
@@ -236,7 +240,7 @@ under the 3:1 contrast that non-text marks need.
       Inside a row or button that already says the name, set{" "}
       <code>aria-hidden</code> on the sticker so the name isn't read twice.
     </>,
-    "Status never relies on colour. Each state has its own shape, and its label is in the accessible name.",
+    "Status never relies on colour alone. Each state has its own shape, and its label is in the accessible name.",
     "The hit area and layout are the square box, not the cut, so an odd shape is no harder to click.",
     "With reduced motion the sticker keeps its tilt and shadow but doesn't lift.",
   ]}

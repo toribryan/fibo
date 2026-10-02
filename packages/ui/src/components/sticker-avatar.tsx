@@ -239,7 +239,25 @@ const PAPER_SHADOW =
 const PAPER_SHADOW_LIFTED =
   "motion-safe:group-hover/sticker-avatar:[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_calc(var(--sticker-edge-width)*1.1)_calc(var(--sticker-edge-width)*1.4)_rgb(0_0_0/0.3))] motion-safe:group-hover/sticker:[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_calc(var(--sticker-edge-width)*1.1)_calc(var(--sticker-edge-width)*1.4)_rgb(0_0_0/0.3))]"
 
-function StatusSticker({ status }: { status: StickerAvatarStatus }) {
+// Each status keeps the semantic token it means everywhere else in fibo.
+const STATUS_FILL: Record<StickerAvatarStatus, string> = {
+  present: "fill-success",
+  away: "fill-warning",
+  offline: "fill-muted-foreground",
+}
+const STATUS_STROKE: Record<StickerAvatarStatus, string> = {
+  present: "stroke-success",
+  away: "stroke-warning",
+  offline: "stroke-muted-foreground",
+}
+
+function StatusSticker({
+  status,
+  colored,
+}: {
+  status: StickerAvatarStatus
+  colored: boolean
+}) {
   return (
     <span
       data-slot="sticker-avatar-status"
@@ -247,24 +265,33 @@ function StatusSticker({ status }: { status: StickerAvatarStatus }) {
       aria-hidden="true"
       className="absolute -right-[6%] -bottom-[6%] size-[34%] min-h-[11px] min-w-[11px] rotate-[calc(var(--sticker-tilt)*-2)] [filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_1px_1px_rgb(0_0_0/0.3))]"
     >
-      {/* Status is told by shape alone, so it reads in greyscale, to anyone
-          who can't tell red from green, and printed on white paper in both
-          themes. */}
+      {/* Unlike the avatar's edge, this disc is the page colour, not paper:
+          fibo's status tokens are tuned for the page in each theme, and on
+          white paper the dark-theme ones fall under 3:1. The shapes still
+          tell status apart without colour. */}
       <svg viewBox="0 0 20 20" className="size-full overflow-visible">
-        <circle cx="10" cy="10" r="10" className="fill-sticker-edge" />
+        <circle cx="10" cy="10" r="10" className="fill-background" />
         {status === "offline" ? (
           <circle
             cx="10"
             cy="10"
             r="4.75"
             strokeWidth="3.5"
-            className="fill-none stroke-sticker-ink"
+            className={cn(
+              "fill-none",
+              colored ? STATUS_STROKE[status] : "stroke-foreground"
+            )}
           />
         ) : (
-          <circle cx="10" cy="10" r="6.5" className="fill-sticker-ink" />
+          <circle
+            cx="10"
+            cy="10"
+            r="6.5"
+            className={colored ? STATUS_FILL[status] : "fill-foreground"}
+          />
         )}
         {status === "away" ? (
-          <circle cx="6.5" cy="6.5" r="5" className="fill-sticker-edge" />
+          <circle cx="6.5" cy="6.5" r="5" className="fill-background" />
         ) : null}
       </svg>
     </span>
@@ -284,6 +311,8 @@ type StickerAvatarProps = Omit<React.ComponentProps<"span">, "children"> & {
   status?: StickerAvatarStatus
   /** Overrides the status's spoken label, for translation. */
   statusLabel?: string
+  /** Colours the status with fibo's semantic tokens. Off, it is drawn in the foreground colour. */
+  statusColor?: boolean
   /** `true` tilts by a stable angle from the name, a number sets degrees, `false` keeps it straight. */
   tilt?: boolean | number
   /** Lifts on hover, and when hovering an ancestor with `group/sticker`. */
@@ -301,6 +330,7 @@ function StickerAvatar({
   edge,
   status,
   statusLabel,
+  statusColor = true,
   tilt = true,
   lift = true,
   cutout = "auto",
@@ -421,7 +451,7 @@ function StickerAvatar({
           {initials(name)}
         </span>
       ) : null}
-      {status ? <StatusSticker status={status} /> : null}
+      {status ? <StatusSticker status={status} colored={statusColor} /> : null}
     </span>
   )
 }
