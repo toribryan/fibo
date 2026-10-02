@@ -206,15 +206,13 @@ function groupByWorkflow(root: FolderNode, stages: Stage[]): FolderNode {
     ...skills,
     children: [
       ...skills.children.filter((child) => !grouped.has(child.name)),
-      ...stages.map(
-        (stage): FolderNode => ({
-          kind: "folder",
-          name: stage.name,
-          path: `skills/~${stage.name}`,
-          stage: { hint: stage.hint },
-          children: stage.skills.map((skill) => byName.get(skill)!),
-        })
-      ),
+      ...stages.map((stage): FolderNode => ({
+        kind: "folder",
+        name: stage.name,
+        path: `skills/~${stage.name}`,
+        stage: { hint: stage.hint },
+        children: stage.skills.map((skill) => byName.get(skill)!),
+      })),
     ],
   }
   return {
