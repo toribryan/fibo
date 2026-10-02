@@ -5,7 +5,7 @@ import {
   BookOpenIcon,
   CoffeeIcon,
   FlowerIcon,
-  PaintbrushIcon,
+  ImageIcon,
   MusicIcon,
 } from "lucide-react"
 
@@ -379,7 +379,7 @@ const ICONS: Record<string, ReactNode> = {
   cafe: <CoffeeIcon />,
   books: <BookOpenIcon />,
   park: <FlowerIcon />,
-  studio: <PaintbrushIcon />,
+  studio: <ImageIcon />,
 }
 
 export const IconMarkers: Story = {

@@ -87,7 +87,7 @@ const mapMarkerVariants = cva(
       type: {
         // The dot is small to look at, so its press area reaches past it.
         dot: "rounded-full shadow-sm ring-2 ring-background before:absolute before:-inset-2 before:rounded-full hover:not-data-[popup-open]:scale-110 data-[popup-open]:scale-125",
-        icon: "rounded-full shadow-sm ring-2 ring-background hover:not-data-[popup-open]:scale-105 data-[popup-open]:scale-110 [&_svg]:shrink-0 [&_svg]:fill-current",
+        icon: "rounded-full shadow-sm ring-2 ring-background hover:not-data-[popup-open]:scale-105 data-[popup-open]:scale-110 [&_svg]:shrink-0",
         label:
           "gap-1 rounded-full border border-border bg-background font-semibold whitespace-nowrap shadow-sm hover:not-data-[popup-open]:scale-[1.03] hover:not-data-[popup-open]:bg-muted data-[popup-open]:scale-105 [&_svg]:shrink-0",
       },
