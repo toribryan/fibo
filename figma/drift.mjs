@@ -345,7 +345,7 @@ const rank = (option) => {
   return at === -1 ? -1 : at + (icon ? SIZES.length : 0)
 }
 
-function checkSizes(subject, options, { orderSeverity = "error" } = {}) {
+function checkSizes(subject, options) {
   const off = options.filter((option) => rank(option) === -1)
   if (off.length > 0) {
     add(
@@ -359,7 +359,7 @@ function checkSizes(subject, options, { orderSeverity = "error" } = {}) {
   const sorted = [...options].sort((a, b) => rank(a) - rank(b))
   if (sorted.join() !== options.join()) {
     add(
-      orderSeverity,
+      "error",
       "conventions",
       subject,
       `size options out of order: ${options.join(", ")} (want ${sorted.join(", ")})`
@@ -369,11 +369,7 @@ function checkSizes(subject, options, { orderSeverity = "error" } = {}) {
 
 for (const [component, properties] of Object.entries(snapshot.components)) {
   if (Array.isArray(properties.size)) {
-    // The Plugin API can't reorder variant options, so this one is a warning
-    // for a person to fix by dragging the values in the properties panel.
-    checkSizes(`Figma ${component}.size`, properties.size, {
-      orderSeverity: "warn",
-    })
+    checkSizes(`Figma ${component}.size`, properties.size)
   }
 }
 for (const name of files) {
