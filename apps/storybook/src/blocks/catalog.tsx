@@ -3,6 +3,7 @@ import {
   ArrowDownIcon,
   ArrowUpRightIcon,
   ChevronDownIcon,
+  ChevronLeftIcon,
   ChevronRightIcon,
   CircleCheckIcon,
   CompassIcon,
@@ -50,7 +51,14 @@ type Entry = {
 
 // The order groups appear in on the Catalog page, per tier.
 const GROUPS: Record<Tier, string[]> = {
-  "base-components": ["Actions", "Forms", "Display", "Overlays", "Feedback"],
+  "base-components": [
+    "Actions",
+    "Forms",
+    "Display",
+    "Navigation",
+    "Overlays",
+    "Feedback",
+  ],
   "special-components": ["Diagrams", "Navigation", "Display", "Feedback"],
 }
 
@@ -165,6 +173,17 @@ const PREVIEWS: Record<string, ReactNode> = {
           {initials}
         </span>
       ))}
+    </div>
+  ),
+  pagination: (
+    <div className="flex items-center gap-1 text-sm">
+      <span className="flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground">
+        <ChevronLeftIcon className="size-4" />
+      </span>
+      <span className="min-w-12 text-center tabular-nums">1 / 400</span>
+      <span className="flex size-8 items-center justify-center rounded-full border border-border">
+        <ChevronRightIcon className="size-4" />
+      </span>
     </div>
   ),
   sheet: (

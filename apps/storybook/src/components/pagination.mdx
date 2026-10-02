@@ -1,0 +1,186 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/pagination.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Pagination
+
+Pagination moves through a long list one page at a time, and says which rows
+are showing, such as “1 to 25 of 10,000 agents”.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Previous and Next with the page and page count between them.
+- The range of rows on this page, with thousands separators and a singular
+  noun for one row.
+- Controlled or uncontrolled, counting pages from 1.
+- The ends are disabled but stay focusable, so keyboard focus isn't lost on
+  the first or last page.
+
+## Installation
+
+<Install name="pagination" exports={["Pagination"]} />
+
+It installs Button.
+
+## Usage
+
+```tsx
+import { Pagination } from "@/components/ui/pagination"
+
+export function AgentsFooter({ page, setPage }: Props) {
+  return (
+    <Pagination
+      page={page}
+      onPageChange={setPage}
+      pageCount={400}
+      pageSize={25}
+      totalCount={10000}
+      noun={{ one: "agent", other: "agents" }}
+    />
+  )
+}
+```
+
+Pagination doesn't fetch or slice anything. It reports the page, and the app
+loads the rows for it.
+
+```ts
+type PaginationNoun = string | { one: string; other: string }
+```
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Pagination",
+    slot: "pagination",
+    children: [
+      { name: "Range", slot: "pagination-range" },
+      { name: "Previous", slot: "pagination-previous" },
+      { name: "Page", slot: "pagination-page" },
+      { name: "Next", slot: "pagination-next" },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Put it under the list it pages, aligned to the end.",
+    "Show the range whenever the total is known, so people know how much there is.",
+    "Name the rows with noun, in the plural people would say: agents, articles, requests.",
+    "Keep the page size the same from page to page.",
+    "For a short list that fits on one screen, don't paginate it.",
+  ]}
+/>
+
+## Examples
+
+### Controlled
+
+The parent owns the page. This one starts on the last page, where the range
+stops at the total.
+
+<Canvas of={Stories.Controlled} />
+
+### Pages only
+
+Without pageSize and totalCount, it shows the pages alone.
+
+<Canvas of={Stories.PagesOnly} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <span className="text-sm text-muted-foreground">
+            1 to 25 of 10,000 agents
+          </span>
+        ),
+        description: "Say what the rows are and how many there are.",
+      },
+      negative: {
+        component: (
+          <span className="text-sm text-muted-foreground">
+            Showing 1-25 of 10000 results
+          </span>
+        ),
+        description:
+          "Don't write a generic “results”, or a long number without separators.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="pagination"',
+      element: "Root nav",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="pagination-range"',
+      element: "Range text",
+      when: "pageSize and totalCount are set.",
+    },
+    {
+      attribute: 'data-slot="pagination-previous"',
+      element: "Previous button",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="pagination-page"',
+      element: "Page and page count",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="pagination-next"',
+      element: "Next button",
+      when: "Always.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "Previous, Next",
+      when: "On the first or last page.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The root is a nav named “Pagination”. Pass aria-label to name it after the list when a page has more than one.",
+    "Previous and Next are named “Previous page” and “Next page”.",
+    "At either end the button is aria-disabled rather than disabled, so it keeps focus and is still announced.",
+    "The page reads as “Page 2 of 400”, not “2 slash 400”, and is announced when it changes.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Button", "Select"]} />
+
+## References
+
+- [WAI-ARIA APG: Landmark regions](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/)
