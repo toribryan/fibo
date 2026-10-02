@@ -36,6 +36,34 @@ With no value, it shows that the task is under way.
   exports={["Progress", "ProgressLabel", "ProgressValue"]}
 />
 
+## Examples
+
+### Indeterminate
+
+`value={null}` for a task with no known length. A segment sweeps across the
+track; under reduced motion the bar fills in the muted text colour instead.
+
+<Canvas of={Stories.Indeterminate} />
+
+### Complete
+
+At 100 the bar is full and the root carries `data-complete`.
+
+<Canvas of={Stories.Complete} />
+
+### Without label
+
+With no visible label, name the bar with `aria-label`.
+
+<Canvas of={Stories.WithoutLabel} />
+
+### Live
+
+A controlled bar that fills as a task runs, with a label that changes when
+it finishes.
+
+<Canvas of={Stories.Live} />
+
 ## Usage
 
 ```tsx
@@ -101,34 +129,6 @@ Pass `value={null}` while you don't know how long the task will take.
     "For content that's loading into a layout, use a skeleton instead.",
   ]}
 />
-
-## Examples
-
-### Indeterminate
-
-`value={null}` for a task with no known length. A segment sweeps across the
-track; under reduced motion the bar fills in the muted text colour instead.
-
-<Canvas of={Stories.Indeterminate} />
-
-### Complete
-
-At 100 the bar is full and the root carries `data-complete`.
-
-<Canvas of={Stories.Complete} />
-
-### Without label
-
-With no visible label, name the bar with `aria-label`.
-
-<Canvas of={Stories.WithoutLabel} />
-
-### Live
-
-A controlled bar that fills as a task runs, with a label that changes when
-it finishes.
-
-<Canvas of={Stories.Live} />
 
 ## Do's and don'ts
 

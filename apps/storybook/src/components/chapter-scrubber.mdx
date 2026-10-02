@@ -37,6 +37,49 @@ around a long piece without a table of contents.
 
 It installs `motion` with it, for the springs.
 
+## Examples
+
+### Horizontal
+
+A rail along the top of a player or a slide deck. Ticks stand up from the
+baseline and the preview opens above.
+
+<Canvas of={Stories.Horizontal} />
+
+### Dots
+
+`variant="dot"` swaps ticks for dots, for a softer rail that sits well beside
+imagery.
+
+<Canvas of={Stories.Dots} />
+
+### Centred ticks
+
+`align="center"` grows ticks out from the middle line, which balances a rail
+placed on its own.
+
+<Canvas of={Stories.Centered} />
+
+### Sizes
+
+`size` sets the density: `sm`, `default` and `lg`. `rowSize`, `restLength` and
+`peakLength` override it when you need an exact rhythm.
+
+<Canvas of={Stories.Sizes} />
+
+### Controlled
+
+Buttons elsewhere on the page drive the same marker the rail sets, through
+`currentIndex` and `onCurrentIndexChange`.
+
+<Canvas of={Stories.Controlled} />
+
+### In an article
+
+The rail in a sticky column beside a long read.
+
+<Canvas of={Stories.InAnArticle} />
+
 ## Usage
 
 ```tsx
@@ -124,49 +167,6 @@ Every part the component renders, with the `data-slot` it carries. You pass
     </>,
   ]}
 />
-
-## Examples
-
-### Horizontal
-
-A rail along the top of a player or a slide deck. Ticks stand up from the
-baseline and the preview opens above.
-
-<Canvas of={Stories.Horizontal} />
-
-### Dots
-
-`variant="dot"` swaps ticks for dots, for a softer rail that sits well beside
-imagery.
-
-<Canvas of={Stories.Dots} />
-
-### Centred ticks
-
-`align="center"` grows ticks out from the middle line, which balances a rail
-placed on its own.
-
-<Canvas of={Stories.Centered} />
-
-### Sizes
-
-`size` sets the density: `sm`, `default` and `lg`. `rowSize`, `restLength` and
-`peakLength` override it when you need an exact rhythm.
-
-<Canvas of={Stories.Sizes} />
-
-### Controlled
-
-Buttons elsewhere on the page drive the same marker the rail sets, through
-`currentIndex` and `onCurrentIndexChange`.
-
-<Canvas of={Stories.Controlled} />
-
-### In an article
-
-The rail in a sticky column beside a long read.
-
-<Canvas of={Stories.InAnArticle} />
 
 ## Do's and don'ts
 

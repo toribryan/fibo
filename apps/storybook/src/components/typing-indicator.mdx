@@ -33,73 +33,6 @@ to three people, then says "Several people are typing…".
   exports={["TypingIndicator", "formatTyping"]}
 />
 
-## Usage
-
-```tsx
-import {
-  TypingIndicator,
-  type TypingPerson,
-} from "@/components/ui/typing-indicator"
-
-export function Channel({
-  typing,
-  me,
-}: {
-  typing: TypingPerson[]
-  me: string
-}) {
-  return (
-    <>
-      <MessageList />
-      <TypingIndicator people={typing} currentUserId={me} />
-      <Composer />
-    </>
-  )
-}
-```
-
-Pass everyone your typing events report, yourself included, and let the
-component leave you out. Drop a person once their typing event expires, which
-is 10 seconds on Discord.
-
-## Anatomy
-
-<Anatomy
-  root={{
-    name: "TypingIndicator",
-    slot: "typing-indicator",
-    note: "A fixed-height row, there even when nobody is typing.",
-    children: [
-      {
-        name: "dots",
-        slot: "typing-indicator-dots",
-        note: "Three dots, or one person's custom indicator. Hidden from screen readers.",
-      },
-      {
-        name: "text",
-        slot: "typing-indicator-text",
-        note: "The sentence, cut short with an ellipsis when it doesn't fit. Hidden from screen readers.",
-      },
-      {
-        name: "status",
-        slot: "typing-indicator-status",
-        note: "A visually hidden status region that announces the sentence.",
-      },
-    ],
-  }}
-/>
-
-## Guidelines
-
-<UsageGuidelines
-  guidelines={[
-    "Put it between the messages and the composer, where people look while they wait for a reply.",
-    "Keep it mounted for the life of the conversation. The status region has to be in the page before it changes, or screen readers miss the first announcement.",
-    "Name at most three people. Past that, a list of names is harder to read than a count.",
-    "In large rooms, consider turning it off. Teams does in chats of more than 20 people.",
-  ]}
-/>
-
 ## Examples
 
 ### One person
@@ -167,6 +100,73 @@ People start and stop typing below a short thread. The row keeps its height,
 so the messages stay put.
 
 <Canvas of={Stories.InAConversation} />
+
+## Usage
+
+```tsx
+import {
+  TypingIndicator,
+  type TypingPerson,
+} from "@/components/ui/typing-indicator"
+
+export function Channel({
+  typing,
+  me,
+}: {
+  typing: TypingPerson[]
+  me: string
+}) {
+  return (
+    <>
+      <MessageList />
+      <TypingIndicator people={typing} currentUserId={me} />
+      <Composer />
+    </>
+  )
+}
+```
+
+Pass everyone your typing events report, yourself included, and let the
+component leave you out. Drop a person once their typing event expires, which
+is 10 seconds on Discord.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "TypingIndicator",
+    slot: "typing-indicator",
+    note: "A fixed-height row, there even when nobody is typing.",
+    children: [
+      {
+        name: "dots",
+        slot: "typing-indicator-dots",
+        note: "Three dots, or one person's custom indicator. Hidden from screen readers.",
+      },
+      {
+        name: "text",
+        slot: "typing-indicator-text",
+        note: "The sentence, cut short with an ellipsis when it doesn't fit. Hidden from screen readers.",
+      },
+      {
+        name: "status",
+        slot: "typing-indicator-status",
+        note: "A visually hidden status region that announces the sentence.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Put it between the messages and the composer, where people look while they wait for a reply.",
+    "Keep it mounted for the life of the conversation. The status region has to be in the page before it changes, or screen readers miss the first announcement.",
+    "Name at most three people. Past that, a list of names is harder to read than a count.",
+    "In large rooms, consider turning it off. Teams does in chats of more than 20 people.",
+  ]}
+/>
 
 ## Do's and don'ts
 
