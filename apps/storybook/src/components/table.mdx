@@ -1,0 +1,247 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/table.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Table
+
+Table lays out rows and columns of data in a native HTML table, at one
+compact density: 36 pixel headers and 40 pixel rows.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Native `table`, `thead`, `tbody` and `tfoot`, so screen readers announce
+  rows, columns and headers.
+- Scrolls sideways inside its own box when it's wider than the page, and
+  joins the tab order while it does so keyboards can scroll it.
+- Hover and selected row states, with borders on the cells so pinned columns
+  stay lined up.
+- Data table builds selection, cell types and pinning on top of it.
+
+## Installation
+
+<Install
+  name="table"
+  exports={[
+    "Table",
+    "TableHeader",
+    "TableBody",
+    "TableFooter",
+    "TableRow",
+    "TableHead",
+    "TableCell",
+    "TableCaption",
+  ]}
+/>
+
+## Usage
+
+```tsx
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
+export function Agents({ agents }: { agents: Agent[] }) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Agent</TableHead>
+          <TableHead className="text-right">Adherence</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {agents.map((agent) => (
+          <TableRow key={agent.id}>
+            <TableCell className="font-medium">{agent.name}</TableCell>
+            <TableCell className="text-right tabular-nums">
+              {agent.adherence}%
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
+}
+```
+
+Right-align numbers and their headers, with `tabular-nums` so digits line up.
+For selection, pinned columns and bulk actions, use Data table.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Table",
+    slot: "table-container",
+    note: "The scroll box around the table element.",
+    children: [
+      {
+        name: "table",
+        slot: "table",
+        children: [
+          { name: "TableCaption", slot: "table-caption" },
+          {
+            name: "TableHeader",
+            slot: "table-header",
+            children: [
+              {
+                name: "TableRow",
+                slot: "table-row",
+                children: [{ name: "TableHead", slot: "table-head" }],
+              },
+            ],
+          },
+          {
+            name: "TableBody",
+            slot: "table-body",
+            children: [
+              {
+                name: "TableRow",
+                slot: "table-row",
+                children: [{ name: "TableCell", slot: "table-cell" }],
+              },
+            ],
+          },
+          { name: "TableFooter", slot: "table-footer" },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a table for data people compare across rows. For a list of things to pick from, use a list.",
+    "Keep rows one line high. A second line belongs in Data table's secondary text, and nothing goes taller.",
+    "Right-align numbers and their headers; left-align everything else.",
+    "Write headers as short nouns in sentence case: Agent, Team, Adherence.",
+    "Put totals in TableFooter, not as a last body row.",
+  ]}
+/>
+
+## Examples
+
+### With footer
+
+Totals in a `tfoot`, separated by a border.
+
+<Canvas of={Stories.WithFooter} />
+
+### Selected
+
+`data-selected` on a row tints it. Data table sets it for you.
+
+<Canvas of={Stories.Selected} />
+
+### Wide
+
+Wider than its box, so it scrolls sideways. Tab to it and use the arrow keys.
+
+<Canvas of={Stories.Wide} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-40 justify-between text-sm">
+            <span>Adherence</span>
+            <span className="tabular-nums">97%</span>
+          </div>
+        ),
+        description: "Right-align numbers so their digits line up.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-40 flex-col text-sm">
+            <span>97%</span>
+            <span>100.5%</span>
+          </div>
+        ),
+        description: "Don't left-align numbers. They're hard to compare.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Every part takes the props of the HTML element it renders. Table's
+`className` goes on the `table`, not the scroll box.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="table-container"',
+      element: "Scroll box",
+      when: "Always.",
+    },
+    { attribute: 'data-slot="table"', element: "table", when: "Always." },
+    {
+      attribute: 'data-slot="table-header"',
+      element: "thead",
+      when: "Always.",
+    },
+    { attribute: 'data-slot="table-body"', element: "tbody", when: "Always." },
+    {
+      attribute: 'data-slot="table-footer"',
+      element: "tfoot",
+      when: "Always.",
+    },
+    { attribute: 'data-slot="table-row"', element: "tr", when: "Always." },
+    { attribute: 'data-slot="table-head"', element: "th", when: "Always." },
+    { attribute: 'data-slot="table-cell"', element: "td", when: "Always." },
+    {
+      attribute: 'data-slot="table-caption"',
+      element: "caption",
+      when: "Always.",
+    },
+    {
+      attribute: "data-selected",
+      element: "tr",
+      when: "You set it, or Data table does, on a selected row.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "Give the table a name: a TableCaption, or aria-label or aria-labelledby on Table.",
+    "Use TableHead for every column header, so each cell is announced with its column.",
+    "While the table is wider than its box, the scroll box is focusable and scrolls with the arrow keys.",
+    "Header labels use foreground text on the muted band. Muted text there would be 4.34:1, under AA.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Badge", "Checkbox", "Pagination"]} />
+
+## References
+
+- [WAI-ARIA APG: Table pattern](https://www.w3.org/WAI/ARIA/apg/patterns/table/)
+- [Adrian Roselli: Under-engineered responsive tables](https://adrianroselli.com/2020/11/under-engineered-responsive-tables.html)

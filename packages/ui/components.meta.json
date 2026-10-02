@@ -179,6 +179,13 @@
     "tier": "base-components",
     "group": "Forms"
   },
+  "table": {
+    "title": "Table",
+    "description": "Rows and columns of data, at one compact density.",
+    "tier": "base-components",
+    "group": "Display",
+    "status": "new"
+  },
   "textarea": {
     "title": "Textarea",
     "description": "Several lines of free text that grow with the content.",
