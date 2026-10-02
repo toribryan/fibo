@@ -17,7 +17,7 @@ type TooltipStoryArgs = React.ComponentProps<typeof TooltipContent> & {
 }
 
 const meta: Meta<TooltipStoryArgs> = {
-  title: "Base components/Tooltip",
+  title: "Base components/Overlays/Tooltip",
   component: TooltipContent,
   subcomponents: { Tooltip, TooltipTrigger, TooltipProvider },
   argTypes: {

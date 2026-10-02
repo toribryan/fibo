@@ -91,6 +91,31 @@
     margin-bottom: 16px !important;
   }
 
+  /* Shelves are section headings, set like the brand kit's eyebrow: small
+     Geist Mono capitals, quieter than the parts beneath them. */
+  #storybook-explorer-menu
+    .sidebar-subheading
+    button[data-action="collapse-root"],
+  #storybook-explorer-menu
+    .sidebar-subheading
+    button[data-action="collapse-root"]
+    .fibo-label {
+    font-family: "Geist Mono", ui-monospace, monospace !important;
+    font-size: 11px !important;
+    line-height: 16px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.08em !important;
+    color: var(--fibo-muted);
+  }
+  #storybook-explorer-menu .sidebar-subheading-action {
+    opacity: 0;
+    transition: opacity 150ms;
+  }
+  #storybook-explorer-menu .sidebar-subheading:hover .sidebar-subheading-action,
+  #storybook-explorer-menu .sidebar-subheading-action:focus-visible {
+    opacity: 1;
+  }
+
   #storybook-explorer-menu a,
   #storybook-explorer-menu button {
     font-family: Geist, ui-sans-serif, system-ui, sans-serif;

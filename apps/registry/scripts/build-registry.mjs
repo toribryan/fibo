@@ -30,7 +30,8 @@ const packageName = (spec) =>
     : spec.split("/")[0]
 
 // Storybook is the site, so a component's docs page is a path off the root.
-const docsUrl = (name, tier) => `${homepage}/?path=/docs/${tier}-${name}--docs`
+const docsUrl = (name, info) =>
+  `${homepage}/?path=/docs/${info.tier}-${info.group.toLowerCase()}-${name}--docs`
 
 const codemodsDir = path.join(registryDir, "codemods")
 const codemodUrl = (name) => `${homepage}/codemods/${name}.js`
@@ -306,14 +307,14 @@ for (const file of files) {
     author: "Tori Bryan",
     docs: [
       info.deprecated && deprecationNotice(info.deprecated),
-      `Docs and live examples: ${docsUrl(name, info.tier)}`,
+      `Docs and live examples: ${docsUrl(name, info)}`,
     ]
       .filter(Boolean)
       .join("\n"),
     meta: {
       tier: info.tier,
       group: info.group,
-      docs: docsUrl(name, info.tier),
+      docs: docsUrl(name, info),
       ...(info.status && { status: info.status }),
       ...(info.deprecated && { deprecated: info.deprecated }),
     },

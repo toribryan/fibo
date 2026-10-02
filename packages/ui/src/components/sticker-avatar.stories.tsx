@@ -26,7 +26,7 @@ type Args = ComponentProps<typeof StickerAvatar> & {
 }
 
 const meta: Meta<Args> = {
-  title: "Special components/Sticker avatar",
+  title: "Special components/Display/Sticker avatar",
   component: StickerAvatar,
   parameters: {
     layout: "centered",
