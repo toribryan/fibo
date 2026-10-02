@@ -61,14 +61,14 @@ export const Default: Story = {
     const trigger = canvas.getByRole("button", { name: "Hover" })
 
     await userEvent.hover(trigger)
-    await expect(await page.findByText("Add to library")).toBeVisible()
+    await waitFor(() => expect(page.getByText("Add to library")).toBeVisible())
     await userEvent.unhover(trigger)
     await waitFor(() => expect(page.queryByText("Add to library")).toBeNull())
 
     // Keyboard focus opens it too, and Escape closes it without moving focus.
     await userEvent.tab()
     await expect(trigger).toHaveFocus()
-    await expect(await page.findByText("Add to library")).toBeVisible()
+    await waitFor(() => expect(page.getByText("Add to library")).toBeVisible())
     await userEvent.keyboard("{Escape}")
     await waitFor(() => expect(page.queryByText("Add to library")).toBeNull())
     await expect(trigger).toHaveFocus()
