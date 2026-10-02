@@ -2,7 +2,7 @@
   // Rewrite old links to their new ids before Storybook reads the address.
   // The shelves were renamed from Components and Niche, and the Theme
   // creator was archived (plans/001-theme-creator.md), so its links land on
-  // Colors.
+  // Colors. Typography was a story before it became a docs page.
   ;(() => {
     const url = new URL(window.location.href)
     const path = url.searchParams.get("path")
@@ -15,6 +15,10 @@
       .replace(
         /^\/docs\/foundations-theme-creator--docs$/,
         "/docs/foundations-colors--docs"
+      )
+      .replace(
+        /^\/story\/foundations-typography--scale$/,
+        "/docs/foundations-typography--docs"
       )
     if (!moved || moved === path) return
     url.searchParams.set("path", moved)
@@ -258,6 +262,17 @@
    * list opens from a bar at the bottom of the screen, so the bar reads as
    * a clear, full-width control, and the list's rows are thumb-sized.
    */
+  /* Touch screens keep no hover: a tapped row would stay lit, with its item
+     menu showing, after the finger lifts. */
+  @media (hover: none) {
+    #storybook-explorer-menu [data-item-id]:hover {
+      background-color: transparent;
+    }
+    #storybook-explorer-menu [data-testid="context-menu"] {
+      display: none !important;
+    }
+  }
+
   @media (max-width: 599px) {
     header.sb-bar:has(button[aria-label="Open navigation menu"]) {
       min-height: 56px;
@@ -289,6 +304,65 @@
     }
     #storybook-explorer-searchfield {
       font-size: 16px;
+    }
+    /*
+     * The menu on a phone lists places, not stories: pages, shelves, groups
+     * and components. A component opens its docs, which show every story, so
+     * its Docs and story rows and its chevron are left out. Foundations and
+     * the shelves keep their own docs pages.
+     */
+    #storybook-explorer-menu [data-nodetype="story"],
+    #storybook-explorer-menu
+      [data-nodetype="document"][data-parent-id]:not(
+        [data-parent-id="foundations"]
+      ):not([data-parent-id="base-components"]):not(
+        [data-parent-id="special-components"]
+      ) {
+      display: none !important;
+    }
+    #storybook-explorer-menu
+      [data-nodetype="component"]
+      button
+      > div:first-child {
+      visibility: hidden;
+    }
+    /* Where you are: the current page, or the component whose docs are open. */
+    #storybook-explorer-menu [data-selected="true"],
+    #storybook-explorer-menu
+      [data-nodetype="component"]:has(
+        + [data-nodetype="document"][data-selected="true"]
+      ) {
+      background-color: var(--fibo-hover) !important;
+    }
+    #storybook-explorer-menu
+      [data-nodetype="component"]:has(
+        + [data-nodetype="document"][data-selected="true"]
+      )
+      .fibo-label {
+      color: var(--fibo-fg);
+    }
+    #storybook-explorer-menu .sidebar-item {
+      margin-bottom: 0;
+    }
+    #storybook-explorer-menu a,
+    #storybook-explorer-menu button {
+      font-size: 15px;
+    }
+    /* The gear opens Storybook's own about page, of no use to someone reading
+       fibo on a phone. Close is a full-size target. */
+    .sidebar-header a[aria-label="About Storybook"] {
+      display: none;
+    }
+    .sidebar-header button[aria-label="Close menu"] {
+      width: 44px;
+      height: 44px;
+    }
+    /* Storybook focuses the logo as the menu opens; a quiet ring marks it
+       without the bright box. */
+    .sidebar-header a:focus-visible {
+      outline: 2px solid var(--fibo-border);
+      outline-offset: 2px;
+      border-radius: 8px;
     }
     /* Docs pages bring their own floating nav (blocks/site-nav.tsx). */
     :root[data-fibo-view="docs"]
