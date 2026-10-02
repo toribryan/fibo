@@ -20,6 +20,44 @@ describe("MapMarker", () => {
       .toHaveTextContent("$6")
   })
 
+  it("falls back to a map pin for an icon marker with no icon", async () => {
+    const screen = await render(
+      <>
+        <MapMarker type="icon" label="Somewhere" />
+        <MapMarker
+          type="icon"
+          label="Blue Bottle Coffee"
+          icon={<svg data-testid="coffee" />}
+        />
+      </>
+    )
+    const fallback = screen.getByRole("button", { name: "Somewhere" })
+    expect(
+      fallback.element().querySelector("svg.lucide-map-pin")
+    ).not.toBeNull()
+    await expect
+      .element(screen.getByRole("button", { name: "Blue Bottle Coffee" }))
+      .toContainElement(screen.getByTestId("coffee").element() as HTMLElement)
+  })
+
+  it("puts a label's icon before its text and exposes the variant", async () => {
+    const screen = await render(
+      <MapMarker
+        type="label"
+        variant="success"
+        label="Blue Bottle Coffee, open now"
+        icon={<svg data-testid="coffee" />}
+        text="$6"
+      />
+    )
+    const marker = screen
+      .getByRole("button", { name: "Blue Bottle Coffee, open now" })
+      .element()
+    expect(marker.firstElementChild?.getAttribute("data-testid")).toBe("coffee")
+    expect(marker.textContent).toBe("$6")
+    expect(marker.getAttribute("data-variant")).toBe("success")
+  })
+
   it("opens nothing when there's nothing to preview", async () => {
     const screen = await render(<MapMarker label="Sunflower Park" />)
     const marker = screen.getByRole("button", { name: "Sunflower Park" })
