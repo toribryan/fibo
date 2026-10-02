@@ -42,5 +42,12 @@ Check each item and report only the ones that fail, with file and line:
    that stories cannot show has a `<name>.test.tsx`. No story imports from
    `vitest`.
 8. **Comments.** They explain why, not what, and none describe removed code.
+9. **Deprecated parts.** When the metadata has `status: "deprecated"`: a
+   complete `deprecated` object whose `replacement` exists, a `@deprecated`
+   JSDoc on the component, `tags: ["deprecated"]` on the stories, and a docs
+   page with `<Deprecation>` under the description and a Migration section in
+   place of Features, Guidelines, Examples and Do's and don'ts. A named
+   `codemod` has a transform and a test in `apps/registry/codemods/`. See the
+   `retire-component` skill.
 
 End with a one-line verdict: ready, or the number of blocking issues.

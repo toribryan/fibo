@@ -22,6 +22,7 @@ Node 24 (pinned in `.nvmrc`).
 | `apps/storybook/src/components/`   | One `.mdx` docs page per component                                   |
 | `apps/storybook/src/blocks/`       | Docs blocks: anatomy, data attributes, guidelines, catalog, hero     |
 | `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                 |
+| `apps/registry/codemods/`          | jscodeshift transforms that migrate off deprecated parts             |
 | `packages/ui/src/21st/`            | One demo per Special component published on 21st.dev                 |
 | `packages/eslint-config/`          | Shared ESLint flat configs                                           |
 | `packages/typescript-config/`      | Shared tsconfigs                                                     |
@@ -82,6 +83,15 @@ Use the `add-component` skill (`.agents/skills/add-component/SKILL.md`). It
 covers the source file, stories, docs page, metadata and checks, and porting
 from another codebase. The `component-reviewer` subagent reviews the result
 against the conventions below.
+
+## Retiring a component
+
+Use the `retire-component` skill (`.agents/skills/retire-component/SKILL.md`).
+A part is deprecated through a `deprecated` entry in `components.meta.json`,
+which the docs banner, catalog, sidebar, registry and `llms.txt` all read,
+plus a codemod in `apps/registry/codemods/` when the move can be automated.
+It stays installable until the next minor release. The policy is in
+`plans/002-retiring-a-component.md`.
 
 ## Conventions
 
