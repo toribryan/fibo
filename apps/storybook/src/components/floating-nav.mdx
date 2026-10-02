@@ -90,7 +90,7 @@ Every part the component renders, with the `data-slot` it carries.
   root={{
     name: "FloatingNav",
     slot: "floating-nav",
-    note: "The nav landmark. Carries data-position, data-labels and data-hidden.",
+    note: "The nav landmark. Carries data-position, data-labels, data-size and data-hidden.",
     children: [
       {
         name: "list",
@@ -142,6 +142,14 @@ Every part the component renders, with the `data-slot` it carries.
 when the icons alone would not say where they go.
 
 <Canvas of={Stories.AlwaysLabelled} />
+
+### Compact
+
+`size="sm"` tightens the pill: 36px items and 16px icons instead of 44px and
+20px. Use it where the bar should take less of the screen, such as a site that
+also shows a scroll-to-top button or a chat launcher.
+
+<Canvas of={Stories.Compact} />
 
 ### Static
 
@@ -261,6 +269,15 @@ Style parts by slot or state, for example with
         </>
       ),
     },
+    {
+      attribute: "data-size",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>sm</code> or <code>default</code>.
+        </>
+      ),
+    },
   ]}
 />
 
@@ -277,7 +294,7 @@ Style parts by slot or state, for example with
       stay in the DOM, so every item keeps its name.
     </>,
     "Items are plain links and buttons in the tab order. Tabbing into a hidden bar brings it back.",
-    "Every item is at least 44px square, and with reduced motion the indicator and the bar move without animating.",
+    'Every item is at least 44px square, or 36px with size="sm", well above the 24px minimum target. With reduced motion the indicator and the bar move without animating.',
   ]}
 />
 
