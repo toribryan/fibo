@@ -186,6 +186,33 @@ const PREVIEWS: Record<string, ReactNode> = {
       </span>
     </div>
   ),
+  "data-table": (
+    <div className="w-52 overflow-hidden rounded-md border border-border text-xs">
+      <div className="flex h-6 items-center gap-2 bg-muted px-2 font-medium">
+        <span className="size-3 rounded-[3px] bg-primary" />
+        Agent
+      </div>
+      {["Maya Okafor", "Priya Raman", "Sam Whitfield"].map((name, index) => (
+        <div
+          key={name}
+          className={
+            index === 1
+              ? "flex h-7 items-center gap-2 border-t border-border bg-muted px-2"
+              : "flex h-7 items-center gap-2 border-t border-border px-2"
+          }
+        >
+          <span
+            className={
+              index === 1
+                ? "size-3 rounded-[3px] bg-primary"
+                : "size-3 rounded-[3px] border border-input"
+            }
+          />
+          {name}
+        </div>
+      ))}
+    </div>
+  ),
   table: (
     <div className="w-48 overflow-hidden rounded-md border border-border text-xs">
       <div className="flex h-6 items-center bg-muted px-2 font-medium">
