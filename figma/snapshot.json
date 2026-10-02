@@ -283,7 +283,7 @@
       "value": "TEXT",
       "iconStart": "BOOLEAN",
       "iconStartSwap": "INSTANCE_SWAP",
-      "size": ["default", "sm"],
+      "size": ["sm", "default"],
       "state": ["default", "filled", "focused", "invalid", "disabled"]
     },
     "Kbd": {
@@ -297,7 +297,7 @@
       "value": "TEXT",
       "iconStart": "BOOLEAN",
       "iconStartSwap": "INSTANCE_SWAP",
-      "size": ["default", "sm"],
+      "size": ["sm", "default"],
       "state": ["default", "focused", "disabled"]
     },
     "Textarea": {
