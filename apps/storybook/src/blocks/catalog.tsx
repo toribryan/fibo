@@ -329,8 +329,13 @@ const PREVIEWS: Record<string, ReactNode> = {
   ),
   "sticker-avatar": (
     <StickerAvatarGroup className="-space-x-2">
-      <StickerAvatar name="Tori Bryan" size={52} status="online" lift={false} />
-      <StickerAvatar name="Ana Ruiz" size={52} status="idle" lift={false} />
+      <StickerAvatar
+        name="Tori Bryan"
+        size={52}
+        status="present"
+        lift={false}
+      />
+      <StickerAvatar name="Ana Ruiz" size={52} status="away" lift={false} />
       <StickerAvatarCount count={4} size={52} />
     </StickerAvatarGroup>
   ),
