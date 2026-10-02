@@ -50,7 +50,7 @@ type Entry = {
 
 // The order groups appear in on the Catalog page, per tier.
 const GROUPS: Record<Tier, string[]> = {
-  "base-components": ["Actions", "Forms", "Display", "Feedback"],
+  "base-components": ["Actions", "Forms", "Display", "Overlays", "Feedback"],
   "special-components": ["Diagrams", "Navigation", "Display", "Feedback"],
 }
 
@@ -165,6 +165,16 @@ const PREVIEWS: Record<string, ReactNode> = {
           {initials}
         </span>
       ))}
+    </div>
+  ),
+  tooltip: (
+    <div className="flex flex-col items-center gap-1.5">
+      <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground">
+        Add to library
+      </span>
+      <span className="flex h-8 items-center rounded-sm border border-border bg-background px-3 text-sm">
+        Hover
+      </span>
     </div>
   ),
   kbd: (

@@ -176,6 +176,13 @@
     "tier": "special-components",
     "group": "Diagrams"
   },
+  "tooltip": {
+    "title": "Tooltip",
+    "description": "A short label that appears when a control is hovered or focused.",
+    "tier": "base-components",
+    "group": "Overlays",
+    "status": "new"
+  },
   "typing-indicator": {
     "title": "Typing indicator",
     "description": "Says who's typing in a conversation, naming up to three people.",
