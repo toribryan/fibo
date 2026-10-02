@@ -6,43 +6,43 @@ import { expect, fn, waitFor } from "storybook/test"
 import { Avatar, AvatarFallback } from "./avatar.js"
 import { Button } from "./button.js"
 import {
-  ComposerAction,
-  ComposerAttachButton,
-  ComposerAttachments,
-  ComposerCommonActions,
-  ComposerDropZone,
-  ComposerFooter,
-  ComposerFrame,
-  ComposerHeader,
-  ComposerInput,
-  ComposerMentionButton,
-  ComposerProvider,
-  ComposerSubmit,
-  LocalComposerProvider,
-  type ComposerActions,
-  type ComposerAttachment,
-  type ComposerMessage,
-  type ComposerState,
+  ChatComposerAction,
+  ChatComposerAttachButton,
+  ChatComposerAttachments,
+  ChatComposerCommonActions,
+  ChatComposerDropZone,
+  ChatComposerFooter,
+  ChatComposerFrame,
+  ChatComposerHeader,
+  ChatComposerInput,
+  ChatComposerMentionButton,
+  ChatComposerProvider,
+  ChatComposerSubmit,
+  LocalChatComposerProvider,
+  type ChatComposerActions,
+  type ChatComposerAttachment,
+  type ChatComposerMessage,
+  type ChatComposerState,
 } from "./chat-composer.js"
 import { Checkbox } from "./checkbox.js"
 import { Kbd } from "./kbd.js"
 
-const meta: Meta<typeof LocalComposerProvider> = {
+const meta: Meta<typeof LocalChatComposerProvider> = {
   title: "Base components/Chat composer",
-  component: LocalComposerProvider,
+  component: LocalChatComposerProvider,
   subcomponents: {
-    ComposerProvider,
-    ComposerFrame,
-    ComposerHeader,
-    ComposerInput,
-    ComposerFooter,
-    ComposerCommonActions,
-    ComposerAction,
-    ComposerAttachButton,
-    ComposerMentionButton,
-    ComposerAttachments,
-    ComposerSubmit,
-    ComposerDropZone,
+    ChatComposerProvider,
+    ChatComposerFrame,
+    ChatComposerHeader,
+    ChatComposerInput,
+    ChatComposerFooter,
+    ChatComposerCommonActions,
+    ChatComposerAction,
+    ChatComposerAttachButton,
+    ChatComposerMentionButton,
+    ChatComposerAttachments,
+    ChatComposerSubmit,
+    ChatComposerDropZone,
   },
   tags: ["new"],
   argTypes: {
@@ -80,24 +80,24 @@ const meta: Meta<typeof LocalComposerProvider> = {
 }
 
 export default meta
-type Story = StoryObj<typeof LocalComposerProvider>
+type Story = StoryObj<typeof LocalChatComposerProvider>
 
 export const Default: Story = {
   render: (args) => (
-    <LocalComposerProvider {...args}>
-      <ComposerDropZone>
-        <ComposerFrame>
-          <ComposerHeader className="empty:hidden">
-            <ComposerAttachments />
-          </ComposerHeader>
-          <ComposerInput placeholder="Message #design" />
-          <ComposerFooter>
-            <ComposerCommonActions />
-            <ComposerSubmit />
-          </ComposerFooter>
-        </ComposerFrame>
-      </ComposerDropZone>
-    </LocalComposerProvider>
+    <LocalChatComposerProvider {...args}>
+      <ChatComposerDropZone>
+        <ChatComposerFrame>
+          <ChatComposerHeader className="empty:hidden">
+            <ChatComposerAttachments />
+          </ChatComposerHeader>
+          <ChatComposerInput placeholder="Message #design" />
+          <ChatComposerFooter>
+            <ChatComposerCommonActions />
+            <ChatComposerSubmit />
+          </ChatComposerFooter>
+        </ChatComposerFrame>
+      </ChatComposerDropZone>
+    </LocalChatComposerProvider>
   ),
   play: async ({ args, canvas, userEvent }) => {
     const input = canvas.getByRole("textbox", { name: "Message" })
@@ -153,7 +153,7 @@ export const Default: Story = {
   },
 }
 
-const FILES: ComposerAttachment[] = [
+const FILES: ChatComposerAttachment[] = [
   { id: "a", name: "token-audit.pdf", size: 482_000 },
   { id: "b", name: "button-states.png", size: 1_830_000 },
 ]
@@ -169,12 +169,12 @@ export const WithAttachments: Story = {
 
 export const Minimal: Story = {
   render: (args) => (
-    <LocalComposerProvider {...args}>
-      <ComposerFrame className="flex-row items-end">
-        <ComposerInput placeholder="Ask anything" />
-        <ComposerSubmit className="m-2 shrink-0" />
-      </ComposerFrame>
-    </LocalComposerProvider>
+    <LocalChatComposerProvider {...args}>
+      <ChatComposerFrame className="flex-row items-end">
+        <ChatComposerInput placeholder="Ask anything" />
+        <ChatComposerSubmit className="m-2 shrink-0" />
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
   ),
 }
 
@@ -207,7 +207,7 @@ function EditMessageDemo(args: Story["args"]) {
       </div>
     )
   return (
-    <LocalComposerProvider
+    <LocalChatComposerProvider
       {...args}
       defaultValue={text}
       onSubmit={(message) => {
@@ -216,29 +216,29 @@ function EditMessageDemo(args: Story["args"]) {
         setEditing(false)
       }}
     >
-      <ComposerFrame>
-        <ComposerHeader>
+      <ChatComposerFrame>
+        <ChatComposerHeader>
           <PencilIcon className="size-3.5" />
           Editing message
-        </ComposerHeader>
-        <ComposerInput
+        </ChatComposerHeader>
+        <ChatComposerInput
           aria-label="Edit message"
           autoFocus={reopened}
           onKeyDown={(event) => {
             if (event.key === "Escape") setEditing(false)
           }}
         />
-        <ComposerFooter className="justify-end gap-2">
+        <ChatComposerFooter className="justify-end gap-2">
           <span className="mr-auto pl-1 text-xs text-muted-foreground">
             <Kbd>Esc</Kbd> to cancel
           </span>
           <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>
             Cancel
           </Button>
-          <ComposerSubmit>Save</ComposerSubmit>
-        </ComposerFooter>
-      </ComposerFrame>
-    </LocalComposerProvider>
+          <ChatComposerSubmit>Save</ChatComposerSubmit>
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
   )
 }
 
@@ -254,19 +254,19 @@ const sendReply = fn().mockName("sendReply")
 function ThreadReplyDemo(args: Story["args"]) {
   const [alsoChannel, setAlsoChannel] = useState(false)
   return (
-    <LocalComposerProvider
+    <LocalChatComposerProvider
       {...args}
       onSubmit={(message) => sendReply({ ...message, alsoChannel })}
     >
-      <ComposerDropZone>
-        <ComposerFrame>
-          <ComposerHeader>
+      <ChatComposerDropZone>
+        <ChatComposerFrame>
+          <ChatComposerHeader>
             <CornerDownRightIcon className="size-3.5" />
             Replying to Ada Lovelace
-          </ComposerHeader>
-          <ComposerInput placeholder="Reply…" />
-          <ComposerFooter>
-            <ComposerCommonActions />
+          </ChatComposerHeader>
+          <ChatComposerInput placeholder="Reply…" />
+          <ChatComposerFooter>
+            <ChatComposerCommonActions />
             <label className="ml-auto flex items-center gap-2 pr-2 text-xs text-muted-foreground">
               <Checkbox
                 checked={alsoChannel}
@@ -274,11 +274,11 @@ function ThreadReplyDemo(args: Story["args"]) {
               />
               Also send to #design
             </label>
-            <ComposerSubmit />
-          </ComposerFooter>
-        </ComposerFrame>
-      </ComposerDropZone>
-    </LocalComposerProvider>
+            <ChatComposerSubmit />
+          </ChatComposerFooter>
+        </ChatComposerFrame>
+      </ChatComposerDropZone>
+    </LocalChatComposerProvider>
   )
 }
 
@@ -290,7 +290,7 @@ export const ThreadReply: Story = {
 function ForwardDemo(args: Story["args"]) {
   return (
     // The forwarded message is the content, so an empty note can still send.
-    <LocalComposerProvider {...args} canSubmit={() => true}>
+    <LocalChatComposerProvider {...args} canSubmit={() => true}>
       <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm">
         <div className="text-sm font-semibold">Forward message</div>
         <div className="flex items-center gap-2 text-sm">
@@ -303,18 +303,18 @@ function ForwardDemo(args: Story["args"]) {
         <blockquote className="border-l-2 border-border pl-3 text-sm text-muted-foreground">
           The tokens land on Friday.
         </blockquote>
-        <ComposerFrame>
-          <ComposerInput placeholder="Add a note (optional)" />
-        </ComposerFrame>
+        <ChatComposerFrame>
+          <ChatComposerInput placeholder="Add a note (optional)" />
+        </ChatComposerFrame>
         <div className="flex justify-end gap-2">
           <Button size="sm" variant="ghost">
             Cancel
           </Button>
           {/* Outside the frame, still inside the provider. */}
-          <ComposerSubmit>Forward</ComposerSubmit>
+          <ChatComposerSubmit>Forward</ChatComposerSubmit>
         </div>
       </div>
-    </LocalComposerProvider>
+    </LocalChatComposerProvider>
   )
 }
 
@@ -328,9 +328,9 @@ export const SubmitOutsideTheFrame: Story = {
  * a subscribe and a snapshot works the same way.
  */
 function createDraftStore() {
-  let state: ComposerState = { value: "", attachments: [] }
+  let state: ChatComposerState = { value: "", attachments: [] }
   const listeners = new Set<() => void>()
-  const set = (next: Partial<ComposerState>) => {
+  const set = (next: Partial<ChatComposerState>) => {
     state = { ...state, ...next }
     listeners.forEach((listener) => listener())
   }
@@ -350,11 +350,11 @@ function SyncedComposerProvider({
   children,
 }: {
   store: ReturnType<typeof createDraftStore>
-  onSubmit?: (message: ComposerMessage) => void
+  onSubmit?: (message: ChatComposerMessage) => void
   children: React.ReactNode
 }) {
   const state = useSyncExternalStore(store.subscribe, store.get)
-  const actions = useMemo<ComposerActions>(
+  const actions = useMemo<ChatComposerActions>(
     () => ({
       setValue: (value) => store.set({ value }),
       addAttachments: (files) =>
@@ -382,9 +382,9 @@ function SyncedComposerProvider({
     [store, onSubmit]
   )
   return (
-    <ComposerProvider state={state} actions={actions}>
+    <ChatComposerProvider state={state} actions={actions}>
       {children}
-    </ComposerProvider>
+    </ChatComposerProvider>
   )
 }
 
@@ -398,19 +398,19 @@ function SyncedDemo(args: Story["args"]) {
             {device}
           </span>
           <SyncedComposerProvider store={store} onSubmit={args?.onSubmit}>
-            <ComposerFrame>
-              <ComposerHeader className="empty:hidden">
-                <ComposerAttachments />
-              </ComposerHeader>
-              <ComposerInput
+            <ChatComposerFrame>
+              <ChatComposerHeader className="empty:hidden">
+                <ChatComposerAttachments />
+              </ChatComposerHeader>
+              <ChatComposerInput
                 aria-label={`Message from ${device.toLowerCase()}`}
                 placeholder="Type on either one"
               />
-              <ComposerFooter>
-                <ComposerCommonActions />
-                <ComposerSubmit />
-              </ComposerFooter>
-            </ComposerFrame>
+              <ChatComposerFooter>
+                <ChatComposerCommonActions />
+                <ChatComposerSubmit />
+              </ChatComposerFooter>
+            </ChatComposerFrame>
           </SyncedComposerProvider>
         </div>
       ))}
@@ -470,7 +470,7 @@ function ChatDemo(args: Story["args"]) {
           </li>
         ))}
       </ol>
-      <LocalComposerProvider
+      <LocalChatComposerProvider
         {...args}
         onSubmit={async (message) => {
           args?.onSubmit?.(message)
@@ -487,19 +487,19 @@ function ChatDemo(args: Story["args"]) {
           ])
         }}
       >
-        <ComposerDropZone>
-          <ComposerFrame>
-            <ComposerHeader className="empty:hidden">
-              <ComposerAttachments />
-            </ComposerHeader>
-            <ComposerInput placeholder="Reply to Ada" />
-            <ComposerFooter>
-              <ComposerCommonActions />
-              <ComposerSubmit />
-            </ComposerFooter>
-          </ComposerFrame>
-        </ComposerDropZone>
-      </LocalComposerProvider>
+        <ChatComposerDropZone>
+          <ChatComposerFrame>
+            <ChatComposerHeader className="empty:hidden">
+              <ChatComposerAttachments />
+            </ChatComposerHeader>
+            <ChatComposerInput placeholder="Reply to Ada" />
+            <ChatComposerFooter>
+              <ChatComposerCommonActions />
+              <ChatComposerSubmit />
+            </ChatComposerFooter>
+          </ChatComposerFrame>
+        </ChatComposerDropZone>
+      </LocalChatComposerProvider>
     </div>
   )
 }

@@ -3,16 +3,16 @@ import { useEffect, useRef } from "react"
 
 import * as Stories from "../../../../packages/ui/src/components/chat-composer.stories"
 import {
-  ComposerAttachments,
-  ComposerCommonActions,
-  ComposerDropZone,
-  ComposerFooter,
-  ComposerFrame,
-  ComposerHeader,
-  ComposerInput,
-  ComposerProvider,
-  ComposerSubmit,
-  LocalComposerProvider,
+  ChatComposerAttachments,
+  ChatComposerCommonActions,
+  ChatComposerDropZone,
+  ChatComposerFooter,
+  ChatComposerFrame,
+  ChatComposerHeader,
+  ChatComposerInput,
+  ChatComposerProvider,
+  ChatComposerSubmit,
+  LocalChatComposerProvider,
 } from "../../../../packages/ui/src/components/chat-composer"
 import { Anatomy } from "../blocks/anatomy"
 import { DocTab, DocTabs } from "../blocks/doc-tabs"
@@ -37,25 +37,25 @@ export const files = [
 ]
 
 export const StillFrame = ({ className, placeholder = "Message #design" }) => (
-  <ComposerFrame className={className}>
-    <ComposerHeader className="empty:hidden">
-      <ComposerAttachments />
-    </ComposerHeader>
-    <ComposerInput placeholder={placeholder} />
-    <ComposerFooter>
-      <ComposerCommonActions />
-      <ComposerSubmit />
-    </ComposerFooter>
-  </ComposerFrame>
+  <ChatComposerFrame className={className}>
+    <ChatComposerHeader className="empty:hidden">
+      <ChatComposerAttachments />
+    </ChatComposerHeader>
+    <ChatComposerInput placeholder={placeholder} />
+    <ChatComposerFooter>
+      <ChatComposerCommonActions />
+      <ChatComposerSubmit />
+    </ChatComposerFooter>
+  </ChatComposerFrame>
 )
 
 export const Still = ({ state, ...props }) => (
-  <ComposerProvider
+  <ChatComposerProvider
     state={{ value: "", attachments: [], ...state }}
     actions={idle}
   >
     <StillFrame {...props} />
-  </ComposerProvider>
+  </ChatComposerProvider>
 )
 
 export const Dragging = () => {
@@ -70,11 +70,11 @@ export const Dragging = () => {
     )
   }, [])
   return (
-    <ComposerProvider state={{ value: "", attachments: [] }} actions={idle}>
-      <ComposerDropZone ref={zone}>
+    <ChatComposerProvider state={{ value: "", attachments: [] }} actions={idle}>
+      <ChatComposerDropZone ref={zone}>
         <StillFrame />
-      </ComposerDropZone>
-    </ComposerProvider>
+      </ChatComposerDropZone>
+    </ChatComposerProvider>
   )
 }
 
@@ -95,8 +95,8 @@ needs, puts them in its own order, and adds its own elements beside them.
 - A provider holds the draft and how to change and send it. The frame, header,
   text box, footer, actions and send button read it from context, so they work
   in any order and anywhere below it, even outside the frame.
-- The parts never own state. `LocalComposerProvider` keeps the draft in
-  component state; pass your own state and actions to `ComposerProvider` to
+- The parts never own state. `LocalChatComposerProvider` keeps the draft in
+  component state; pass your own state and actions to `ChatComposerProvider` to
   keep it in a store, on a server, or synced across devices.
 - Enter sends, Shift+Enter breaks the line, and the text box grows with the
   draft. Attachments come from a file picker or a drop.
@@ -108,43 +108,43 @@ needs, puts them in its own order, and adds its own elements beside them.
 <Install
   name="chat-composer"
   exports={[
-    "LocalComposerProvider",
-    "ComposerFrame",
-    "ComposerInput",
-    "ComposerFooter",
-    "ComposerCommonActions",
-    "ComposerSubmit",
+    "LocalChatComposerProvider",
+    "ChatComposerFrame",
+    "ChatComposerInput",
+    "ChatComposerFooter",
+    "ChatComposerCommonActions",
+    "ChatComposerSubmit",
   ]}
 />
 
-It installs Button with it. `ComposerProvider`, `useComposer`,
-`ComposerHeader`, `ComposerAttachments`, `ComposerAction`,
-`ComposerAttachButton`, `ComposerMentionButton` and `ComposerDropZone` are
+It installs Button with it. `ChatComposerProvider`, `useChatComposer`,
+`ChatComposerHeader`, `ChatComposerAttachments`, `ChatComposerAction`,
+`ChatComposerAttachButton`, `ChatComposerMentionButton` and `ChatComposerDropZone` are
 exported too.
 
 ## Usage
 
 ```tsx
 import {
-  ComposerCommonActions,
-  ComposerFooter,
-  ComposerFrame,
-  ComposerInput,
-  ComposerSubmit,
-  LocalComposerProvider,
+  ChatComposerCommonActions,
+  ChatComposerFooter,
+  ChatComposerFrame,
+  ChatComposerInput,
+  ChatComposerSubmit,
+  LocalChatComposerProvider,
 } from "@/components/ui/chat-composer"
 
 export function ChannelComposer() {
   return (
-    <LocalComposerProvider onSubmit={({ value }) => sendMessage(value)}>
-      <ComposerFrame>
-        <ComposerInput placeholder="Message #design" />
-        <ComposerFooter>
-          <ComposerCommonActions />
-          <ComposerSubmit />
-        </ComposerFooter>
-      </ComposerFrame>
-    </LocalComposerProvider>
+    <LocalChatComposerProvider onSubmit={({ value }) => sendMessage(value)}>
+      <ChatComposerFrame>
+        <ChatComposerInput placeholder="Message #design" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
   )
 }
 ```
@@ -155,26 +155,26 @@ them rather than adding a prop to a part.
 ### Bring your own state
 
 Every part talks to this interface and nothing else. Render
-`ComposerProvider` with your own `state` and `actions` and the same parts run
+`ChatComposerProvider` with your own `state` and `actions` and the same parts run
 on them:
 
 ```ts
-type ComposerState = {
+type ChatComposerState = {
   value: string
-  attachments: ComposerAttachment[]
+  attachments: ChatComposerAttachment[]
   submitting?: boolean
   disabled?: boolean
   canSubmit?: boolean // defaults to having text or an attachment
 }
 
-type ComposerActions = {
+type ChatComposerActions = {
   setValue: (value: string) => void
   addAttachments: (files: File[]) => void
   removeAttachment: (id: string) => void
   submit: () => void
 }
 
-type ComposerAttachment = {
+type ChatComposerAttachment = {
   id: string
   name: string
   size?: number // bytes
@@ -187,14 +187,14 @@ function SyncedComposerProvider({ children }) {
   const state = useSyncExternalStore(draft.subscribe, draft.get)
   const actions = useMemo(() => createDraftActions(draft), [])
   return (
-    <ComposerProvider state={state} actions={actions}>
+    <ChatComposerProvider state={state} actions={actions}>
       {children}
-    </ComposerProvider>
+    </ChatComposerProvider>
   )
 }
 ```
 
-Custom parts read the same context with `useComposer()`, which returns
+Custom parts read the same context with `useChatComposer()`, which returns
 `{ state, actions, meta }`, with the text box at `meta.inputRef`.
 
 ## Anatomy
@@ -259,21 +259,21 @@ to find its part, then find its element and `data-slot` in the tree below.
   ]}
 >
   {(part) => (
-    <ComposerProvider
+    <ChatComposerProvider
       state={{ value: "Both files from the review.", attachments: files }}
       actions={idle}
     >
-      <ComposerFrame {...part("frame")}>
-        <ComposerHeader {...part("header")}>
-          <ComposerAttachments {...part("attachments")} />
-        </ComposerHeader>
-        <ComposerInput {...part("input")} />
-        <ComposerFooter {...part("footer")}>
-          <ComposerCommonActions {...part("actions")} />
-          <ComposerSubmit {...part("submit")} />
-        </ComposerFooter>
-      </ComposerFrame>
-    </ComposerProvider>
+      <ChatComposerFrame {...part("frame")}>
+        <ChatComposerHeader {...part("header")}>
+          <ChatComposerAttachments {...part("attachments")} />
+        </ChatComposerHeader>
+        <ChatComposerInput {...part("input")} />
+        <ChatComposerFooter {...part("footer")}>
+          <ChatComposerCommonActions {...part("actions")} />
+          <ChatComposerSubmit {...part("submit")} />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </ChatComposerProvider>
   )}
 </AnatomyDiagram>
 
@@ -284,22 +284,22 @@ Every part, with the `data-slot` it carries. The providers render no element.
 
 <Anatomy
   root={{
-    name: "ComposerDropZone",
+    name: "ChatComposerDropZone",
     slot: "chat-composer-drop-zone",
     note: "Optional. Attaches dropped files and shows a drop hint while dragging.",
     children: [
       {
-        name: "ComposerFrame",
+        name: "ChatComposerFrame",
         slot: "chat-composer",
         note: "The box. A click on its bare surface focuses the text box.",
         children: [
           {
-            name: "ComposerHeader",
+            name: "ChatComposerHeader",
             slot: "chat-composer-header",
             note: "Optional row above the text, for context or attachments.",
             children: [
               {
-                name: "ComposerAttachments",
+                name: "ChatComposerAttachments",
                 slot: "chat-composer-attachments",
                 note: "A list of chips, each with a remove button. Absent when there are none.",
                 children: [
@@ -312,29 +312,29 @@ Every part, with the `data-slot` it carries. The providers render no element.
             ],
           },
           {
-            name: "ComposerInput",
+            name: "ChatComposerInput",
             slot: "chat-composer-input",
             note: "The text box.",
           },
           {
-            name: "ComposerFooter",
+            name: "ChatComposerFooter",
             slot: "chat-composer-footer",
             note: "Optional row below the text.",
             children: [
               {
-                name: "ComposerCommonActions",
+                name: "ChatComposerCommonActions",
                 slot: "chat-composer-common-actions",
                 note: "Attach and mention, the actions most composers share.",
                 children: [
                   {
-                    name: "ComposerAction",
+                    name: "ChatComposerAction",
                     slot: "chat-composer-action",
                     note: "An icon button. The attach and mention buttons are built on it.",
                   },
                 ],
               },
               {
-                name: "ComposerSubmit",
+                name: "ChatComposerSubmit",
                 slot: "chat-composer-submit",
                 note: "Sends the draft. Can sit anywhere inside the provider.",
               },
@@ -353,8 +353,8 @@ Every part, with the `data-slot` it carries. The providers render no element.
     "Compose a variant from parts instead of adding a prop. An edit box, a thread reply and a forward dialog are three compositions of the same parts.",
     <>
       Keep state out of the parts. If the draft has to survive a reload or
-      follow someone across devices, swap <code>LocalComposerProvider</code> for
-      a <code>ComposerProvider</code> fed by your store.
+      follow someone across devices, swap <code>LocalChatComposerProvider</code>{" "}
+      for a <code>ChatComposerProvider</code> fed by your store.
     </>,
     <>
       Put the provider around everything that needs the draft. A send button in
@@ -362,7 +362,7 @@ Every part, with the `data-slot` it carries. The providers render no element.
       provider.
     </>,
     <>
-      Leave <code>ComposerCommonActions</code> out when a composer needs a
+      Leave <code>ChatComposerCommonActions</code> out when a composer needs a
       different set, and list the actions it does need.
     </>,
     <>
@@ -439,15 +439,15 @@ busy state.
     {
       positive: {
         component: (
-          <LocalComposerProvider>
-            <ComposerFrame className="w-72">
-              <ComposerHeader>Editing message</ComposerHeader>
-              <ComposerInput aria-label="Edit message" />
-              <ComposerFooter className="justify-end">
-                <ComposerSubmit>Save</ComposerSubmit>
-              </ComposerFooter>
-            </ComposerFrame>
-          </LocalComposerProvider>
+          <LocalChatComposerProvider>
+            <ChatComposerFrame className="w-72">
+              <ChatComposerHeader>Editing message</ChatComposerHeader>
+              <ChatComposerInput aria-label="Edit message" />
+              <ChatComposerFooter className="justify-end">
+                <ChatComposerSubmit>Save</ChatComposerSubmit>
+              </ChatComposerFooter>
+            </ChatComposerFrame>
+          </LocalChatComposerProvider>
         ),
         description:
           "Compose a variant: a header that says what's happening and the actions it needs.",
@@ -465,29 +465,29 @@ busy state.
     {
       positive: {
         component: (
-          <LocalComposerProvider>
-            <ComposerFrame className="w-72">
-              <ComposerInput placeholder="Message #design" />
-              <ComposerFooter>
-                <ComposerCommonActions />
-                <ComposerSubmit />
-              </ComposerFooter>
-            </ComposerFrame>
-          </LocalComposerProvider>
+          <LocalChatComposerProvider>
+            <ChatComposerFrame className="w-72">
+              <ChatComposerInput placeholder="Message #design" />
+              <ChatComposerFooter>
+                <ChatComposerCommonActions />
+                <ChatComposerSubmit />
+              </ChatComposerFooter>
+            </ChatComposerFrame>
+          </LocalChatComposerProvider>
         ),
         description: "Keep the send button at the end of the footer.",
       },
       negative: {
         component: (
-          <LocalComposerProvider>
-            <ComposerFrame className="w-72">
-              <ComposerFooter>
-                <ComposerSubmit />
-                <ComposerCommonActions />
-              </ComposerFooter>
-              <ComposerInput placeholder="Message #design" />
-            </ComposerFrame>
-          </LocalComposerProvider>
+          <LocalChatComposerProvider>
+            <ChatComposerFrame className="w-72">
+              <ChatComposerFooter>
+                <ChatComposerSubmit />
+                <ChatComposerCommonActions />
+              </ChatComposerFooter>
+              <ChatComposerInput placeholder="Message #design" />
+            </ChatComposerFrame>
+          </LocalChatComposerProvider>
         ),
         description:
           "Don't move it because you can. People look for it where they finish typing.",

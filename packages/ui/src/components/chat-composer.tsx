@@ -25,7 +25,7 @@ import { cn } from "@workspace/ui/lib/utils"
  * draft synced across devices without a boolean prop for each.
  */
 
-type ComposerAttachment = {
+type ChatComposerAttachment = {
   /** Stable key for the attachment. */
   id: string
   /** File name shown on the chip. */
@@ -36,11 +36,11 @@ type ComposerAttachment = {
   file?: File
 }
 
-type ComposerState = {
+type ChatComposerState = {
   /** The draft text. */
   value: string
   /** Files attached to the draft. */
-  attachments: ComposerAttachment[]
+  attachments: ChatComposerAttachment[]
   /** True while a submit is in flight. */
   submitting?: boolean
   /** True when the composer takes no input. */
@@ -49,7 +49,7 @@ type ComposerState = {
   canSubmit?: boolean
 }
 
-type ComposerActions = {
+type ChatComposerActions = {
   /** Replaces the draft text. */
   setValue: (value: string) => void
   /** Attaches files to the draft. */
@@ -60,40 +60,41 @@ type ComposerActions = {
   submit: () => void
 }
 
-type ComposerMeta = {
+type ChatComposerMeta = {
   /** The text box, so any part can focus it or read the caret. */
   inputRef: React.RefObject<HTMLTextAreaElement | null>
 }
 
-type ComposerContextValue = {
+type ChatComposerContextValue = {
   /** The draft. */
-  state: ComposerState
+  state: ChatComposerState
   /** How to change the draft and send it. */
-  actions: ComposerActions
+  actions: ChatComposerActions
   /** Handles the parts share, such as the text box. */
-  meta: ComposerMeta
+  meta: ChatComposerMeta
 }
 
-const ComposerContext = React.createContext<ComposerContextValue | null>(null)
+const ChatComposerContext =
+  React.createContext<ChatComposerContextValue | null>(null)
 
 /** Reads the nearest composer. Throws outside a provider. */
-function useComposer() {
-  const context = React.useContext(ComposerContext)
+function useChatComposer() {
+  const context = React.useContext(ChatComposerContext)
   if (!context) {
     throw new Error(
-      "Composer parts must be rendered inside a ComposerProvider."
+      "Composer parts must be rendered inside a ChatComposerProvider."
     )
   }
   return context
 }
 
 /** Whether the draft has any text or files in it. */
-function hasContent({ value, attachments }: ComposerMessage) {
+function hasContent({ value, attachments }: ChatComposerMessage) {
   return value.trim() !== "" || attachments.length > 0
 }
 
 /** Whether the draft may be sent and the composer is free to send it. */
-function isSubmittable(state: ComposerState) {
+function isSubmittable(state: ChatComposerState) {
   return (
     !state.disabled &&
     !state.submitting &&
@@ -101,11 +102,11 @@ function isSubmittable(state: ComposerState) {
   )
 }
 
-type ComposerProviderProps = {
+type ChatComposerProviderProps = {
   /** The draft, from wherever it lives. */
-  state: ComposerState
+  state: ChatComposerState
   /** How the parts change the draft and send it. */
-  actions: ComposerActions
+  actions: ChatComposerActions
   /** A ref for the text box. One is made for you when omitted. */
   inputRef?: React.RefObject<HTMLTextAreaElement | null>
   /** The parts, in any order and anywhere below. Renders no element. */
@@ -115,39 +116,39 @@ type ComposerProviderProps = {
 /*
  * The seam between the parts and the state. Swap what feeds it, not the parts.
  */
-function ComposerProvider({
+function ChatComposerProvider({
   state,
   actions,
   inputRef,
   children,
-}: ComposerProviderProps) {
+}: ChatComposerProviderProps) {
   const ownRef = React.useRef<HTMLTextAreaElement>(null)
   const ref = inputRef ?? ownRef
   const value = React.useMemo(
     () => ({ state, actions, meta: { inputRef: ref } }),
     [state, actions, ref]
   )
-  return <ComposerContext value={value}>{children}</ComposerContext>
+  return <ChatComposerContext value={value}>{children}</ChatComposerContext>
 }
 
-type ComposerMessage = {
+type ChatComposerMessage = {
   /** The text that was sent, trimmed. */
   value: string
   /** The files that were sent. */
-  attachments: ComposerAttachment[]
+  attachments: ChatComposerAttachment[]
 }
 
-type LocalComposerProviderProps = {
+type LocalChatComposerProviderProps = {
   /** The draft to start with. */
   defaultValue?: string
   /** Attachments to start with. */
-  defaultAttachments?: ComposerAttachment[]
+  defaultAttachments?: ChatComposerAttachment[]
   /** Called with the draft on send. Return a promise to hold the draft until it settles; a rejection keeps it. */
-  onSubmit?: (message: ComposerMessage) => void | Promise<void>
+  onSubmit?: (message: ChatComposerMessage) => void | Promise<void>
   /** Takes no input while true. */
   disabled?: boolean
   /** Decides whether the draft may be sent. Defaults to having text or an attachment. */
-  canSubmit?: (message: ComposerMessage) => boolean
+  canSubmit?: (message: ChatComposerMessage) => boolean
   /** A ref for the text box. One is made for you when omitted. */
   inputRef?: React.RefObject<HTMLTextAreaElement | null>
   /** The parts. */
@@ -157,7 +158,7 @@ type LocalComposerProviderProps = {
 let attachmentCount = 0
 
 /** Turns picked or dropped files into attachments with unique ids. */
-function toAttachments(files: File[]): ComposerAttachment[] {
+function toAttachments(files: File[]): ChatComposerAttachment[] {
   return files.map((file) => ({
     id: `attachment-${++attachmentCount}`,
     name: file.name,
@@ -169,9 +170,9 @@ function toAttachments(files: File[]): ComposerAttachment[] {
 /*
  * The draft in component state, cleared once a send succeeds. For a draft
  * that has to outlive the component or follow the person across devices,
- * render ComposerProvider with your own store instead.
+ * render ChatComposerProvider with your own store instead.
  */
-function LocalComposerProvider({
+function LocalChatComposerProvider({
   defaultValue = "",
   defaultAttachments = [],
   onSubmit,
@@ -179,7 +180,7 @@ function LocalComposerProvider({
   canSubmit = hasContent,
   inputRef,
   children,
-}: LocalComposerProviderProps) {
+}: LocalChatComposerProviderProps) {
   const [value, setValue] = React.useState(defaultValue)
   const [attachments, setAttachments] = React.useState(defaultAttachments)
   const [submitting, setSubmitting] = React.useState(false)
@@ -197,7 +198,7 @@ function LocalComposerProvider({
     latest.current = { state, onSubmit }
   })
 
-  const actions = React.useMemo<ComposerActions>(
+  const actions = React.useMemo<ChatComposerActions>(
     () => ({
       setValue,
       addAttachments: (files) =>
@@ -231,9 +232,9 @@ function LocalComposerProvider({
   )
 
   return (
-    <ComposerProvider state={state} actions={actions} inputRef={inputRef}>
+    <ChatComposerProvider state={state} actions={actions} inputRef={inputRef}>
       {children}
-    </ComposerProvider>
+    </ChatComposerProvider>
   )
 }
 
@@ -244,12 +245,12 @@ const INTERACTIVE =
  * The box around the parts. A click on its bare surface focuses the text box,
  * so the whole frame reads as one field.
  */
-function ComposerFrame({
+function ChatComposerFrame({
   className,
   onClick,
   ...props
 }: React.ComponentProps<"div">) {
-  const { state, meta } = useComposer()
+  const { state, meta } = useChatComposer()
   return (
     <div
       data-slot="chat-composer"
@@ -270,7 +271,10 @@ function ComposerFrame({
 }
 
 /** A row above the text box, for context such as a reply or attachments. */
-function ComposerHeader({ className, ...props }: React.ComponentProps<"div">) {
+function ChatComposerHeader({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="chat-composer-header"
@@ -287,7 +291,7 @@ function ComposerHeader({ className, ...props }: React.ComponentProps<"div">) {
  * The text box. Enter sends and Shift+Enter breaks the line. To change that,
  * handle onKeyDown and call preventDefault; the part then leaves the key alone.
  */
-function ComposerInput({
+function ChatComposerInput({
   className,
   ref,
   disabled,
@@ -300,7 +304,7 @@ function ComposerInput({
     state,
     actions,
     meta: { inputRef },
-  } = useComposer()
+  } = useChatComposer()
   // A caller's ref joins the composer's rather than replacing it, which
   // would break frame clicks and the mention button.
   const mergedRef = React.useCallback(
@@ -348,7 +352,10 @@ function ComposerInput({
 }
 
 /** A row below the text box, for actions and the send button. */
-function ComposerFooter({ className, ...props }: React.ComponentProps<"div">) {
+function ChatComposerFooter({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="chat-composer-footer"
@@ -361,7 +368,7 @@ function ComposerFooter({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-type ComposerActionProps = Omit<
+type ChatComposerActionProps = Omit<
   React.ComponentProps<typeof Button>,
   "aria-label"
 > & {
@@ -370,13 +377,13 @@ type ComposerActionProps = Omit<
 }
 
 /** An icon button for the footer, disabled with the composer. */
-function ComposerAction({
+function ChatComposerAction({
   label,
   className,
   disabled,
   ...props
-}: ComposerActionProps) {
-  const { state } = useComposer()
+}: ChatComposerActionProps) {
+  const { state } = useChatComposer()
   return (
     <Tooltip>
       <TooltipTrigger
@@ -398,7 +405,7 @@ function ComposerAction({
   )
 }
 
-type ComposerAttachButtonProps = Omit<ComposerActionProps, "label"> & {
+type ChatComposerAttachButtonProps = Omit<ChatComposerActionProps, "label"> & {
   /** File types the picker offers, as in the input's accept attribute. */
   accept?: string
   /** Names the button. */
@@ -406,18 +413,18 @@ type ComposerAttachButtonProps = Omit<ComposerActionProps, "label"> & {
 }
 
 /** Opens the file picker and attaches what is picked. */
-function ComposerAttachButton({
+function ChatComposerAttachButton({
   accept,
   label = "Attach files",
   onClick,
   children,
   ...props
-}: ComposerAttachButtonProps) {
-  const { actions } = useComposer()
+}: ChatComposerAttachButtonProps) {
+  const { actions } = useChatComposer()
   const fileRef = React.useRef<HTMLInputElement>(null)
   return (
     <>
-      <ComposerAction
+      <ChatComposerAction
         label={label}
         onClick={(event) => {
           onClick?.(event)
@@ -426,7 +433,7 @@ function ComposerAttachButton({
         {...props}
       >
         {children ?? <PaperclipIcon />}
-      </ComposerAction>
+      </ChatComposerAction>
       <input
         ref={fileRef}
         type="file"
@@ -447,7 +454,7 @@ function ComposerAttachButton({
 
 /** Puts text at the caret, replacing any selection, and keeps focus there. */
 function insertAtCaret(
-  { state, actions, meta }: ComposerContextValue,
+  { state, actions, meta }: ChatComposerContextValue,
   text: string
 ) {
   const input = meta.inputRef.current
@@ -462,18 +469,18 @@ function insertAtCaret(
 }
 
 /** Starts a mention by typing @ at the caret. */
-function ComposerMentionButton({
+function ChatComposerMentionButton({
   label = "Mention someone",
   onClick,
   children,
   ...props
-}: Omit<ComposerActionProps, "label"> & {
+}: Omit<ChatComposerActionProps, "label"> & {
   /** Names the button. */
   label?: string
 }) {
-  const composer = useComposer()
+  const composer = useChatComposer()
   return (
-    <ComposerAction
+    <ChatComposerAction
       label={label}
       onClick={(event) => {
         onClick?.(event)
@@ -482,7 +489,7 @@ function ComposerMentionButton({
       {...props}
     >
       {children ?? <AtSignIcon />}
-    </ComposerAction>
+    </ChatComposerAction>
   )
 }
 
@@ -490,7 +497,7 @@ function ComposerMentionButton({
  * The actions most composers share. It is only JSX, so a composer that needs
  * something else leaves it out and lists its own actions instead.
  */
-function ComposerCommonActions({
+function ChatComposerCommonActions({
   className,
   ...props
 }: React.ComponentProps<"div">) {
@@ -500,14 +507,14 @@ function ComposerCommonActions({
       className={cn("flex items-center gap-0.5", className)}
       {...props}
     >
-      <ComposerAttachButton />
-      <ComposerMentionButton />
+      <ChatComposerAttachButton />
+      <ChatComposerMentionButton />
     </div>
   )
 }
 
 /** Sends the draft. Works anywhere inside the provider, not only in the frame. */
-function ComposerSubmit({
+function ChatComposerSubmit({
   className,
   children,
   disabled,
@@ -515,7 +522,7 @@ function ComposerSubmit({
   "aria-label": ariaLabel = "Send",
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { state, actions, meta } = useComposer()
+  const { state, actions, meta } = useChatComposer()
   return (
     <Button
       data-slot="chat-composer-submit"
@@ -546,11 +553,11 @@ function ComposerSubmit({
 }
 
 /** Lists the draft's attachments, each with a button to remove it. Renders nothing when empty. */
-function ComposerAttachments({
+function ChatComposerAttachments({
   className,
   ...props
 }: React.ComponentProps<"ul">) {
-  const { state, actions } = useComposer()
+  const { state, actions } = useChatComposer()
   if (!state.attachments.length) return null
   return (
     <ul
@@ -618,7 +625,7 @@ function matchesAccept(file: File, accept?: string) {
  * Attaches files dropped anywhere inside it. Leave it out to turn drag and
  * drop off; there is no prop for that.
  */
-function ComposerDropZone({
+function ChatComposerDropZone({
   className,
   children,
   label = "Drop files to attach",
@@ -634,7 +641,7 @@ function ComposerDropZone({
   /** File types it takes, as in a file input's accept attribute. Match it to the attach button's. */
   accept?: string
 }) {
-  const { state, actions } = useComposer()
+  const { state, actions } = useChatComposer()
   const [dragging, setDragging] = React.useState(false)
   // dragenter and dragleave fire for every child crossed, so count them.
   const depth = React.useRef(0)
@@ -649,7 +656,7 @@ function ComposerDropZone({
       className={cn("relative", className)}
       onDragEnter={(event) => {
         // A caller's handler runs first and can take the drag over by
-        // calling preventDefault, as with ComposerFrame's click.
+        // calling preventDefault, as with ChatComposerFrame's click.
         onDragEnter?.(event)
         if (event.defaultPrevented || !hasFiles(event)) return
         event.preventDefault()
@@ -696,24 +703,24 @@ function ComposerDropZone({
 }
 
 export {
-  ComposerAction,
-  ComposerAttachButton,
-  ComposerAttachments,
-  ComposerCommonActions,
-  ComposerDropZone,
-  ComposerFooter,
-  ComposerFrame,
-  ComposerHeader,
-  ComposerInput,
-  ComposerMentionButton,
-  ComposerProvider,
-  ComposerSubmit,
-  LocalComposerProvider,
-  useComposer,
-  type ComposerActions,
-  type ComposerAttachment,
-  type ComposerContextValue,
-  type ComposerMessage,
-  type ComposerMeta,
-  type ComposerState,
+  ChatComposerAction,
+  ChatComposerAttachButton,
+  ChatComposerAttachments,
+  ChatComposerCommonActions,
+  ChatComposerDropZone,
+  ChatComposerFooter,
+  ChatComposerFrame,
+  ChatComposerHeader,
+  ChatComposerInput,
+  ChatComposerMentionButton,
+  ChatComposerProvider,
+  ChatComposerSubmit,
+  LocalChatComposerProvider,
+  useChatComposer,
+  type ChatComposerActions,
+  type ChatComposerAttachment,
+  type ChatComposerContextValue,
+  type ChatComposerMessage,
+  type ChatComposerMeta,
+  type ChatComposerState,
 }

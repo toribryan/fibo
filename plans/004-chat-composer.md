@@ -23,35 +23,37 @@ Fernando Rojo's "Composition is all you need". A surface picks the parts it
 needs, puts them in its own order, and writes anything unusual as JSX beside
 them.
 
-**Where state lives.** The parts hold none. `ComposerProvider` takes `state`
+**Where state lives.** The parts hold none. `ChatComposerProvider` takes `state`
 (`value`, `attachments`, `submitting`, `disabled`) and `actions` (`setValue`,
 `addAttachments`, `removeAttachment`, `submit`), and every part reads those
-through `useComposer()`. That interface is the whole contract, so the same
+through `useChatComposer()`. That interface is the whole contract, so the same
 parts run on component state, a store, or a draft synced across devices.
-`LocalComposerProvider` is the ready-made implementation on `useState`, and
+`LocalChatComposerProvider` is the ready-made implementation on `useState`, and
 covers most uses.
 
-**Features as parts, not flags.** Drag and drop is `ComposerDropZone`,
-attaching is `ComposerAttachButton`, mentions are `ComposerMentionButton`.
-Rendering one turns it on; leaving it out turns it off. `ComposerCommonActions`
+**Features as parts, not flags.** Drag and drop is `ChatComposerDropZone`,
+attaching is `ChatComposerAttachButton`, mentions are `ChatComposerMentionButton`.
+Rendering one turns it on; leaving it out turns it off. `ChatComposerCommonActions`
 groups the shared ones, and since it is only JSX, a composer that needs a
 different set leaves it out.
 
-**Submit anywhere.** `ComposerSubmit` calls `actions.submit` rather than
+**Submit anywhere.** `ChatComposerSubmit` calls `actions.submit` rather than
 submitting a form, so it works outside the frame, such as in a dialog's
 footer, as long as it is inside the provider.
 
 **Changing keyboard behaviour.** Enter sends and Shift+Enter breaks the line.
-Rather than a `submitOnEnter` prop, `ComposerInput` skips its own handling
+Rather than a `submitOnEnter` prop, `ChatComposerInput` skips its own handling
 when the caller's `onKeyDown` calls `preventDefault`.
 
-**Naming.** The file and registry item are `chat-composer`, to say what it is
-in the catalog. The exports are `Composer*`, as in the talk, since
-`ChatComposerFooter` adds length and no meaning.
+**Naming.** The file, the registry item and every export say
+`chat-composer`: `ChatComposerInput`, `useChatComposer`. The talk's shorter
+`Composer*` was considered and dropped, since every other part with several
+pieces takes its file name as the prefix (`Sheet*`, `DataTable*`), and an
+import list should say what each piece belongs to.
 
 **Shelf.** Base components: it depends on Button and lucide only, and has no
 animation beyond a busy spinner that stops under reduced motion.
 
 **Out of scope.** Rich text, a mention picker and an emoji picker. The
 mention button types `@`; a picker is a part a project can add on top of
-`useComposer()`.
+`useChatComposer()`.

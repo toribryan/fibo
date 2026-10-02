@@ -3,39 +3,41 @@ import { page, userEvent } from "vitest/browser"
 import { render } from "vitest-browser-react"
 
 import {
-  ComposerAttachButton,
-  ComposerAttachments,
-  ComposerDropZone,
-  ComposerFrame,
-  ComposerInput,
-  ComposerProvider,
-  ComposerSubmit,
-  LocalComposerProvider,
-  useComposer,
-  type ComposerActions,
+  ChatComposerAttachButton,
+  ChatComposerAttachments,
+  ChatComposerDropZone,
+  ChatComposerFrame,
+  ChatComposerInput,
+  ChatComposerProvider,
+  ChatComposerSubmit,
+  LocalChatComposerProvider,
+  useChatComposer,
+  type ChatComposerActions,
 } from "./chat-composer.js"
 
-function Composer(props: React.ComponentProps<typeof LocalComposerProvider>) {
+function Composer(
+  props: React.ComponentProps<typeof LocalChatComposerProvider>
+) {
   return (
-    <LocalComposerProvider {...props}>
-      <ComposerFrame>
-        <ComposerAttachments />
-        <ComposerInput />
-        <ComposerAttachButton />
-        <ComposerSubmit />
-      </ComposerFrame>
-    </LocalComposerProvider>
+    <LocalChatComposerProvider {...props}>
+      <ChatComposerFrame>
+        <ChatComposerAttachments />
+        <ChatComposerInput />
+        <ChatComposerAttachButton />
+        <ChatComposerSubmit />
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
   )
 }
 
 describe("Chat composer", () => {
   it("throws when a part renders outside a provider", async () => {
     function Orphan() {
-      useComposer()
+      useChatComposer()
       return null
     }
     const error = vi.spyOn(console, "error").mockImplementation(() => {})
-    await expect(render(<Orphan />)).rejects.toThrow(/ComposerProvider/)
+    await expect(render(<Orphan />)).rejects.toThrow(/ChatComposerProvider/)
     error.mockRestore()
   })
 
@@ -125,9 +127,9 @@ describe("Chat composer", () => {
   it("leaves Enter alone when a handler prevents it", async () => {
     const onSubmit = vi.fn()
     await render(
-      <LocalComposerProvider defaultValue="Draft" onSubmit={onSubmit}>
-        <ComposerInput onKeyDown={(event) => event.preventDefault()} />
-      </LocalComposerProvider>
+      <LocalChatComposerProvider defaultValue="Draft" onSubmit={onSubmit}>
+        <ChatComposerInput onKeyDown={(event) => event.preventDefault()} />
+      </LocalChatComposerProvider>
     )
     await page.getByRole("textbox").click()
     await userEvent.keyboard("{Enter}")
@@ -136,32 +138,32 @@ describe("Chat composer", () => {
 
   it("focuses the text box from a click on the frame's surface", async () => {
     await render(
-      <LocalComposerProvider>
-        <ComposerFrame>
+      <LocalChatComposerProvider>
+        <ChatComposerFrame>
           <div data-testid="surface" className="h-10" />
-          <ComposerInput />
-        </ComposerFrame>
-      </LocalComposerProvider>
+          <ChatComposerInput />
+        </ChatComposerFrame>
+      </LocalChatComposerProvider>
     )
     await page.getByTestId("surface").click()
     await expect.element(page.getByRole("textbox")).toHaveFocus()
   })
 
   it("runs on any state and actions passed to the provider", async () => {
-    const actions: ComposerActions = {
+    const actions: ChatComposerActions = {
       setValue: vi.fn(),
       addAttachments: vi.fn(),
       removeAttachment: vi.fn(),
       submit: vi.fn(),
     }
     await render(
-      <ComposerProvider
+      <ChatComposerProvider
         state={{ value: "From a store", attachments: [] }}
         actions={actions}
       >
-        <ComposerInput />
-        <ComposerSubmit />
-      </ComposerProvider>
+        <ChatComposerInput />
+        <ChatComposerSubmit />
+      </ChatComposerProvider>
     )
     const input = page.getByRole("textbox")
     await expect.element(input).toHaveValue("From a store")
@@ -191,12 +193,12 @@ describe("Chat composer", () => {
   it("keeps the composer's ref when the caller passes one", async () => {
     const ref = { current: null as HTMLTextAreaElement | null }
     await render(
-      <LocalComposerProvider>
-        <ComposerFrame>
+      <LocalChatComposerProvider>
+        <ChatComposerFrame>
           <div data-testid="surface" className="h-10" />
-          <ComposerInput ref={ref} />
-        </ComposerFrame>
-      </LocalComposerProvider>
+          <ChatComposerInput ref={ref} />
+        </ChatComposerFrame>
+      </LocalChatComposerProvider>
     )
     expect(ref.current).toBeInstanceOf(HTMLTextAreaElement)
     await page.getByTestId("surface").click()
@@ -205,14 +207,14 @@ describe("Chat composer", () => {
 
   it("keeps only dropped files that match accept", async () => {
     const screen = await render(
-      <LocalComposerProvider>
-        <ComposerDropZone accept="image/*, .pdf" data-testid="zone">
-          <ComposerFrame>
-            <ComposerAttachments />
-            <ComposerInput />
-          </ComposerFrame>
-        </ComposerDropZone>
-      </LocalComposerProvider>
+      <LocalChatComposerProvider>
+        <ChatComposerDropZone accept="image/*, .pdf" data-testid="zone">
+          <ChatComposerFrame>
+            <ChatComposerAttachments />
+            <ChatComposerInput />
+          </ChatComposerFrame>
+        </ChatComposerDropZone>
+      </LocalChatComposerProvider>
     )
     const data = new DataTransfer()
     for (const [name, type] of [
@@ -237,7 +239,7 @@ describe("Chat composer", () => {
   it("shows sizes in the units people read", async () => {
     const sizes = [512, 1024, 1536, 482_000, 1_830_000]
     const screen = await render(
-      <ComposerProvider
+      <ChatComposerProvider
         state={{
           value: "",
           attachments: sizes.map((size, i) => ({
@@ -253,8 +255,8 @@ describe("Chat composer", () => {
           submit() {},
         }}
       >
-        <ComposerAttachments />
-      </ComposerProvider>
+        <ChatComposerAttachments />
+      </ChatComposerProvider>
     )
     const text = screen
       .getByRole("list", { name: "Attachments" })
