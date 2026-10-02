@@ -108,6 +108,37 @@ function useHiddenOnScroll(enabled: boolean) {
   return [enabled && hidden, setHidden] as const
 }
 
+/*
+ * Each label's natural width in CSS pixels, for the current item to grow
+ * into. Motion would measure "auto" on screen instead, which inside a zoomed
+ * or scaled parent comes out in the wrong units, so the label ends a few
+ * pixels short and snaps. scrollWidth isn't scaled. Measured again once web
+ * fonts load, since they change the width.
+ */
+function useLabelWidths(count: number, enabled: boolean) {
+  const labels = React.useRef<(HTMLSpanElement | null)[]>([])
+  const [widths, setWidths] = React.useState<number[]>([])
+
+  React.useLayoutEffect(() => {
+    if (!enabled) return
+    let cancelled = false
+    const measure = () => {
+      if (cancelled) return
+      // A pixel over, since scrollWidth rounds and would clip the last letter.
+      setWidths(
+        labels.current.map((label) => (label ? label.scrollWidth + 1 : 0))
+      )
+    }
+    measure()
+    document.fonts?.ready.then(measure)
+    return () => {
+      cancelled = true
+    }
+  }, [count, enabled])
+
+  return [labels, widths] as const
+}
+
 function FloatingNav({
   items,
   value: valueProp,
@@ -128,6 +159,10 @@ function FloatingNav({
   const reduceMotion = useReducedMotion()
   const indicatorId = React.useId()
   const transition = reduceMotion ? { duration: 0 } : SPRING
+  const [labelRefs, labelWidths] = useLabelWidths(
+    items.length,
+    labels !== "always"
+  )
 
   return (
     <nav
@@ -162,7 +197,7 @@ function FloatingNav({
           size === "sm" ? "gap-0.5 p-1" : "gap-1 p-1.5"
         )}
       >
-        {items.map((item) => {
+        {items.map((item, index) => {
           const current = item.value === value
           const handleClick = (
             event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>
@@ -197,11 +232,14 @@ function FloatingNav({
                 // Kept in the DOM at zero width, so every item keeps its name
                 // and the current one can grow into it.
                 <motion.span
+                  ref={(label) => {
+                    labelRefs.current[index] = label
+                  }}
                   initial={false}
                   animate={
                     current
                       ? {
-                          width: "auto",
+                          width: labelWidths[index] || "auto",
                           opacity: 1,
                           marginLeft: size === "sm" ? 6 : 8,
                         }
