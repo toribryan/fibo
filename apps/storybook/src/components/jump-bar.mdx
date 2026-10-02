@@ -1,0 +1,202 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/jump-bar.stories"
+import { JumpBar } from "../../../../packages/ui/src/components/jump-bar"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Jump bar
+
+A jump bar takes people somewhere else in a conversation: up to the messages
+they haven't read, down to ones that arrived while they were scrolled up, or
+back to the present from history.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Three types: unread messages above with "Mark as read", a pill for new
+  messages below, and a bar for when you're viewing history.
+- Counts stop at 99+ on screen, with the full number after them for screen
+  readers.
+- `jumpTo` scrolls to a message and focuses it, instantly under reduced motion
+  or for a long jump.
+- `useAtBottom` says whether the conversation is scrolled to its end.
+
+## Installation
+
+<Install name="jump-bar" exports={["JumpBar", "jumpTo", "useAtBottom"]} />
+
+## Usage
+
+```tsx
+import { useState } from "react"
+
+import { JumpBar, jumpTo, useAtBottom } from "@/components/ui/jump-bar"
+import { MessageList, type ChatMessage } from "@/components/ui/message-list"
+
+export function Channel({
+  messages,
+  unreadFrom,
+  newBelow,
+}: {
+  messages: ChatMessage[]
+  unreadFrom?: string
+  newBelow: number
+}) {
+  const [scroller, setScroller] = useState<HTMLDivElement | null>(null)
+  const atBottom = useAtBottom(scroller)
+
+  function jumpToPresent() {
+    const last = scroller?.querySelector<HTMLElement>(
+      '[data-slot="message"]:last-of-type'
+    )
+    if (last) jumpTo(last, { container: scroller, block: "end" })
+  }
+
+  return (
+    <div className="relative">
+      <div ref={setScroller} className="h-96 overflow-y-auto">
+        <MessageList messages={messages} unreadFrom={unreadFrom} />
+      </div>
+      {newBelow > 0 && !atBottom ? (
+        <JumpBar type="new-below" count={newBelow} onJump={jumpToPresent} />
+      ) : null}
+    </div>
+  )
+}
+```
+
+The bars position themselves, so put them inside a `relative` wrapper around
+the scroll container, not inside the container itself.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Show unread-above while the unread divider is above the view, and hide it once people scroll past it or mark the conversation read.",
+    "Show new-below when messages arrive while people are scrolled up. When they're at the bottom, scroll to the new message instead.",
+    "Show history when the newest messages aren't on screen, or aren't loaded, and nothing new has arrived.",
+    "Sending a message always scrolls to the bottom and clears the unread marker.",
+    "Count a message as read only when the window has focus and the message is on screen.",
+  ]}
+/>
+
+## Examples
+
+### New messages below
+
+A pill over the bottom of the conversation, for messages that arrived while
+people were scrolled up.
+
+<Canvas of={Stories.NewBelow} />
+
+### Over 99
+
+The count stops at 99+ on screen. The button's name keeps those words and
+adds the full number, "99+ new messages (128)", so speech input can still say
+what's on screen.
+
+<Canvas of={Stories.Capped} />
+
+### Viewing history
+
+For when people have scrolled far from the present.
+
+<Canvas of={Stories.History} />
+
+### In a timeline
+
+A message list with an unread divider, both bars, a typing indicator and a
+composer. Scroll up and use "Ben sends a message" to see the pill. Escape on a
+message or in the composer marks the conversation read.
+
+<Canvas of={Stories.InATimeline} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="relative h-16 w-64">
+            <JumpBar type="new-below" count={3} />
+          </div>
+        ),
+        description: "Say how many messages are waiting.",
+      },
+      negative: {
+        component: (
+          <div className="relative h-16 w-64">
+            <JumpBar
+              type="new-below"
+              count={3}
+              strings={{ newBelow: () => "Scroll down" }}
+            />
+          </div>
+        ),
+        description:
+          "Don't hide the count. People decide whether to jump by how much they missed.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+JumpBar also takes every prop of a `div`, except `children`.
+
+<ArgTypes of={Stories.Default} />
+
+`jumpTo(target, { container, block })` scrolls `target` into view and
+focuses it. `useAtBottom(element, threshold = 150)` returns whether `element`
+is scrolled to within `threshold` pixels of its end.
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="jump-bar"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-type",
+      element: "The root",
+      when: (
+        <>
+          <code>unread-above</code>, <code>new-below</code> or{" "}
+          <code>history</code>.
+        </>
+      ),
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "Every bar is plain buttons, reachable by Tab. A capped count keeps its visible words in the name and adds the full number after them (WCAG 2.5.3).",
+    "Move focus when a jump happens: to the first unread message, or to the newest message. jumpTo does this. Never leave focus on a button whose bar has just disappeared; after Mark as read, move it to the composer.",
+    "jumpTo scrolls instantly under reduced motion, and for any jump longer than three screens.",
+    "The unread divider itself carries a “New” label, so the marker isn't colour alone.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Message list", "Typing indicator", "Button"]} />
+
+## References
+
+- [Discord: keyboard shortcuts](https://support.discord.com/hc/en-us/articles/225977308), for Escape to mark read and Shift+Page Up to jump to unread
+- [Matrix: read markers](https://spec.matrix.org/latest/client-server-api/#fully-read-markers), which keeps the divider position apart from read receipts
+- [WCAG 1.4.1 Use of color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)
+- [WCAG 2.3.3 Animation from interactions](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html)
