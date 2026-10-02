@@ -75,6 +75,13 @@
     "tier": "base-components",
     "group": "Forms"
   },
+  "message-list": {
+    "title": "Message list",
+    "description": "A conversation that groups each person's messages under one heading, with a single tab stop.",
+    "tier": "base-components",
+    "group": "Display",
+    "status": "new"
+  },
   "pixel-snail": {
     "title": "Pixel snail",
     "description": "A one-colour pixel snail that crawls on a loop while something loads.",
