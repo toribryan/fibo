@@ -6,7 +6,7 @@
 // public/llms.txt so agents can see the complete list.
 import { execSync } from "node:child_process"
 import process from "node:process"
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
+import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
 
 const registryDir = path.resolve(import.meta.dirname, "..")
@@ -31,6 +31,23 @@ const packageName = (spec) =>
 
 // Storybook is the site, so a component's docs page is a path off the root.
 const docsUrl = (name, tier) => `${homepage}/?path=/docs/${tier}-${name}--docs`
+
+const codemodsDir = path.join(registryDir, "codemods")
+const codemodUrl = (name) => `${homepage}/codemods/${name}.js`
+
+// The shadcn CLI prints `docs` after an install, so a deprecated part says so
+// at the moment someone adds it.
+function deprecationNotice({ since, removal, replacement, codemod }) {
+  const title = meta[replacement]?.title
+  if (!title) throw new Error(`Unknown replacement "${replacement}"`)
+  return [
+    `Deprecated in ${since} and removed in ${removal}. Use ${title} (@fibo/${replacement}) instead.`,
+    codemod &&
+      `Migrate: pnpm dlx jscodeshift --parser tsx -t ${codemodUrl(codemod)} src`,
+  ]
+    .filter(Boolean)
+    .join("\n")
+}
 
 // Tokens come from globals.css so the registry can never drift from it. Each
 // component ships only the roles a stock `shadcn init` lacks, so adding one to
@@ -223,12 +240,18 @@ for (const file of files) {
     description: info.description,
     categories: [info.tier, info.group.toLowerCase()],
     author: "Tori Bryan",
-    docs: `Docs and live examples: ${docsUrl(name, info.tier)}`,
+    docs: [
+      info.deprecated && deprecationNotice(info.deprecated),
+      `Docs and live examples: ${docsUrl(name, info.tier)}`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
     meta: {
       tier: info.tier,
       group: info.group,
       docs: docsUrl(name, info.tier),
       ...(info.status && { status: info.status }),
+      ...(info.deprecated && { deprecated: info.deprecated }),
     },
     dependencies: [...dependencies],
     registryDependencies: [...registryDependencies],
@@ -282,7 +305,11 @@ const section = (tier) =>
     .filter((item) => item.meta.tier === tier)
     .map(
       (item) =>
-        `- [${item.title}](${item.meta.docs}): ${item.description} Install: \`pnpm dlx shadcn@latest add @fibo/${item.name}\``
+        `- [${item.title}](${item.meta.docs}): ${item.description} Install: \`pnpm dlx shadcn@latest add @fibo/${item.name}\`${
+          item.meta.deprecated
+            ? ` Deprecated: use \`@fibo/${item.meta.deprecated.replacement}\` in new code.`
+            : ""
+        }`
     )
     .join("\n")
 
@@ -317,4 +344,30 @@ ${section("special-components")}
 await mkdir(path.join(registryDir, "public"), { recursive: true })
 await writeFile(path.join(registryDir, "public/llms.txt"), llms)
 
-console.log(`Registry: ${items.length} items -> public/r, llms.txt`)
+// Codemods are served beside the registry so `jscodeshift -t <url>` works
+// without installing anything from fibo. They outlive the part they migrate
+// off, so they come from the folder, not the metadata.
+const codemods = (await readdir(codemodsDir))
+  .filter((file) => file.endsWith(".js") && !file.endsWith(".test.js"))
+  .map((file) => path.basename(file, ".js"))
+for (const info of Object.values(meta)) {
+  const codemod = info.deprecated?.codemod
+  if (codemod && !codemods.includes(codemod)) {
+    throw new Error(`No codemods/${codemod}.js for a deprecated part`)
+  }
+}
+await rm(path.join(registryDir, "public/codemods"), {
+  recursive: true,
+  force: true,
+})
+await mkdir(path.join(registryDir, "public/codemods"), { recursive: true })
+for (const name of codemods) {
+  await cp(
+    path.join(codemodsDir, `${name}.js`),
+    path.join(registryDir, `public/codemods/${name}.js`)
+  )
+}
+
+console.log(
+  `Registry: ${items.length} items -> public/r, llms.txt, ${codemods.length} codemods`
+)
