@@ -3,6 +3,18 @@
   "ignoredProps": ["state"],
   "figmaOnlyTokens": {},
   "codeOnlyTokens": {
+    "destructive-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "destructive-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "destructive-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "success-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "success-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "success-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "warning-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "warning-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "warning-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "info-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "info-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "info-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
     "sticker-edge": "Sticker avatar's paper and ink, white and near-black in both themes. Sticker avatar has no Figma component yet; add both with it.",
     "sticker-ink": "Sticker avatar's paper and ink, white and near-black in both themes. Sticker avatar has no Figma component yet; add both with it."
   },
