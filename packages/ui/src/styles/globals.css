@@ -100,8 +100,9 @@
 /*
  * Status tones sit on the 700 step rather than 600: at 600, white text on a
  * solid success or warning fill measures 3.3:1, and coloured text on its own
- * subtle tint measures under 3:1. The 700 step with an 8% tint clears AA on
- * both. Dark mode stays on 400, which already clears it.
+ * subtle tint measures under 3:1. At 700, success text on an 8% tint is still
+ * 4.43:1 at badge size, so success, warning and info tint at 6%; destructive's
+ * red is dark enough to keep 8%. Dark mode stays on 400, which clears it.
  */
 /*
  * The `-subtle`, `-hover` and `-ring` roles exist because Figma cannot express
@@ -158,13 +159,13 @@
   );
   --success: var(--color-green-700);
   --success-foreground: var(--color-neutral-50);
-  --success-subtle: color-mix(in oklch, var(--color-green-700) 8%, transparent);
+  --success-subtle: color-mix(in oklch, var(--color-green-700) 6%, transparent);
   --warning: var(--color-amber-700);
   --warning-foreground: var(--color-neutral-50);
-  --warning-subtle: color-mix(in oklch, var(--color-amber-700) 8%, transparent);
+  --warning-subtle: color-mix(in oklch, var(--color-amber-700) 6%, transparent);
   --info: var(--color-blue-700);
   --info-foreground: var(--color-neutral-50);
-  --info-subtle: color-mix(in oklch, var(--color-blue-700) 8%, transparent);
+  --info-subtle: color-mix(in oklch, var(--color-blue-700) 6%, transparent);
 
   --border: var(--color-neutral-200);
   --input: var(--color-neutral-200);
