@@ -26,6 +26,20 @@ A textarea takes several lines of free text. It grows with its content through
 
 <Install name="textarea" exports={["Textarea"]} />
 
+## Examples
+
+### Invalid
+
+`aria-invalid` turns the border and the focus ring destructive.
+
+<Canvas of={Stories.Invalid} />
+
+### Disabled
+
+`disabled` dims the textarea and blocks the pointer.
+
+<Canvas of={Stories.Disabled} />
+
 ## Usage
 
 ```tsx
@@ -54,20 +68,6 @@ it.
     "Set a sensible min height through className when the expected answer is long.",
   ]}
 />
-
-## Examples
-
-### Invalid
-
-`aria-invalid` turns the border and the focus ring destructive.
-
-<Canvas of={Stories.Invalid} />
-
-### Disabled
-
-`disabled` dims the textarea and blocks the pointer.
-
-<Canvas of={Stories.Disabled} />
 
 ## API reference
 

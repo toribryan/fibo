@@ -31,6 +31,27 @@ just happened, such as a save or a failed upload. It leaves on its own.
 
 Toast installs the Button component too, for its action and close buttons.
 
+## Examples
+
+### Types
+
+`type` adds an icon in the matching status colour.
+
+<Canvas of={Stories.Types} />
+
+### With action
+
+`actionProps` adds a button. Here, Undo closes the toast with the id that
+`toast.add` returned.
+
+<Canvas of={Stories.WithAction} />
+
+### Promise
+
+A loading toast that becomes a success after two seconds.
+
+<Canvas of={Stories.Pending} />
+
 ## Usage
 
 Mount the Toaster once, near the root of your app:
@@ -120,27 +141,6 @@ toast.add({
   `toast.promise(promise, { loading, success, error })` shows a loading toast
   and swaps it for the result when the promise settles.
 </Tip>
-
-## Examples
-
-### Types
-
-`type` adds an icon in the matching status colour.
-
-<Canvas of={Stories.Types} />
-
-### With action
-
-`actionProps` adds a button. Here, Undo closes the toast with the id that
-`toast.add` returned.
-
-<Canvas of={Stories.WithAction} />
-
-### Promise
-
-A loading toast that becomes a success after two seconds.
-
-<Canvas of={Stories.Pending} />
 
 ## Do's and don'ts
 

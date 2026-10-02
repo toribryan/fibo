@@ -31,8 +31,8 @@ Check each item and report only the ones that fail, with file and line:
    Motion is skipped under `prefers-reduced-motion`.
 5. **Stories.** No `autodocs` tag. `Default` is driven by args. Data and
    callback props have `control: false`.
-6. **Docs page.** Sections in the order Features, Installation, Usage,
-   Anatomy (multi-element parts only), Guidelines, Examples, Do's and don'ts,
+6. **Docs page.** Sections in the order Features, Installation, Examples,
+   Usage, Anatomy (multi-element parts only), Guidelines, Do's and don'ts,
    API reference with data attributes, Accessibility, Related components,
    References. Every example has a sentence, every `data-slot` in the source
    appears in the data attributes table, and every story used exists.

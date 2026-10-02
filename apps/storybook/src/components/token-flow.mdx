@@ -36,6 +36,20 @@ values while the semantic name stays put.
 No animation library: the pulse and the scramble use the Web Animations API and
 `requestAnimationFrame`.
 
+## Examples
+
+### Without use
+
+The default: three chips per row, with no `use` line.
+
+<Canvas of={Stories.Default} />
+
+### Single row
+
+One role on its own, with `showUse` on.
+
+<Canvas of={Stories.SingleRow} />
+
 ## Usage
 
 ```tsx
@@ -117,20 +131,6 @@ Every part the component renders, with the `data-slot` it carries. You pass
   <code>theme</code>, and scope a <code>dark</code> class to a wrapper so the
   surfaces follow too.
 </Tip>
-
-## Examples
-
-### Without use
-
-The default: three chips per row, with no `use` line.
-
-<Canvas of={Stories.Default} />
-
-### Single row
-
-One role on its own, with `showUse` on.
-
-<Canvas of={Stories.SingleRow} />
 
 ## Do's and don'ts
 

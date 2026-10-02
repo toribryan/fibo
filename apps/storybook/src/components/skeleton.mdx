@@ -26,6 +26,26 @@ keeps the layout steady, so nothing jumps when the real content arrives.
 
 <Install name="skeleton" exports={["Skeleton"]} />
 
+## Examples
+
+### Profile row
+
+A circle for the avatar and two lines for the name and detail.
+
+<Canvas of={Stories.ProfileRow} />
+
+### Card
+
+An image block, two lines of text and a button.
+
+<Canvas of={Stories.Card} />
+
+### Paragraph
+
+Lines of text with the last one short, as a paragraph ends.
+
+<Canvas of={Stories.Paragraph} />
+
 ## Usage
 
 ```tsx
@@ -53,26 +73,6 @@ Match the size and shape of what's coming, so the swap doesn't move anything.
     "For a task with a known length, like an upload, use a progress bar instead.",
   ]}
 />
-
-## Examples
-
-### Profile row
-
-A circle for the avatar and two lines for the name and detail.
-
-<Canvas of={Stories.ProfileRow} />
-
-### Card
-
-An image block, two lines of text and a button.
-
-<Canvas of={Stories.Card} />
-
-### Paragraph
-
-Lines of text with the last one short, as a paragraph ends.
-
-<Canvas of={Stories.Paragraph} />
 
 ## Do's and don'ts
 
