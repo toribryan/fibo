@@ -342,7 +342,6 @@ const meta: Meta<typeof DataTable> = {
     DataTableCard,
     DataTableCardField,
   },
-  tags: ["new"],
   argTypes: {
     rowIds: { control: false },
     value: { control: false },

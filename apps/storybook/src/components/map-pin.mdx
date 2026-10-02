@@ -41,6 +41,65 @@ places it and moves it as the map pans and zooms.
 It installs `@base-ui/react` for the popover. Your map library is your own
 dependency; fibo doesn't add one.
 
+## Examples
+
+### Label pins
+
+`type="label"` shows a short value in a pill. The open one fills in, so it's
+clear which preview belongs to which pin.
+
+<Canvas of={Stories.LabelPins} />
+
+### Icon pins
+
+`type="icon"` puts an icon in a round pin, for maps where the kind of
+place matters. Without an `icon`, it shows a map-pin icon.
+
+<Canvas of={Stories.IconPins} />
+
+### Colours
+
+`variant` takes fibo's status colours. Here they say whether each place is
+open. The status is in each pin's `label` and meta too, so it doesn't rest
+on colour alone.
+
+<Canvas of={Stories.Colours} />
+
+### Labels with icons
+
+A label pin can lead with an icon, and colours its text to match the
+`variant`. The open one fills in.
+
+<Canvas of={Stories.LabelsWithIcons} />
+
+### Sizes
+
+`size="sm"` shrinks all three types for dense maps. The dot's press area stays
+32px either way.
+
+<Canvas of={Stories.Sizes} />
+
+### Custom content
+
+Children go under the other fields, for actions such as directions or saving
+the place.
+
+<Canvas of={Stories.CustomContent} />
+
+### Controlled
+
+`open` and `onOpenChange` let a list beside the map choose the open pin.
+Picking a row opens its preview; opening a pin selects its row.
+
+<Canvas of={Stories.Controlled} />
+
+### Without a preview
+
+With no preview fields or children, the pin is a plain button, for maps
+where a click does something else, such as filtering a list.
+
+<Canvas of={Stories.WithoutPreview} />
+
 ## Usage
 
 With `react-map-gl`, which works with both Mapbox and MapLibre, put the
@@ -125,65 +184,6 @@ Every part the component renders, with the `data-slot` it carries.
     "Leave side at top for most maps. The card flips on its own when it would leave the screen.",
   ]}
 />
-
-## Examples
-
-### Label pins
-
-`type="label"` shows a short value in a pill. The open one fills in, so it's
-clear which preview belongs to which pin.
-
-<Canvas of={Stories.LabelPins} />
-
-### Icon pins
-
-`type="icon"` puts an icon in a round pin, for maps where the kind of
-place matters. Without an `icon`, it shows a map-pin icon.
-
-<Canvas of={Stories.IconPins} />
-
-### Colours
-
-`variant` takes fibo's status colours. Here they say whether each place is
-open. The status is in each pin's `label` and meta too, so it doesn't rest
-on colour alone.
-
-<Canvas of={Stories.Colours} />
-
-### Labels with icons
-
-A label pin can lead with an icon, and colours its text to match the
-`variant`. The open one fills in.
-
-<Canvas of={Stories.LabelsWithIcons} />
-
-### Sizes
-
-`size="sm"` shrinks all three types for dense maps. The dot's press area stays
-32px either way.
-
-<Canvas of={Stories.Sizes} />
-
-### Custom content
-
-Children go under the other fields, for actions such as directions or saving
-the place.
-
-<Canvas of={Stories.CustomContent} />
-
-### Controlled
-
-`open` and `onOpenChange` let a list beside the map choose the open pin.
-Picking a row opens its preview; opening a pin selects its row.
-
-<Canvas of={Stories.Controlled} />
-
-### Without a preview
-
-With no preview fields or children, the pin is a plain button, for maps
-where a click does something else, such as filtering a list.
-
-<Canvas of={Stories.WithoutPreview} />
 
 ## Do's and don'ts
 

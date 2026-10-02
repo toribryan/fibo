@@ -62,6 +62,81 @@ either edge. It matches the Data table in the Figma library.
 
 It installs Table, Checkbox, Avatar, Tooltip, Button, Menu and Sheet.
 
+## Examples
+
+### Bulk action patterns
+
+The patterns from the Figma library: Delete alone, a safe action before
+Delete, several actions with More, and an action that works on one row.
+
+<Canvas of={Stories.BulkActionPatterns} />
+
+### Review queue
+
+Approve then Deny, and no Delete. Second lines carry the details.
+
+<Canvas of={Stories.ReviewQueue} />
+
+### Directory
+
+248 members across pages, one of them locked. Select the page, then Select all
+247 members; Show selected only filters the rows, which the app does.
+
+<Canvas of={Stories.Directory} />
+
+### Locked row
+
+Elena's row can't be selected. The lock explains why on hover or focus, and
+select all leaves her out.
+
+<Canvas of={Stories.Locked} />
+
+### Secondary text
+
+A second line under each name, as in a review queue. Rows grow to 52 pixels.
+
+<Canvas of={Stories.SecondaryText} />
+
+### Pinned columns
+
+Narrower than the table, so the middle scrolls while the name and actions
+stay put. Shadows show there's more under them.
+
+<Canvas of={Stories.Pinned} />
+
+### With pagination
+
+Pagination in the footer. The table only ever holds one page; the app loads
+the rest.
+
+<Canvas of={Stories.WithPagination} />
+
+### Picker
+
+Choosing rows for a form, with the count in the footer instead of actions.
+
+<Canvas of={Stories.Picker} />
+
+### Narrow, scroll
+
+The default under 32rem: the table scrolls sideways, pinning switches off,
+the search fills the toolbar, and sort and filters move behind Filters.
+
+<Canvas of={Stories.NarrowScroll} />
+
+### Narrow, cards
+
+`narrowLayout="cards"`: each row becomes a card, select all moves into the
+toolbar, and bulk actions show their icons. Cards need a DataTableToolbar,
+since that's where select all goes.
+
+Narrow, the toolbar keeps the count, Clear and bulk actions. Select all
+matching and Show selected only aren't offered, as in the Figma library.
+Keep filter values in state you own: the controls move between the toolbar
+and the Filters sheet as the width crosses 32rem.
+
+<Canvas of={Stories.NarrowCards} />
+
 ## Usage
 
 ```tsx
@@ -265,81 +340,6 @@ everything is selected keeps this page's rows and drops the rest.
     'Use narrowLayout="cards" when a row reads better as a summary than as a line, such as people with a status. Keep scroll for data people compare across columns.',
   ]}
 />
-
-## Examples
-
-### Bulk action patterns
-
-The patterns from the Figma library: Delete alone, a safe action before
-Delete, several actions with More, and an action that works on one row.
-
-<Canvas of={Stories.BulkActionPatterns} />
-
-### Review queue
-
-Approve then Deny, and no Delete. Second lines carry the details.
-
-<Canvas of={Stories.ReviewQueue} />
-
-### Directory
-
-248 members across pages, one of them locked. Select the page, then Select all
-247 members; Show selected only filters the rows, which the app does.
-
-<Canvas of={Stories.Directory} />
-
-### Locked row
-
-Elena's row can't be selected. The lock explains why on hover or focus, and
-select all leaves her out.
-
-<Canvas of={Stories.Locked} />
-
-### Secondary text
-
-A second line under each name, as in a review queue. Rows grow to 52 pixels.
-
-<Canvas of={Stories.SecondaryText} />
-
-### Pinned columns
-
-Narrower than the table, so the middle scrolls while the name and actions
-stay put. Shadows show there's more under them.
-
-<Canvas of={Stories.Pinned} />
-
-### With pagination
-
-Pagination in the footer. The table only ever holds one page; the app loads
-the rest.
-
-<Canvas of={Stories.WithPagination} />
-
-### Picker
-
-Choosing rows for a form, with the count in the footer instead of actions.
-
-<Canvas of={Stories.Picker} />
-
-### Narrow, scroll
-
-The default under 32rem: the table scrolls sideways, pinning switches off,
-the search fills the toolbar, and sort and filters move behind Filters.
-
-<Canvas of={Stories.NarrowScroll} />
-
-### Narrow, cards
-
-`narrowLayout="cards"`: each row becomes a card, select all moves into the
-toolbar, and bulk actions show their icons. Cards need a DataTableToolbar,
-since that's where select all goes.
-
-Narrow, the toolbar keeps the count, Clear and bulk actions. Select all
-matching and Show selected only aren't offered, as in the Figma library.
-Keep filter values in state you own: the controls move between the toolbar
-and the Filters sheet as the width crosses 32rem.
-
-<Canvas of={Stories.NarrowCards} />
 
 ## Do's and don'ts
 

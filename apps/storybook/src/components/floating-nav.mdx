@@ -50,6 +50,44 @@ one and the bar replaces Storybook's own.
 
 It installs `motion` with it, for the indicator and the slide.
 
+## Examples
+
+### Labels always shown
+
+`labels="always"` stacks every label under its icon, like a tab bar. Use it
+when the icons alone would not say where they go.
+
+<Canvas of={Stories.AlwaysLabelled} />
+
+### Compact
+
+`size="sm"` tightens the pill: 36px items and 16px icons instead of 44px and
+20px. Use it where the bar should take less of the screen, such as a site that
+also shows a scroll-to-top button or a chat launcher.
+
+<Canvas of={Stories.Compact} />
+
+### Text items
+
+Leave out an item's `icon` and it shows its label as text, always. Use it when
+there are only two or three places and their names say more than icons.
+
+<Canvas of={Stories.TextItems} />
+
+### Static
+
+`position="static"` keeps the bar in the flow, for a toolbar at the foot of a
+card or a preview like this one.
+
+<Canvas of={Stories.Static} />
+
+### Controlled links
+
+Items with an `href` render as links. `onValueChange` hands over the click, so
+an app can call `event.preventDefault()` and route it itself.
+
+<Canvas of={Stories.ControlledLinks} />
+
 ## Usage
 
 ```tsx
@@ -133,44 +171,6 @@ Every part the component renders, with the `data-slot` it carries.
     "Hide it at desktop widths where a sidebar or top bar already does the job.",
   ]}
 />
-
-## Examples
-
-### Labels always shown
-
-`labels="always"` stacks every label under its icon, like a tab bar. Use it
-when the icons alone would not say where they go.
-
-<Canvas of={Stories.AlwaysLabelled} />
-
-### Compact
-
-`size="sm"` tightens the pill: 36px items and 16px icons instead of 44px and
-20px. Use it where the bar should take less of the screen, such as a site that
-also shows a scroll-to-top button or a chat launcher.
-
-<Canvas of={Stories.Compact} />
-
-### Text items
-
-Leave out an item's `icon` and it shows its label as text, always. Use it when
-there are only two or three places and their names say more than icons.
-
-<Canvas of={Stories.TextItems} />
-
-### Static
-
-`position="static"` keeps the bar in the flow, for a toolbar at the foot of a
-card or a preview like this one.
-
-<Canvas of={Stories.Static} />
-
-### Controlled links
-
-Items with an `href` render as links. `onValueChange` hands over the click, so
-an app can call `event.preventDefault()` and route it itself.
-
-<Canvas of={Stories.ControlledLinks} />
 
 ## Do's and don'ts
 

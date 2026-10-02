@@ -65,7 +65,7 @@ const preview: Preview = {
           "Base components",
           ["Actions", "Forms", "Display", "Navigation", "Overlays", "Feedback"],
           "Special components",
-          ["Diagrams", "Navigation", "Display", "Feedback"],
+          ["Diagrams", "Navigation", "Forms", "Display", "Feedback"],
         ],
       },
     },
