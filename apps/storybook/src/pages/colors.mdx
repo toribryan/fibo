@@ -70,6 +70,24 @@ and none of them change.
 
 <TokenFamily name="status" />
 
+## Property tokens
+
+Each status colour has a token per property it paints: `-text` for text,
+`-border` for borders and `-icon` for icons and marks. The class names don't
+change. `text-success` reads `--success-text`, `border-success` reads
+`--success-border`, and `fill-success` and `stroke-success` read
+`--success-icon`, while `bg-success` keeps the solid fill.
+
+They exist because one value can't meet every bar. Text needs 4.5:1 against
+the surface behind it, while borders, icons and marks need 3:1. Holding each
+property to its own bar lets a theme tune one without breaking another, and a
+unit test fails if any of them drops below its bar in either theme. Today they
+match their status colour; see
+[plan 003](https://github.com/toribryan/fibo/blob/main/plans/003-property-tokens.md)
+for why they exist and what comes next.
+
+<TokenFamily name="properties" />
+
 ## Lines and focus
 
 <TokenFamily name="lines" />

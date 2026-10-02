@@ -6,7 +6,6 @@ import {
   FileTextIcon,
   FolderIcon,
   HashIcon,
-  HexagonIcon,
   MoonIcon,
   RabbitIcon,
   SquareDashedIcon,
@@ -42,7 +41,6 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   "about-fibo--docs": RabbitIcon,
   "foundations-colors--docs": ContrastIcon,
   "foundations-typography": TypeIcon,
-  "foundations-theme-creator--docs": HexagonIcon,
 }
 
 const ICON_BY_TYPE: Record<string, LucideIcon> = {
