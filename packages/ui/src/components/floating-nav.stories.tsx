@@ -56,7 +56,7 @@ const meta: Meta<typeof FloatingNav> = {
   },
   argTypes: {
     labels: { control: "inline-radio", options: ["active", "always"] },
-    size: { control: "inline-radio", options: ["default", "sm"] },
+    size: { control: "inline-radio", options: ["sm", "default"] },
     position: { control: "inline-radio", options: ["fixed", "static"] },
     hideOnScroll: { control: "boolean" },
     defaultValue: {

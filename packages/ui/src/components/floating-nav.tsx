@@ -32,7 +32,7 @@ type FloatingNavProps = Omit<React.ComponentProps<"nav">, "onChange"> & {
   /** `active` shows only the current item's label; `always` stacks every label under its icon. */
   labels?: "active" | "always"
   /** `sm` tightens the pill: 36px items and 16px icons instead of 44px and 20px. */
-  size?: "default" | "sm"
+  size?: "sm" | "default"
   /** `fixed` floats above the page at the bottom of the viewport; `static` sits in the flow. */
   position?: "fixed" | "static"
   /** Slides the bar away while the page scrolls down and back when it scrolls up. */
@@ -47,7 +47,7 @@ const floatingNavItemVariants = cva(
         active: "",
         always: "flex-col gap-0.5 leading-4",
       },
-      size: { default: "", sm: "" },
+      size: { sm: "", default: "" },
     },
     compoundVariants: [
       {
