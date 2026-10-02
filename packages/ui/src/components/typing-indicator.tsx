@@ -130,9 +130,11 @@ function TypingIndicator({
     >
       {count > 0 ? (
         <div aria-hidden className="flex min-w-0 items-center gap-2">
+          {/* A fixed height rather than a cap, so the dots have room to
+              rise inside the clip that holds a custom indicator to 16px. */}
           <span
             data-slot="typing-indicator-dots"
-            className="flex max-h-4 shrink-0 items-center gap-0.5 overflow-hidden [&_svg]:size-3.5"
+            className="flex h-4 shrink-0 items-center gap-0.5 overflow-hidden [&_svg]:size-3.5"
           >
             {custom ?? <TypingDots />}
           </span>
