@@ -1,6 +1,5 @@
 import {
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -15,6 +14,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { DARK, LIGHT, primitive } from "./color-tokens.js"
+import { LeaderLines, useAnnotations, type Callout } from "./leader-lines.js"
 
 type Mode = "light" | "dark"
 
@@ -128,107 +128,22 @@ function Scramble({
  * order top to bottom, so no two lines cross. The button's fill and its
  * label each get a line, since they're two tokens.
  */
-type Callout = { token: string; side: "left" | "right" }
-
 const CALLOUTS: Callout[] = [
   { token: "foreground", side: "left" },
   { token: "muted-foreground", side: "left" },
   { token: "border", side: "left" },
   { token: "muted", side: "left" },
-  { token: "card", side: "left" },
-  { token: "background", side: "right" },
+  // The two surfaces are met near a corner, clear of the content: the card
+  // at its foot, the page at its top.
+  { token: "card", side: "left", landing: 0.96 },
+  { token: "background", side: "right", landing: 0.08 },
   { token: "success", side: "right" },
   { token: "ring", side: "right" },
   { token: "primary", side: "right" },
-  { token: "primary-foreground", side: "right" },
+  // A label inside a button, whose line comes in below the button and
+  // rises into the text rather than cutting through the fill from the side.
+  { token: "primary-foreground", side: "right", fromBelow: true },
 ]
-
-// Where down its part a line lands, as a share of the part's height. The
-// two surfaces are met near a corner, clear of the content: the page at
-// its top, the card at its foot.
-const LANDING: Record<string, number> = { background: 0.08, card: 0.96 }
-
-// Parts met from underneath: a label inside a button, whose line comes in
-// below the button and rises into the text rather than cutting through the
-// fill from the side.
-const FROM_BELOW = new Set(["primary-foreground"])
-
-// The least room between two callouts stacked on one side.
-const CALLOUT_GAP = 2
-
-type Line = { token: string; d: string; x: number; y: number }
-type Annotations = { tops: Record<string, number>; lines: Line[] }
-
-/*
- * Sets each callout level with the part it names, so its line runs
- * straight across. Where two parts sit closer than their callouts are
- * tall, the lower callout steps down and its line bends in just short of
- * the part. Measured whenever the figure resizes; the layout doesn't change
- * between modes.
- */
-function useAnnotations(
-  frame: React.RefObject<HTMLDivElement | null>,
-  columns: React.RefObject<Map<string, HTMLElement>>,
-  callouts: React.RefObject<Map<string, HTMLElement>>,
-  parts: React.RefObject<Map<string, HTMLElement>>
-) {
-  const [annotations, setAnnotations] = useState<Annotations | null>(null)
-  useLayoutEffect(() => {
-    const node = frame.current
-    if (!node) return
-    const observer = new ResizeObserver(() => {
-      const box = node.getBoundingClientRect()
-      const tops: Record<string, number> = {}
-      const lines: Line[] = []
-      for (const side of ["left", "right"] as const) {
-        const column = columns.current.get(side)?.getBoundingClientRect()
-        // The columns are hidden on narrow screens, and measure as zero.
-        if (!column || column.width === 0) continue
-        const left = side === "left"
-        const x1 = (left ? column.right : column.left) - box.left
-        const offset = column.top - box.top
-        let floor = -Infinity
-        for (const { token } of CALLOUTS.filter((c) => c.side === side)) {
-          const to = parts.current.get(token)?.getBoundingClientRect()
-          const height = callouts.current.get(token)?.offsetHeight ?? 0
-          if (!to) continue
-          const below = FROM_BELOW.has(token)
-          const y = below
-            ? to.bottom + 3 - box.top
-            : to.top + to.height * (LANDING[token] ?? 0.5) - box.top
-          // A line from below needs its callout clear of the part's owner,
-          // so it aims a row lower.
-          const aim = below ? y + 16 : y
-          const top = Math.max(aim - offset - height / 2, floor)
-          floor = top + height + CALLOUT_GAP
-          tops[token] = top
-          const from = top + offset + height / 2
-          if (below) {
-            const x2 = to.left + to.width / 2 - box.left
-            lines.push({ token, d: `M${x1} ${from}H${x2}V${y}`, x: x2, y })
-            continue
-          }
-          // The dot lands just outside the part, clear of its text.
-          const x2 = (left ? to.left - 6 : to.right + 6) - box.left
-          const bend = left ? x2 - 16 : x2 + 16
-          lines.push({
-            token,
-            d:
-              Math.abs(from - y) < 1
-                ? `M${x1} ${y}H${x2}`
-                : `M${x1} ${from}H${bend}L${x2} ${y}`,
-            x: x2,
-            y,
-          })
-        }
-      }
-      setAnnotations({ tops, lines })
-    })
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [frame, columns, callouts, parts])
-  return annotations
-}
 
 /**
  * fibo's neutrals as a twelve-step scale, grouped by the job each step does,
@@ -255,7 +170,8 @@ function ColorScale() {
     frame,
     columnNodes,
     calloutNodes,
-    partNodes
+    partNodes,
+    CALLOUTS
   )
   const lines = annotations?.lines ?? []
 
@@ -463,26 +379,11 @@ function ColorScale() {
         ref={frame}
         className="relative flex flex-col items-center gap-6 md:flex-row md:justify-center md:gap-10"
       >
-        <svg
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 hidden size-full overflow-visible md:block"
-        >
-          {lines.map(({ token, d, x, y }) => (
-            <g
-              key={token}
-              className={cn(
-                "transition-opacity duration-200",
-                active && !isActive(token) ? "opacity-25" : "opacity-100",
-                isActive(token)
-                  ? "fill-foreground stroke-foreground"
-                  : "fill-muted-foreground stroke-border"
-              )}
-            >
-              <path d={d} fill="none" strokeWidth={1} />
-              <circle cx={x} cy={y} r={2.5} className="stroke-none" />
-            </g>
-          ))}
-        </svg>
+        <LeaderLines
+          lines={lines}
+          isActive={isActive}
+          anyActive={active !== null}
+        />
 
         <div
           ref={(node) => {

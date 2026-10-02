@@ -98,6 +98,22 @@ order:
 
 Headings and copy in sentence case.
 
+### Build and Design tabs
+
+A part made of several pieces can split its page with `<DocTabs>` from
+`blocks/doc-tabs`. Model: `chat-composer.mdx`. Keep the title, description and
+lead `<Canvas>` above the tabs.
+
+- **Build** comes first and holds sections 2 to 11 above, in that order, so a
+  first visit lands on them. Its `## Anatomy` opens with the part diagram
+  (`AnatomyDiagram` from `blocks/design-specs`), then the `data-slot` tree.
+  One anatomy per page.
+- **Design** follows, for what a designer needs to draw it: when each piece
+  appears, layout and spacing, states, arrangements, content, and how it is
+  built in Figma. Use `SpecTable` and `Specimens` from `blocks/design-specs`,
+  and render the real parts in specimens rather than copying their markup.
+- "On this page" lists only the open tab's headings, with nothing to set.
+
 ## 5. Register the metadata
 
 - Add an entry to `packages/ui/components.meta.json`: `title`, a one-line

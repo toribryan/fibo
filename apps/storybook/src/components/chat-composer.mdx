@@ -1,0 +1,828 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+import { useEffect, useRef } from "react"
+
+import * as Stories from "../../../../packages/ui/src/components/chat-composer.stories"
+import {
+  ChatComposerAttachments,
+  ChatComposerCommonActions,
+  ChatComposerDropZone,
+  ChatComposerFooter,
+  ChatComposerFrame,
+  ChatComposerHeader,
+  ChatComposerInput,
+  ChatComposerProvider,
+  ChatComposerSubmit,
+  LocalChatComposerProvider,
+} from "../../../../packages/ui/src/components/chat-composer"
+import { Anatomy } from "../blocks/anatomy"
+import { DocTab, DocTabs } from "../blocks/doc-tabs"
+import { AnatomyDiagram, SpecTable, Specimens } from "../blocks/design-specs"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+export const idle = {
+  setValue() {},
+  addAttachments() {},
+  removeAttachment() {},
+  submit() {},
+}
+
+export const files = [
+  { id: "a", name: "token-audit.pdf", size: 482000 },
+  { id: "b", name: "button-states.png", size: 1830000 },
+]
+
+export const StillFrame = ({ className, placeholder = "Message #design" }) => (
+  <ChatComposerFrame className={className}>
+    <ChatComposerHeader className="empty:hidden">
+      <ChatComposerAttachments />
+    </ChatComposerHeader>
+    <ChatComposerInput placeholder={placeholder} />
+    <ChatComposerFooter>
+      <ChatComposerCommonActions />
+      <ChatComposerSubmit />
+    </ChatComposerFooter>
+  </ChatComposerFrame>
+)
+
+export const Still = ({ state, ...props }) => (
+  <ChatComposerProvider
+    state={{ value: "", attachments: [], ...state }}
+    actions={idle}
+  >
+    <StillFrame {...props} />
+  </ChatComposerProvider>
+)
+
+export const Dragging = () => {
+  // The real drop zone, held mid-drag by one synthetic dragenter, so the
+  // specimen shows the overlay the component draws rather than a copy.
+  const zone = useRef(null)
+  useEffect(() => {
+    const data = new DataTransfer()
+    data.items.add(new File([""], "review.png", { type: "image/png" }))
+    zone.current?.dispatchEvent(
+      new DragEvent("dragenter", { bubbles: true, dataTransfer: data })
+    )
+  }, [])
+  return (
+    <ChatComposerProvider state={{ value: "", attachments: [] }} actions={idle}>
+      <ChatComposerDropZone ref={zone}>
+        <StillFrame />
+      </ChatComposerDropZone>
+    </ChatComposerProvider>
+  )
+}
+
+# Chat composer
+
+The box people write messages in. It is a set of parts around one draft, not
+one component with a prop for every case: each chat surface picks the parts it
+needs, puts them in its own order, and adds its own elements beside them.
+
+<Canvas of={Stories.Default} />
+
+<DocTabs>
+
+<DocTab value="build" label="Build">
+
+## Features
+
+- A provider holds the draft and how to change and send it. The frame, header,
+  text box, footer, actions and send button read it from context, so they work
+  in any order and anywhere below it, even outside the frame.
+- The parts never own state. `LocalChatComposerProvider` keeps the draft in
+  component state; pass your own state and actions to `ChatComposerProvider` to
+  keep it in a store, on a server, or synced across devices.
+- Enter sends, Shift+Enter breaks the line, and the text box grows with the
+  draft. Attachments come from a file picker or a drop.
+- No boolean props for features. Drag and drop, mentions and attachments are
+  parts: render one to turn it on, leave it out to turn it off.
+
+## Installation
+
+<Install
+  name="chat-composer"
+  exports={[
+    "LocalChatComposerProvider",
+    "ChatComposerFrame",
+    "ChatComposerInput",
+    "ChatComposerFooter",
+    "ChatComposerCommonActions",
+    "ChatComposerSubmit",
+  ]}
+/>
+
+It installs Button with it. `ChatComposerProvider`, `useChatComposer`,
+`ChatComposerHeader`, `ChatComposerAttachments`, `ChatComposerAction`,
+`ChatComposerAttachButton`, `ChatComposerMentionButton` and `ChatComposerDropZone` are
+exported too.
+
+## Usage
+
+```tsx
+import {
+  ChatComposerCommonActions,
+  ChatComposerFooter,
+  ChatComposerFrame,
+  ChatComposerInput,
+  ChatComposerSubmit,
+  LocalChatComposerProvider,
+} from "@/components/ui/chat-composer"
+
+export function ChannelComposer() {
+  return (
+    <LocalChatComposerProvider onSubmit={({ value }) => sendMessage(value)}>
+      <ChatComposerFrame>
+        <ChatComposerInput placeholder="Message #design" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  )
+}
+```
+
+When a surface needs something the parts don't do, write it as JSX beside
+them rather than adding a prop to a part.
+
+### Bring your own state
+
+Every part talks to this interface and nothing else. Render
+`ChatComposerProvider` with your own `state` and `actions` and the same parts run
+on them:
+
+```ts
+type ChatComposerState = {
+  value: string
+  attachments: ChatComposerAttachment[]
+  submitting?: boolean
+  disabled?: boolean
+  canSubmit?: boolean // defaults to having text or an attachment
+}
+
+type ChatComposerActions = {
+  setValue: (value: string) => void
+  addAttachments: (files: File[]) => void
+  removeAttachment: (id: string) => void
+  submit: () => void
+}
+
+type ChatComposerAttachment = {
+  id: string
+  name: string
+  size?: number // bytes
+  file?: File
+}
+```
+
+```tsx
+function SyncedComposerProvider({ children }) {
+  const state = useSyncExternalStore(draft.subscribe, draft.get)
+  const actions = useMemo(() => createDraftActions(draft), [])
+  return (
+    <ChatComposerProvider state={state} actions={actions}>
+      {children}
+    </ChatComposerProvider>
+  )
+}
+```
+
+Custom parts read the same context with `useChatComposer()`, which returns
+`{ state, actions, meta }`, with the text box at `meta.inputRef`.
+
+## Anatomy
+
+Seven parts make up a full composer. Each is its own component, so a design
+picks the ones it needs rather than switching features off. Point at a name
+to find its part, then find its element and `data-slot` in the tree below.
+
+<AnatomyDiagram
+  parts={[
+    {
+      token: "frame",
+      side: "left",
+      landing: 0.1,
+      name: "Frame",
+      description:
+        "The box. It reads as one field: a click anywhere on its surface puts the caret in the text.",
+    },
+    {
+      token: "header",
+      side: "left",
+      name: "Header",
+      description:
+        "Optional. Context above the text: what's being edited or replied to, and attachments.",
+    },
+    {
+      token: "input",
+      side: "left",
+      name: "Text box",
+      description:
+        "Where the message is written. The only part every composer has.",
+    },
+    {
+      token: "footer",
+      side: "left",
+      name: "Footer",
+      description:
+        "Optional. The row of actions under the text, with send at the end.",
+    },
+    {
+      token: "attachments",
+      side: "right",
+      name: "Attachments",
+      description:
+        "A chip per file, with its size and a remove button. Only there when files are attached.",
+    },
+    {
+      token: "submit",
+      side: "right",
+      name: "Send",
+      description:
+        "Sends the message. An arrow on its own, or a word such as Save or Forward.",
+    },
+    {
+      token: "actions",
+      side: "right",
+      fromBelow: true,
+      name: "Actions",
+      description:
+        "Icon buttons for attaching and mentioning. A composer can swap in its own set.",
+    },
+  ]}
+>
+  {(part) => (
+    <ChatComposerProvider
+      state={{ value: "Both files from the review.", attachments: files }}
+      actions={idle}
+    >
+      <ChatComposerFrame {...part("frame")}>
+        <ChatComposerHeader {...part("header")}>
+          <ChatComposerAttachments {...part("attachments")} />
+        </ChatComposerHeader>
+        <ChatComposerInput {...part("input")} />
+        <ChatComposerFooter {...part("footer")}>
+          <ChatComposerCommonActions {...part("actions")} />
+          <ChatComposerSubmit {...part("submit")} />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </ChatComposerProvider>
+  )}
+</AnatomyDiagram>
+
+A drop zone can wrap the frame too. It has no look of its own until files are
+dragged over it, so it shows under States instead.
+
+Every part, with the `data-slot` it carries. The providers render no element.
+
+<Anatomy
+  root={{
+    name: "ChatComposerDropZone",
+    slot: "chat-composer-drop-zone",
+    note: "Optional. Attaches dropped files and shows a drop hint while dragging.",
+    children: [
+      {
+        name: "ChatComposerFrame",
+        slot: "chat-composer",
+        note: "The box. A click on its bare surface focuses the text box.",
+        children: [
+          {
+            name: "ChatComposerHeader",
+            slot: "chat-composer-header",
+            note: "Optional row above the text, for context or attachments.",
+            children: [
+              {
+                name: "ChatComposerAttachments",
+                slot: "chat-composer-attachments",
+                note: "A list of chips, each with a remove button. Absent when there are none.",
+                children: [
+                  {
+                    name: "attachment",
+                    slot: "chat-composer-attachment",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            name: "ChatComposerInput",
+            slot: "chat-composer-input",
+            note: "The text box.",
+          },
+          {
+            name: "ChatComposerFooter",
+            slot: "chat-composer-footer",
+            note: "Optional row below the text.",
+            children: [
+              {
+                name: "ChatComposerCommonActions",
+                slot: "chat-composer-common-actions",
+                note: "Attach and mention, the actions most composers share.",
+                children: [
+                  {
+                    name: "ChatComposerAction",
+                    slot: "chat-composer-action",
+                    note: "An icon button. The attach and mention buttons are built on it.",
+                  },
+                ],
+              },
+              {
+                name: "ChatComposerSubmit",
+                slot: "chat-composer-submit",
+                note: "Sends the draft. Can sit anywhere inside the provider.",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Compose a variant from parts instead of adding a prop. An edit box, a thread reply and a forward dialog are three compositions of the same parts.",
+    <>
+      Keep state out of the parts. If the draft has to survive a reload or
+      follow someone across devices, swap <code>LocalChatComposerProvider</code>{" "}
+      for a <code>ChatComposerProvider</code> fed by your store.
+    </>,
+    <>
+      Put the provider around everything that needs the draft. A send button in
+      a dialog's footer, outside the frame, still works when it's inside the
+      provider.
+    </>,
+    <>
+      Leave <code>ChatComposerCommonActions</code> out when a composer needs a
+      different set, and list the actions it does need.
+    </>,
+    <>
+      Return a promise from <code>onSubmit</code> when sending takes a round
+      trip. The send button shows it's busy, and a rejection keeps the draft.
+    </>,
+  ]}
+/>
+
+## Examples
+
+### With attachments
+
+Files picked or dropped show as chips in the header, each with its size and a
+remove button.
+
+<Canvas of={Stories.WithAttachments} />
+
+### Minimal
+
+A text box and a send button in one row, with no header, footer or drop zone.
+Leaving the parts out is the whole configuration.
+
+<Canvas of={Stories.Minimal} />
+
+### Disabled
+
+`disabled` on the provider turns off the text box and every action.
+
+<Canvas of={Stories.Disabled} />
+
+### Edit message
+
+Editing a sent message: a header says so, the footer swaps the actions for
+Cancel and Save, and Escape cancels through the text box's own `onKeyDown`.
+No `isEditing` prop.
+
+<Canvas of={Stories.EditMessage} />
+
+### Thread reply
+
+A reply in a thread, with a checkbox to also post it to the channel. The
+checkbox is ordinary JSX in the footer, and the story's `onSubmit` reads it.
+
+<Canvas of={Stories.ThreadReply} />
+
+### Submit outside the frame
+
+A forward dialog whose Forward button sits in the dialog's footer, outside
+the frame. It sends because it's inside the provider. The note is optional,
+so the provider's `canSubmit` lets an empty draft through.
+
+<Canvas of={Stories.SubmitOutsideTheFrame} />
+
+### Synced draft
+
+Two composers on one store, as a draft synced between a laptop and a phone
+would be. Type in either one. The parts are the same; only the provider
+changed.
+
+<Canvas of={Stories.SyncedDraft} />
+
+### In a chat
+
+Under a message list, with a pretend round trip so the send button shows its
+busy state.
+
+<Canvas of={Stories.InAChat} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <LocalChatComposerProvider>
+            <ChatComposerFrame className="w-72">
+              <ChatComposerHeader>Editing message</ChatComposerHeader>
+              <ChatComposerInput aria-label="Edit message" />
+              <ChatComposerFooter className="justify-end">
+                <ChatComposerSubmit>Save</ChatComposerSubmit>
+              </ChatComposerFooter>
+            </ChatComposerFrame>
+          </LocalChatComposerProvider>
+        ),
+        description:
+          "Compose a variant: a header that says what's happening and the actions it needs.",
+      },
+      negative: {
+        component: (
+          <code className="rounded-md bg-muted px-2 py-1 text-xs">
+            {"<Composer isEditing isThread hideAttach />"}
+          </code>
+        ),
+        description:
+          "Don't add a boolean for each case. Every flag doubles the states the part has to get right.",
+      },
+    },
+    {
+      positive: {
+        component: (
+          <LocalChatComposerProvider>
+            <ChatComposerFrame className="w-72">
+              <ChatComposerInput placeholder="Message #design" />
+              <ChatComposerFooter>
+                <ChatComposerCommonActions />
+                <ChatComposerSubmit />
+              </ChatComposerFooter>
+            </ChatComposerFrame>
+          </LocalChatComposerProvider>
+        ),
+        description: "Keep the send button at the end of the footer.",
+      },
+      negative: {
+        component: (
+          <LocalChatComposerProvider>
+            <ChatComposerFrame className="w-72">
+              <ChatComposerFooter>
+                <ChatComposerSubmit />
+                <ChatComposerCommonActions />
+              </ChatComposerFooter>
+              <ChatComposerInput placeholder="Message #design" />
+            </ChatComposerFrame>
+          </LocalChatComposerProvider>
+        ),
+        description:
+          "Don't move it because you can. People look for it where they finish typing.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+Style parts by slot or state, for example with
+`[&_[data-slot=chat-composer-footer]]:border-t`.
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="chat-composer"',
+      element: "The frame",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-header"',
+      element: "The row above the text",
+      when: "When rendered.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-attachments"',
+      element: "The list of attachment chips",
+      when: "When there is at least one attachment.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-attachment"',
+      element: "Each attachment chip",
+      when: "One per attachment.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-input"',
+      element: "The text box",
+      when: "When rendered.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-footer"',
+      element: "The row below the text",
+      when: "When rendered.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-common-actions"',
+      element: "The shared actions group",
+      when: "When rendered.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-action"',
+      element: "Each icon action, including attach and mention",
+      when: "When rendered.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-submit"',
+      element: "The send button",
+      when: "When rendered.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-drop-zone"',
+      element: "The drop target",
+      when: "When rendered.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "The frame",
+      when: "The composer is disabled.",
+    },
+    {
+      attribute: "data-dragging",
+      element: "The drop zone",
+      when: "Files are being dragged over it.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The text box is named Message by default. Pass <code>aria-label</code>{" "}
+      when the placeholder says something more specific, such as Edit message.
+    </>,
+    "Icon buttons are named by their label, which is also their tooltip. The send button is named Send.",
+    "Enter sends and Shift+Enter breaks the line. Enter that confirms a word in an input method editor never sends.",
+    "Each attachment has its own Remove button, named after the file.",
+    <>
+      Dropping files is a shortcut. The attach button does the same from the
+      keyboard; give both the same <code>accept</code>.
+    </>,
+    "The send button is aria-busy while a send is in flight, and its spinner holds still when reduced motion is on.",
+    "After a send, focus returns to the text box, so the next message starts where the last one ended.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Textarea", "Button", "Filter menu"]} />
+
+## References
+
+- Fernando Rojo, [Composition is all you need](https://www.youtube.com/watch?v=4KvbVq3Eg5w),
+  React Universe Conf 2025, the talk whose composer these parts follow
+- [Base UI](https://base-ui.com), for the button underneath
+
+</DocTab>
+
+<DocTab value="design" label="Design">
+
+## When each part appears
+
+Every part but the text box is optional. Leaving one out is how a composer
+changes, so there's never a hidden switch to design for.
+
+<SpecTable
+  columns={["Part", "Include it when", "Leave it out when"]}
+  rows={[
+    [
+      "Header",
+      "The message needs context: an edit, a reply, a forward, or attachments.",
+      "It's a plain message to the conversation on screen.",
+    ],
+    [
+      "Actions",
+      "People attach files or mention others from here.",
+      "The surface only takes text, such as a search or an AI prompt.",
+    ],
+    [
+      "Send",
+      "Almost always. It's the visible way to send, and the only one on touch screens.",
+      "A surrounding dialog has its own confirm button, which can send instead.",
+    ],
+    [
+      "Drop zone",
+      "Attachments are welcome, and there's room to drop onto.",
+      "The composer doesn't take files.",
+    ],
+  ]}
+/>
+
+## Layout and spacing
+
+Sizes at the default radius and type scale. Every colour is a semantic token,
+so the composer follows the theme.
+
+<SpecTable
+  columns={["Part", "Size", "Spacing", "Tokens"]}
+  rows={[
+    [
+      "Frame",
+      "Fills its container",
+      "No padding of its own; rows pad themselves",
+      <>
+        <code>input-subtle</code> fill, 1px <code>input</code> border,{" "}
+        <code>radius-2xl</code> (16px)
+      </>,
+    ],
+    [
+      "Header",
+      "Hugs its content",
+      "12px top and sides, 8px between items",
+      <>
+        14px text in <code>muted-foreground</code>
+      </>,
+    ],
+    [
+      "Attachments",
+      "Chips 28px tall, at most 224px wide; long names truncate",
+      "10px left, 4px right, 6px gaps",
+      <>
+        <code>background</code> fill, <code>border</code> outline, 12px text,
+        fully rounded
+      </>,
+    ],
+    [
+      "Text box",
+      "44px tall for one line, grows to 240px, then scrolls",
+      "12px all round",
+      <>
+        14px text, 16px on small screens so phones don't zoom;{" "}
+        <code>muted-foreground</code> placeholder
+      </>,
+    ],
+    [
+      "Footer",
+      "Hugs its content",
+      "8px sides and bottom, 4px between actions",
+      "Actions start, send ends",
+    ],
+    [
+      "Action",
+      "32px square, 16px icon",
+      "2px between actions",
+      <>
+        Ghost button, <code>muted-foreground</code> icon, fully rounded
+      </>,
+    ],
+    [
+      "Send",
+      "32px square, or 32px tall with a word",
+      "Sits at the end of the footer",
+      <>
+        <code>primary</code> fill, <code>primary-foreground</code> icon, fully
+        rounded
+      </>,
+    ],
+  ]}
+/>
+
+## States
+
+The frame carries the composer's state, so the whole field changes together
+rather than part by part.
+
+<Specimens
+  items={[
+    {
+      label: "Empty",
+      note: "The placeholder says where the message goes. Send is dimmed until there's something to send.",
+      children: <Still />,
+    },
+    {
+      label: "Focused",
+      note: (
+        <>
+          The frame takes the <code>ring</code> border and a 3px{" "}
+          <code>ring-subtle</code> halo while the text box has focus.
+        </>
+      ),
+      children: <Still className="border-ring ring-[3px] ring-ring-subtle" />,
+    },
+    {
+      label: "Filled",
+      note: "The text box grows with each line up to 240px, then scrolls. Send turns solid.",
+      children: (
+        <Still
+          state={{ value: "Tokens first,\nthen the parts that use them." }}
+        />
+      ),
+    },
+    {
+      label: "With attachments",
+      note: "Chips wrap onto new lines in the header. Files alone are enough to send.",
+      children: <Still state={{ attachments: files }} />,
+    },
+    {
+      label: "Sending",
+      note: "Send shows a spinner and holds still under reduced motion. People can keep typing.",
+      children: <Still state={{ value: "On its way", submitting: true }} />,
+    },
+    {
+      label: "Disabled",
+      note: "The whole frame drops to half opacity and takes no input.",
+      children: (
+        <Still state={{ value: "Waiting for a connection", disabled: true }} />
+      ),
+    },
+    {
+      label: "Dragging files",
+      note: (
+        <>
+          A dashed <code>ring</code> outline covers the frame with a short
+          instruction, until the files are dropped or dragged away.
+        </>
+      ),
+      children: <Dragging />,
+    },
+  ]}
+/>
+
+## Arrangements
+
+The same parts, arranged for different moments. Each is one of the examples
+under Build.
+
+<SpecTable
+  columns={["Arrangement", "Header", "Footer", "Send"]}
+  rows={[
+    [
+      "Message",
+      "Attachments, when there are any",
+      "Attach and mention",
+      "Arrow",
+    ],
+    ["Minimal", "None", "None; send sits beside the text", "Arrow"],
+    [
+      "Edit message",
+      "Editing message",
+      "A hint that Esc cancels, and Cancel",
+      "Save",
+    ],
+    [
+      "Thread reply",
+      "Replying to someone",
+      "Attach, mention, and a checkbox to also post to the channel",
+      "Arrow",
+    ],
+    [
+      "Forward",
+      "None; the dialog gives the context",
+      "None",
+      "Forward, in the dialog's own footer",
+    ],
+  ]}
+/>
+
+## Content
+
+<UsageGuidelines
+  guidelines={[
+    "Name where the message goes in the placeholder: Message #design, Reply to Ada. Avoid generic text such as Type here.",
+    "Headers say what's happening in a few words, in sentence case: Editing message, Replying to Ada Lovelace.",
+    "Give send a word when it does something other than post a new message: Save, Forward. Keep the arrow for a plain send.",
+    "Keep file names whole in the data. The chip truncates them for display and screen readers still hear the full name.",
+  ]}
+/>
+
+## In Figma
+
+<UsageGuidelines
+  guidelines={[
+    "Build the composer from nested instances, one per part, so a design swaps or hides parts the way code does.",
+    "Prefer instance swaps and slots over boolean properties. A property for every case is the problem this component exists to avoid.",
+    "Use the same names as the Anatomy in the Build tab, so a spec reads the same in both places.",
+    "Bind every fill and stroke to the semantic variables in the spacing table, never to a grey from the ramp.",
+  ]}
+/>
+
+</DocTab>
+
+</DocTabs>

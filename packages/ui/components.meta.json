@@ -24,6 +24,13 @@
     "tier": "special-components",
     "group": "Navigation"
   },
+  "chat-composer": {
+    "title": "Chat composer",
+    "description": "A message box built from parts around one draft, so each chat surface composes its own.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new"
+  },
   "checkbox": {
     "title": "Checkbox",
     "description": "Turns a single option on or off, or picks many from a list.",

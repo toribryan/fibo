@@ -36,7 +36,9 @@ Check each item and report only the ones that fail, with file and line:
    API reference with data attributes, Accessibility, Related components,
    References. Every example has a sentence, every `data-slot` in the source
    appears in the data attributes table, and every story used exists.
-   Sentence case headings.
+   Sentence case headings. A page split with `<DocTabs>` puts those sections
+   in a Build tab that comes first, the design material in a Design tab
+   after it, and one Anatomy (see the add-component skill).
 7. **Tests.** Interactive parts have a `play` function on `Default` covering
    pointer and keyboard. Bare stories name the part with `aria-label`. Logic
    that stories cannot show has a `<name>.test.tsx`. No story imports from
