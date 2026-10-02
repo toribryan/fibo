@@ -48,6 +48,7 @@ has the same history with links into the docs.
 
 ### Fixed
 
+- Typing indicator: the dots no longer get clipped at the top of their bounce.
 - Registry parts now bring the tokens they use that a stock shadcn theme
   lacks, such as `--primary-hover`, `--ring-subtle` and the status colours.
   Before, they installed without them, and hover, focus ring and destructive
