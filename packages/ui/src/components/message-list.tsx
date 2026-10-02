@@ -173,6 +173,8 @@ type MessageListStrings = {
   deleted: string
   /** Read before a reply's quote. */
   replyingTo: (name: string) => string
+  /** The label on the unread divider. */
+  unread: string
 }
 
 const defaultStrings: MessageListStrings = {
@@ -185,6 +187,7 @@ const defaultStrings: MessageListStrings = {
         : `${message.author.name}, ${time}`,
   deleted: "This message was deleted.",
   replyingTo: (name) => `Replying to ${name}`,
+  unread: "New",
 }
 
 const FOCUSABLE = [
@@ -257,6 +260,8 @@ type MessageListProps = Omit<React.ComponentProps<"div">, "children"> &
   Omit<GroupOptions, "dividers"> & {
     /** The conversation, oldest first. */
     messages: ChatMessage[]
+    /** The first unread message. Freeze it when the conversation opens, so the divider stays put while people read. */
+    unreadFrom?: string
     /** Labels for dividers above messages, keyed by message id. Each one also breaks the group. */
     dividers?: Record<string, string>
     /** The level of each group's heading. */
@@ -271,6 +276,7 @@ function MessageList({
   messages,
   windowMinutes,
   windowFrom,
+  unreadFrom,
   dividers = {},
   headingLevel = 3,
   locale = "en",
@@ -282,7 +288,9 @@ function MessageList({
   ...props
 }: MessageListProps) {
   const strings = { ...defaultStrings, ...stringOverrides }
-  const dividerKey = Object.keys(dividers).join("\u0000")
+  const dividerKey = [...Object.keys(dividers), unreadFrom ?? ""]
+    .filter(Boolean)
+    .join("\u0000")
   const grouped = React.useMemo(
     () =>
       groupMessages(messages, {
@@ -433,10 +441,16 @@ function MessageList({
 
         return (
           <React.Fragment key={message.id}>
-            {newDay ? (
-              <MessageDivider label={day.format(message.sentAt)} />
+            {newDay || divider || message.id === unreadFrom ? (
+              <MessageDivider
+                label={
+                  [newDay ? day.format(message.sentAt) : "", divider ?? ""]
+                    .filter(Boolean)
+                    .join(" \u00b7 ") || undefined
+                }
+                unread={message.id === unreadFrom ? strings.unread : undefined}
+              />
             ) : null}
-            {divider ? <MessageDivider label={divider} /> : null}
             <article
               data-slot="message"
               data-id={message.id}
@@ -535,20 +549,45 @@ function MessageList({
   )
 }
 
+/*
+ * One divider carries whatever marks a message: its date, a caller's label,
+ * the unread marker. A new day that is also where unread messages begin
+ * draws one line, not two.
+ */
 function MessageDivider({
   label,
+  unread,
 }: {
-  /** What the divider marks, such as a date or "New". Also its accessible name. */
-  label: string
+  /** What the divider marks, such as a date, or a date and a label. */
+  label?: string
+  /** The unread marker's label. Turns the line red, with the label beside it. */
+  unread?: string
 }) {
   return (
     <div
       role="separator"
-      aria-label={label}
+      aria-label={[label, unread].filter(Boolean).join(", ")}
       data-slot="message-divider"
-      className="mt-[var(--message-group-gap)] flex items-center gap-3 text-xs font-medium text-muted-foreground before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border first:mt-0"
+      data-unread={unread ? "" : undefined}
+      className="group/divider mt-[var(--message-group-gap)] flex items-center gap-3 text-xs font-medium text-muted-foreground first:mt-0"
     >
-      {label}
+      <span className="h-px flex-1 bg-border group-data-unread/divider:bg-destructive" />
+      {label ? (
+        <>
+          {label}
+          <span className="h-px flex-1 bg-border group-data-unread/divider:bg-destructive" />
+        </>
+      ) : null}
+      {unread ? (
+        // A word as well as a colour, since red alone carries nothing for
+        // people who can't tell it apart (WCAG 1.4.1).
+        <span
+          data-slot="message-divider-unread"
+          className="-ml-3 rounded-sm bg-destructive px-1.5 py-0.5 text-[10px] leading-none font-semibold text-destructive-foreground"
+        >
+          {unread}
+        </span>
+      ) : null}
     </div>
   )
 }

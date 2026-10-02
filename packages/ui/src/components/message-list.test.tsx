@@ -249,6 +249,28 @@ describe("MessageList", () => {
       .toBeInTheDocument()
   })
 
+  it("marks where unread messages begin, in words as well as colour", async () => {
+    const screen = await render(
+      <MessageList messages={thread} unreadFrom="a2" />
+    )
+    const divider = screen.getByRole("separator", { name: "New" })
+    await expect.element(divider).toHaveAttribute("data-unread")
+    await expect.element(divider).toHaveTextContent("New")
+    // It breaks the group, so the message under it gets its own heading.
+    await expect
+      .element(screen.getByRole("article", { name: /^Ana, 9:01/ }))
+      .toHaveAttribute("data-break", "divider")
+  })
+
+  it("draws one divider for a new day that is also the first unread", async () => {
+    const screen = await render(
+      <MessageList messages={thread} unreadFrom="a1" />
+    )
+    const dividers = screen.getByRole("separator").elements()
+    expect(dividers).toHaveLength(1)
+    expect(dividers[0]?.getAttribute("aria-label")).toBe("October 1, 2026, New")
+  })
+
   it("draws a divider for a new day and for each label", async () => {
     const screen = await render(
       <MessageList messages={thread} dividers={{ b1: "New" }} />
