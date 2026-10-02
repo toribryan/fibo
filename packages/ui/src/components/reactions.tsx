@@ -47,7 +47,7 @@ const ANCHOR =
 
 const reactionsVariants = cva("group/reactions", {
   variants: {
-    variant: {
+    type: {
       inline: "relative flex flex-wrap items-center gap-1.5",
       floating: ANCHOR,
     },
@@ -60,32 +60,32 @@ const reactionsVariants = cva("group/reactions", {
   },
   compoundVariants: [
     {
-      variant: "floating",
+      type: "floating",
       position: "bottom-right",
       class:
         "right-[var(--edge)] bottom-[calc(var(--gap)+env(safe-area-inset-bottom,0px))]",
     },
     {
-      variant: "floating",
+      type: "floating",
       position: "bottom-left",
       class:
         "bottom-[calc(var(--gap)+env(safe-area-inset-bottom,0px))] left-[var(--edge)]",
     },
     {
-      variant: "floating",
+      type: "floating",
       position: "top-right",
       class:
         "top-[calc(var(--gap)+env(safe-area-inset-top,0px))] right-[var(--edge)]",
     },
     {
-      variant: "floating",
+      type: "floating",
       position: "top-left",
       class:
         "top-[calc(var(--gap)+env(safe-area-inset-top,0px))] left-[var(--edge)]",
     },
   ],
   defaultVariants: {
-    variant: "inline",
+    type: "inline",
     position: "bottom-right",
   },
 })
@@ -278,7 +278,7 @@ type ReactionsProps = Omit<React.ComponentProps<"div">, "onChange"> &
 
 function Reactions({
   className,
-  variant = "inline",
+  type = "inline",
   position = "bottom-right",
   reactions: reactionsProp,
   defaultReactions = [],
@@ -362,7 +362,7 @@ function Reactions({
     const change = `${nowActive ? "Added" : "Removed"} ${reaction.label}`
     // The floating bar has no pills, so its total is the only count to hear.
     setAnnouncement(
-      variant === "floating" && showCounts
+      type === "floating" && showCounts
         ? `${change}, ${describeCount(total + (nowActive ? 1 : -1))} in total`
         : change
     )
@@ -399,7 +399,7 @@ function Reactions({
 
   // The panel opens away from the bar's corner when floating, and above the
   // trigger inline. Base UI flips it to whichever side has room.
-  const isBar = variant === "floating"
+  const isBar = type === "floating"
   const opensDown =
     isBar && (position === "top-right" || position === "top-left")
   const alignsEnd =
@@ -424,7 +424,7 @@ function Reactions({
       aria-label={triggerLabel}
       className={cn(
         "group/trigger relative inline-flex shrink-0 items-center justify-center rounded-full transition-[background-color,color,transform,box-shadow] duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
-        variant === "inline"
+        type === "inline"
           ? "size-7 text-muted-foreground hover:bg-muted hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground [&_svg]:size-4"
           : "size-8 touch-manipulation text-foreground hover:bg-muted data-[state=open]:bg-muted motion-safe:active:scale-95 [&_svg]:size-4"
       )}
@@ -440,16 +440,16 @@ function Reactions({
     <div
       ref={rootRef}
       data-slot="reactions"
-      data-variant={variant}
+      data-type={type}
       role="group"
       aria-label={ariaLabel}
-      className={cn(reactionsVariants({ variant, position, className }))}
+      className={cn(reactionsVariants({ type, position, className }))}
       {...props}
     >
       <span role="status" aria-live="polite" className="sr-only">
         {announcement}
       </span>
-      {variant === "inline" &&
+      {type === "inline" &&
         items.map((item) => (
           <button
             key={item.emoji}
@@ -561,7 +561,7 @@ function Reactions({
             </PopoverPrimitive.Positioner>
           </PopoverPrimitive.Portal>
 
-          {variant === "floating" && totalChip}
+          {type === "floating" && totalChip}
 
           {trigger}
         </PopoverPrimitive.Root>

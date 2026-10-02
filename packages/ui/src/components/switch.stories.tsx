@@ -8,7 +8,7 @@ const meta: Meta<typeof Switch> = {
   title: "Base components/Switch",
   component: Switch,
   argTypes: {
-    size: { control: "inline-radio", options: ["default", "sm"] },
+    size: { control: "inline-radio", options: ["sm", "default"] },
     disabled: { control: "boolean" },
     onCheckedChange: { control: false },
   },

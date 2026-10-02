@@ -23,13 +23,13 @@ const meta: Meta<typeof Button> = {
     size: {
       control: "select",
       options: [
-        "default",
         "xs",
         "sm",
+        "default",
         "lg",
-        "icon",
         "icon-xs",
         "icon-sm",
+        "icon",
         "icon-lg",
       ],
     },

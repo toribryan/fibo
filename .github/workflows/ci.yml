@@ -34,6 +34,11 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
+      # Code against the Figma library as last read into figma/snapshot.json.
+      # Refresh the snapshot with the figma-drift skill when Figma changes.
+      - name: Figma drift
+        run: pnpm figma:drift
+
       # Build runs before typecheck so the generated registry files exist.
       - name: Build
         run: pnpm build

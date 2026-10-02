@@ -245,7 +245,8 @@ function tokens(theme: Theme, mode: Mode): Record<string, Token> {
       return {
         [role]: solid(color),
         [`${role}-foreground`]: solid(n[50]),
-        [`${role}-subtle`]: alpha(color, 0.08),
+        // Matches globals.css: only destructive's red stays AA on 8%.
+        [`${role}-subtle`]: alpha(color, role === "destructive" ? 0.08 : 0.06),
         ...extra,
       }
     }
