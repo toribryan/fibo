@@ -18,8 +18,9 @@ sits next to the thing it describes.
 
 ## Features
 
-- Four variants: `default`, `secondary`, `outline`, and `destructive`, a red
-  tint for states that need action.
+- Three neutral variants, `default`, `secondary` and `outline`, and four
+  status tints: `destructive` for states that need action, `success`,
+  `warning` and `info`.
 - Sized for one or two words, next to the thing it describes.
 - Not interactive, so it adds nothing to the tab order.
 
@@ -50,13 +51,14 @@ Say the state in the label. The variant only reinforces it.
     "Keep it to one or two words, so it can be taken in at a glance.",
     "Use default for the one state that needs attention, secondary or outline for everything else.",
     "Use destructive only for states that need action, such as Failed or Overdue.",
+    "Use success, warning and info for a status that has one of those meanings, such as Paid, Expiring or Beta. Never for decoration.",
     "If clicking it should do something, use a Button instead.",
   ]}
 />
 
 ## Examples
 
-All four variants side by side.
+Every variant side by side.
 
 <Canvas of={Stories.AllVariants} />
 
