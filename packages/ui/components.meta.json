@@ -154,5 +154,12 @@
     "description": "Walks a colour token from raw value to primitive to semantic role.",
     "tier": "special-components",
     "group": "Diagrams"
+  },
+  "tooltip": {
+    "title": "Tooltip",
+    "description": "A short label that appears when a control is hovered or focused.",
+    "tier": "base-components",
+    "group": "Overlays",
+    "status": "new"
   }
 }
