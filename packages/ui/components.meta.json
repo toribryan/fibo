@@ -4,51 +4,59 @@
     "title": "Avatar",
     "description": "A person's photo, or their initials when there's no photo.",
     "tier": "base-components",
-    "group": "Display"
+    "group": "Display",
+    "figma": "238-2"
   },
   "badge": {
     "title": "Badge",
     "description": "A short label for status, category or count.",
     "tier": "base-components",
-    "group": "Display"
+    "group": "Display",
+    "figma": "169-13"
   },
   "button": {
     "title": "Button",
     "description": "Triggers an action or event with a single click.",
     "tier": "base-components",
-    "group": "Actions"
+    "group": "Actions",
+    "figma": "169-12"
   },
   "chapter-scrubber": {
     "title": "Chapter scrubber",
     "description": "A rail of marks that swell under the pointer like the Dock, previewing the chapter at the crest.",
     "tier": "special-components",
-    "group": "Navigation"
+    "group": "Navigation",
+    "figma": "371-4"
   },
   "chat-composer": {
     "title": "Chat composer",
     "description": "A message box built from parts around one draft, so each chat surface composes its own.",
     "tier": "base-components",
     "group": "Forms",
-    "status": "new"
+    "status": "new",
+    "figma": "509-2"
   },
   "checkbox": {
     "title": "Checkbox",
     "description": "Turns a single option on or off, or picks many from a list.",
     "tier": "base-components",
-    "group": "Forms"
+    "group": "Forms",
+    "figma": "169-14"
   },
   "command-menu": {
     "title": "Command menu",
     "description": "A Cmd+K palette with nested pages, recent commands, ranked search and a preview pane.",
     "tier": "special-components",
-    "group": "Navigation"
+    "group": "Navigation",
+    "figma": "526-6"
   },
   "data-table": {
     "title": "Data table",
     "description": "A table for lists people work through: selection, cell types, locked rows and pinned columns.",
     "tier": "base-components",
     "group": "Display",
-    "status": "new"
+    "status": "new",
+    "figma": "230-2"
   },
   "filter-menu": {
     "title": "Filter menu",
@@ -60,44 +68,51 @@
     "title": "Floating nav",
     "description": "A pill of destinations that floats above the bottom of a phone screen and steps aside while you scroll.",
     "tier": "special-components",
-    "group": "Navigation"
+    "group": "Navigation",
+    "figma": "601-74"
   },
   "input": {
     "title": "Input",
     "description": "A single line of free text.",
     "tier": "base-components",
-    "group": "Forms"
+    "group": "Forms",
+    "figma": "169-15"
   },
   "integration-visual": {
     "title": "Integration visual",
     "description": "A hub and the tools wired into it, with pulses along the routes.",
     "tier": "special-components",
-    "group": "Diagrams"
+    "group": "Diagrams",
+    "figma": "371-5"
   },
   "jump-bar": {
     "title": "Jump bar",
     "description": "Takes people to unread messages, new messages or the present in a conversation.",
     "tier": "base-components",
-    "group": "Actions"
+    "group": "Actions",
+    "figma": "567-9880"
   },
   "kbd": {
     "title": "Kbd",
     "description": "Shows a key or a keyboard shortcut in text.",
     "tier": "base-components",
-    "group": "Display"
+    "group": "Display",
+    "figma": "526-5"
   },
   "label": {
     "title": "Label",
     "description": "Names a form control and widens its hit area.",
     "tier": "base-components",
-    "group": "Forms"
+    "group": "Forms",
+    "figma": "169-16"
   },
   "map-pin": {
     "title": "Map pin",
     "description": "A pin for a point on a map, with a preview that opens on click or tap.",
     "tier": "special-components",
     "group": "Display",
-    "status": "new"
+    "status": "new",
+    "figma": "601-75"
   },
   "menu": {
     "title": "Menu",
@@ -109,7 +124,8 @@
     "title": "Message list",
     "description": "A conversation that groups each person's messages under one heading, with a single tab stop.",
     "tier": "base-components",
-    "group": "Display"
+    "group": "Display",
+    "figma": "567-9879"
   },
   "pagination": {
     "title": "Pagination",
@@ -139,13 +155,15 @@
     "title": "Reactions",
     "description": "Lets people respond to content with an emoji in one tap.",
     "tier": "special-components",
-    "group": "Feedback"
+    "group": "Feedback",
+    "figma": "169-18"
   },
   "select": {
     "title": "Select",
     "description": "Picks one option from a list that opens on demand.",
     "tier": "base-components",
-    "group": "Forms"
+    "group": "Forms",
+    "figma": "247-1593"
   },
   "sheet": {
     "title": "Sheet",
@@ -201,7 +219,8 @@
     "title": "Textarea",
     "description": "Several lines of free text that grow with the content.",
     "tier": "base-components",
-    "group": "Forms"
+    "group": "Forms",
+    "figma": "169-17"
   },
   "toast": {
     "title": "Toast",
@@ -213,7 +232,8 @@
     "title": "Token flow",
     "description": "Walks a colour token from raw value to primitive to semantic role.",
     "tier": "special-components",
-    "group": "Diagrams"
+    "group": "Diagrams",
+    "figma": "371-6"
   },
   "tooltip": {
     "title": "Tooltip",
@@ -225,6 +245,7 @@
     "title": "Typing indicator",
     "description": "Says who's typing in a conversation, naming up to three people.",
     "tier": "base-components",
-    "group": "Feedback"
+    "group": "Feedback",
+    "figma": "567-9878"
   }
 }

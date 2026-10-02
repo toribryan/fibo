@@ -10,6 +10,9 @@ has the same history with links into the docs.
 
 ### Added
 
+- An Open in Figma link at the top of each component's docs page, for the
+  parts with a Figma page. Each part's page is its `figma` node in
+  `components.meta.json`.
 - Map pin: a dot, icon or labelled pin for a point on a map, in five
   status colours, with a preview card that springs open on click or tap.
   Renders inside any map library's marker.
