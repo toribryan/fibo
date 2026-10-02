@@ -21,7 +21,7 @@ body:
     attributes:
       label: Storybook link
       description: A link to the story that shows the problem, if there is one.
-      placeholder: https://fibo.toribryan.com/?path=/docs/base-components-button--docs
+      placeholder: https://fibo.toribryan.com/?path=/docs/base-components-actions-button--docs
   - type: input
     id: environment
     attributes:

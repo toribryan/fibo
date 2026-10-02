@@ -9,7 +9,7 @@ import {
 } from "./pixel-snail.js"
 
 const meta: Meta<typeof PixelSnail> = {
-  title: "Special components/Pixel snail",
+  title: "Special components/Feedback/Pixel snail",
   component: PixelSnail,
   argTypes: {
     size: { control: "inline-radio", options: ["sm", "default", "lg"] },

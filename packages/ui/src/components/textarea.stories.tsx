@@ -4,7 +4,7 @@ import { expect } from "storybook/test"
 import { Textarea } from "./textarea.js"
 
 const meta: Meta<typeof Textarea> = {
-  title: "Base components/Textarea",
+  title: "Base components/Forms/Textarea",
   component: Textarea,
   args: {
     placeholder: "Type your message here...",

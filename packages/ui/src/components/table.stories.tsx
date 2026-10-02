@@ -34,7 +34,7 @@ const STATUS_VARIANT = {
 } as const
 
 const meta: Meta<typeof Table> = {
-  title: "Base components/Table",
+  title: "Base components/Display/Table",
   component: Table,
   subcomponents: {
     TableHeader,

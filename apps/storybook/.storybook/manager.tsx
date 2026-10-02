@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from "react"
 import {
+  BellIcon,
+  CompassIcon,
   ComponentIcon,
   ContrastIcon,
   DiamondIcon,
   FileTextIcon,
   FolderIcon,
   HashIcon,
+  LayersIcon,
+  LayoutGridIcon,
   MoonIcon,
+  MousePointerClickIcon,
   RabbitIcon,
-  SquareDashedIcon,
   SunIcon,
+  TextCursorInputIcon,
   TypeIcon,
+  WorkflowIcon,
   type LucideIcon,
 } from "lucide-react"
 import { IconButton } from "storybook/internal/components"
-import { STORY_CHANGED } from "storybook/internal/core-events"
+import {
+  SET_INDEX,
+  STORY_CHANGED,
+  STORY_MISSING,
+} from "storybook/internal/core-events"
 import { addons, types, type API } from "storybook/manager-api"
 
 import { OPEN_MENU } from "./site-nav-sync.js"
@@ -43,9 +53,20 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   "foundations-typography": TypeIcon,
 }
 
+// Each group inside a shelf has an icon for what its parts do.
+const ICON_BY_GROUP: Record<string, LucideIcon> = {
+  Actions: MousePointerClickIcon,
+  Forms: TextCursorInputIcon,
+  Display: LayoutGridIcon,
+  Navigation: CompassIcon,
+  Overlays: LayersIcon,
+  Feedback: BellIcon,
+  Diagrams: WorkflowIcon,
+}
+
 const ICON_BY_TYPE: Record<string, LucideIcon> = {
-  root: FolderIcon,
-  group: SquareDashedIcon,
+  root: HashIcon,
+  group: FolderIcon,
   component: ComponentIcon,
   docs: FileTextIcon,
   story: DiamondIcon,
@@ -53,10 +74,16 @@ const ICON_BY_TYPE: Record<string, LucideIcon> = {
 
 // Top-level pages sit on the canvas like frames; a docs page under a
 // component or section is a page of that part.
-function iconFor(item: { id: string; type: string; parent?: string }) {
+function iconFor(item: {
+  id: string
+  name: string
+  type: string
+  parent?: string
+}) {
   if (ICON_BY_ID[item.id]) return ICON_BY_ID[item.id]
+  if (item.type === "group" && ICON_BY_GROUP[item.name])
+    return ICON_BY_GROUP[item.name]
   if (item.type === "docs" && !item.parent) return HashIcon
-  if (item.type === "group" && !item.parent) return FolderIcon
   return ICON_BY_TYPE[item.type]
 }
 
@@ -67,7 +94,7 @@ addons.setConfig({
   theme: initialTheme === "dark" ? darkTheme : lightTheme,
   showToolbar: true,
   sidebar: {
-    showRoots: false,
+    showRoots: true,
     renderLabel: (item) => {
       const status =
         item.type === "component"
@@ -152,4 +179,78 @@ addons.register("fibo/site-nav", (api) => {
       )
       ?.click()
   })
+})
+
+/*
+ * Parts sat straight under their shelf until the sidebar grouped them, so
+ * links from before (the portfolio, llms.txt, shared URLs) have no group in
+ * their id: base-components-input--docs is now base-components-forms-input--docs.
+ * A missing id of the old shape opens the entry with the same shelf and name.
+ */
+function openMovedPart(api: API) {
+  const { storyId, viewMode } = api.getUrlState()
+  if (!storyId || api.resolveStory(storyId)) return false
+  const old = /^(base|special)-components-(.+)$/.exec(storyId)
+  const entries = api.getIndex()?.entries
+  const [, shelf, rest] = old ?? []
+  if (!shelf || !rest || !entries) return false
+  const moved = Object.keys(entries).find(
+    (id) =>
+      id.startsWith(`${shelf}-components-`) &&
+      id.endsWith(`-${rest}`) &&
+      // Exactly one group segment between the shelf and the old name.
+      !id.slice(`${shelf}-components-`.length, -rest.length - 1).includes("-")
+  )
+  if (moved) api.navigate(`/${viewMode ?? "docs"}/${moved}`)
+  return Boolean(moved)
+}
+
+addons.register("fibo/moved-parts", (api) => {
+  api.on(SET_INDEX, () => openMovedPart(api))
+  api.on(STORY_MISSING, () => openMovedPart(api))
+})
+
+/*
+ * The shelves are headings, not folders, so they always stay open. Storybook
+ * renders each one as a collapse button named "Collapse", so it becomes a
+ * level-two heading named by its text instead: out of the tab order, its
+ * clicks and Enter or Space stopped before Storybook sees them, and opened
+ * again if it was collapsed before (or by "Collapse all").
+ */
+const SHELF_TOGGLE = 'button[data-action="collapse-root"]'
+
+for (const type of ["click", "keydown"] as const) {
+  document.addEventListener(
+    type,
+    (event) => {
+      if (!event.isTrusted) return
+      if (!(event.target as Element | null)?.closest?.(SHELF_TOGGLE)) return
+      if (event instanceof KeyboardEvent && !["Enter", " "].includes(event.key))
+        return
+      event.preventDefault()
+      event.stopPropagation()
+    },
+    true
+  )
+}
+
+function settleShelf(toggle: HTMLButtonElement) {
+  if (toggle.getAttribute("aria-expanded") === "false") toggle.click()
+  if (toggle.tabIndex !== -1) toggle.tabIndex = -1
+  if (toggle.getAttribute("role") !== "heading")
+    toggle.setAttribute("role", "heading")
+  if (toggle.getAttribute("aria-level") !== "2")
+    toggle.setAttribute("aria-level", "2")
+  toggle.removeAttribute("aria-label")
+  toggle.removeAttribute("aria-expanded")
+}
+
+new MutationObserver(() => {
+  document
+    .querySelectorAll<HTMLButtonElement>(SHELF_TOGGLE)
+    .forEach(settleShelf)
+}).observe(document.body, {
+  childList: true,
+  subtree: true,
+  attributeFilter: ["aria-expanded", "aria-label", "role", "tabindex"],
 })

@@ -251,7 +251,7 @@ function Pin({ place, children }: { place: Place; children: ReactNode }) {
 const cafe = PLACES[0]!
 
 const meta: Meta<typeof MapPin> = {
-  title: "Special components/Map pin",
+  title: "Special components/Display/Map pin",
   component: MapPin,
   tags: ["new"],
   parameters: {

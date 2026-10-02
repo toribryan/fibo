@@ -28,7 +28,7 @@ import { Checkbox } from "./checkbox.js"
 import { Kbd } from "./kbd.js"
 
 const meta: Meta<typeof LocalChatComposerProvider> = {
-  title: "Base components/Chat composer",
+  title: "Base components/Forms/Chat composer",
   component: LocalChatComposerProvider,
   subcomponents: {
     ChatComposerProvider,

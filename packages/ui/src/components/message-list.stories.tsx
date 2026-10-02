@@ -92,7 +92,7 @@ const conversation: ChatMessage[] = [
 type Args = Omit<MessageListProps, "messages">
 
 const meta: Meta<MessageListProps> = {
-  title: "Base components/Message list",
+  title: "Base components/Display/Message list",
   component: MessageList,
   argTypes: {
     windowMinutes: { control: { type: "range", min: 0, max: 30, step: 1 } },

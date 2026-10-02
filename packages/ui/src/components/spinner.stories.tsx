@@ -4,7 +4,7 @@ import { Progress, ProgressLabel } from "./progress.js"
 import { Spinner } from "./spinner.js"
 
 const meta: Meta<typeof Spinner> = {
-  title: "Base components/Spinner",
+  title: "Base components/Feedback/Spinner",
   component: Spinner,
   tags: ["deprecated"],
   argTypes: {

@@ -62,7 +62,13 @@ const GROUPS: Record<Tier, string[]> = {
     "Overlays",
     "Feedback",
   ],
-  "special-components": ["Diagrams", "Navigation", "Display", "Feedback"],
+  "special-components": [
+    "Diagrams",
+    "Navigation",
+    "Forms",
+    "Display",
+    "Feedback",
+  ],
 }
 
 // The wave a Chapter scrubber makes under the pointer, frozen for a preview.
@@ -560,7 +566,7 @@ const META = Object.entries(componentsMeta).filter(
 
 const ENTRIES: Entry[] = META.map(([key, info]) => ({
   name: info.title,
-  id: `${info.tier}-${key}--docs`,
+  id: `${info.tier}-${info.group.toLowerCase()}-${key}--docs`,
   description: info.description,
   tier: info.tier,
   group: info.group,

@@ -14,7 +14,7 @@ import { Textarea } from "./textarea.js"
 import { TypingIndicator } from "./typing-indicator.js"
 
 const meta: Meta<JumpBarProps> = {
-  title: "Base components/Jump bar",
+  title: "Base components/Actions/Jump bar",
   component: JumpBar,
   argTypes: {
     type: {
