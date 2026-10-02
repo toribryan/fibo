@@ -22,12 +22,14 @@ Node 24 (pinned in `.nvmrc`).
 | `apps/storybook/src/components/`   | One `.mdx` docs page per component                                   |
 | `apps/storybook/src/blocks/`       | Docs blocks: anatomy, data attributes, guidelines, catalog, hero     |
 | `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                 |
+| `apps/registry/codemods/`          | jscodeshift transforms that migrate off deprecated parts             |
 | `packages/ui/src/21st/`            | One demo per Special component published on 21st.dev                 |
 | `packages/eslint-config/`          | Shared ESLint flat configs                                           |
 | `packages/typescript-config/`      | Shared tsconfigs                                                     |
 | `.agents/skills/`                  | Agent skills; `.claude/skills/` links here                           |
 | `.claude/agents/`                  | Claude Code subagents                                                |
 | `plans/`                           | Numbered design docs, see `plans/README.md`                          |
+| `figma/`                           | Last-read Figma snapshot and the drift check against code            |
 | `brand/`                           | Brand kit source: the rabbit, logo, cards, posters, motion prototype |
 
 ## Commands
@@ -45,6 +47,7 @@ pnpm typecheck        # tsc in every workspace; run build first on a clean tree
 pnpm test             # unit and story tests in Chromium, with axe checks
 pnpm format:check     # Prettier
 pnpm format:write
+pnpm figma:drift      # compare figma/snapshot.json with the code
 ```
 
 ## Definition of done
@@ -83,6 +86,25 @@ covers the source file, stories, docs page, metadata and checks, and porting
 from another codebase. The `component-reviewer` subagent reviews the result
 against the conventions below.
 
+## Retiring a component
+
+Use the `retire-component` skill (`.agents/skills/retire-component/SKILL.md`).
+A part is deprecated through a `deprecated` entry in `components.meta.json`,
+which the docs banner, catalog, sidebar, registry and `llms.txt` all read,
+plus a codemod in `apps/registry/codemods/` when the move can be automated.
+It stays installable until the next minor release. The policy is in
+`plans/002-retiring-a-component.md`.
+
+## Figma drift
+
+Use the `figma-drift` skill (`.agents/skills/figma-drift/SKILL.md`) to check
+the Figma library against the code. It reads Figma through the Figma MCP
+server into `figma/snapshot.json`, then `pnpm figma:drift` compares Color
+variables with `globals.css`, radii with `--radius`, and component variant
+properties with cva variants and props. Intended differences live in
+`figma/drift.config.json`, each with a reason. Run it after changing a token
+or a component's variants.
+
 ## Conventions
 
 - **Two shelves.** Standard parts are titled `Base components/<Name>` and
@@ -102,6 +124,13 @@ against the conventions below.
 - **Structure.** kebab-case files. A PascalCase component, plus a
   `<name>Variants` cva object when it has variants. `data-slot` on the root.
   A JSDoc line on every prop.
+- **Sizes and props.** One size scale everywhere: `xs`, `sm`, `default`,
+  `lg`, `xl`, plus `icon-<step>` for icon-only sizes, listed smallest first
+  in types, cva objects, story controls and Figma. A prop and its Figma
+  property share one camelCase name and one set of options. `variant` is for
+  a visual style (outline, ghost); `type` is for a structural kind that
+  changes what renders (Reactions inline or floating, Avatar image or
+  initials). `pnpm figma:drift` checks both.
 - **Stories.** No `autodocs` tag: each component has an MDX docs page. New
   parts take `tags: ["new"]`.
 - **Writing.** Sentence case for headings and UI copy. Comments explain why,

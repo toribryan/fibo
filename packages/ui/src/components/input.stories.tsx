@@ -7,8 +7,12 @@ import { Label } from "./label.js"
 const meta: Meta<typeof Input> = {
   title: "Base components/Input",
   component: Input,
+  argTypes: {
+    size: { control: "inline-radio", options: ["sm", "default"] },
+  },
   args: {
     placeholder: "Enter text...",
+    size: "default",
   },
 }
 
@@ -21,6 +25,14 @@ export const Email: Story = {
   args: {
     type: "email",
     placeholder: "you@example.com",
+  },
+}
+
+export const Small: Story = {
+  args: {
+    size: "sm",
+    "aria-label": "Search",
+    placeholder: "Search",
   },
 }
 

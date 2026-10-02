@@ -5,6 +5,7 @@
 .turbo/
 apps/registry/public/r/
 apps/registry/public/llms.txt
+apps/registry/public/codemods/
 apps/registry/registry.json
 apps/registry/registry/
 apps/registry/21st/

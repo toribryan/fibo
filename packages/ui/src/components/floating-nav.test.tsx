@@ -70,6 +70,28 @@ describe("FloatingNav", () => {
       .not.toHaveAttribute("data-hidden")
   })
 
+  it("shrinks its items with size sm", async () => {
+    const screen = await render(
+      <>
+        <FloatingNav aria-label="Default" position="static" items={items} />
+        <FloatingNav
+          aria-label="Compact"
+          position="static"
+          size="sm"
+          items={items}
+        />
+      </>
+    )
+    const height = (nav: string) =>
+      screen
+        .getByRole("navigation", { name: nav })
+        .getByRole("link", { name: "Home" })
+        .element()
+        .getBoundingClientRect().height
+    expect(height("Default")).toBe(44)
+    expect(height("Compact")).toBe(36)
+  })
+
   it("leaves a controlled value to its owner and hands over the click", async () => {
     const onValueChange = vi.fn<NonNullable<FloatingNavProps["onValueChange"]>>(
       (_value, event) => event.preventDefault()

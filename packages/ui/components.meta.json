@@ -117,6 +117,20 @@
     "tier": "base-components",
     "group": "Forms"
   },
+  "spinner": {
+    "title": "Spinner",
+    "description": "A spinning ring that says something is loading.",
+    "tier": "base-components",
+    "group": "Feedback",
+    "status": "deprecated",
+    "deprecated": {
+      "since": "0.2.0",
+      "removal": "0.3.0",
+      "replacement": "progress",
+      "reason": "A spinner says nothing about how long a wait will be or what is happening. An indeterminate Progress takes a label, and turns determinate once the total is known.",
+      "codemod": "spinner-to-progress"
+    }
+  },
   "sticker-avatar": {
     "title": "Sticker avatar",
     "description": "An avatar cut out like a die-cut sticker, with a paper edge that follows its shape and a status told by shape.",

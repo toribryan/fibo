@@ -1,0 +1,100 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/spinner.stories"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { Deprecation } from "../blocks/deprecation"
+import { UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Spinner
+
+A spinner is a ring that turns while something loads. It's on its way out:
+new work should use an indeterminate Progress.
+
+<Deprecation name="spinner" />
+
+<Canvas of={Stories.Default} />
+
+## Migration
+
+The codemod above rewrites every Spinner in a project. Run it from the
+project root, run your formatter and review the diff, then delete
+`components/ui/spinner.tsx`.
+
+```tsx
+// Before
+import { Spinner } from "@/components/ui/spinner"
+;<Spinner size="sm" label="Loading comments" className="mx-auto" />
+
+// After
+import { Progress } from "@/components/ui/progress"
+;<Progress value={null} aria-label="Loading comments" className="mx-auto" />
+```
+
+<Canvas of={Stories.Replacement} />
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The import moves to <code>progress</code>, keeping your alias, and joins
+      an existing Progress import if there is one.
+    </>,
+    <>
+      <code>label</code> becomes <code>aria-label</code>. With no label, the
+      codemod writes <code>aria-label="Loading"</code>, the Spinner's default.
+    </>,
+    <>
+      <code>size</code> is dropped. A progress bar fills its container, so set
+      its width with <code>className</code> where it sits in a row.
+    </>,
+    "A Spinner passed around as a value, such as icon={Spinner}, is left alone and listed in the codemod's output to change by hand.",
+    "Install Progress first if the project doesn't have it yet.",
+  ]}
+/>
+
+## Installation
+
+Spinner stays in the registry until it's removed, so existing projects keep
+building.
+
+<Install name="spinner" exports={["Spinner"]} />
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="spinner"',
+      element: "The ring",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The ring is a <code>status</code> region named by <code>label</code>, so a
+      screen reader hears “Loading” and nothing about how far along it is.
+      Progress reports a value as soon as there is one.
+    </>,
+    "Under reduced motion the ring stops turning.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Progress", "Pixel snail", "Skeleton"]} />
+
+## References
+
+- [Plan 002: retiring a component](https://github.com/toribryan/fibo/blob/main/plans/002-retiring-a-component.md)

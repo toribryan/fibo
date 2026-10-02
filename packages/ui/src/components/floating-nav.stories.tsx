@@ -56,6 +56,7 @@ const meta: Meta<typeof FloatingNav> = {
   },
   argTypes: {
     labels: { control: "inline-radio", options: ["active", "always"] },
+    size: { control: "inline-radio", options: ["sm", "default"] },
     position: { control: "inline-radio", options: ["fixed", "static"] },
     hideOnScroll: { control: "boolean" },
     defaultValue: {
@@ -69,6 +70,7 @@ const meta: Meta<typeof FloatingNav> = {
   args: {
     items,
     labels: "active",
+    size: "default",
     position: "fixed",
     hideOnScroll: false,
     defaultValue: "home",
@@ -121,6 +123,10 @@ export const Default: Story = {
 export const AlwaysLabelled: Story = {
   name: "Labels always shown",
   args: { labels: "always" },
+}
+
+export const Compact: Story = {
+  args: { size: "sm" },
 }
 
 export const Static: Story = {

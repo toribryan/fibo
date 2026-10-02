@@ -111,9 +111,8 @@ Every part the component renders, with the `data-slot` it carries. You pass
     "Use it for content with a real sequence: a talk, a long read, a case study, a recording.",
     "Keep between six and thirty chapters. Fewer reads as a list; more stops the wave from reaching the neighbours.",
     <>
-      Pick <code>card</code> when chapters have descriptions, <code>label</code>{" "}
-      when the title says enough, and <code>none</code> when the page already
-      names the section.
+      Pick <code>card</code> when chapters have descriptions, and{" "}
+      <code>label</code> when the title says enough.
     </>,
     <>
       Leave <code>side</code> unset in most layouts. It prefers right or top and
@@ -177,7 +176,7 @@ The rail in a sticky column beside a long read.
       positive: {
         component: (
           <ChapterScrubber
-            preview="none"
+            preview="label"
             size="sm"
             defaultCurrentIndex={2}
             chapters={Array.from({ length: 14 }, (_, i) => ({
@@ -192,7 +191,7 @@ The rail in a sticky column beside a long read.
       negative: {
         component: (
           <ChapterScrubber
-            preview="none"
+            preview="label"
             size="sm"
             chapters={Array.from({ length: 3 }, (_, i) => ({
               id: String(i),
@@ -253,12 +252,7 @@ portal on the body, out of reach of the rail's selectors, so style it with
     {
       attribute: 'data-slot="chapter-scrubber-preview"',
       element: "The card or label beside the crest",
-      when: (
-        <>
-          Unless <code>preview</code> is <code>none</code>. It fades in while a
-          chapter is hovered or focused.
-        </>
-      ),
+      when: <>While a chapter is hovered or focused, fading in and out.</>,
     },
     {
       attribute: "data-orientation",

@@ -65,6 +65,12 @@ personal details.
 
 ## Examples
 
+### Small
+
+`size="sm"` matches a small Select or Button in dense forms and toolbars.
+
+<Canvas of={Stories.Small} />
+
 ### Invalid
 
 `aria-invalid` turns the border and the focus ring destructive.
@@ -103,7 +109,8 @@ personal details.
 
 ## API reference
 
-Input takes every native `input` prop.
+Input takes every native `input` prop except `size`, which sets its height
+instead. Use `className` to set its width.
 
 <ArgTypes of={Stories.Default} />
 
@@ -115,6 +122,15 @@ Input takes every native `input` prop.
       attribute: 'data-slot="input"',
       element: "The input",
       when: "Always.",
+    },
+    {
+      attribute: "data-size",
+      element: "The input",
+      when: (
+        <>
+          Always. <code>sm</code> or <code>default</code>.
+        </>
+      ),
     },
     {
       attribute: "data-disabled",
