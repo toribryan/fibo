@@ -45,7 +45,7 @@
     "Token chip": "token-flow",
     "Message": "message-list",
     "Message divider": "message-list",
-    "Map marker preview": "map-marker",
+    "Map pin preview": "map-pin",
     "Floating nav item": "floating-nav"
   },
   "codeOnlyComponents": {}

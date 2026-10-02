@@ -481,7 +481,7 @@ const PREVIEWS: Record<string, ReactNode> = {
       </span>
     </div>
   ),
-  "map-marker": (
+  "map-pin": (
     <span className="relative block h-28 w-48 overflow-hidden rounded-lg border border-border bg-muted">
       <span className="absolute inset-x-0 top-10 h-2 bg-background" />
       <span className="absolute inset-y-0 left-20 w-2 bg-background" />
