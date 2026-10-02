@@ -69,15 +69,15 @@ describe("StickerAvatar", () => {
   it("names the status, and lets it be translated", async () => {
     const screen = await render(
       <>
-        <StickerAvatar name="Ana" status="dnd" />
-        <StickerAvatar name="Mei" status="idle" statusLabel="Absent" />
+        <StickerAvatar name="Ana" status="away" />
+        <StickerAvatar name="Mei" status="present" statusLabel="Here" />
       </>
     )
     await expect
-      .element(screen.getByRole("img", { name: "Ana, Do not disturb" }))
+      .element(screen.getByRole("img", { name: "Ana, Away" }))
       .toBeInTheDocument()
     await expect
-      .element(screen.getByRole("img", { name: "Mei, Absent" }))
+      .element(screen.getByRole("img", { name: "Mei, Here" }))
       .toBeInTheDocument()
   })
 

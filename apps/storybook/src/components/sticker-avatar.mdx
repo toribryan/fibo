@@ -27,7 +27,8 @@ status is a small sticker of its own on the corner.
   image, so a list of fifty stickers costs no more than fifty avatars.
 - Tilts by a stable angle from the name and lifts on hover, or when a row with
   `group/sticker` is hovered.
-- Tells status apart by shape: a dot, a crescent, a bar or a ring.
+- Tells status apart by shape: a dot for present, a crescent for away and a
+  ring for offline.
 
 ## Installation
 
@@ -120,8 +121,8 @@ The edge grows with the sticker: 2px up to 40, 4px at 64, 6px at 96.
 
 ### Status by shape
 
-Online, idle, do not disturb and offline, each labelled. Each shape reads
-without colour: a solid dot, a crescent, a bar and a ring.
+Present, away and offline, each labelled. Each shape reads without colour:
+a solid dot, a crescent and a ring.
 
 <Canvas of={Stories.Statuses} />
 
@@ -198,8 +199,8 @@ StickerAvatarCount counts the rest.
       element: "The root and the status sticker",
       when: (
         <>
-          With <code>status</code>. <code>online</code>, <code>idle</code>,{" "}
-          <code>dnd</code> or <code>offline</code>.
+          With <code>status</code>. <code>present</code>, <code>away</code> or{" "}
+          <code>offline</code>.
         </>
       ),
     },
@@ -228,7 +229,7 @@ under the 3:1 contrast that non-text marks need.
   guidelines={[
     <>
       The root is <code>role="img"</code>, named by <code>name</code> and the
-      status: “Ana Ruiz, Idle”. Pass <code>statusLabel</code> to translate the
+      status: “Ana Ruiz, Away”. Pass <code>statusLabel</code> to translate the
       status.
     </>,
     <>

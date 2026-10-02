@@ -4,15 +4,14 @@ import * as React from "react"
 
 import { cn } from "@workspace/ui/lib/utils"
 
-type StickerAvatarStatus = "online" | "idle" | "dnd" | "offline"
+type StickerAvatarStatus = "present" | "away" | "offline"
 
 /** How the sticker was cut: from the image's own shape, round, or from initials. */
 type StickerAvatarShape = "cutout" | "round" | "initials"
 
 const STATUS_LABELS: Record<StickerAvatarStatus, string> = {
-  online: "Online",
-  idle: "Idle",
-  dnd: "Do not disturb",
+  present: "Present",
+  away: "Away",
   offline: "Offline",
 }
 
@@ -264,18 +263,8 @@ function StatusSticker({ status }: { status: StickerAvatarStatus }) {
         ) : (
           <circle cx="10" cy="10" r="6.5" className="fill-sticker-ink" />
         )}
-        {status === "idle" ? (
+        {status === "away" ? (
           <circle cx="6.5" cy="6.5" r="5" className="fill-sticker-edge" />
-        ) : null}
-        {status === "dnd" ? (
-          <rect
-            x="5.5"
-            y="8.6"
-            width="9"
-            height="2.8"
-            rx="1.4"
-            className="fill-sticker-edge"
-          />
         ) : null}
       </svg>
     </span>

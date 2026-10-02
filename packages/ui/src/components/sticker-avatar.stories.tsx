@@ -42,7 +42,7 @@ const meta: Meta<Args> = {
     edge: { control: { type: "range", min: 0, max: 12, step: 1 } },
     status: {
       control: "inline-radio",
-      options: [undefined, "online", "idle", "dnd", "offline"],
+      options: [undefined, "present", "away", "offline"],
     },
     cutout: { control: "inline-radio", options: ["auto", "shape", "round"] },
     tilt: { control: "boolean" },
@@ -55,7 +55,7 @@ const meta: Meta<Args> = {
     subject: "rabbit",
     name: "fibo",
     size: 96,
-    status: "online",
+    status: "present",
     cutout: "auto",
     tilt: true,
     lift: true,
@@ -71,11 +71,11 @@ type Story = StoryObj<Args>
 
 export const Default: Story = {
   play: async ({ canvas }) => {
-    const sticker = canvas.getByRole("img", { name: "fibo, Online" })
+    const sticker = canvas.getByRole("img", { name: "fibo, Present" })
     await waitFor(() => expect(sticker).toHaveAttribute("data-shape", "cutout"))
     await expect(
       sticker.querySelector('[data-slot="sticker-avatar-status"]')
-    ).toHaveAttribute("data-status", "online")
+    ).toHaveAttribute("data-status", "present")
   },
 }
 
@@ -99,12 +99,11 @@ export const Sizes: Story = {
   ),
 }
 
-const STATUSES: StickerAvatarStatus[] = ["online", "idle", "dnd", "offline"]
+const STATUSES: StickerAvatarStatus[] = ["present", "away", "offline"]
 
 const STATUS_NAMES: Record<StickerAvatarStatus, string> = {
-  online: "Online",
-  idle: "Idle",
-  dnd: "Do not disturb",
+  present: "Present",
+  away: "Away",
   offline: "Offline",
 }
 
@@ -143,9 +142,9 @@ export const Shapes: Story = {
 
 const PEOPLE = [
   { name: "boo.exe", src: ghostSrc, status: "offline" },
-  { name: "fibo", src: rabbitSrc, status: "online", pixelated: true },
-  { name: "Ana Ruiz", src: photoSrc, status: "idle" },
-  { name: "Kofi Mensah", status: "dnd" },
+  { name: "fibo", src: rabbitSrc, status: "present", pixelated: true },
+  { name: "Ana Ruiz", src: photoSrc, status: "away" },
+  { name: "Kofi Mensah", status: "present" },
 ] as const
 
 export const DirectMessages: Story = {
