@@ -58,7 +58,7 @@ would rebuild TanStack's surface and fights the copy-and-own registry model.
   <DataTableToolbar>
     <DataTableFilters>...</DataTableFilters>
     <DataTableActions>...</DataTableActions>
-    <DataTableBulkActions pattern="delete only" onDelete={remove} />
+    <DataTableBulkActions onDelete={remove} />
   </DataTableToolbar>
   <DataTableContent>
     <DataTableHeader>
@@ -129,7 +129,10 @@ restyling `<tr>`, which drops table semantics in some browsers.
 
 **Figma parity.** The Figma property names and options carry over as code
 props: `type` and `pinned` on Head and Cell, `state` on Row as data
-attributes, `pattern` on Bulk actions, `narrowLayout` on the root.
+attributes, `narrowLayout` on the root. Bulk actions has no `pattern` prop:
+each Figma pattern is a set of buttons with their own handlers, so code
+composes them as children, with More and Delete in a fixed order after.
+Figma's Bulk actions is a base part, so the drift check doesn't compare it.
 Data table's `selection` and `width` are state and container width in code,
 so they go in `figma/drift.config.json` under `figmaOnlyProps` with that
 reason.
