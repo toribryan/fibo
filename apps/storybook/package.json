@@ -28,7 +28,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/browser": "^4.1.11",
-    "@vitest/browser-playwright": "^4.1.11",
+    "@vitest/browser-playwright": "^5.0.2",
     "@vitest/coverage-v8": "^4.1.11",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
