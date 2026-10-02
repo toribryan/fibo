@@ -125,12 +125,14 @@ export const Reason: Story = {
       Elena Marsh
       <Tooltip>
         <TooltipTrigger
-          aria-label="Locked: workforce admins can't be removed"
+          aria-label="Locked: the workspace owner can't be removed"
           className="inline-flex size-6 items-center justify-center rounded-sm text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
         >
           <LockIcon className="size-3.5" aria-hidden="true" />
         </TooltipTrigger>
-        <TooltipContent>Workforce admins can&rsquo;t be removed</TooltipContent>
+        <TooltipContent>
+          The workspace owner can&rsquo;t be removed
+        </TooltipContent>
       </Tooltip>
     </div>
   ),

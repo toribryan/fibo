@@ -190,7 +190,7 @@ const PREVIEWS: Record<string, ReactNode> = {
     <div className="w-52 overflow-hidden rounded-md border border-border text-xs">
       <div className="flex h-6 items-center gap-2 bg-muted px-2 font-medium">
         <span className="size-3 rounded-[3px] bg-primary" />
-        Agent
+        Member
       </div>
       {["Maya Okafor", "Priya Raman", "Sam Whitfield"].map((name, index) => (
         <div
@@ -216,7 +216,7 @@ const PREVIEWS: Record<string, ReactNode> = {
   table: (
     <div className="w-48 overflow-hidden rounded-md border border-border text-xs">
       <div className="flex h-6 items-center bg-muted px-2 font-medium">
-        Agent
+        Member
       </div>
       {["Maya Okafor", "Priya Raman", "Sam Whitfield"].map((name) => (
         <div

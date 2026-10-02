@@ -15,14 +15,14 @@ import {
   type DataTableSelection,
 } from "./data-table.js"
 
-const AGENTS = [
+const MEMBERS = [
   { id: "maya", name: "Maya Okafor" },
   { id: "priya", name: "Priya Raman" },
   { id: "jordan", name: "Jordan Alvarez" },
   {
     id: "elena",
     name: "Elena Marsh",
-    lock: "Workforce admins can't be removed",
+    lock: "The workspace owner can't be removed",
   },
   { id: "sam", name: "Sam Whitfield" },
 ]
@@ -35,23 +35,23 @@ function Example(props: {
 }) {
   return (
     <DataTable
-      aria-label="Agents"
-      rowIds={AGENTS.map((agent) => agent.id)}
-      noun={{ one: "agent", other: "agents" }}
+      aria-label="Members"
+      rowIds={MEMBERS.map((member) => member.id)}
+      noun={{ one: "member", other: "members" }}
       {...props}
     >
       <DataTableContent>
         <DataTableHeader>
-          <DataTableHead type="primary">Agent</DataTableHead>
+          <DataTableHead type="primary">Member</DataTableHead>
         </DataTableHeader>
         <DataTableBody>
-          {AGENTS.map((agent) => (
+          {MEMBERS.map((member) => (
             <DataTableRow
-              key={agent.id}
-              id={agent.id}
-              lockedReason={agent.lock}
+              key={member.id}
+              id={member.id}
+              lockedReason={member.lock}
             >
-              <DataTableCell type="primary">{agent.name}</DataTableCell>
+              <DataTableCell type="primary">{member.name}</DataTableCell>
             </DataTableRow>
           ))}
         </DataTableBody>
@@ -71,7 +71,9 @@ describe("DataTable", () => {
       .toBeInTheDocument()
     await expect
       .element(
-        screen.getByRole("checkbox", { name: "Select all agents on this page" })
+        screen.getByRole("checkbox", {
+          name: "Select all members on this page",
+        })
       )
       .toBeInTheDocument()
   })
@@ -85,7 +87,7 @@ describe("DataTable", () => {
       .element(screen.getByRole("checkbox", { name: /Select all/ }))
       .toHaveAttribute("aria-checked", "mixed")
     await expect
-      .element(screen.getByText("1 of 5 agents selected"))
+      .element(screen.getByText("1 of 5 members selected"))
       .toBeInTheDocument()
   })
 
@@ -109,10 +111,10 @@ describe("DataTable", () => {
     await expect.element(elena).toBeDisabled()
     await expect
       .element(elena)
-      .toHaveAccessibleDescription("Workforce admins can't be removed")
+      .toHaveAccessibleDescription("The workspace owner can't be removed")
     await expect
       .element(screen.getByRole("button", { name: "Locked" }))
-      .toHaveAccessibleDescription("Workforce admins can't be removed")
+      .toHaveAccessibleDescription("The workspace owner can't be removed")
   })
 
   it("selects a range with Shift, skipping locked rows", async () => {
@@ -153,7 +155,7 @@ describe("DataTable", () => {
       />
     )
     await expect
-      .element(screen.getByText("247 of 248 agents selected"))
+      .element(screen.getByText("247 of 248 members selected"))
       .toBeInTheDocument()
     await screen
       .getByRole("checkbox", { name: "Select Jordan Alvarez" })
@@ -176,13 +178,16 @@ describe("DataTable", () => {
 
   it("disables select all when every row is locked", async () => {
     const screen = await render(
-      <DataTable aria-label="Admins" rowIds={["elena"]}>
+      <DataTable aria-label="Owners" rowIds={["elena"]}>
         <DataTableContent>
           <DataTableHeader>
-            <DataTableHead type="primary">Agent</DataTableHead>
+            <DataTableHead type="primary">Member</DataTableHead>
           </DataTableHeader>
           <DataTableBody>
-            <DataTableRow id="elena" lockedReason="Admins can't be removed">
+            <DataTableRow
+              id="elena"
+              lockedReason="The workspace owner can't be removed"
+            >
               <DataTableCell type="primary">Elena Marsh</DataTableCell>
             </DataTableRow>
           </DataTableBody>
@@ -199,20 +204,20 @@ describe("DataTable", () => {
     await screen.getByRole("checkbox", { name: "Select Maya Okafor" }).click()
     await expect
       .element(screen.getByRole("status"))
-      .toHaveTextContent("1 agent selected")
+      .toHaveTextContent("1 member selected")
   })
 
   it("names the checkbox from the first name cell only", async () => {
     const screen = await render(
-      <DataTable aria-label="Cases" rowIds={["case"]}>
+      <DataTable aria-label="Tasks" rowIds={["task"]}>
         <DataTableContent>
           <DataTableHeader>
-            <DataTableHead type="primary">Case</DataTableHead>
+            <DataTableHead type="primary">Task</DataTableHead>
             <DataTableHead type="person">Owner</DataTableHead>
           </DataTableHeader>
           <DataTableBody>
-            <DataTableRow id="case">
-              <DataTableCell type="primary">Refund request</DataTableCell>
+            <DataTableRow id="task">
+              <DataTableCell type="primary">Design review</DataTableCell>
               <DataTableCell type="person" avatar={{ fallback: "MO" }}>
                 Maya Okafor
               </DataTableCell>
@@ -222,7 +227,7 @@ describe("DataTable", () => {
       </DataTable>
     )
     await expect
-      .element(screen.getByRole("checkbox", { name: "Select Refund request" }))
+      .element(screen.getByRole("checkbox", { name: "Select Design review" }))
       .toBeInTheDocument()
     const named = screen.container.querySelectorAll("[data-row-name][id]")
     expect(named).toHaveLength(1)

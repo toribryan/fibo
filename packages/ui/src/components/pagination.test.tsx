@@ -5,7 +5,9 @@ import { formatRange, Pagination } from "./pagination.js"
 
 describe("formatRange", () => {
   it("formats the first page with thousands separators", () => {
-    expect(formatRange(1, 25, 10000, "agents")).toBe("1 to 25 of 10,000 agents")
+    expect(formatRange(1, 25, 10000, "members")).toBe(
+      "1 to 25 of 10,000 members"
+    )
   })
 
   it("stops the last page at the total", () => {
@@ -15,9 +17,9 @@ describe("formatRange", () => {
   })
 
   it("uses the singular noun for one row", () => {
-    const noun = { one: "agent", other: "agents" }
-    expect(formatRange(1, 25, 1, noun)).toBe("1 to 1 of 1 agent")
-    expect(formatRange(1, 25, 4, noun)).toBe("1 to 4 of 4 agents")
+    const noun = { one: "member", other: "members" }
+    expect(formatRange(1, 25, 1, noun)).toBe("1 to 1 of 1 member")
+    expect(formatRange(1, 25, 4, noun)).toBe("1 to 4 of 4 members")
   })
 
   it("reads 0 to 0 when there are no rows", () => {

@@ -26,7 +26,7 @@ either edge. It matches the Data table in the Figma library.
   second line on a cell makes its row 52 pixels.
 - Columns pinned to the start or end, with shadows while there's more to
   scroll. Pinning switches off under 32rem.
-- Selection changes are announced: “3 agents selected”, “Selection cleared”.
+- Selection changes are announced: “3 members selected”, “Selection cleared”.
 - One toolbar row for every action: filters and create actions while idle,
   then the selection and bulk actions in the same place while rows are
   selected, with Select all matching for the rows on other pages.
@@ -77,40 +77,42 @@ import {
   useDataTableSelection,
 } from "@/components/ui/data-table"
 
-export function Agents({ agents }: { agents: Agent[] }) {
+export function Members({ members }: { members: Member[] }) {
   const selection = useDataTableSelection()
   return (
     <DataTable
-      aria-label="Agents"
-      rowIds={agents.map((agent) => agent.id)}
-      noun={{ one: "agent", other: "agents" }}
+      aria-label="Members"
+      rowIds={members.map((member) => member.id)}
+      noun={{ one: "member", other: "members" }}
       {...selection}
     >
       <DataTableContent>
         <DataTableHeader>
           <DataTableHead type="person" pinned="start">
-            Agent
+            Member
           </DataTableHead>
           <DataTableHead type="status">Status</DataTableHead>
         </DataTableHeader>
         <DataTableBody>
-          {agents.map((agent) => (
+          {members.map((member) => (
             <DataTableRow
-              key={agent.id}
-              id={agent.id}
+              key={member.id}
+              id={member.id}
               lockedReason={
-                agent.isAdmin ? "Admins can't be removed" : undefined
+                member.isOwner
+                  ? "The workspace owner can't be removed"
+                  : undefined
               }
             >
               <DataTableCell
                 type="person"
                 pinned="start"
-                avatar={{ src: agent.photo, fallback: agent.initials }}
+                avatar={{ src: member.photo, fallback: member.initials }}
               >
-                {agent.name}
+                {member.name}
               </DataTableCell>
               <DataTableCell type="status">
-                <Badge variant="success">{agent.status}</Badge>
+                <Badge variant="success">{member.status}</Badge>
               </DataTableCell>
             </DataTableRow>
           ))}
@@ -281,8 +283,8 @@ Approve then Deny, and no Delete. Second lines carry the details.
 
 ### Directory
 
-248 agents across pages, one of them locked. Select the page, then Select all
-247 agents; Show selected only filters the rows, which the app does.
+248 members across pages, one of them locked. Select the page, then Select all
+247 members; Show selected only filters the rows, which the app does.
 
 <Canvas of={Stories.Directory} />
 
@@ -596,12 +598,12 @@ renders.
   guidelines={[
     "It's a native table, not a grid: checkboxes and buttons are ordinary Tab stops.",
     "Name it with aria-label or aria-labelledby on DataTable.",
-    "Each row checkbox is named from its primary cell, “Select Maya Okafor”, and select all says its scope, “Select all agents on this page”.",
+    "Each row checkbox is named from its primary cell, “Select Maya Okafor”, and select all says its scope, “Select all members on this page”.",
     "A locked row's checkbox is disabled and described by the reason. The lock is focusable, so keyboard users can open its tooltip.",
     "Selection changes are announced through a status region, and Escape clears the selection.",
     "The toolbar is a group named “Filters and actions” or “Bulk actions”, not a toolbar role, so its controls stay ordinary Tab stops and arrow keys stay with the search field.",
     "When the focused control goes away, such as Clear or Select all matching, focus moves to Clear, or to select all when nothing is selected, instead of the page.",
-    "A single-row action that's dimmed stays focusable and is described by why: “Works on one agent at a time”.",
+    "A single-row action that's dimmed stays focusable and is described by why: “Works on one member at a time”.",
     "Only one of the table and the cards is ever in the page, so screen readers don't meet each row twice. Cards are a list, and each card's checkbox is named from its title.",
     "Icon-only actions on a narrow table keep their label as their accessible name and show it as a tooltip.",
     "Status badges sit on the background, so their tints keep AA contrast on selected and hovered rows.",

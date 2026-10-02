@@ -170,8 +170,8 @@ export const Checkboxes: Story = {
   render: function Render() {
     const [columns, setColumns] = React.useState({
       team: true,
-      channels: true,
-      adherence: false,
+      role: true,
+      projects: false,
     })
     const toggle = (key: keyof typeof columns) => (checked: boolean) =>
       setColumns((current) => ({ ...current, [key]: checked }))
@@ -188,16 +188,16 @@ export const Checkboxes: Story = {
               Team
             </MenuCheckboxItem>
             <MenuCheckboxItem
-              checked={columns.channels}
-              onCheckedChange={toggle("channels")}
+              checked={columns.role}
+              onCheckedChange={toggle("role")}
             >
-              Channels
+              Role
             </MenuCheckboxItem>
             <MenuCheckboxItem
-              checked={columns.adherence}
-              onCheckedChange={toggle("adherence")}
+              checked={columns.projects}
+              onCheckedChange={toggle("projects")}
             >
-              Adherence
+              Projects
             </MenuCheckboxItem>
           </MenuGroup>
         </MenuContent>
@@ -218,7 +218,7 @@ export const Radio: Story = {
             <MenuRadioGroup value={sort} onValueChange={setSort}>
               <MenuRadioItem value="name">Name</MenuRadioItem>
               <MenuRadioItem value="team">Team</MenuRadioItem>
-              <MenuRadioItem value="adherence">Adherence</MenuRadioItem>
+              <MenuRadioItem value="projects">Projects</MenuRadioItem>
             </MenuRadioGroup>
           </MenuGroup>
         </MenuContent>
@@ -230,18 +230,18 @@ export const Radio: Story = {
 export const Submenu: Story = {
   render: () => (
     <Menu>
-      <MenuTrigger render={<Button variant="outline" />}>Agents</MenuTrigger>
+      <MenuTrigger render={<Button variant="outline" />}>Members</MenuTrigger>
       <MenuContent>
-        <MenuItem>Assign schedule</MenuItem>
+        <MenuItem>Change role</MenuItem>
         <MenuSub>
           <MenuSubTrigger>Change team</MenuSubTrigger>
           <MenuSubContent>
-            <MenuItem>Tier 1 Support</MenuItem>
-            <MenuItem>Tier 2 Escalations</MenuItem>
-            <MenuItem>Billing</MenuItem>
+            <MenuItem>Design</MenuItem>
+            <MenuItem>Engineering</MenuItem>
+            <MenuItem>Marketing</MenuItem>
           </MenuSubContent>
         </MenuSub>
-        <MenuItem disabled>Add skill</MenuItem>
+        <MenuItem disabled>Transfer ownership</MenuItem>
       </MenuContent>
     </Menu>
   ),
