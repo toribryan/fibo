@@ -51,6 +51,16 @@ const GROUPS: Record<Tier, string[]> = {
 // The wave a Chapter scrubber makes under the pointer, frozen for a preview.
 const SCRUBBER_WAVE = [14, 14, 16, 24, 40, 56, 40, 24, 16, 14, 14, 14]
 
+// Two groups, the first with a continuation line, for the Message list card.
+const MESSAGE_PREVIEW = [
+  {
+    initials: "AR",
+    name: "Ana",
+    lines: ["Pushed the tokens.", "AA clears now."],
+  },
+  { initials: "BO", name: "Ben", lines: ["Looking now."] },
+]
+
 // Previews are inert: a catalog card is one link, so nothing inside it can
 // take focus or swallow the click. Everything else about an entry comes from
 // packages/ui/components.meta.json, the same file the registry build reads.
@@ -260,6 +270,25 @@ const PREVIEWS: Record<string, ReactNode> = {
       />
       <circle cx={80} cy={50} r={3} className="fill-foreground" />
     </svg>
+  ),
+  "message-list": (
+    <div className="flex w-56 flex-col gap-2 text-xs">
+      {MESSAGE_PREVIEW.map(({ initials, name, lines }) => (
+        <div key={name} className="flex gap-2">
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-[10px]">
+            {initials}
+          </span>
+          <span className="flex flex-col gap-0.5">
+            <span className="font-semibold">{name}</span>
+            {lines.map((line) => (
+              <span key={line} className="text-muted-foreground">
+                {line}
+              </span>
+            ))}
+          </span>
+        </div>
+      ))}
+    </div>
   ),
   "pixel-snail": (
     <svg
