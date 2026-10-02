@@ -566,7 +566,12 @@ const META = Object.entries(componentsMeta).filter(
 
 const ENTRIES: Entry[] = META.map(([key, info]) => ({
   name: info.title,
-  id: `${info.tier}-${info.group.toLowerCase()}-${key}--docs`,
+  // Base parts sit in a group in the sidebar; special parts sit straight
+  // under their shelf.
+  id:
+    info.tier === "base-components"
+      ? `${info.tier}-${info.group.toLowerCase()}-${key}--docs`
+      : `${info.tier}-${key}--docs`,
   description: info.description,
   tier: info.tier,
   group: info.group,

@@ -199,7 +199,7 @@ const FILES: CommandMenuGroup[] = [
 ]
 
 const meta: Meta<typeof CommandMenu> = {
-  title: "Special components/Navigation/Command menu",
+  title: "Special components/Command menu",
   component: CommandMenu,
   argTypes: {
     placeholder: { control: "text" },

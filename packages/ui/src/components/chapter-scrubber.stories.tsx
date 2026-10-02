@@ -91,7 +91,7 @@ const talk: Chapter[] = [
 ]
 
 const meta: Meta<typeof ChapterScrubber> = {
-  title: "Special components/Navigation/Chapter scrubber",
+  title: "Special components/Chapter scrubber",
   component: ChapterScrubber,
   parameters: { layout: "centered" },
   argTypes: {
