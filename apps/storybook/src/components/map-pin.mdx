@@ -1,7 +1,7 @@
 import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 
-import * as Stories from "../../../../packages/ui/src/components/map-marker.stories"
-import { MapMarker } from "../../../../packages/ui/src/components/map-marker"
+import * as Stories from "../../../../packages/ui/src/components/map-pin.stories"
+import { MapPin } from "../../../../packages/ui/src/components/map-pin"
 import { RelatedComponents } from "../blocks/catalog"
 import { DataAttributes } from "../blocks/data-attributes"
 import { Anatomy } from "../blocks/anatomy"
@@ -10,9 +10,9 @@ import { Install } from "../blocks/install"
 
 <Meta of={Stories} />
 
-# Map marker
+# Map pin
 
-A marker for a point on a map, as a dot, an icon or a labelled pill, with a preview
+A pin for a point on a map, as a dot, an icon or a labelled pill, with a preview
 card that opens on click or tap. It brings no map of its own: your map library
 places it and moves it as the map pans and zooms.
 
@@ -26,7 +26,7 @@ places it and moves it as the map pans and zooms.
 - A preview card with an image, meta line, title and description, plus any
   content of your own, such as directions or a save button.
 - Lifts on hover, part of the way to its open size, then opens on click or
-  tap with a springy grow from the marker and stays open, so the card can
+  tap with a springy grow from the pin and stays open, so the card can
   hold links and actions. Escape or a click elsewhere closes it and returns focus.
 - Works in Mapbox, MapLibre or any library that can place a DOM element on
   its map.
@@ -34,8 +34,8 @@ places it and moves it as the map pans and zooms.
 ## Installation
 
 <Install
-  name="map-marker"
-  exports={["MapMarker", "mapMarkerVariants", "type MapMarkerProps"]}
+  name="map-pin"
+  exports={["MapPin", "mapPinVariants", "type MapPinProps"]}
 />
 
 It installs `@base-ui/react` for the popover. Your map library is your own
@@ -44,19 +44,19 @@ dependency; fibo doesn't add one.
 ## Usage
 
 With `react-map-gl`, which works with both Mapbox and MapLibre, put the
-marker inside the library's own `Marker`:
+pin inside the library's own `Marker`:
 
 ```tsx
 import Map, { Marker } from "react-map-gl/maplibre"
 
-import { MapMarker } from "@/components/ui/map-marker"
+import { MapPin } from "@/components/ui/map-pin"
 
 export function Places({ places }: { places: Place[] }) {
   return (
     <Map initialViewState={{ longitude: -122.42, latitude: 37.77, zoom: 13 }}>
       {places.map((place) => (
         <Marker key={place.id} longitude={place.lng} latitude={place.lat}>
-          <MapMarker
+          <MapPin
             label={place.name}
             meta={place.category}
             title={place.name}
@@ -75,12 +75,12 @@ it:
 ```tsx
 const element = document.createElement("div")
 createRoot(element).render(
-  <MapMarker label="Blue Bottle Coffee" title="Blue Bottle Coffee" />
+  <MapPin label="Blue Bottle Coffee" title="Blue Bottle Coffee" />
 )
 new maplibregl.Marker({ element }).setLngLat([-122.42, 37.77]).addTo(map)
 ```
 
-`label` names the marker for screen readers, so give every marker one, even
+`label` names the pin for screen readers, so give every pin one, even
 when it shows a price.
 
 ## Anatomy
@@ -89,22 +89,22 @@ Every part the component renders, with the `data-slot` it carries.
 
 <Anatomy
   root={{
-    name: "MapMarker",
-    slot: "map-marker",
+    name: "MapPin",
+    slot: "map-pin",
     note: "The button on the map. Carries data-type, data-variant, data-size and, while open, data-popup-open.",
     children: [
       {
         name: "preview",
-        slot: "map-marker-preview",
+        slot: "map-pin-preview",
         note: "The card, portalled to the body so no map container clips it. Only rendered when there's something to preview.",
         children: [
-          { name: "image", slot: "map-marker-image" },
-          { name: "meta", slot: "map-marker-meta" },
-          { name: "title", slot: "map-marker-title" },
-          { name: "description", slot: "map-marker-description" },
+          { name: "image", slot: "map-pin-image" },
+          { name: "meta", slot: "map-pin-meta" },
+          { name: "title", slot: "map-pin-title" },
+          { name: "description", slot: "map-pin-description" },
           {
             name: "content",
-            slot: "map-marker-content",
+            slot: "map-pin-content",
             note: "Your children, under the other fields.",
           },
         ],
@@ -118,41 +118,41 @@ Every part the component renders, with the `data-slot` it carries.
 <UsageGuidelines
   guidelines={[
     "Use dots for places, icons when the kind of place matters, and labels when a value matters at a glance, such as prices or times. Keep labels to a few characters.",
-    "Keep markers default unless colour means something, such as open or closed. Put the meaning in a legend and in each marker's label too.",
-    "Give every marker a label, the place's name. It's what screen readers announce and what the preview is named by.",
+    "Keep pins default unless colour means something, such as open or closed. Put the meaning in a legend and in each pin's label too.",
+    "Give every pin a label, the place's name. It's what screen readers announce and what the preview is named by.",
     "Keep the card short: an image, a title, a line of description. Put the full page behind a link in the content.",
-    "Control which preview is open when a list sits beside the map, so picking a row opens its marker and the two never disagree.",
+    "Control which preview is open when a list sits beside the map, so picking a row opens its pin and the two never disagree.",
     "Leave side at top for most maps. The card flips on its own when it would leave the screen.",
   ]}
 />
 
 ## Examples
 
-### Label markers
+### Label pins
 
 `type="label"` shows a short value in a pill. The open one fills in, so it's
-clear which preview belongs to which marker.
+clear which preview belongs to which pin.
 
-<Canvas of={Stories.LabelMarkers} />
+<Canvas of={Stories.LabelPins} />
 
-### Icon markers
+### Icon pins
 
-`type="icon"` puts an icon in a round marker, for maps where the kind of
-place matters. Without an `icon`, it shows a map pin.
+`type="icon"` puts an icon in a round pin, for maps where the kind of
+place matters. Without an `icon`, it shows a map-pin icon.
 
-<Canvas of={Stories.IconMarkers} />
+<Canvas of={Stories.IconPins} />
 
 ### Colours
 
 `variant` takes fibo's status colours. Here they say whether each place is
-open. The status is in each marker's `label` and meta too, so it doesn't rest
+open. The status is in each pin's `label` and meta too, so it doesn't rest
 on colour alone.
 
 <Canvas of={Stories.Colours} />
 
 ### Labels with icons
 
-A label marker can lead with an icon, and colours its text to match the
+A label pin can lead with an icon, and colours its text to match the
 `variant`. The open one fills in.
 
 <Canvas of={Stories.LabelsWithIcons} />
@@ -173,14 +173,14 @@ the place.
 
 ### Controlled
 
-`open` and `onOpenChange` let a list beside the map choose the open marker.
-Picking a row opens its preview; opening a marker selects its row.
+`open` and `onOpenChange` let a list beside the map choose the open pin.
+Picking a row opens its preview; opening a pin selects its row.
 
 <Canvas of={Stories.Controlled} />
 
 ### Without a preview
 
-With no preview fields or children, the marker is a plain button, for maps
+With no preview fields or children, the pin is a plain button, for maps
 where a click does something else, such as filtering a list.
 
 <Canvas of={Stories.WithoutPreview} />
@@ -193,8 +193,8 @@ where a click does something else, such as filtering a list.
       positive: {
         component: (
           <div className="flex items-center gap-3">
-            <MapMarker type="label" label="Blue Bottle Coffee" text="$6" />
-            <MapMarker type="label" label="Golden Ratio Books" text="$18" />
+            <MapPin type="label" label="Blue Bottle Coffee" text="$6" />
+            <MapPin type="label" label="Golden Ratio Books" text="$18" />
           </div>
         ),
         description: "Keep labels to a short value people compare.",
@@ -202,8 +202,8 @@ where a click does something else, such as filtering a list.
       negative: {
         component: (
           <div className="flex items-center gap-3">
-            <MapMarker type="label" label="Blue Bottle Coffee" />
-            <MapMarker type="label" label="Golden Ratio Books" />
+            <MapPin type="label" label="Blue Bottle Coffee" />
+            <MapPin type="label" label="Golden Ratio Books" />
           </div>
         ),
         description:
@@ -219,25 +219,25 @@ where a click does something else, such as filtering a list.
 
 ### Data attributes
 
-Style the marker by slot or state, for example with
-`[&[data-slot=map-marker][data-popup-open]]:scale-150`. The preview renders in
+Style the pin by slot or state, for example with
+`[&[data-slot=map-pin][data-popup-open]]:scale-150`. The preview renders in
 a portal on the body, so style it with `previewClassName`.
 
 <DataAttributes
   rows={[
     {
-      attribute: 'data-slot="map-marker"',
-      element: "The marker",
+      attribute: 'data-slot="map-pin"',
+      element: "The pin",
       when: "Always.",
     },
     {
-      attribute: 'data-slot="map-marker-preview"',
+      attribute: 'data-slot="map-pin-preview"',
       element: "The preview card",
       when: "While open.",
     },
     {
       attribute: "data-type",
-      element: "The marker",
+      element: "The pin",
       when: (
         <>
           Always. <code>dot</code>, <code>icon</code> or <code>label</code>.
@@ -246,7 +246,7 @@ a portal on the body, so style it with `previewClassName`.
     },
     {
       attribute: "data-variant",
-      element: "The marker",
+      element: "The pin",
       when: (
         <>
           Always. <code>default</code>, <code>success</code>,{" "}
@@ -256,7 +256,7 @@ a portal on the body, so style it with `previewClassName`.
     },
     {
       attribute: "data-size",
-      element: "The marker",
+      element: "The pin",
       when: (
         <>
           Always. <code>sm</code> or <code>default</code>.
@@ -265,7 +265,7 @@ a portal on the body, so style it with `previewClassName`.
     },
     {
       attribute: "data-popup-open",
-      element: "The marker",
+      element: "The pin",
       when: "Its preview is open.",
     },
   ]}
@@ -275,12 +275,12 @@ a portal on the body, so style it with `previewClassName`.
 
 <UsageGuidelines
   guidelines={[
-    "Each marker is a button named by its label, and says it opens a dialog. A label marker showing a price is still announced by the place's name.",
-    "Enter or Space opens the preview and moves focus into it. Escape closes it and returns focus to the marker.",
-    "The preview is a dialog named by the marker's label, so screen readers announce which place they're in.",
+    "Each pin is a button named by its label, and says it opens a dialog. A label pin showing a price is still announced by the place's name.",
+    "Enter or Space opens the preview and moves focus into it. Escape closes it and returns focus to the pin.",
+    "The preview is a dialog named by the pin's label, so screen readers announce which place they're in.",
     "A dot is 16px to look at but takes presses across 32px, above the 24px minimum target.",
-    "Colour never stands alone: put the status a colour stands for in the marker's label, which screen readers announce, and in the preview.",
-    "With reduced motion, the marker changes without animating and the card fades in place.",
+    "Colour never stands alone: put the status a colour stands for in the pin's label, which screen readers announce, and in the preview.",
+    "With reduced motion, the pin changes without animating and the card fades in place.",
   ]}
 />
 

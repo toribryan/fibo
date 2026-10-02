@@ -9,7 +9,9 @@ import {
   Unstyled,
   type DocsContainerProps,
 } from "@storybook/addon-docs/blocks"
-import { BugIcon } from "lucide-react"
+import { ArrowUpRightIcon, BugIcon } from "lucide-react"
+
+import componentsMeta from "@workspace/ui/components.meta.json" with { type: "json" }
 
 import { darkTheme, lightTheme } from "../../.storybook/theme.js"
 import { FigmaIcon } from "./brand-icons.js"
@@ -51,7 +53,7 @@ function Footer() {
       href: LINKS.figma,
       icon: FigmaIcon,
       title: "Open the Figma library",
-      body: "Every component here has a matching Figma component.",
+      body: "Most components here have a Figma page of their own, linked at the top of their docs.",
     },
   ]
   return (
@@ -88,6 +90,52 @@ function Footer() {
 }
 
 type Context = DocsContainerProps["context"]
+
+const META = componentsMeta as unknown as Record<
+  string,
+  { title: string; tier: string; figma?: string }
+>
+
+/*
+ * The Figma page for the component a docs page is about, found from the
+ * page's title ("Special components/Map pin") and the part's `figma` node in
+ * components.meta.json. Pages that aren't about a component, and parts with
+ * no Figma page yet, get nothing.
+ */
+function figmaUrl(context: Context) {
+  let title: string | undefined
+  try {
+    const resolved = context.resolveOf("meta", ["meta"])
+    title = "preparedMeta" in resolved ? resolved.preparedMeta.title : undefined
+  } catch {
+    return undefined
+  }
+  if (!title) return undefined
+  const [shelf, name] = title.split("/")
+  const tier = shelf?.trim().toLowerCase().replace(/\s+/g, "-")
+  const part = Object.values(META).find(
+    (info) => info.tier === tier && info.title === name?.trim()
+  )
+  return part?.figma ? `${LINKS.figma}?node-id=${part.figma}` : undefined
+}
+
+function FigmaLink({ href }: { href: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="float-right mt-2 ml-4 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm font-medium text-foreground no-underline transition-colors hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle focus-visible:outline-none"
+    >
+      <FigmaIcon className="size-3.5" />
+      Open in Figma
+      <ArrowUpRightIcon
+        aria-hidden
+        className="size-3.5 text-muted-foreground"
+      />
+    </a>
+  )
+}
 
 /*
  * Storybook builds "On this page" from the headings that don't match its
@@ -140,6 +188,7 @@ function FiboDocsContainer({
   const dark = useIsDark()
   const tabs = useDocTabsState()
   const tabAwareContext = useTabAwareContext(context, tabs.tabRef)
+  const figma = useMemo(() => figmaUrl(context), [context])
   return (
     <DocTabsContext value={tabs}>
       <DocsContainer
@@ -148,6 +197,7 @@ function FiboDocsContainer({
       >
         <Unstyled>
           <div className="fibo-docs font-sans text-foreground antialiased">
+            {figma ? <FigmaLink href={figma} /> : null}
             {children}
             <Footer />
           </div>
