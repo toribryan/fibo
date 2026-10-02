@@ -1,9 +1,11 @@
 import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+import { useEffect, useRef } from "react"
 
 import * as Stories from "../../../../packages/ui/src/components/chat-composer.stories"
 import {
   ComposerAttachments,
   ComposerCommonActions,
+  ComposerDropZone,
   ComposerFooter,
   ComposerFrame,
   ComposerHeader,
@@ -34,27 +36,47 @@ export const files = [
   { id: "b", name: "button-states.png", size: 1830000 },
 ]
 
-export const Still = ({
-  state,
-  className,
-  placeholder = "Message #design",
-}) => (
+export const StillFrame = ({ className, placeholder = "Message #design" }) => (
+  <ComposerFrame className={className}>
+    <ComposerHeader className="empty:hidden">
+      <ComposerAttachments />
+    </ComposerHeader>
+    <ComposerInput placeholder={placeholder} />
+    <ComposerFooter>
+      <ComposerCommonActions />
+      <ComposerSubmit />
+    </ComposerFooter>
+  </ComposerFrame>
+)
+
+export const Still = ({ state, ...props }) => (
   <ComposerProvider
     state={{ value: "", attachments: [], ...state }}
     actions={idle}
   >
-    <ComposerFrame className={className}>
-      <ComposerHeader className="empty:hidden">
-        <ComposerAttachments />
-      </ComposerHeader>
-      <ComposerInput placeholder={placeholder} />
-      <ComposerFooter>
-        <ComposerCommonActions />
-        <ComposerSubmit />
-      </ComposerFooter>
-    </ComposerFrame>
+    <StillFrame {...props} />
   </ComposerProvider>
 )
+
+export const Dragging = () => {
+  // The real drop zone, held mid-drag by one synthetic dragenter, so the
+  // specimen shows the overlay the component draws rather than a copy.
+  const zone = useRef(null)
+  useEffect(() => {
+    const data = new DataTransfer()
+    data.items.add(new File([""], "review.png", { type: "image/png" }))
+    zone.current?.dispatchEvent(
+      new DragEvent("dragenter", { bubbles: true, dataTransfer: data })
+    )
+  }, [])
+  return (
+    <ComposerProvider state={{ value: "", attachments: [] }} actions={idle}>
+      <ComposerDropZone ref={zone}>
+        <StillFrame />
+      </ComposerDropZone>
+    </ComposerProvider>
+  )
+}
 
 # Chat composer
 
@@ -65,319 +87,6 @@ needs, puts them in its own order, and adds its own elements beside them.
 <Canvas of={Stories.Default} />
 
 <DocTabs>
-
-<DocTab value="design" label="Design">
-
-## Visual anatomy
-
-Seven parts make up a full composer. Each is its own component, so a design
-picks the ones it needs rather than switching features off. Point at a name
-to find its part.
-
-<AnatomyDiagram
-  parts={[
-    {
-      token: "frame",
-      side: "left",
-      landing: 0.1,
-      name: "Frame",
-      description:
-        "The box. It reads as one field: a click anywhere on its surface puts the caret in the text.",
-    },
-    {
-      token: "header",
-      side: "left",
-      name: "Header",
-      description:
-        "Optional. Context above the text: what's being edited or replied to, and attachments.",
-    },
-    {
-      token: "input",
-      side: "left",
-      name: "Text box",
-      description:
-        "Where the message is written. The only part every composer has.",
-    },
-    {
-      token: "footer",
-      side: "left",
-      name: "Footer",
-      description:
-        "Optional. The row of actions under the text, with send at the end.",
-    },
-    {
-      token: "attachments",
-      side: "right",
-      name: "Attachments",
-      description:
-        "A chip per file, with its size and a remove button. Only there when files are attached.",
-    },
-    {
-      token: "submit",
-      side: "right",
-      name: "Send",
-      description:
-        "Sends the message. An arrow on its own, or a word such as Save or Forward.",
-    },
-    {
-      token: "actions",
-      side: "right",
-      fromBelow: true,
-      name: "Actions",
-      description:
-        "Icon buttons for attaching and mentioning. A composer can swap in its own set.",
-    },
-  ]}
->
-  {(part) => (
-    <ComposerProvider
-      state={{ value: "Both files from the review.", attachments: files }}
-      actions={idle}
-    >
-      <ComposerFrame {...part("frame")}>
-        <ComposerHeader {...part("header")}>
-          <ComposerAttachments {...part("attachments")} />
-        </ComposerHeader>
-        <ComposerInput {...part("input")} />
-        <ComposerFooter {...part("footer")}>
-          <ComposerCommonActions {...part("actions")} />
-          <ComposerSubmit {...part("submit")} />
-        </ComposerFooter>
-      </ComposerFrame>
-    </ComposerProvider>
-  )}
-</AnatomyDiagram>
-
-A drop zone can wrap the frame too. It has no look of its own until files are
-dragged over it, so it shows under States instead.
-
-## When each part appears
-
-Every part but the text box is optional. Leaving one out is how a composer
-changes, so there's never a hidden switch to design for.
-
-<SpecTable
-  columns={["Part", "Include it when", "Leave it out when"]}
-  rows={[
-    [
-      "Header",
-      "The message needs context: an edit, a reply, a forward, or attachments.",
-      "It's a plain message to the conversation on screen.",
-    ],
-    [
-      "Actions",
-      "People attach files or mention others from here.",
-      "The surface only takes text, such as a search or an AI prompt.",
-    ],
-    [
-      "Send",
-      "Almost always. It's the visible way to send, and the only one on touch screens.",
-      "A surrounding dialog has its own confirm button, which can send instead.",
-    ],
-    [
-      "Drop zone",
-      "Attachments are welcome, and there's room to drop onto.",
-      "The composer doesn't take files.",
-    ],
-  ]}
-/>
-
-## Layout and spacing
-
-Sizes at the default radius and type scale. Every colour is a semantic token,
-so the composer follows the theme.
-
-<SpecTable
-  columns={["Part", "Size", "Spacing", "Tokens"]}
-  rows={[
-    [
-      "Frame",
-      "Fills its container",
-      "No padding of its own; rows pad themselves",
-      <>
-        <code>input-subtle</code> fill, 1px <code>input</code> border,{" "}
-        <code>radius-2xl</code> (16px)
-      </>,
-    ],
-    [
-      "Header",
-      "Hugs its content",
-      "12px top and sides, 8px between items",
-      <>
-        14px text in <code>muted-foreground</code>
-      </>,
-    ],
-    [
-      "Attachments",
-      "Chips 28px tall, at most 224px wide; long names truncate",
-      "10px left, 4px right, 6px gaps",
-      <>
-        <code>background</code> fill, <code>border</code> outline, 12px text,
-        fully rounded
-      </>,
-    ],
-    [
-      "Text box",
-      "44px tall for one line, grows to 240px, then scrolls",
-      "12px all round",
-      <>
-        14px text, 16px on small screens so phones don't zoom;{" "}
-        <code>muted-foreground</code> placeholder
-      </>,
-    ],
-    [
-      "Footer",
-      "Hugs its content",
-      "8px sides and bottom, 4px between actions",
-      "Actions start, send ends",
-    ],
-    [
-      "Action",
-      "32px square, 16px icon",
-      "2px between actions",
-      <>
-        Ghost button, <code>muted-foreground</code> icon, fully rounded
-      </>,
-    ],
-    [
-      "Send",
-      "32px square, or 32px tall with a word",
-      "Sits at the end of the footer",
-      <>
-        <code>primary</code> fill, <code>primary-foreground</code> icon, fully
-        rounded
-      </>,
-    ],
-  ]}
-/>
-
-## States
-
-The frame carries the composer's state, so the whole field changes together
-rather than part by part.
-
-<Specimens
-  items={[
-    {
-      label: "Empty",
-      note: "The placeholder says where the message goes. Send is dimmed until there's something to send.",
-      children: <Still />,
-    },
-    {
-      label: "Focused",
-      note: (
-        <>
-          The frame takes the <code>ring</code> border and a 3px{" "}
-          <code>ring-subtle</code> halo while the text box has focus.
-        </>
-      ),
-      children: <Still className="border-ring ring-[3px] ring-ring-subtle" />,
-    },
-    {
-      label: "Filled",
-      note: "The text box grows with each line up to 240px, then scrolls. Send turns solid.",
-      children: (
-        <Still
-          state={{ value: "Tokens first,\nthen the parts that use them." }}
-        />
-      ),
-    },
-    {
-      label: "With attachments",
-      note: "Chips wrap onto new lines in the header. Files alone are enough to send.",
-      children: <Still state={{ attachments: files }} />,
-    },
-    {
-      label: "Sending",
-      note: "Send shows a spinner and holds still under reduced motion. People can keep typing.",
-      children: <Still state={{ value: "On its way", submitting: true }} />,
-    },
-    {
-      label: "Disabled",
-      note: "The whole frame drops to half opacity and takes no input.",
-      children: (
-        <Still state={{ value: "Waiting for a connection", disabled: true }} />
-      ),
-    },
-    {
-      label: "Dragging files",
-      note: (
-        <>
-          A dashed <code>ring</code> outline covers the frame with a short
-          instruction, until the files are dropped or dragged away.
-        </>
-      ),
-      children: (
-        <div className="relative">
-          <Still />
-          <div className="absolute inset-0 flex items-center justify-center rounded-2xl border-2 border-dashed border-ring bg-background text-sm font-medium text-foreground">
-            Drop files to attach
-          </div>
-        </div>
-      ),
-    },
-  ]}
-/>
-
-## Arrangements
-
-The same parts, arranged for different moments. Each is one of the examples
-under Build.
-
-<SpecTable
-  columns={["Arrangement", "Header", "Footer", "Send"]}
-  rows={[
-    [
-      "Message",
-      "Attachments, when there are any",
-      "Attach and mention",
-      "Arrow",
-    ],
-    ["Minimal", "None", "None; send sits beside the text", "Arrow"],
-    [
-      "Edit message",
-      "Editing message",
-      "A hint that Esc cancels, and Cancel",
-      "Save",
-    ],
-    [
-      "Thread reply",
-      "Replying to someone",
-      "Attach, mention, and a checkbox to also post to the channel",
-      "Arrow",
-    ],
-    [
-      "Forward",
-      "None; the dialog gives the context",
-      "None",
-      "Forward, in the dialog's own footer",
-    ],
-  ]}
-/>
-
-## Content
-
-<UsageGuidelines
-  guidelines={[
-    "Name where the message goes in the placeholder: Message #design, Reply to Ada. Avoid generic text such as Type here.",
-    "Headers say what's happening in a few words, in sentence case: Editing message, Replying to Ada Lovelace.",
-    "Give send a word when it does something other than post a new message: Save, Forward. Keep the arrow for a plain send.",
-    "Keep file names whole in the data. The chip truncates them for display and screen readers still hear the full name.",
-  ]}
-/>
-
-## In Figma
-
-<UsageGuidelines
-  guidelines={[
-    "Build the composer from nested instances, one per part, so a design swaps or hides parts the way code does.",
-    "Prefer instance swaps and slots over boolean properties. A property for every case is the problem this component exists to avoid.",
-    "Use the same names as the anatomy above, so a spec reads the same in both places.",
-    "Bind every fill and stroke to the semantic variables in the spacing table, never to a grey from the ramp.",
-  ]}
-/>
-
-</DocTab>
 
 <DocTab value="build" label="Build">
 
@@ -489,6 +198,87 @@ Custom parts read the same context with `useComposer()`, which returns
 `{ state, actions, meta }`, with the text box at `meta.inputRef`.
 
 ## Anatomy
+
+Seven parts make up a full composer. Each is its own component, so a design
+picks the ones it needs rather than switching features off. Point at a name
+to find its part, then find its element and `data-slot` in the tree below.
+
+<AnatomyDiagram
+  parts={[
+    {
+      token: "frame",
+      side: "left",
+      landing: 0.1,
+      name: "Frame",
+      description:
+        "The box. It reads as one field: a click anywhere on its surface puts the caret in the text.",
+    },
+    {
+      token: "header",
+      side: "left",
+      name: "Header",
+      description:
+        "Optional. Context above the text: what's being edited or replied to, and attachments.",
+    },
+    {
+      token: "input",
+      side: "left",
+      name: "Text box",
+      description:
+        "Where the message is written. The only part every composer has.",
+    },
+    {
+      token: "footer",
+      side: "left",
+      name: "Footer",
+      description:
+        "Optional. The row of actions under the text, with send at the end.",
+    },
+    {
+      token: "attachments",
+      side: "right",
+      name: "Attachments",
+      description:
+        "A chip per file, with its size and a remove button. Only there when files are attached.",
+    },
+    {
+      token: "submit",
+      side: "right",
+      name: "Send",
+      description:
+        "Sends the message. An arrow on its own, or a word such as Save or Forward.",
+    },
+    {
+      token: "actions",
+      side: "right",
+      fromBelow: true,
+      name: "Actions",
+      description:
+        "Icon buttons for attaching and mentioning. A composer can swap in its own set.",
+    },
+  ]}
+>
+  {(part) => (
+    <ComposerProvider
+      state={{ value: "Both files from the review.", attachments: files }}
+      actions={idle}
+    >
+      <ComposerFrame {...part("frame")}>
+        <ComposerHeader {...part("header")}>
+          <ComposerAttachments {...part("attachments")} />
+        </ComposerHeader>
+        <ComposerInput {...part("input")} />
+        <ComposerFooter {...part("footer")}>
+          <ComposerCommonActions {...part("actions")} />
+          <ComposerSubmit {...part("submit")} />
+        </ComposerFooter>
+      </ComposerFrame>
+    </ComposerProvider>
+  )}
+</AnatomyDiagram>
+
+A drop zone can wrap the frame too. It has no look of its own until files are
+dragged over it, so it shows under States instead.
 
 Every part, with the `data-slot` it carries. The providers render no element.
 
@@ -809,6 +599,229 @@ Style parts by slot or state, for example with
 - Fernando Rojo, [Composition is all you need](https://www.youtube.com/watch?v=4KvbVq3Eg5w),
   React Universe Conf 2025, the talk whose composer these parts follow
 - [Base UI](https://base-ui.com), for the button underneath
+
+</DocTab>
+
+<DocTab value="design" label="Design">
+
+## When each part appears
+
+Every part but the text box is optional. Leaving one out is how a composer
+changes, so there's never a hidden switch to design for.
+
+<SpecTable
+  columns={["Part", "Include it when", "Leave it out when"]}
+  rows={[
+    [
+      "Header",
+      "The message needs context: an edit, a reply, a forward, or attachments.",
+      "It's a plain message to the conversation on screen.",
+    ],
+    [
+      "Actions",
+      "People attach files or mention others from here.",
+      "The surface only takes text, such as a search or an AI prompt.",
+    ],
+    [
+      "Send",
+      "Almost always. It's the visible way to send, and the only one on touch screens.",
+      "A surrounding dialog has its own confirm button, which can send instead.",
+    ],
+    [
+      "Drop zone",
+      "Attachments are welcome, and there's room to drop onto.",
+      "The composer doesn't take files.",
+    ],
+  ]}
+/>
+
+## Layout and spacing
+
+Sizes at the default radius and type scale. Every colour is a semantic token,
+so the composer follows the theme.
+
+<SpecTable
+  columns={["Part", "Size", "Spacing", "Tokens"]}
+  rows={[
+    [
+      "Frame",
+      "Fills its container",
+      "No padding of its own; rows pad themselves",
+      <>
+        <code>input-subtle</code> fill, 1px <code>input</code> border,{" "}
+        <code>radius-2xl</code> (16px)
+      </>,
+    ],
+    [
+      "Header",
+      "Hugs its content",
+      "12px top and sides, 8px between items",
+      <>
+        14px text in <code>muted-foreground</code>
+      </>,
+    ],
+    [
+      "Attachments",
+      "Chips 28px tall, at most 224px wide; long names truncate",
+      "10px left, 4px right, 6px gaps",
+      <>
+        <code>background</code> fill, <code>border</code> outline, 12px text,
+        fully rounded
+      </>,
+    ],
+    [
+      "Text box",
+      "44px tall for one line, grows to 240px, then scrolls",
+      "12px all round",
+      <>
+        14px text, 16px on small screens so phones don't zoom;{" "}
+        <code>muted-foreground</code> placeholder
+      </>,
+    ],
+    [
+      "Footer",
+      "Hugs its content",
+      "8px sides and bottom, 4px between actions",
+      "Actions start, send ends",
+    ],
+    [
+      "Action",
+      "32px square, 16px icon",
+      "2px between actions",
+      <>
+        Ghost button, <code>muted-foreground</code> icon, fully rounded
+      </>,
+    ],
+    [
+      "Send",
+      "32px square, or 32px tall with a word",
+      "Sits at the end of the footer",
+      <>
+        <code>primary</code> fill, <code>primary-foreground</code> icon, fully
+        rounded
+      </>,
+    ],
+  ]}
+/>
+
+## States
+
+The frame carries the composer's state, so the whole field changes together
+rather than part by part.
+
+<Specimens
+  items={[
+    {
+      label: "Empty",
+      note: "The placeholder says where the message goes. Send is dimmed until there's something to send.",
+      children: <Still />,
+    },
+    {
+      label: "Focused",
+      note: (
+        <>
+          The frame takes the <code>ring</code> border and a 3px{" "}
+          <code>ring-subtle</code> halo while the text box has focus.
+        </>
+      ),
+      children: <Still className="border-ring ring-[3px] ring-ring-subtle" />,
+    },
+    {
+      label: "Filled",
+      note: "The text box grows with each line up to 240px, then scrolls. Send turns solid.",
+      children: (
+        <Still
+          state={{ value: "Tokens first,\nthen the parts that use them." }}
+        />
+      ),
+    },
+    {
+      label: "With attachments",
+      note: "Chips wrap onto new lines in the header. Files alone are enough to send.",
+      children: <Still state={{ attachments: files }} />,
+    },
+    {
+      label: "Sending",
+      note: "Send shows a spinner and holds still under reduced motion. People can keep typing.",
+      children: <Still state={{ value: "On its way", submitting: true }} />,
+    },
+    {
+      label: "Disabled",
+      note: "The whole frame drops to half opacity and takes no input.",
+      children: (
+        <Still state={{ value: "Waiting for a connection", disabled: true }} />
+      ),
+    },
+    {
+      label: "Dragging files",
+      note: (
+        <>
+          A dashed <code>ring</code> outline covers the frame with a short
+          instruction, until the files are dropped or dragged away.
+        </>
+      ),
+      children: <Dragging />,
+    },
+  ]}
+/>
+
+## Arrangements
+
+The same parts, arranged for different moments. Each is one of the examples
+under Build.
+
+<SpecTable
+  columns={["Arrangement", "Header", "Footer", "Send"]}
+  rows={[
+    [
+      "Message",
+      "Attachments, when there are any",
+      "Attach and mention",
+      "Arrow",
+    ],
+    ["Minimal", "None", "None; send sits beside the text", "Arrow"],
+    [
+      "Edit message",
+      "Editing message",
+      "A hint that Esc cancels, and Cancel",
+      "Save",
+    ],
+    [
+      "Thread reply",
+      "Replying to someone",
+      "Attach, mention, and a checkbox to also post to the channel",
+      "Arrow",
+    ],
+    [
+      "Forward",
+      "None; the dialog gives the context",
+      "None",
+      "Forward, in the dialog's own footer",
+    ],
+  ]}
+/>
+
+## Content
+
+<UsageGuidelines
+  guidelines={[
+    "Name where the message goes in the placeholder: Message #design, Reply to Ada. Avoid generic text such as Type here.",
+    "Headers say what's happening in a few words, in sentence case: Editing message, Replying to Ada Lovelace.",
+    "Give send a word when it does something other than post a new message: Save, Forward. Keep the arrow for a plain send.",
+    "Keep file names whole in the data. The chip truncates them for display and screen readers still hear the full name.",
+  ]}
+/>
+
+## In Figma
+
+<UsageGuidelines
+  guidelines={[
+    "Build the composer from nested instances, one per part, so a design swaps or hides parts the way code does.",
+    "Prefer instance swaps and slots over boolean properties. A property for every case is the problem this component exists to avoid.",
+    "Use the same names as the Anatomy in the Build tab, so a spec reads the same in both places.",
+    "Bind every fill and stroke to the semantic variables in the spacing table, never to a grey from the ramp.",
+  ]}
+/>
 
 </DocTab>
 
