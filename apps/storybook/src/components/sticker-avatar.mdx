@@ -2,7 +2,7 @@ import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
 
 import * as Stories from "../../../../packages/ui/src/components/sticker-avatar.stories"
 import { StickerAvatar } from "../../../../packages/ui/src/components/sticker-avatar"
-import { ghostSrc } from "../../../../packages/ui/src/components/sticker-avatar.fixtures"
+import bonzo from "../../../../packages/ui/src/assets/bonzo.webp"
 import { RelatedComponents } from "../blocks/catalog"
 import { DataAttributes } from "../blocks/data-attributes"
 import { Anatomy } from "../blocks/anatomy"
@@ -158,12 +158,13 @@ StickerAvatarCount counts the rest.
   rules={[
     {
       positive: {
-        component: <StickerAvatar name="Ghost" src={ghostSrc()} size={64} />,
-        description: "Give it an image with the background removed.",
+        component: <StickerAvatar name="Bonzo" src={bonzo} size={64} />,
+        description:
+          "Let the edge follow the size. The default stays in proportion.",
       },
       negative: {
         component: (
-          <StickerAvatar name="Ghost" src={ghostSrc()} size={64} edge={12} />
+          <StickerAvatar name="Bonzo" src={bonzo} size={64} edge={12} />
         ),
         description:
           "Don't thicken the edge past the default. The paper swamps the subject.",
