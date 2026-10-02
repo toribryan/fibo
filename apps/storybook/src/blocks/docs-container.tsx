@@ -90,18 +90,19 @@ function Footer() {
 type Context = DocsContainerProps["context"]
 
 /*
- * Storybook builds "On this page" once, from the headings in the DOM, and
- * rebuilds it only when its tocbot options change identity. So the context
- * handed to DocsContainer gives the table of contents fresh options for each
- * doc tab, with hidden headings skipped. The context object itself stays
- * stable, so switching tabs never re-renders the stories.
+ * Storybook builds "On this page" from the headings that don't match its
+ * ignore selector, and rebuilds it when that selector changes. So the context
+ * handed to DocsContainer adds the headings of every doc tab but the open
+ * one. It goes by which panel a heading sits in, not whether it's visible,
+ * because the list rebuilds before the old panel is hidden; and it matches
+ * nothing on a page without tabs. The context object itself stays stable,
+ * so switching tabs never re-renders the stories.
  */
 function useTabAwareContext(
   context: Context,
   tabRef: RefObject<string | null>
 ) {
   return useMemo(() => {
-    const options = new Map<string | null, object>()
     const proxy: Context = Object.create(context)
     proxy.resolveOf = ((...args: Parameters<Context["resolveOf"]>) => {
       const resolved = context.resolveOf(...args)
@@ -111,22 +112,19 @@ function useTabAwareContext(
       const parameters = resolved.preparedMeta.parameters
       const toc = parameters?.docs?.toc
       if (!toc) return resolved
-      const key = tabRef.current
-      if (!options.has(key))
-        options.set(key, {
-          ...toc.unsafeTocbotOptions,
-          ignoreHiddenElements: true,
-        })
+      const tab = tabRef.current
+      // With no tab chosen yet, DocTabs opens the first.
+      const others = tab
+        ? `[data-doc-tab]:not([data-doc-tab="${tab}"]) *`
+        : "[data-doc-tab] ~ [data-doc-tab] *"
+      const ignoreSelector = `${toc.ignoreSelector ?? ".docs-story *, .skip-toc"}, ${others}`
       return {
         ...resolved,
         preparedMeta: {
           ...resolved.preparedMeta,
           parameters: {
             ...parameters,
-            docs: {
-              ...parameters.docs,
-              toc: { ...toc, unsafeTocbotOptions: options.get(key) },
-            },
+            docs: { ...parameters.docs, toc: { ...toc, ignoreSelector } },
           },
         },
       }
