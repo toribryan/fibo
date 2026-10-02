@@ -96,6 +96,13 @@
     "tier": "base-components",
     "group": "Forms"
   },
+  "map-marker": {
+    "title": "Map marker",
+    "description": "A marker for a point on a map, with a preview that opens on click or tap.",
+    "tier": "special-components",
+    "group": "Display",
+    "status": "new"
+  },
   "menu": {
     "title": "Menu",
     "description": "A short list of actions that opens from a button.",
