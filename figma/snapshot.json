@@ -415,7 +415,7 @@
       "size": ["sm", "default"],
       "state": ["default", "current"]
     },
-    "Map marker": {
+    "Map pin": {
       "label": "TEXT",
       "showIcon": "BOOLEAN",
       "icon": "INSTANCE_SWAP",
@@ -424,7 +424,7 @@
       "size": ["sm", "default"],
       "state": ["rest", "open"]
     },
-    "Map marker preview": {
+    "Map pin preview": {
       "showImage": "BOOLEAN",
       "showMeta": "BOOLEAN",
       "meta": "TEXT",
