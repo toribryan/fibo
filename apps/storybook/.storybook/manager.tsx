@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from "react"
 import {
-  BookmarkIcon,
-  BoxesIcon,
   ComponentIcon,
+  ContrastIcon,
+  DiamondIcon,
   FileTextIcon,
   FolderIcon,
-  GitPullRequestIcon,
-  HistoryIcon,
-  HouseIcon,
-  LayoutGridIcon,
+  HashIcon,
   MoonIcon,
-  PaintbrushIcon,
-  PaletteIcon,
-  RocketIcon,
-  SnailIcon,
-  SparklesIcon,
+  RabbitIcon,
+  SquareDashedIcon,
   SunIcon,
-  SwatchBookIcon,
+  TypeIcon,
   type LucideIcon,
 } from "lucide-react"
 import { IconButton } from "storybook/internal/components"
+import { STORY_CHANGED } from "storybook/internal/core-events"
 import { addons, types, type API } from "storybook/manager-api"
 
+import { OPEN_MENU } from "./site-nav-sync.js"
 import { darkTheme, lightTheme } from "./theme.js"
 import {
   readTheme,
@@ -37,32 +33,31 @@ import {
 const STATUSES = ["new", "beta", "deprecated"]
 
 // Lucide icons stand in for Storybook's own sidebar icons, which are hidden
-// in manager-head.html. Named pages and sections get their own icon; every
+// in manager-head.html. They are picked to echo Figma's layers panel, so the
+// tree reads like the Figma file: frames, components and their instances.
+// Foundations pages get the icon for the kind of token they document; every
 // other entry gets one for its type.
 const ICON_BY_ID: Record<string, LucideIcon> = {
-  "welcome--docs": HouseIcon,
-  "getting-started--docs": RocketIcon,
-  "catalog--docs": LayoutGridIcon,
-  "changelog--docs": HistoryIcon,
-  "contributing--docs": GitPullRequestIcon,
-  "design-skills--docs": SparklesIcon,
-  foundations: PaletteIcon,
-  "foundations-theme-creator--docs": PaintbrushIcon,
-  "base-components": BoxesIcon,
-  "special-components": SnailIcon,
-}
-
-// Foundations pages document tokens rather than components.
-const ICON_BY_PARENT: Record<string, LucideIcon> = {
-  foundations: SwatchBookIcon,
+  "about-fibo--docs": RabbitIcon,
+  "foundations-colors--docs": ContrastIcon,
+  "foundations-typography": TypeIcon,
 }
 
 const ICON_BY_TYPE: Record<string, LucideIcon> = {
   root: FolderIcon,
-  group: FolderIcon,
+  group: SquareDashedIcon,
   component: ComponentIcon,
   docs: FileTextIcon,
-  story: BookmarkIcon,
+  story: DiamondIcon,
+}
+
+// Top-level pages sit on the canvas like frames; a docs page under a
+// component or section is a page of that part.
+function iconFor(item: { id: string; type: string; parent?: string }) {
+  if (ICON_BY_ID[item.id]) return ICON_BY_ID[item.id]
+  if (item.type === "docs" && !item.parent) return HashIcon
+  if (item.type === "group" && !item.parent) return FolderIcon
+  return ICON_BY_TYPE[item.type]
 }
 
 const initialTheme = readTheme()
@@ -78,16 +73,11 @@ addons.setConfig({
         item.type === "component"
           ? STATUSES.find((tag) => item.tags.includes(tag))
           : undefined
-      const Icon =
-        ICON_BY_ID[item.id] ??
-        (item.type === "component" && item.parent
-          ? ICON_BY_PARENT[item.parent]
-          : undefined) ??
-        ICON_BY_TYPE[item.type]
+      const Icon = iconFor(item)
       return (
         <span className="fibo-label">
           {Icon ? (
-            <Icon className="fibo-icon" size={16} strokeWidth={1.75} />
+            <Icon className="fibo-icon" size={16} strokeWidth={1.5} />
           ) : null}
           {item.name}
           {status ? (
@@ -137,5 +127,29 @@ addons.register("fibo/theme", (api) => {
     type: types.TOOL,
     title: "Theme",
     render: () => <ThemeTool api={api} />,
+  })
+})
+
+// Docs pages carry the floating nav on phones, so Storybook's bottom bar is
+// hidden there (manager-head.html) and only returns for a story's canvas.
+function syncView() {
+  const path = new URL(window.location.href).searchParams.get("path") ?? ""
+  document.documentElement.dataset.fiboView = path.startsWith("/story/")
+    ? "story"
+    : "docs"
+}
+
+syncView()
+
+addons.register("fibo/site-nav", (api) => {
+  api.on(STORY_CHANGED, syncView)
+  // Storybook keeps the mobile menu's state to itself, so the nav's Menu
+  // item presses the hidden bar's own button.
+  api.on(OPEN_MENU, () => {
+    document
+      .querySelector<HTMLButtonElement>(
+        'button[aria-label="Open navigation menu"]'
+      )
+      ?.click()
   })
 })

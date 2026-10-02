@@ -1,4 +1,4 @@
-# 002 Chat composer
+# 004 Chat composer
 
 ## What is changing
 

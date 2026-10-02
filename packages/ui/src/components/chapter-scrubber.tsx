@@ -173,7 +173,7 @@ type ChapterScrubberProps = Omit<React.ComponentProps<"div">, "onSelect"> & {
   /** Ticks grow from the rail's edge, or out from its centre line. */
   align?: "edge" | "center"
   /** What shows beside the crest. */
-  preview?: "card" | "label" | "none"
+  preview?: "card" | "label"
   /** Row pitch along the rail, in pixels. */
   rowSize?: number
   /** Resting mark length (or dot diameter), in pixels. */
@@ -306,7 +306,7 @@ function ChapterScrubber({
   // paint, so it never shows a frame on the wrong side. While engaged, the
   // rail is re-measured as the page scrolls or resizes.
   React.useLayoutEffect(() => {
-    if (!engaged || preview === "none") return
+    if (!engaged) return
     const root = rootRef.current
     const view = root?.ownerDocument.defaultView
     if (!root || !view) return
@@ -539,7 +539,7 @@ function ChapterScrubber({
         })}
       </div>
 
-      {chapter && preview !== "none" && mounted
+      {chapter && mounted
         ? createPortal(
             <motion.div
               ref={previewRef}

@@ -11,7 +11,7 @@ function Avatar({
   ...props
 }: AvatarPrimitive.Root.Props & {
   /** 24, 32 or 40 pixels across. */
-  size?: "default" | "sm" | "lg"
+  size?: "sm" | "default" | "lg"
 }) {
   return (
     <AvatarPrimitive.Root

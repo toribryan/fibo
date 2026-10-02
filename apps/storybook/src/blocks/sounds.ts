@@ -100,6 +100,19 @@ export const sfx = {
           volume: 0.03,
           wave: "triangle",
         }),
+  /** Leaving the ground on a hop. */
+  hop: () => tone({ from: 330, to: 760, ms: 110, volume: 0.03 }),
+  /** Landing from a hop. */
+  land: () =>
+    tone({ from: 160, to: 90, ms: 70, volume: 0.04, wave: "triangle" }),
+  /** A back foot thumped on the ground. */
+  thump: () => {
+    tone({ from: 110, to: 45, ms: 140, volume: 0.12, wave: "sine" })
+    tone({ from: 70, to: 40, ms: 90, volume: 0.05 })
+  },
+  /** A flinch from a poke. */
+  flinch: () =>
+    tone({ from: 900, to: 300, ms: 120, volume: 0.03, wave: "sawtooth" }),
   /** The last pixels settling: a chord. */
   settle: () => {
     for (const note of [523, 659, 784])

@@ -6,16 +6,126 @@ import { Meta } from "@storybook/addon-docs/blocks"
 
 Notable changes, newest first.
 
-## September 2026
+## October 2026
 
 - Docs pages can split into **Design** and **Build** tabs. Chat composer is
   the first: Design covers its visual anatomy, spacing, states and
   arrangements; Build holds installation, usage and the API. "On this page"
   follows the open tab, and the choice is remembered.
-- Added **Chat composer** to Forms, the first part built from composable
-  pieces: a provider holds the draft, and a frame, header, input, footer,
-  actions and send button compose around it in any order. Swap the provider
-  to keep the draft somewhere else.
+- New **Chat composer** in Base components, under Forms. It's the first part
+  built from composable pieces: a provider holds the draft, and a frame,
+  header, input, footer, actions and send button compose around it in any
+  order. Swap the provider to keep the draft somewhere else.
+- **Data table** works on a phone. Under 32rem the table scrolls under an
+  icon-only toolbar, with sort and filters in a sheet, or with
+  `narrowLayout="cards"` each row becomes a card. That finishes plan 003.
+- **Sheet** takes `keepMounted`, so the controls in a closed sheet keep
+  their state.
+- **Data table** has its toolbar: filters and create actions while idle,
+  swapping in place to the selection, Select all matching and bulk actions
+  while rows are selected. Bulk actions keep one order, with Delete last.
+- New **Data table** in Base components, matching the Figma library: a
+  checkbox column with select all and Shift+click ranges, six cell types,
+  locked rows that say why, and columns pinned to either edge. The toolbar,
+  bulk actions and narrow layouts follow in plan 003.
+- New **Table** in Base components: native table parts at the Figma
+  density, 36 pixel headers and 40 pixel rows, that scroll sideways in their
+  own box. Data table builds on it.
+- **Checkbox** shows its indeterminate state: a filled box with a dash.
+- New **Pagination** in Base components: Previous and Next around the page
+  count, with the range of rows showing, such as “1 to 25 of 10,000 agents”.
+- New **Sheet** in Base components: a panel that slides in from any edge
+  and can be swiped away, for focused tasks and for filters on a phone.
+- New **Menu** in Base components: a short list of actions from a button,
+  with checkbox and radio items, submenus and a destructive item for Delete.
+- New **Tooltip** in Base components: a short label on hover or focus, for
+  icon buttons and for saying why something is locked. It's the first part
+  of the Data table work in plan 003.
+- New **Jump bar** in Base components: a bar for unread messages above, with
+  "Mark as read", a pill for new messages below, and a bar for getting back
+  to the present from history. Counts stop at 99+ on screen and are read out
+  in full, and jumping moves focus to the message, never leaving it on a bar
+  that has gone.
+- **Message list** marks where unread messages begin with `unreadFrom`: a red
+  line labelled "New" that breaks the group and shares a line with the date
+  when a day starts there.
+- New **Message list** in Base components: a conversation that groups each
+  person's messages under one heading. Every reason a group breaks (a new
+  author, a new day, a reply, a system or deleted message, a divider, the
+  time window) is a named rule, and the window can be rolling or fixed. The
+  whole list is one tab stop: arrow keys move between messages, Enter goes
+  into one, Escape comes back out.
+- New **Typing indicator** in Base components: says who's typing in a
+  conversation, naming up to three people before switching to "Several
+  people". It leaves out the person looking, takes its sentence from one
+  formatter you can translate, waits for typing to settle before a screen
+  reader hears it, and keeps its row when nobody is typing so the messages
+  don't jump.
+- **Property tokens** for the status colours: `text-success`,
+  `border-success` and `fill-success` now read `--success-text`,
+  `--success-border` and `--success-icon`, and the same for destructive,
+  warning and info. Class names don't change. Each is held to the contrast
+  its property needs, 4.5:1 for text and 3:1 for borders and icons, and a
+  unit test checks every one in both themes. The Colors page explains them.
+- New **Sticker avatar** in a new Display group of Special components: an
+  avatar cut out like a die-cut sticker. A transparent image gets a white
+  paper edge that follows its shape, a photo with a background becomes a round
+  sticker, and with no image the initials are the sticker. Each one tilts by a
+  stable angle from the name and lifts on hover, and status is a small sticker
+  of its own told apart by shape: present, away or offline. It adds
+  `--sticker-edge` and `--sticker-ink`, two tokens that keep their values in
+  dark mode on purpose.
+- The **Theme creator** is archived. fibo is about its components and their
+  tokens, and a theme builder is a separate product. The page is off the
+  site, links to it open Colors, and its code is kept in the repo under
+  `archive/` in case it comes back.
+- **Floating nav** has a compact size: `size="sm"` gives 36px items and
+  16px icons, for sites where the bar should take less of the screen.
+- **Badge** has `success`, `warning` and `info` variants, and **Input** has a
+  `size` prop with `sm` for dense forms, both matching the Figma library.
+- **Reactions** takes `type="inline"` or `type="floating"` in place of
+  `variant`, the name the Figma component uses.
+- **Integration visual** drops its `size` prop, and **Chapter scrubber** drops
+  `preview="none"`. Neither had a Figma counterpart.
+- The success, warning and info tints are lighter in light mode, so their
+  text clears AA contrast at badge size.
+- fibo can now **retire a part** without surprising anyone who installed it.
+  A deprecated part carries a red pill in the sidebar and catalog, a banner
+  on its docs page with what to use instead, a notice when it's installed,
+  and a codemod that rewrites a project for you.
+- **Spinner** is the first through it: it ships deprecated in favour of an
+  indeterminate **Progress**, and is removed in 0.3.0. Run the codemod on its
+  page to migrate.
+- New **Floating nav** in Special components: a pill of destinations that
+  floats above the bottom of a phone screen. The current item slides open to
+  show its name, and the bar can step aside while the page scrolls down.
+- On phones, this site now gets around with a floating nav instead of
+  Storybook's bottom bar: Home, Start, Components and About, plus Menu for
+  every page.
+- New **About fibo** page: fibo's lore, from Fibonacci's rabbits to
+  the pixel rabbit and the sunflower, and where to find him on the site.
+
+## September 2026
+
+- New **Command menu** in Special components: a Cmd+K or Ctrl+K palette
+  where items open pages of their own, recent commands come first, search
+  ranks every command across pages, and a side pane previews the highlighted
+  one. It adds a `--backdrop` token for the scrim behind dialogs.
+- **Getting started** is now a step-by-step walkthrough for designers of
+  what the registry is, how to add, use and update parts, and how it works,
+  with a picker that shows exactly what each part brings into a project.
+- Installing a part from the registry now brings the tokens it uses that a
+  stock shadcn theme lacks, so hover states, focus rings and status colours
+  work in any project. **Theme** installs fibo's full token set with
+  `shadcn add @fibo/theme`, and CI installs every part into a fresh app to
+  keep it that way.
+- fibo is now a **pixel rabbit**, after the rabbits in the puzzle that
+  started the Fibonacci sequence. On the Welcome page he builds himself up,
+  idles and hops, watches the pointer, flinches when poked and hides behind
+  his ears when rage clicked. He is also the sidebar logo and the favicon.
+  The **Pixel snail** stays on as the loading component.
+- The Welcome page hero keeps its golden construction but no longer draws
+  the spiral, and its heading and drafting labels are set in Geist.
 - The **Design skills** tree groups skills by workflow phase, from Discover
   to Tell plus the brand, motion and marketing tracks, with a Folders view for
   the repo layout.

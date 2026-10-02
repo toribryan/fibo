@@ -15,7 +15,7 @@ follows your tokens, and belongs to you.
 [Figma library](https://www.figma.com/design/LJZ5Tt4Ba7NPPi8Xnq8i0e/Fibo-DS) ·
 [llms.txt](https://fibo.toribryan.com/llms.txt)
 
-![The fibo Storybook welcome page: a golden-rectangle hero with the spiral drawn over a dotted grid](./.github/assets/storybook-welcome.jpg)
+![The fibo Storybook welcome page: a golden-rectangle hero drawn in hairlines over a dotted grid, with fibo the pixel rabbit](./.github/assets/storybook-welcome.jpg)
 
 ## Install
 
@@ -41,9 +41,13 @@ Without the registry entry, the full URL works in any shadcn project:
 pnpm dlx shadcn@latest add https://fibo.toribryan.com/r/button.json
 ```
 
-To make the parts look the way they do in Storybook, copy the `:root` and
-`.dark` blocks from [`globals.css`](./packages/ui/src/styles/globals.css) into
-your own.
+Each part brings the tokens it uses that a stock shadcn theme lacks, such as
+`--primary-hover` and `--ring-subtle`, and leaves your existing tokens alone. To
+make everything look the way it does in Storybook, add the full theme too:
+
+```bash
+pnpm dlx shadcn@latest add @fibo/theme
+```
 
 ## What's inside
 

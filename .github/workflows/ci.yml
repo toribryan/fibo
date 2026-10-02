@@ -34,6 +34,11 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
+      # Code against the Figma library as last read into figma/snapshot.json.
+      # Refresh the snapshot with the figma-drift skill when Figma changes.
+      - name: Figma drift
+        run: pnpm figma:drift
+
       # Build runs before typecheck so the generated registry files exist.
       - name: Build
         run: pnpm build
@@ -48,3 +53,25 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+  # Installs every registry item into a fresh `shadcn init` app, the way a
+  # consumer would, and fails if a part's tokens do not come with it.
+  registry-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install every part into a fresh app
+        run: pnpm --filter registry smoke

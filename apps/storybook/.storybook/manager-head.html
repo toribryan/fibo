@@ -1,14 +1,21 @@
 <script>
-  // The shelves were renamed from Components and Niche. Rewrite old links
-  // to their new ids before Storybook reads the address.
+  // Rewrite old links to their new ids before Storybook reads the address.
+  // The shelves were renamed from Components and Niche, and the Theme
+  // creator was archived (plans/001-theme-creator.md), so its links land on
+  // Colors.
   ;(() => {
     const url = new URL(window.location.href)
     const path = url.searchParams.get("path")
-    const moved = path?.replace(
-      /^\/(docs|story)\/(components|niche)-/,
-      (_, kind, shelf) =>
-        `/${kind}/${shelf === "niche" ? "special" : "base"}-components-`
-    )
+    const moved = path
+      ?.replace(
+        /^\/(docs|story)\/(components|niche)-/,
+        (_, kind, shelf) =>
+          `/${kind}/${shelf === "niche" ? "special" : "base"}-components-`
+      )
+      .replace(
+        /^\/docs\/foundations-theme-creator--docs$/,
+        "/docs/foundations-colors--docs"
+      )
     if (!moved || moved === path) return
     url.searchParams.set("path", moved)
     window.history.replaceState(null, "", url)
@@ -235,6 +242,11 @@
     }
     #storybook-explorer-searchfield {
       font-size: 16px;
+    }
+    /* Docs pages bring their own floating nav (blocks/site-nav.tsx). */
+    :root[data-fibo-view="docs"]
+      header.sb-bar:has(button[aria-label="Open navigation menu"]) {
+      display: none;
     }
   }
 </style>

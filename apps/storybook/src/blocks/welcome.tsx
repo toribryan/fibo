@@ -60,20 +60,20 @@ function Resources() {
 
 const PRINCIPLES = [
   {
-    title: "Achromatic by default",
-    body: "There is no brand hue. Primary is a neutral, and colour only ever carries meaning: destructive, success, warning, info.",
+    title: "Quiet until it matters",
+    body: "Greys build the hierarchy with weight, size and space. Colour appears only when it means something: danger, success, warning, information.",
   },
   {
-    title: "One name on both sides",
-    body: "Every token in globals.css has a Figma variable with the same name. Opacity steps get names too, such as -subtle and -hover, so Figma can bind them.",
+    title: "Proportion, not preference",
+    body: "Size, spacing and radius come from one scale. The system sets the measure, so every screen shares a rhythm.",
   },
   {
-    title: "Yours once installed",
-    body: "Installing a part copies its source into your project. The file uses your tokens, and you can change it however you like.",
+    title: "Every state is designed",
+    body: "Hover, focus, disabled and invalid are drawn in Figma and built to match. Nothing is left to a browser default.",
   },
   {
-    title: "Contrast is measured",
-    body: "Status tones sit on the 700 step so text clears WCAG AA on solid fills and on their own tints, in both themes.",
+    title: "Legible for everyone",
+    body: "Contrast is measured, not judged by eye, and focus is always visible. A part that fails either isn't finished.",
   },
 ]
 

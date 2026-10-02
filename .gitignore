@@ -53,6 +53,10 @@ apps/registry/registry
 apps/registry/registry.json
 apps/registry/public/r
 apps/registry/public/llms.txt
+apps/registry/public/codemods
+
+# 21st.dev copies (rebuilt by apps/registry/scripts/export-21st.mjs)
+apps/registry/21st
 
 # caches
 .eslintcache
@@ -66,3 +70,9 @@ coverage
 __screenshots__
 .vitest-attachments
 build-storybook.log
+
+# brand kit renders and photos
+brand/out/
+brand/photos/*
+!brand/photos/README.md
+brand/kit/img/

@@ -1,0 +1,267 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/sheet.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Sheet
+
+Sheet slides a panel in from an edge of the screen for a focused task, such
+as editing a record or setting filters on a phone, without leaving the page.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Slides in from any edge, and can be swiped back the way it came.
+- A modal dialog: focus moves in and stays in, the page behind can't scroll,
+  and focus returns to the trigger on close.
+- Closes on Escape, a click outside, or the close button.
+- Text in SheetBody can be selected without dragging the sheet.
+
+## Installation
+
+<Install
+  name="sheet"
+  exports={[
+    "Sheet",
+    "SheetTrigger",
+    "SheetContent",
+    "SheetHeader",
+    "SheetTitle",
+    "SheetDescription",
+    "SheetBody",
+    "SheetFooter",
+    "SheetClose",
+  ]}
+/>
+
+It installs Button for the close button.
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button"
+import {
+  Sheet,
+  SheetBody,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+
+export function Filters() {
+  return (
+    <Sheet side="bottom">
+      <SheetTrigger render={<Button variant="outline" />}>Filters</SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Filters</SheetTitle>
+        </SheetHeader>
+        <SheetBody>{/* Sort, group and filter controls */}</SheetBody>
+      </SheetContent>
+    </Sheet>
+  )
+}
+```
+
+`side` goes on Sheet, not on SheetContent as in shadcn's Sheet, because it
+also sets which way the sheet is swiped to close. Always give it a SheetTitle.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Sheet",
+    children: [
+      { name: "SheetTrigger", slot: "sheet-trigger" },
+      {
+        name: "SheetContent",
+        slot: "sheet-content",
+        note: "Renders its own backdrop, sheet-overlay.",
+        children: [
+          {
+            name: "SheetHeader",
+            slot: "sheet-header",
+            children: [
+              { name: "SheetTitle", slot: "sheet-title" },
+              { name: "SheetDescription", slot: "sheet-description" },
+            ],
+          },
+          { name: "SheetBody", slot: "sheet-body" },
+          { name: "SheetFooter", slot: "sheet-footer" },
+          { name: "SheetClose", slot: "sheet-close" },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a sheet for a task that needs room but belongs to the page behind it: editing a record, filters on a phone.",
+    "Come in from the right on wide screens and from the bottom on phones, where a thumb can reach it.",
+    "Keep one task per sheet. If it needs steps or its own navigation, it's a page.",
+    "Put the main action first in the footer, and keep Cancel as a way out.",
+    "Don't stack sheets on sheets.",
+  ]}
+/>
+
+## Examples
+
+### Bottom
+
+From the bottom edge, as on a phone. Swipe it down to close.
+
+<Canvas of={Stories.Bottom} />
+
+### Left
+
+From the left edge, for navigation that slides over the page.
+
+<Canvas of={Stories.Left} />
+
+### Filters
+
+Sort, group and filter controls in a bottom sheet behind one icon button,
+as on a phone.
+
+<Canvas of={Stories.Filters} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-48 flex-col gap-2 rounded-t-xl border-t border-border bg-background p-3 text-sm shadow-lg">
+            <span className="font-medium">Filters</span>
+            <span className="h-8 rounded-sm border border-input bg-input-subtle" />
+            <span className="h-8 rounded-sm border border-input bg-input-subtle" />
+          </div>
+        ),
+        description: "Give it one job and a title that names it.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-48 flex-col gap-2 rounded-t-xl border-t border-border bg-background p-3 text-sm shadow-lg">
+            <span className="font-medium">Step 1 of 4</span>
+            <span className="h-8 rounded-sm border border-input bg-input-subtle" />
+            <span className="self-end rounded-sm bg-primary px-2 py-1 text-xs text-primary-foreground">
+              Next
+            </span>
+          </div>
+        ),
+        description:
+          "Don't put a multi-step flow in a sheet. It needs a page of its own.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Sheet takes Base UI's Drawer Root props, with `side` in place of
+`swipeDirection`. SheetContent takes the Popup's props plus
+`showCloseButton`, and `keepMounted` to keep its controls' state while it's
+closed, and the other parts take the props of the Base UI part or
+element they wrap.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="sheet-trigger"',
+      element: "Trigger",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="sheet-overlay"',
+      element: "Backdrop",
+      when: "While it's open.",
+    },
+    {
+      attribute: 'data-slot="sheet-content"',
+      element: "Panel",
+      when: "While it's open.",
+    },
+    {
+      attribute: "data-swipe-direction",
+      element: "Panel",
+      when: "Always: up, right, down or left, from side.",
+    },
+    {
+      attribute: "data-swiping",
+      element: "Panel, backdrop",
+      when: "While it's being dragged.",
+    },
+    {
+      attribute: "data-starting-style, data-ending-style",
+      element: "Panel, backdrop",
+      when: "On the frame it opens or starts to close, for the slide.",
+    },
+    {
+      attribute: 'data-slot="sheet-header"',
+      element: "Header",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="sheet-title"',
+      element: "Title",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="sheet-description"',
+      element: "Description",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="sheet-body"',
+      element: "Body",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="sheet-footer"',
+      element: "Footer",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="sheet-close"',
+      element: "Close button",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The panel is a modal dialog named by SheetTitle and described by SheetDescription.",
+    "Focus moves into it on open, stays inside while it's open, and returns to the trigger on close.",
+    "Swiping is a shortcut, never the only way out: Escape, a click outside and the close button all close it.",
+    "Name an icon-only trigger with aria-label, such as “Filters”.",
+    "With reduced motion on, it appears and disappears without sliding.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Button", "Menu", "Select"]} />
+
+## References
+
+- [Base UI: Drawer](https://base-ui.com/react/components/drawer)
+- [WAI-ARIA APG: Dialog (modal) pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)

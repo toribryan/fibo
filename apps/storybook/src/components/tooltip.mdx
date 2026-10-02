@@ -1,0 +1,205 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/tooltip.stories"
+import { Button } from "../../../../packages/ui/src/components/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../../../../packages/ui/src/components/tooltip"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Tooltip
+
+Tooltip shows a short label when a control is hovered or focused, such as the
+name of an icon button or why something is locked.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Opens on hover after a short delay, and at once on keyboard focus.
+- Escape closes it without moving focus.
+- Once one tooltip is open, its neighbours in a TooltipProvider open without
+  the delay.
+- Flips to stay on screen, and skips its animation when reduced motion is on.
+
+## Installation
+
+<Install
+  name="tooltip"
+  exports={["Tooltip", "TooltipContent", "TooltipProvider", "TooltipTrigger"]}
+/>
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
+export function Save() {
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={<Button size="icon-sm" variant="ghost" aria-label="Save" />}
+      >
+        <SaveIcon aria-hidden="true" />
+      </TooltipTrigger>
+      <TooltipContent>Save</TooltipContent>
+    </Tooltip>
+  )
+}
+```
+
+`render` makes the Button itself the trigger, so there's one focusable
+element. The tooltip repeats the trigger's accessible name; it never holds
+anything the name doesn't.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Tooltip",
+    children: [
+      { name: "TooltipTrigger", slot: "tooltip-trigger" },
+      { name: "TooltipContent", slot: "tooltip-content" },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Keep it to a few words: a name, a shortcut, or a short reason.",
+    "Use it to name icon-only buttons and to explain a locked or disabled control.",
+    "Wrap a toolbar of icon buttons in one TooltipProvider, so moving along it doesn't wait on every button.",
+    "Don't put links, buttons or anything people need to click in a tooltip. Use a popover.",
+    "Don't use a tooltip for information people need to finish a task. Show it on the page.",
+  ]}
+/>
+
+## Examples
+
+### Sides
+
+The side it prefers. It flips to the other side when there isn't room.
+
+<Canvas of={Stories.Sides} />
+
+### Icon buttons
+
+A formatting toolbar in one TooltipProvider. Each tooltip names its button
+and shows the shortcut.
+
+<Canvas of={Stories.IconButtons} />
+
+### Reason
+
+A lock that explains why a row can't be changed. The lock is a focusable
+trigger, so keyboard users can reach the reason too.
+
+<Canvas of={Stories.Reason} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Tooltip open>
+            <TooltipTrigger render={<Button variant="outline" />}>
+              Publish
+            </TooltipTrigger>
+            <TooltipContent>Ctrl Enter</TooltipContent>
+          </Tooltip>
+        ),
+        description: "Add a hint the label leaves out, such as the shortcut.",
+      },
+      negative: {
+        component: (
+          <Tooltip open>
+            <TooltipTrigger render={<Button variant="outline" />}>
+              Publish
+            </TooltipTrigger>
+            <TooltipContent>Publish</TooltipContent>
+          </Tooltip>
+        ),
+        description: "Don't repeat a visible label. It adds noise and no help.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+TooltipContent takes every prop of Base UI's Tooltip Popup, plus `side`,
+`align` and their offsets from the Positioner. Tooltip, TooltipTrigger and
+TooltipProvider take Base UI's Root, Trigger and Provider props; `delay`
+defaults to 600ms.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="tooltip-trigger"',
+      element: "Trigger",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="tooltip-content"',
+      element: "Popup",
+      when: "While it's open.",
+    },
+    {
+      attribute: "data-popup-open",
+      element: "Trigger",
+      when: "While its tooltip is open.",
+    },
+    {
+      attribute: "data-side",
+      element: "Popup",
+      when: "The side it opened on after flipping: top, right, bottom or left.",
+    },
+    {
+      attribute: "data-instant",
+      element: "Popup",
+      when: "It skips its animation: opened by focus or from a neighbour in a provider, or closed with Escape.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "Screen readers don't read the tooltip. Put the same words on the trigger with aria-label, or in visible text it describes with aria-describedby.",
+    "The trigger has to take focus, so keyboard users can open it. A disabled button can't; use aria-disabled instead, or put the tooltip on a separate focusable icon.",
+    "Touch screens have no hover, so nothing should only exist in a tooltip.",
+    "It opens on focus and closes on Escape, and stays open while the pointer is over it, as WCAG 1.4.13 asks.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Button", "Kbd"]} />
+
+## References
+
+- [Base UI: Tooltip](https://base-ui.com/react/components/tooltip)
+- [WAI-ARIA APG: Tooltip pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/)
+- [WCAG 1.4.13: Content on hover or focus](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html)

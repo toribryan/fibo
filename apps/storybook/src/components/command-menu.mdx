@@ -1,0 +1,379 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/command-menu.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Command menu
+
+A Cmd+K palette for moving around an app and running actions. Items can open
+pages of their own, the commands you ran last come first, a search ranks
+every command across every page, and a side pane previews the highlighted
+one.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- **Nested pages.** An item with `items` opens a page instead of running,
+  sliding in with a breadcrumb in the search row. Backspace on an empty
+  search, the back button or Escape steps out.
+- **Recents.** Commands you run float to the top of the first page under
+  Recent, labelled with the page they live on. `storageKey` keeps them across
+  visits.
+- **Ranked search.** From the first page, a search reaches into every page.
+  Whole-label matches rank first, then label starts, word starts, anywhere in
+  the label, then keywords, with recent commands nudged up. The matched
+  letters are bold.
+- **Preview pane.** Items with a `preview` open a pane beside the list that
+  follows the highlight. Below the `sm` breakpoint the pane hides.
+
+## Installation
+
+<Install
+  name="command-menu"
+  exports={["CommandMenu", "type CommandMenuGroup", "type CommandMenuItem"]}
+/>
+
+It installs the Button and Kbd components, the `motion` package, and the
+`--backdrop` token.
+
+## Usage
+
+```tsx
+import { useRouter } from "next/navigation"
+import {
+  CommandMenu,
+  type CommandMenuGroup,
+} from "@/components/ui/command-menu"
+
+export function AppCommands({ setTheme }: { setTheme: (t: string) => void }) {
+  const router = useRouter()
+  const groups: CommandMenuGroup[] = [
+    {
+      label: "Go to",
+      items: [
+        {
+          value: "inbox",
+          label: "Inbox",
+          onSelect: () => router.push("/inbox"),
+        },
+      ],
+    },
+    {
+      label: "Actions",
+      items: [
+        {
+          value: "theme",
+          label: "Change theme",
+          items: [
+            {
+              value: "light",
+              label: "Light",
+              onSelect: () => setTheme("light"),
+            },
+            { value: "dark", label: "Dark", onSelect: () => setTheme("dark") },
+          ],
+        },
+      ],
+    },
+  ]
+  return <CommandMenu groups={groups} storageKey="app-commands" />
+}
+```
+
+Every `value` must be unique across the whole menu, nested pages included:
+recents and ranking find commands by it. An item runs its own `onSelect`,
+then the menu's `onSelect` gets the item, and the menu closes.
+
+```ts
+type CommandMenuItem = {
+  value: string
+  label: string
+  icon?: React.ReactNode
+  shortcut?: string[]
+  keywords?: string[]
+  disabled?: boolean
+  onSelect?: () => void
+  items?: CommandMenuItem[] // makes the item a page
+  placeholder?: string // the search hint on that page
+  preview?: React.ReactNode // shown in the side pane
+}
+```
+
+Render one command menu per page. Its shortcut listens on the whole
+document, so two menus with the same `hotkey` would both open.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "CommandMenu",
+    note: "Renders the trigger, and the dialog while it's open.",
+    children: [
+      {
+        name: "trigger",
+        slot: "command-menu-trigger",
+        note: "The search button, unless trigger is null.",
+      },
+      {
+        name: "backdrop",
+        slot: "command-menu-backdrop",
+        note: "In a portal on the body.",
+      },
+      {
+        name: "dialog",
+        slot: "command-menu",
+        note: "In a portal on the body. Carries data-page and data-preview.",
+        children: [
+          {
+            name: "search",
+            slot: "command-menu-search",
+            children: [
+              {
+                name: "back",
+                slot: "command-menu-back",
+                note: "On a page.",
+              },
+              {
+                name: "breadcrumb",
+                slot: "command-menu-breadcrumb",
+                note: "On a page, naming it.",
+              },
+            ],
+          },
+          {
+            name: "list",
+            slot: "command-menu-list",
+            children: [
+              {
+                name: "group",
+                slot: "command-menu-group",
+                note: "Recent, a group, a page, or Results.",
+                children: [
+                  { name: "group label", slot: "command-menu-group-label" },
+                  {
+                    name: "item",
+                    slot: "command-menu-item",
+                    children: [
+                      {
+                        name: "context",
+                        slot: "command-menu-context",
+                        note: "Where a result or recent command lives.",
+                      },
+                      {
+                        name: "shortcut",
+                        slot: "command-menu-shortcut",
+                        note: "When the item has one.",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            name: "empty",
+            slot: "command-menu-empty",
+            note: "Shows emptyText when a search matches nothing.",
+          },
+          {
+            name: "preview",
+            slot: "command-menu-preview",
+            note: "When any item on screen has a preview.",
+          },
+          {
+            name: "hints",
+            slot: "command-menu-hints",
+            note: "The keyboard hints, unless hints is false.",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use it for moving around an app and running actions people would otherwise hunt for in menus.",
+    "Start labels with a verb for actions (New file, Change theme) and use the plain name for places and things (Inbox, Roadmap 2027).",
+    "Make an item a page when it needs a choice before it can run: a theme, a person, a status. Keep pages one or two levels deep.",
+    "Add keywords for the words people might type instead: appearance for Change theme, create for New file.",
+    "Give previews to things people pick between by content, such as files and people. Leave them off plain actions.",
+    "Don't make it the only way to reach something. It speeds up people who know it's there.",
+  ]}
+/>
+
+<Tip>
+  A shortcut on an item is only a label. Wire the same keys up in your app, or
+  leave `shortcut` off.
+</Tip>
+
+## Examples
+
+### Default
+
+Change theme and Assign to open pages. Run something and reopen the menu to
+see it under Recent. Type to search across every page at once.
+
+<Canvas of={Stories.Default} />
+
+### With preview
+
+Files and people carry a `preview`, so the dialog widens and a pane follows
+the highlight. Actions without one show a placeholder.
+
+<Canvas of={Stories.WithPreview} />
+
+### With recents
+
+`defaultRecent` starts the menu with recent commands. A nested one names its
+page on the right.
+
+<Canvas of={Stories.WithRecents} />
+
+### No matches
+
+A search with no results says so, using `emptyText`.
+
+<Canvas of={Stories.NoMatches} />
+
+### Custom trigger
+
+`trigger` swaps the search button for your own element.
+
+<Canvas of={Stories.CustomTrigger} />
+
+### Controlled
+
+`trigger={null}` renders no trigger, and `open` with `onOpenChange` puts the
+state in your hands, here opened by a button elsewhere on the page or the
+shortcut.
+
+<Canvas of={Stories.Controlled} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Change theme</span>
+            <span className="pl-4 text-muted-foreground">
+              Light, Dark, System
+            </span>
+          </div>
+        ),
+        description: "Group the choices for one action on a page of their own.",
+      },
+      negative: {
+        component: (
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Switch to light theme</span>
+            <span className="font-medium">Switch to dark theme</span>
+            <span className="font-medium">Switch to system theme</span>
+          </div>
+        ),
+        description:
+          "Don't list every variant on the first page. It buries the other commands.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="command-menu-trigger"',
+      element: "The trigger",
+      when: (
+        <>
+          Unless <code>trigger</code> is <code>null</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="command-menu"',
+      element: "The dialog",
+      when: "While it's open.",
+    },
+    {
+      attribute: "data-page",
+      element: "The dialog",
+      when: "A page is open. The page item's value.",
+    },
+    {
+      attribute: "data-preview",
+      element: "The dialog",
+      when: "Any item on screen has a preview.",
+    },
+    {
+      attribute: 'data-slot="command-menu-item"',
+      element: "A command",
+      when: "It's on screen.",
+    },
+    {
+      attribute: "data-highlighted",
+      element: "A command",
+      when: "The keyboard or pointer is on it.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "A command",
+      when: (
+        <>
+          It has <code>disabled</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-open, data-closed",
+      element: "The dialog and backdrop",
+      when: "While opening or closing, for the fade and zoom.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "It's a modal dialog named by label. Focus moves to the search box when it opens, stays inside while it's open, and returns to the trigger when it closes.",
+    "The search box is a combobox that points at the highlighted command with aria-activedescendant, so screen readers read each one as the arrows move.",
+    "On a page, the search box is named after it, such as Command menu, Change theme, and the back button says where it goes. Items that open a page say so.",
+    "Escape steps back one level at a time: it clears the search, then leaves the page, then closes the menu without running anything.",
+    "A search announces how many results it found, and the preview pane is a polite live region.",
+    "The keyboard hints are hidden from screen readers, which announce the combobox's keys themselves.",
+    <>
+      Every piece of text the menu writes can be translated with{" "}
+      <code>labels</code>, alongside <code>placeholder</code>,{" "}
+      <code>emptyText</code> and <code>label</code>.
+    </>,
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Filter menu", "Kbd", "Avatar"]} />
+
+## References
+
+- [Base UI Dialog](https://base-ui.com/react/components/dialog), for the modal
+- [Base UI Autocomplete](https://base-ui.com/react/components/autocomplete), for the search and list
+- [WAI-ARIA combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)
+- [Motion for React](https://motion.dev/docs/react), for the page slides

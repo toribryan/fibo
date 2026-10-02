@@ -1,14 +1,20 @@
 import type { ReactNode } from "react"
 import {
+  ArrowDownIcon,
   ArrowUpIcon,
   ArrowUpRightIcon,
   AtSignIcon,
   ChevronDownIcon,
+  ChevronLeftIcon,
   ChevronRightIcon,
   CircleCheckIcon,
+  CompassIcon,
+  HouseIcon,
   ListFilterIcon,
   PaperclipIcon,
   PlusIcon,
+  SearchIcon,
+  UserIcon,
   XIcon,
 } from "lucide-react"
 
@@ -20,6 +26,12 @@ import { Kbd, KbdGroup } from "@workspace/ui/components/kbd"
 import { Label } from "@workspace/ui/components/label"
 import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Spinner } from "@workspace/ui/components/spinner"
+import {
+  StickerAvatar,
+  StickerAvatarCount,
+  StickerAvatarGroup,
+} from "@workspace/ui/components/sticker-avatar"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -28,6 +40,7 @@ import componentsMeta from "@workspace/ui/components.meta.json" with { type: "js
 import { DocLink } from "./doc-link.js"
 
 type Tier = "base-components" | "special-components"
+type Status = "new" | "beta" | "deprecated"
 
 type Entry = {
   name: string
@@ -35,18 +48,35 @@ type Entry = {
   description: string
   tier: Tier
   group: string
-  status?: "new" | "beta"
+  status?: Status
   preview: ReactNode
 }
 
 // The order groups appear in on the Catalog page, per tier.
 const GROUPS: Record<Tier, string[]> = {
-  "base-components": ["Actions", "Forms", "Display", "Feedback"],
-  "special-components": ["Diagrams", "Navigation", "Feedback"],
+  "base-components": [
+    "Actions",
+    "Forms",
+    "Display",
+    "Navigation",
+    "Overlays",
+    "Feedback",
+  ],
+  "special-components": ["Diagrams", "Navigation", "Display", "Feedback"],
 }
 
 // The wave a Chapter scrubber makes under the pointer, frozen for a preview.
 const SCRUBBER_WAVE = [14, 14, 16, 24, 40, 56, 40, 24, 16, 14, 14, 14]
+
+// Two groups, the first with a continuation line, for the Message list card.
+const MESSAGE_PREVIEW = [
+  {
+    initials: "AR",
+    name: "Ana",
+    lines: ["Pushed the tokens.", "AA clears now."],
+  },
+  { initials: "BO", name: "Ben", lines: ["Looking now."] },
+]
 
 // Previews are inert: a catalog card is one link, so nothing inside it can
 // take focus or swallow the click. Everything else about an entry comes from
@@ -74,6 +104,7 @@ const PREVIEWS: Record<string, ReactNode> = {
     </div>
   ),
   input: <Input placeholder="you@example.com" className="w-48" />,
+  spinner: <Spinner size="lg" label="Spinner preview" />,
   label: (
     <div className="flex w-48 flex-col gap-1.5">
       <Label>Email</Label>
@@ -161,6 +192,86 @@ const PREVIEWS: Record<string, ReactNode> = {
       ))}
     </div>
   ),
+  pagination: (
+    <div className="flex items-center gap-1 text-sm">
+      <span className="flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground">
+        <ChevronLeftIcon className="size-4" />
+      </span>
+      <span className="min-w-12 text-center tabular-nums">1 / 400</span>
+      <span className="flex size-8 items-center justify-center rounded-full border border-border">
+        <ChevronRightIcon className="size-4" />
+      </span>
+    </div>
+  ),
+  "data-table": (
+    <div className="w-52 overflow-hidden rounded-md border border-border text-xs">
+      <div className="flex h-6 items-center gap-2 bg-muted px-2 font-medium">
+        <span className="size-3 rounded-[3px] bg-primary" />
+        Agent
+      </div>
+      {["Maya Okafor", "Priya Raman", "Sam Whitfield"].map((name, index) => (
+        <div
+          key={name}
+          className={
+            index === 1
+              ? "flex h-7 items-center gap-2 border-t border-border bg-muted px-2"
+              : "flex h-7 items-center gap-2 border-t border-border px-2"
+          }
+        >
+          <span
+            className={
+              index === 1
+                ? "size-3 rounded-[3px] bg-primary"
+                : "size-3 rounded-[3px] border border-input"
+            }
+          />
+          {name}
+        </div>
+      ))}
+    </div>
+  ),
+  table: (
+    <div className="w-48 overflow-hidden rounded-md border border-border text-xs">
+      <div className="flex h-6 items-center bg-muted px-2 font-medium">
+        Agent
+      </div>
+      {["Maya Okafor", "Priya Raman", "Sam Whitfield"].map((name) => (
+        <div
+          key={name}
+          className="flex h-7 items-center border-t border-border px-2"
+        >
+          {name}
+        </div>
+      ))}
+    </div>
+  ),
+  sheet: (
+    <div className="relative h-28 w-44 overflow-hidden rounded-md border border-border bg-muted">
+      <div className="absolute inset-y-0 right-0 flex w-24 flex-col gap-1.5 border-l border-border bg-background p-2">
+        <span className="h-2 w-12 rounded-full bg-foreground" />
+        <span className="h-2 w-16 rounded-full bg-border" />
+        <span className="mt-auto h-5 rounded-sm bg-primary" />
+      </div>
+    </div>
+  ),
+  menu: (
+    <div className="flex w-36 flex-col rounded-lg border border-border bg-popover p-1 text-sm shadow-md">
+      <span className="rounded-md bg-accent px-2 py-1.5">Edit</span>
+      <span className="px-2 py-1.5">Duplicate</span>
+      <span className="-mx-1 my-1 h-px bg-border" />
+      <span className="px-2 py-1.5 text-destructive">Delete</span>
+    </div>
+  ),
+  tooltip: (
+    <div className="flex flex-col items-center gap-1.5">
+      <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground">
+        Add to library
+      </span>
+      <span className="flex h-8 items-center rounded-sm border border-border bg-background px-3 text-sm">
+        Hover
+      </span>
+    </div>
+  ),
   kbd: (
     <KbdGroup>
       <Kbd>Ctrl</Kbd>
@@ -193,6 +304,16 @@ const PREVIEWS: Record<string, ReactNode> = {
       <span className="flex-1 font-medium">Changes saved</span>
       <XIcon className="size-3.5 text-muted-foreground" />
     </span>
+  ),
+  "typing-indicator": (
+    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+      <span className="flex gap-0.5">
+        {[0, 1, 2].map((i) => (
+          <span key={i} className="size-1 rounded-full bg-current" />
+        ))}
+      </span>
+      Ana and Ben are typing…
+    </div>
   ),
   "token-flow": (
     <div className="flex items-center gap-1.5 font-mono text-[10px]">
@@ -261,6 +382,31 @@ const PREVIEWS: Record<string, ReactNode> = {
       <circle cx={80} cy={50} r={3} className="fill-foreground" />
     </svg>
   ),
+  "jump-bar": (
+    <span className="flex h-8 items-center gap-1.5 rounded-full bg-primary px-3 text-xs font-medium text-primary-foreground shadow-md">
+      3 new messages
+      <ArrowDownIcon className="size-3.5" />
+    </span>
+  ),
+  "message-list": (
+    <div className="flex w-56 flex-col gap-2 text-xs">
+      {MESSAGE_PREVIEW.map(({ initials, name, lines }) => (
+        <div key={name} className="flex gap-2">
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-[10px]">
+            {initials}
+          </span>
+          <span className="flex flex-col gap-0.5">
+            <span className="font-semibold">{name}</span>
+            {lines.map((line) => (
+              <span key={line} className="text-muted-foreground">
+                {line}
+              </span>
+            ))}
+          </span>
+        </div>
+      ))}
+    </div>
+  ),
   "pixel-snail": (
     <svg
       viewBox="-13 -16 27 18"
@@ -269,6 +415,33 @@ const PREVIEWS: Record<string, ReactNode> = {
     >
       <PixelSnailSprite mode="rest" />
     </svg>
+  ),
+  "command-menu": (
+    <span className="flex w-48 flex-col overflow-hidden rounded-lg border border-border bg-popover text-xs shadow-md">
+      <span className="flex h-7 items-center gap-1.5 border-b border-border px-2 text-muted-foreground">
+        <SearchIcon className="size-3" />
+        Search…
+      </span>
+      <span className="flex flex-col p-1">
+        {["New file", "Go to inbox", "Preferences"].map((label, index) => (
+          <span
+            key={label}
+            className={cn(
+              "flex h-6 items-center justify-between rounded-sm px-1.5",
+              index === 0 && "bg-accent"
+            )}
+          >
+            {label}
+            {index === 0 ? (
+              <KbdGroup>
+                <Kbd>⌘</Kbd>
+                <Kbd>N</Kbd>
+              </KbdGroup>
+            ) : null}
+          </span>
+        ))}
+      </span>
+    </span>
   ),
   "filter-menu": (
     <div className="flex w-44 flex-col gap-1.5">
@@ -308,6 +481,34 @@ const PREVIEWS: Record<string, ReactNode> = {
       </span>
     </div>
   ),
+  "sticker-avatar": (
+    <StickerAvatarGroup className="-space-x-2">
+      <StickerAvatar
+        name="Tori Bryan"
+        size={52}
+        status="present"
+        lift={false}
+      />
+      <StickerAvatar name="Ana Ruiz" size={52} status="away" lift={false} />
+      <StickerAvatarCount count={4} size={52} />
+    </StickerAvatarGroup>
+  ),
+  "floating-nav": (
+    <span className="flex items-center gap-1 rounded-full border border-border bg-popover p-1 shadow-md">
+      <span className="flex h-8 items-center gap-1.5 rounded-full bg-primary px-3 text-xs font-medium text-primary-foreground">
+        <HouseIcon className="size-4" />
+        Home
+      </span>
+      {[CompassIcon, SearchIcon, UserIcon].map((Icon, i) => (
+        <span
+          key={i}
+          className="flex size-8 items-center justify-center text-muted-foreground"
+        >
+          <Icon className="size-4" />
+        </span>
+      ))}
+    </span>
+  ),
 }
 
 type Meta = {
@@ -315,7 +516,7 @@ type Meta = {
   description: string
   tier: Tier
   group: string
-  status?: "new" | "beta"
+  status?: Status
 }
 
 const META = Object.entries(componentsMeta).filter(
@@ -345,7 +546,7 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
       <div
         inert
         className={cn(
-          "flex items-center justify-center bg-muted transition-colors group-hover:bg-secondary-hover",
+          "flex items-center justify-center bg-card",
           compact ? "h-32" : "h-40"
         )}
       >
@@ -355,7 +556,14 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
         <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
           {entry.name}
           {entry.status ? (
-            <span className="rounded-full border border-success px-1.5 py-0.5 font-mono text-[10px] leading-none text-success uppercase">
+            <span
+              className={cn(
+                "rounded-full border px-1.5 py-0.5 font-mono text-[10px] leading-none uppercase",
+                entry.status === "deprecated"
+                  ? "border-destructive text-destructive"
+                  : "border-success text-success"
+              )}
+            >
               {entry.status}
             </span>
           ) : null}
@@ -374,8 +582,13 @@ function Catalog({ tier }: { tier: Tier }) {
   return (
     <div className="my-8 flex flex-col gap-12">
       {groups.map((group) => {
+        // Deprecated parts sink to the end so new work starts elsewhere.
         const entries = ENTRIES.filter(
           (entry) => entry.tier === tier && entry.group === group
+        ).sort(
+          (a, b) =>
+            Number(a.status === "deprecated") -
+            Number(b.status === "deprecated")
         )
         if (entries.length === 0) return null
         return (

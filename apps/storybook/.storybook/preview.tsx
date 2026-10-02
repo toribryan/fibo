@@ -53,13 +53,13 @@ const preview: Preview = {
       storySort: {
         order: [
           "Welcome",
+          "About fibo",
           "Getting started",
           "Catalog",
           "Changelog",
-          "Contributing",
           "Design skills",
           "Foundations",
-          ["Colors", "Typography", "Theme creator"],
+          ["Colors", "Typography"],
           "Base components",
           "Special components",
         ],

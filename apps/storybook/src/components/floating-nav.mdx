@@ -1,0 +1,309 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+import {
+  BellIcon,
+  BookmarkIcon,
+  CircleHelpIcon,
+  CompassIcon,
+  HouseIcon,
+  SettingsIcon,
+  UserIcon,
+} from "lucide-react"
+
+import * as Stories from "../../../../packages/ui/src/components/floating-nav.stories"
+import { FloatingNav } from "../../../../packages/ui/src/components/floating-nav"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { Anatomy } from "../blocks/anatomy"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Floating nav
+
+A pill of destinations that floats above the bottom of a phone screen. The
+current item stretches to show its name, and the bar can step out of the way
+while people read.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- An indicator slides to the current item, which grows to show its label while
+  the others stay as icons.
+- Floats over the page, clear of the home indicator, or sits in the flow with
+  `position="static"`.
+- Can hide while the page scrolls down and return the moment it scrolls up or
+  takes focus.
+- Items are links or buttons, controlled or uncontrolled, so it works with any
+  router.
+
+It is also how this site gets around on a phone: open fibo.toribryan.com on
+one and the bar replaces Storybook's own.
+
+## Installation
+
+<Install
+  name="floating-nav"
+  exports={["FloatingNav", "floatingNavItemVariants", "type FloatingNavItem"]}
+/>
+
+It installs `motion` with it, for the indicator and the slide.
+
+## Usage
+
+```tsx
+import { BookmarkIcon, HouseIcon, UserIcon } from "lucide-react"
+
+import { FloatingNav } from "@/components/ui/floating-nav"
+
+const items = [
+  { value: "home", label: "Home", icon: <HouseIcon />, href: "/" },
+  { value: "saved", label: "Saved", icon: <BookmarkIcon />, href: "/saved" },
+  { value: "profile", label: "Profile", icon: <UserIcon />, href: "/profile" },
+]
+
+export function AppNav({ pathname }: { pathname: string }) {
+  return <FloatingNav items={items} value={pathname.split("/")[1] || "home"} />
+}
+```
+
+Give every item a `label`, even with `labels="active"`. It is the item's name
+for screen readers, and the label the current item shows.
+
+Each item takes:
+
+```ts
+type FloatingNavItem = {
+  value: string
+  label: string
+  icon: React.ReactNode
+  href?: string // renders a link; without it, a button
+}
+```
+
+## Anatomy
+
+Every part the component renders, with the `data-slot` it carries.
+
+<Anatomy
+  root={{
+    name: "FloatingNav",
+    slot: "floating-nav",
+    note: "The nav landmark. Carries data-position, data-labels, data-size and data-hidden.",
+    children: [
+      {
+        name: "list",
+        slot: "floating-nav-list",
+        note: "The pill. Slides out of view when hidden.",
+        children: [
+          {
+            name: "item",
+            slot: "floating-nav-item",
+            note: "A link or a button per destination. Carries data-current on the current one.",
+            children: [
+              {
+                name: "indicator",
+                note: "The fill behind the current item. Slides between items.",
+              },
+              { name: "icon" },
+              { name: "label" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use it for the three to five places people move between most on a phone. Everything else belongs in a menu.",
+    "Keep labels to one short word. The current label has to fit beside its icon on a 320px screen.",
+    <>
+      Turn on <code>hideOnScroll</code> for reading surfaces such as articles
+      and docs. Leave it off where people switch places often.
+    </>,
+    <>
+      Pad the bottom of the page by the bar's height, about <code>6rem</code>,
+      so the last content can scroll clear of it.
+    </>,
+    "Hide it at desktop widths where a sidebar or top bar already does the job.",
+  ]}
+/>
+
+## Examples
+
+### Labels always shown
+
+`labels="always"` stacks every label under its icon, like a tab bar. Use it
+when the icons alone would not say where they go.
+
+<Canvas of={Stories.AlwaysLabelled} />
+
+### Compact
+
+`size="sm"` tightens the pill: 36px items and 16px icons instead of 44px and
+20px. Use it where the bar should take less of the screen, such as a site that
+also shows a scroll-to-top button or a chat launcher.
+
+<Canvas of={Stories.Compact} />
+
+### Static
+
+`position="static"` keeps the bar in the flow, for a toolbar at the foot of a
+card or a preview like this one.
+
+<Canvas of={Stories.Static} />
+
+### Controlled links
+
+Items with an `href` render as links. `onValueChange` hands over the click, so
+an app can call `event.preventDefault()` and route it itself.
+
+<Canvas of={Stories.ControlledLinks} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <FloatingNav
+            position="static"
+            aria-label="Example"
+            defaultValue="home"
+            items={[
+              { value: "home", label: "Home", icon: <HouseIcon /> },
+              { value: "explore", label: "Explore", icon: <CompassIcon /> },
+              { value: "profile", label: "Profile", icon: <UserIcon /> },
+            ]}
+          />
+        ),
+        description: "Keep it to a handful of places with one-word names.",
+      },
+      negative: {
+        component: (
+          <FloatingNav
+            position="static"
+            aria-label="Example"
+            defaultValue="home"
+            items={[
+              { value: "home", label: "Home", icon: <HouseIcon /> },
+              { value: "explore", label: "Explore", icon: <CompassIcon /> },
+              { value: "saved", label: "Saved", icon: <BookmarkIcon /> },
+              { value: "profile", label: "Profile", icon: <UserIcon /> },
+              { value: "settings", label: "Settings", icon: <SettingsIcon /> },
+              { value: "alerts", label: "Alerts", icon: <BellIcon /> },
+              { value: "help", label: "Help", icon: <CircleHelpIcon /> },
+            ]}
+          />
+        ),
+        description:
+          "Don't fill it with every section. Past five, icons alone stop saying where they go.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+Style parts by slot or state, for example with
+`[&_[data-slot=floating-nav-item]]:px-4`.
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="floating-nav"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="floating-nav-list"',
+      element: "The pill",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="floating-nav-item"',
+      element: "Each destination",
+      when: "Always.",
+    },
+    {
+      attribute: "data-current",
+      element: "An item",
+      when: "It is the current destination.",
+    },
+    {
+      attribute: "data-hidden",
+      element: "The root",
+      when: (
+        <>
+          <code>hideOnScroll</code> is on and the page last scrolled down, more
+          than 64px from the top. Cleared when it scrolls up or the bar takes
+          focus.
+        </>
+      ),
+    },
+    {
+      attribute: "data-position",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>fixed</code> or <code>static</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-labels",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>active</code> or <code>always</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-size",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>sm</code> or <code>default</code>.
+        </>
+      ),
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The root is a <code>nav</code> landmark, named Main unless you pass{" "}
+      <code>aria-label</code>. Name it when a page has more than one.
+    </>,
+    <>
+      The current item carries <code>aria-current="page"</code>. Hidden labels
+      stay in the DOM, so every item keeps its name.
+    </>,
+    "Items are plain links and buttons in the tab order. Tabbing into a hidden bar brings it back.",
+    'Every item is at least 44px square, or 36px with size="sm", well above the 24px minimum target. With reduced motion the indicator and the bar move without animating.',
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Command menu", "Chapter scrubber"]} />
+
+## References
+
+- [WAI-ARIA `aria-current`](https://www.w3.org/TR/wai-aria-1.2/#aria-current), for marking the current page
+- Apple's [Human Interface Guidelines on tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars), for counts and label length
+- [Motion](https://motion.dev), for the layout animation

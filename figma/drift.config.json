@@ -1,0 +1,49 @@
+{
+  "$comment": "Known, intended differences between the Figma library and the code. Every entry says why; anything not listed here is drift. Keys are Component.prop for props and file names for code-only components.",
+  "ignoredProps": ["state"],
+  "figmaOnlyTokens": {},
+  "codeOnlyTokens": {
+    "destructive-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "destructive-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "destructive-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "success-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "success-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "success-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "warning-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "warning-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "warning-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "info-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "info-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "info-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
+    "sticker-edge": "Sticker avatar's paper and ink, white and near-black in both themes. Sticker avatar has no Figma component yet; add both with it.",
+    "sticker-ink": "Sticker avatar's paper and ink, white and near-black in both themes. Sticker avatar has no Figma component yet; add both with it."
+  },
+  "figmaOnlyProps": {
+    "Avatar.type": "Code picks image or initials from whether src loads; designers pick it by hand.",
+    "Checkbox.checked": "Base UI's checked and indeterminate props, not a fibo prop.",
+    "Command menu.view": "Which page is open is internal state in code.",
+    "Command menu.preview": "Code shows the pane when an item has preview content; Figma toggles it.",
+    "Typing indicator.indicator": "Code shows a person's indicator from data when they're the only one typing; designers pick it by hand.",
+    "Message.type": "Code picks first, continuation, system or deleted from grouping rules and message data, not a prop.",
+    "Message divider.unread": "Code draws the unread divider above the message named by unreadFrom.",
+    "Data table.selection": "In code the selection is state, from value or defaultValue; Figma shows each state as a variant.",
+    "Data table.width": "Code reads the container's width and switches at 32rem; Figma picks narrow by hand."
+  },
+  "codeOnlyProps": {
+    "reactions.position": "Which viewport corner the floating bar pins to; Figma shows the bar on its own."
+  },
+  "componentFiles": {
+    "Chapter preview": "chapter-scrubber",
+    "Command menu item": "command-menu",
+    "Command menu trigger": "command-menu",
+    "Reaction Pill": "reactions",
+    "Reactions Trigger": "reactions",
+    "Reactions Panel": "reactions",
+    "Integration tile": "integration-visual",
+    "Integration hub": "integration-visual",
+    "Token chip": "token-flow",
+    "Message": "message-list",
+    "Message divider": "message-list"
+  },
+  "codeOnlyComponents": {}
+}

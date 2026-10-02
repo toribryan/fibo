@@ -1,0 +1,329 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/menu.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Menu
+
+Menu opens a short list of actions from a button, such as More actions on a
+toolbar or the actions for one row in a table.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Opens from a button by click, Enter, Space or the down arrow, and puts
+  focus on the first item.
+- Arrow keys move between items, typing a letter jumps to the item that
+  starts with it, and Escape closes and returns focus.
+- Items for actions, checkboxes and radio choices, with groups, labels,
+  separators and submenus.
+- A `destructive` item for delete and anything that can't be undone.
+
+## Installation
+
+<Install
+  name="menu"
+  exports={[
+    "Menu",
+    "MenuTrigger",
+    "MenuContent",
+    "MenuItem",
+    "MenuCheckboxItem",
+    "MenuRadioGroup",
+    "MenuRadioItem",
+    "MenuGroup",
+    "MenuLabel",
+    "MenuSeparator",
+    "MenuShortcut",
+    "MenuSub",
+    "MenuSubTrigger",
+    "MenuSubContent",
+  ]}
+/>
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button"
+import {
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuSeparator,
+  MenuTrigger,
+} from "@/components/ui/menu"
+
+export function MoreActions({ onDelete }: { onDelete: () => void }) {
+  return (
+    <Menu>
+      <MenuTrigger render={<Button variant="outline" />}>More</MenuTrigger>
+      <MenuContent>
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <MenuSeparator />
+        <MenuItem variant="destructive" onClick={onDelete}>
+          Delete
+        </MenuItem>
+      </MenuContent>
+    </Menu>
+  )
+}
+```
+
+`render` makes the Button itself the trigger. Put a destructive item last,
+after a separator.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Menu",
+    children: [
+      { name: "MenuTrigger", slot: "menu-trigger" },
+      {
+        name: "MenuContent",
+        slot: "menu-content",
+        children: [
+          {
+            name: "MenuGroup",
+            slot: "menu-group",
+            children: [
+              { name: "MenuLabel", slot: "menu-label" },
+              {
+                name: "MenuItem",
+                slot: "menu-item",
+                children: [{ name: "MenuShortcut", slot: "menu-shortcut" }],
+              },
+            ],
+          },
+          { name: "MenuSeparator", slot: "menu-separator" },
+          {
+            name: "MenuSub",
+            children: [
+              { name: "MenuSubTrigger", slot: "menu-sub-trigger" },
+              { name: "MenuSubContent", slot: "menu-sub-content" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a menu for actions. To pick a value for a form, use Select.",
+    "Keep it short: a handful of items, and at most one level of submenu.",
+    "Start each item with a verb: Edit, Duplicate, Export.",
+    "Put Delete last, after a separator, with the destructive variant.",
+    "Disable an item that can't be used right now rather than hiding it, so the menu doesn't change shape.",
+  ]}
+/>
+
+## Examples
+
+### Row actions
+
+An icon-only trigger at the end of a row. Its label names the row, so each
+trigger in a table is distinct.
+
+<Canvas of={Stories.RowActions} />
+
+### Checkboxes
+
+Items that toggle, such as which columns a table shows. The menu stays open
+while you toggle.
+
+<Canvas of={Stories.Checkboxes} />
+
+### Radio
+
+One choice from a group, such as the sort order.
+
+<Canvas of={Stories.Radio} />
+
+### Submenu
+
+A second level for a choice with its own options. The last item is disabled.
+
+<Canvas of={Stories.Submenu} />
+
+## Do's and don'ts
+
+export const StaticMenu = ({ items }) => (
+  <div className="flex w-40 flex-col rounded-lg border border-border bg-popover p-1 text-sm text-popover-foreground shadow-md">
+    {items.map((item, index) =>
+      item === "---" ? (
+        <span key={index} className="-mx-1 my-1 h-px bg-border" />
+      ) : (
+        <span
+          key={index}
+          className={
+            item.startsWith("!")
+              ? "px-2 py-1.5 text-destructive"
+              : "px-2 py-1.5"
+          }
+        >
+          {item.replace("!", "")}
+        </span>
+      )
+    )}
+  </div>
+)
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: <StaticMenu items={["Export", "---", "!Delete"]} />,
+        description: "Put Delete last, set apart and marked destructive.",
+      },
+      negative: {
+        component: <StaticMenu items={["Delete", "Export"]} />,
+        description:
+          "Don't lead with Delete or style it like the rest. It's too easy to choose by mistake.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+MenuContent takes every prop of Base UI's Menu Popup, plus `side`, `align`
+and their offsets from the Positioner. The other parts take the props of the
+Base UI part they wrap. MenuItem, MenuLabel and MenuSubTrigger also take
+`inset`, and MenuItem takes `variant`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="menu-trigger"',
+      element: "Trigger",
+      when: "Always.",
+    },
+    {
+      attribute: "data-popup-open",
+      element: "Trigger, sub trigger",
+      when: "While its menu is open.",
+    },
+    {
+      attribute: 'data-slot="menu-content"',
+      element: "Popup",
+      when: "While it's open.",
+    },
+    {
+      attribute: 'data-slot="menu-sub-content"',
+      element: "Submenu popup",
+      when: "While it's open.",
+    },
+    {
+      attribute: "data-side",
+      element: "Popup",
+      when: "The side it opened on after flipping.",
+    },
+    {
+      attribute: 'data-slot="menu-group"',
+      element: "Group",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="menu-label"',
+      element: "Group label",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="menu-item"',
+      element: "Item",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-variant="destructive"',
+      element: "Item",
+      when: "The item deletes or can't be undone.",
+    },
+    {
+      attribute: 'data-inset="true"',
+      element: "Item, label, sub trigger",
+      when: "It's indented to line up with icons.",
+    },
+    {
+      attribute: "data-highlighted",
+      element: "Item",
+      when: "It has focus, from the pointer or the keyboard.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "Item",
+      when: "It can't be chosen.",
+    },
+    {
+      attribute: 'data-slot="menu-checkbox-item"',
+      element: "Checkbox item",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="menu-radio-group"',
+      element: "Radio group",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="menu-radio-item"',
+      element: "Radio item",
+      when: "Always.",
+    },
+    {
+      attribute: "data-checked",
+      element: "Checkbox and radio items",
+      when: "It's on.",
+    },
+    {
+      attribute: 'data-slot="menu-separator"',
+      element: "Separator",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="menu-shortcut"',
+      element: "Shortcut",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="menu-sub-trigger"',
+      element: "Sub trigger",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The trigger is a button with aria-haspopup, and the list is a menu of menuitem, menuitemcheckbox and menuitemradio, following the APG menu button pattern.",
+    "Name an icon-only trigger with aria-label, and include the row it acts on, such as “Actions for Maya Okafor”.",
+    "Icons in items need no extra markup: lucide hides them from screen readers by default, and the item's text is its name.",
+    "Focus returns to the trigger when the menu closes, whether an item was chosen or Escape was pressed.",
+    "MenuShortcut is hidden from screen readers so it isn't read as part of the item's name. It's a hint only: wire the key up yourself, and add aria-keyshortcuts to the item when you do.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Button", "Select", "Tooltip"]} />
+
+## References
+
+- [Base UI: Menu](https://base-ui.com/react/components/menu)
+- [WAI-ARIA APG: Menu button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/)

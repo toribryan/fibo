@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="fonts/fonts.css" />
+    <style>
+      body {
+        margin: 0;
+        background: #888;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        padding: 20px;
+        align-items: flex-start;
+      }
+    </style>
+    <script src="rabbit.js"></script>
+    <script src="mosaic-lib.js"></script>
+    <script src="texture-lib.js"></script>
+    <script src="logo.js"></script>
+  </head>
+  <body>
+    <script>
+      const BAYER8 = [
+        [0, 32, 8, 40, 2, 34, 10, 42],
+        [48, 16, 56, 24, 50, 18, 58, 26],
+        [12, 44, 4, 36, 14, 46, 6, 38],
+        [60, 28, 52, 20, 62, 30, 54, 22],
+        [3, 35, 11, 43, 1, 33, 9, 41],
+        [51, 19, 59, 27, 49, 17, 57, 25],
+        [15, 47, 7, 39, 13, 45, 5, 37],
+        [63, 31, 55, 23, 61, 29, 53, 21],
+      ]
+      const INK = "#0a0a0a",
+        PAPER = "#f3f3f1",
+        PHI = (1 + Math.sqrt(5)) / 2
+      let seed = 34
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647
+      const canvas = (id, W, H) => {
+        const c = document.createElement("canvas")
+        c.width = W
+        c.height = H
+        c.id = id
+        document.body.appendChild(c)
+        const x = c.getContext("2d")
+        x.fillStyle = PAPER
+        x.fillRect(0, 0, W, H)
+        return x
+      }
+
+      // Foot strip: the logo on the left, the address on the right.
+      function foot(ctx, W, H) {
+        geistLockup(ctx, 34, H - 44, 3, 500)
+        ctx.fillStyle = INK
+        ctx.font = "400 21px 'Geist Mono'"
+        ctx.textBaseline = "alphabetic"
+        ctx.textAlign = "right"
+        ctx.fillText("fibo.toribryan.com", W - 34, H - 44)
+        ctx.textAlign = "left"
+      }
+
+      async function main() {
+        for (const f of ["500 20px Geist", "400 20px 'Geist Mono'"])
+          await document.fonts.load(f)
+        const img = { "u-rabbit": await loadImage("photos/u-rabbit.jpg") }
+        // The golden window: the rabbit painting dithered everywhere but one golden rectangle,
+        // where the colour comes through.
+        {
+          const W = 1080,
+            H = 1350,
+            ctx = canvas("window", W, H)
+          const r = { x: 34, y: 34, w: W - 68, h: H - 178, fx: 0.5, fy: 0.3 }
+          const ph = photoLayer(img["u-rabbit"], r)
+          const ww = 377,
+            wh = Math.round(377 / PHI),
+            win = { x: 560, y: 470, w: ww, h: wh }
+          dither(ctx, ph, r, {
+            cell: 4,
+            keep: (x, y) =>
+              !(
+                x > win.x &&
+                x < win.x + win.w &&
+                y > win.y &&
+                y < win.y + win.h
+              ),
+          })
+          ctx.save()
+          ctx.beginPath()
+          ctx.rect(win.x, win.y, win.w, win.h)
+          ctx.clip()
+          dreamy(ctx, ph, r)
+          ctx.restore()
+          foot(ctx, W, H)
+          grain(ctx, W, H, 22, 0.5)
+        }
+
+        document.title = "done"
+      }
+      main().catch((e) => {
+        document.title = "error " + e.message
+      })
+    </script>
+  </body>
+</html>
