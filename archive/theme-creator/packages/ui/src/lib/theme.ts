@@ -221,23 +221,6 @@ type Token = { color: Oklch; alpha?: number }
 
 const WHITE: Oklch = { l: 1, c: 0, h: 0 }
 
-// The text, border and icon tokens of plans/003-property-tokens.md. They match
-// the status colour today, and are written out so a pasted theme defines
-// every variable globals.css's @theme block points at.
-const PROPERTY_ROLES = ["text", "border", "icon"] as const
-
-function propertyTokens(role: StatusRole, color: Oklch): Record<string, Token> {
-  return Object.fromEntries(
-    PROPERTY_ROLES.map((property) => [`${role}-${property}`, { color }])
-  )
-}
-
-const PROPERTY_TOKEN_NAMES = new Set(
-  STATUS_ROLES.flatMap((role) =>
-    PROPERTY_ROLES.map((property) => `${role}-${property}`)
-  )
-)
-
 function tokens(theme: Theme, mode: Mode): Record<string, Token> {
   const n = neutralRamp(theme.neutral)
   const solid = (color: Oklch): Token => ({ color })
@@ -265,7 +248,6 @@ function tokens(theme: Theme, mode: Mode): Record<string, Token> {
         // Matches globals.css: only destructive's red stays AA on 8%.
         [`${role}-subtle`]: alpha(color, role === "destructive" ? 0.08 : 0.06),
         ...extra,
-        ...propertyTokens(role, color),
       }
     }
     return {
@@ -328,7 +310,6 @@ function tokens(theme: Theme, mode: Mode): Record<string, Token> {
       [`${role}-foreground`]: solid(n[950]),
       [`${role}-subtle`]: alpha(color, 0.2),
       ...extra,
-      ...propertyTokens(role, color),
     }
   }
   return {
@@ -426,14 +407,11 @@ function rgba(token: Token): Rgb {
  */
 function figmaTokens(theme: Theme) {
   const mode = (m: Mode) => {
-    // Property tokens wait for Figma's variable scopes (plan 003).
     const colors = Object.fromEntries(
-      Object.entries(tokens(theme, m))
-        .filter(([name]) => !PROPERTY_TOKEN_NAMES.has(name))
-        .map(([name, token]) => [
-          name,
-          { $type: "color", $value: toHex(rgba(token)) },
-        ])
+      Object.entries(tokens(theme, m)).map(([name, token]) => [
+        name,
+        { $type: "color", $value: toHex(rgba(token)) },
+      ])
     )
     const r = theme.radius
     const radius = Object.fromEntries(

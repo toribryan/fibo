@@ -71,8 +71,9 @@ against their target instead of sharing one step.
 2. Teach `build-registry.mjs` to read and ship them, and extend the smoke test.
 3. Tune the status text and icon values and add contrast checks to the unit
    tests, so a theme change can't silently drop under the bar.
-4. Update the Colours page, the Theme creator and its Figma export, with
-   variable scopes.
+4. Update the Colours page. Figma variable scopes follow in a later plan. The
+   Theme creator was archived before this landed, so its generator doesn't
+   write these tokens; see `archive/theme-creator/README.md`.
 5. Move components across one at a time. Nothing breaks in between, since the
    old tokens stay as the fallback.
 
