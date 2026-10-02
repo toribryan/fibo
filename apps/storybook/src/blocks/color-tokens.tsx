@@ -69,7 +69,12 @@ type Family = {
 // way they do in use.
 function Swatch({ mode, name }: { mode: "light" | "dark"; name: string }) {
   const values = mode === "dark" ? DARK : LIGHT
-  const value = values[name]
+  // A property token points at another role, such as --success-text at
+  // --success. Follow it within the mode, or the page's own theme would
+  // paint the swatch.
+  const alias = /^var\(--([\w-]+)\)$/.exec(values[name] ?? "")?.[1]
+  const via = alias && alias in values ? alias : undefined
+  const value = via ? values[via] : values[name]
   return (
     <div className="flex w-28 flex-col gap-1.5">
       <span
@@ -83,7 +88,7 @@ function Swatch({ mode, name }: { mode: "light" | "dark"; name: string }) {
         />
       </span>
       <span className="font-mono text-xs text-muted-foreground">
-        {primitive(value)}
+        {via ? `${via}, ${primitive(value)}` : primitive(value)}
       </span>
     </div>
   )
@@ -230,11 +235,11 @@ const FAMILIES: Record<string, Family> = {
   status: {
     title: "Status",
     description:
-      "The only hues in the system, and each means one thing. A solid tone for text, icons and fills, and a translucent -subtle tone for the background behind them.",
+      "The only hues in the system, and each means one thing. A solid tone for fills, and a translucent -subtle tone for the background behind text. Text, borders and icons read the property tokens below.",
     tokens: [
       {
         name: "destructive",
-        utility: "text-destructive",
+        utility: "bg-destructive",
         use: "Errors, and actions that delete or can't be undone.",
       },
       {
@@ -249,7 +254,7 @@ const FAMILIES: Record<string, Family> = {
       },
       {
         name: "success",
-        utility: "text-success",
+        utility: "bg-success",
         use: "Something finished or is healthy.",
       },
       {
@@ -259,7 +264,7 @@ const FAMILIES: Record<string, Family> = {
       },
       {
         name: "warning",
-        utility: "text-warning",
+        utility: "bg-warning",
         use: "Something needs attention soon.",
       },
       {
@@ -269,13 +274,80 @@ const FAMILIES: Record<string, Family> = {
       },
       {
         name: "info",
-        utility: "text-info",
+        utility: "bg-info",
         use: "Neutral news: an update, a tip.",
       },
       {
         name: "info-subtle",
         utility: "bg-info-subtle",
         use: "Behind info text.",
+      },
+    ],
+  },
+  properties: {
+    title: "Property tokens",
+    description:
+      "What text-, border-, fill- and stroke- read for each status. Each is held to the contrast its property needs, and a unit test checks every one in both themes.",
+    tokens: [
+      {
+        name: "destructive-text",
+        utility: "text-destructive",
+        use: "Text for an error. Clears 4.5:1 on every surface and on its own tint.",
+      },
+      {
+        name: "destructive-border",
+        utility: "border-destructive",
+        use: "Borders that mark an error. Clears 3:1 on every surface.",
+      },
+      {
+        name: "destructive-icon",
+        utility: "fill-destructive",
+        use: "Icons and marks for an error, with fill- or stroke-. Clears 3:1.",
+      },
+      {
+        name: "success-text",
+        utility: "text-success",
+        use: "Text for success. Clears 4.5:1 on every surface and on its own tint.",
+      },
+      {
+        name: "success-border",
+        utility: "border-success",
+        use: "Borders that mark success. Clears 3:1 on every surface.",
+      },
+      {
+        name: "success-icon",
+        utility: "fill-success",
+        use: "Icons and marks for success, with fill- or stroke-. Clears 3:1.",
+      },
+      {
+        name: "warning-text",
+        utility: "text-warning",
+        use: "Text for a warning. Clears 4.5:1 on every surface and on its own tint.",
+      },
+      {
+        name: "warning-border",
+        utility: "border-warning",
+        use: "Borders that mark a warning. Clears 3:1 on every surface.",
+      },
+      {
+        name: "warning-icon",
+        utility: "fill-warning",
+        use: "Icons and marks for a warning, with fill- or stroke-. Clears 3:1.",
+      },
+      {
+        name: "info-text",
+        utility: "text-info",
+        use: "Text for news. Clears 4.5:1 on every surface and on its own tint.",
+      },
+      {
+        name: "info-border",
+        utility: "border-info",
+        use: "Borders that mark news. Clears 3:1 on every surface.",
+      },
+      {
+        name: "info-icon",
+        utility: "fill-info",
+        use: "Icons and marks for news, with fill- or stroke-. Clears 3:1.",
       },
     ],
   },
