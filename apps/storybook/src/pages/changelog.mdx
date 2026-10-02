@@ -8,6 +8,14 @@ Notable changes, newest first.
 
 ## October 2026
 
+- **Badge** has `success`, `warning` and `info` variants, and **Input** has a
+  `size` prop with `sm` for dense forms, both matching the Figma library.
+- **Reactions** takes `type="inline"` or `type="floating"` in place of
+  `variant`, the name the Figma component uses.
+- **Integration visual** drops its `size` prop, and **Chapter scrubber** drops
+  `preview="none"`. Neither had a Figma counterpart.
+- The success, warning and info tints are lighter in light mode, so their
+  text clears AA contrast at badge size.
 - fibo can now **retire a part** without surprising anyone who installed it.
   A deprecated part carries a red pill in the sidebar and catalog, a banner
   on its docs page with what to use instead, a notice when it's installed,

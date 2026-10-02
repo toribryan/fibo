@@ -40,6 +40,9 @@ If unsure, it is a base component.
   off unless it is the point of the part.
 - Accessibility: keyboard reachable, visible `focus-visible` ring
   (`ring-[3px] ring-ring-subtle`), names on icon-only controls.
+- Sizes come from the shared scale (`xs`, `sm`, `default`, `lg`, `xl`,
+  `icon-<step>`), listed smallest first. Name a visual style `variant` and a
+  structural kind `type`, and match the Figma property's name and options.
 - Document every prop with a one-line JSDoc comment. Storybook's props table
   reads them.
 - Comments explain why, never what. No emojis in code; escape them

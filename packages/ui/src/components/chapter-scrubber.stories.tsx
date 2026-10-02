@@ -108,7 +108,7 @@ const meta: Meta<typeof ChapterScrubber> = {
         "Left or right for vertical rails, top or bottom for horizontal. Unset picks right or top.",
     },
     align: { control: "inline-radio", options: ["edge", "center"] },
-    preview: { control: "inline-radio", options: ["card", "label", "none"] },
+    preview: { control: "inline-radio", options: ["card", "label"] },
     radius: { control: { type: "range", min: 1, max: 8, step: 0.5 } },
     rowSize: { control: { type: "range", min: 6, max: 24, step: 1 } },
     restLength: { control: { type: "range", min: 2, max: 32, step: 1 } },
@@ -200,7 +200,7 @@ export const Sizes: Story = {
     <div className="flex items-end gap-24">
       {(["sm", "default", "lg"] as const).map((size) => (
         <div key={size} className="flex flex-col items-start gap-4">
-          <ChapterScrubber {...args} size={size} preview="none" />
+          <ChapterScrubber {...args} size={size} preview="label" />
           <span className="font-mono text-xs text-muted-foreground">
             {size}
           </span>
