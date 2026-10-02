@@ -1,0 +1,329 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/voice-memo.stories"
+import { VoiceMemo } from "../../../../packages/ui/src/components/voice-memo"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { Anatomy } from "../blocks/anatomy"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Voice memo
+
+An aluminium recorder, after the clip-on memo devices that hold to the
+back of a phone, that writes down what you say. Press it and a transcript
+opens beside it, filling in as you talk; press it again and the transcript
+stays, ready to copy or download as a Markdown file.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- One button. The device itself starts and stops listening, and its
+  pinhole glows red while it does.
+- A live transcript beside the device: settled words in full, the words
+  still being worked out fainter after them. It follows the newest words
+  unless you scroll up to reread.
+- Saves the transcript as a `.md` file: the title, when it was said and for
+  how long, then a paragraph per phrase led by its timestamp.
+- Uses the browser's own speech recognition, with nothing to install, or
+  shows text from your own service through `transcript` and `interim`.
+- Aluminium drawn in fibo's tokens, silver in the light theme and space
+  grey in the dark, that lifts on hover and presses in on a click.
+
+## Installation
+
+<Install
+  name="voice-memo"
+  exports={[
+    "VoiceMemo",
+    "voiceMemoVariants",
+    "formatElapsed",
+    "transcriptToMarkdown",
+    "type VoiceMemoProps",
+    "type VoiceMemoResult",
+    "type VoiceMemoSegment",
+  ]}
+/>
+
+It installs fibo's Button for the copy and close actions, `lucide-react`
+for their icons and `class-variance-authority` for the sizes.
+
+## Examples
+
+### Listening
+
+While listening, the pinhole glows, the clock runs and the words fill in.
+
+<Canvas of={Stories.Listening} />
+
+### Below
+
+`side="bottom"` opens the transcript under the device, for narrow columns.
+
+<Canvas of={Stories.Below} />
+
+### Small
+
+`size="sm"` fits a toolbar or a sidebar.
+
+<Canvas of={Stories.Small} />
+
+### Wordmark
+
+`wordmark` changes the word raised on the device.
+
+<Canvas of={Stories.Wordmark} />
+
+### Your own service
+
+`transcript` and `interim` show text from elsewhere. Here a slider stands in
+for a service streaming words back.
+
+<Canvas of={Stories.OwnService} />
+
+### Scripted
+
+`simulate` types out a script in place of the microphone, so a preview, or
+this page, can show a finished transcript to copy and download without
+anyone speaking.
+
+<Canvas of={Stories.Scripted} />
+
+### Saving notes
+
+`onComplete` hands back each finished transcript, here saved to a list.
+
+<Canvas of={Stories.SavingNotes} />
+
+## Usage
+
+With no props it transcribes through the browser. Once stopped, the
+transcript offers a download as a `.md` file, and `onComplete` hands back the
+text and the memo, Markdown included, for saving it yourself:
+
+```tsx
+import { VoiceMemo } from "@/components/ui/voice-memo"
+
+export function Notes() {
+  return (
+    <VoiceMemo
+      title="Standup"
+      onComplete={(text, memo) => saveNote(memo.filename, memo.markdown)}
+    />
+  )
+}
+```
+
+The memo is a `VoiceMemoResult`:
+
+```ts
+type VoiceMemoResult = {
+  title: string
+  transcript: string
+  segments: { at?: number; text: string }[] // at: ms from the start
+  startedAt: Date
+  duration: number // ms
+  markdown: string
+  filename: string // standup-2026-10-02-1405.md
+}
+```
+
+The file reads like this:
+
+```md
+# Standup
+
+October 2, 2026 at 2:05 PM · 00:42 · 61 words
+
+**00:01** Quick note for the design review.
+
+**00:04** The token drift check passes in both themes.
+```
+
+With your own speech-to-text service, pass what it has settled as
+`transcript` and what it's still guessing as `interim`. The browser's
+recogniser stays off:
+
+```tsx
+<VoiceMemo
+  recording={recording}
+  onRecordingChange={setRecording}
+  transcript={final}
+  interim={partial}
+/>
+```
+
+Browser recognition works in Chrome, Edge and Safari, and sends audio to the
+browser maker's servers to transcribe. Where it isn't available, or for
+speech that must stay on your own servers, bring your own service.
+
+## Anatomy
+
+Every part the component renders, with the `data-slot` it carries.
+
+<Anatomy
+  root={{
+    name: "VoiceMemo",
+    slot: "voice-memo",
+    note: "Carries data-recording while listening, data-side and data-size.",
+    children: [
+      {
+        name: "device",
+        slot: "voice-memo-device",
+        note: "The aluminium recorder, a toggle button named Transcribe.",
+        children: [
+          {
+            name: "light",
+            slot: "voice-memo-light",
+            note: "While listening.",
+          },
+        ],
+      },
+      {
+        name: "transcript",
+        slot: "voice-memo-transcript",
+        note: "While listening, and after, until it's closed.",
+        children: [
+          {
+            name: "header",
+            slot: "voice-memo-header",
+            children: [
+              {
+                name: "time",
+                slot: "voice-memo-time",
+                note: "While listening.",
+              },
+              {
+                name: "copy",
+                slot: "voice-memo-copy",
+                note: "Once stopped, with text to copy.",
+              },
+              {
+                name: "download",
+                slot: "voice-memo-download",
+                note: "Once stopped, with text to save.",
+              },
+              {
+                name: "close",
+                slot: "voice-memo-close",
+                note: "Once stopped.",
+              },
+            ],
+          },
+          { name: "text", slot: "voice-memo-text" },
+        ],
+      },
+      {
+        name: "announcer",
+        slot: "voice-memo-announcer",
+        note: "A visually hidden status region.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use it for quick spoken notes: one take, started and stopped with a press. For long recordings that need editing, use a full transcription tool.",
+    "Do something with the text in onComplete, such as saving it as a note. A transcript that vanishes when closed teaches people not to bother.",
+    "Open the transcript to the right where there's room beside the device, and below it in narrow columns and on phones.",
+    "Keep the wordmark to one short word. It's raised across the bottom of the device and has room for about six letters.",
+    "Set lang to the language people speak. The recogniser doesn't detect it.",
+    "Leave simulate for previews and demos. In production it would type out the same script for everyone.",
+    "Give each memo a title people will recognise, such as the meeting. It heads the Markdown file and names it.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: <VoiceMemo size="sm" wordmark="notes" />,
+        description: "Raise one short word on the device.",
+      },
+      negative: {
+        component: <VoiceMemo size="sm" wordmark="Meeting notes" />,
+        description:
+          "Don't fit a phrase onto it. The lettering runs off the edge.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+Style the device by state, for example with
+`data-recording:[&_[data-slot=voice-memo-transcript]]:border-destructive`.
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="voice-memo"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-recording",
+      element: "The root",
+      when: "While listening.",
+    },
+    {
+      attribute: "data-side",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>right</code> or <code>bottom</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-size",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>sm</code> or <code>default</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="voice-memo-transcript"',
+      element: "The transcript",
+      when: "While open.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The device is a toggle button named Transcribe, pressed while listening. Enter or Space starts and stops it, and focus stays on it.",
+    "Starting and stopping are announced once in a status region, with the word count when it stops. The words themselves aren't read out as they arrive, which would talk over the speaker.",
+    "The transcript is a region the device points to with aria-controls. Its text is a log that takes focus, so it can be scrolled and read by keyboard.",
+    "Once stopped, Tab moves from the device to copy, download and close.",
+    "Failures, such as a blocked microphone or a browser without recognition, show in the transcript and are announced.",
+    "With reduced motion, the device doesn't lift or press in, the light holds still, and the transcript fades in without growing.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Chat composer", "Typing indicator", "Toast"]} />
+
+## References
+
+- [Web Speech API `SpeechRecognition`](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition), for transcribing in the browser
+- [WAI-ARIA button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/), for the device as a toggle
+- [JPG card holder](https://chanhdai.com/components/jpg-card-holder) by
+  Chánh Đại, whose material rendering and crossfaded shadows the device follows

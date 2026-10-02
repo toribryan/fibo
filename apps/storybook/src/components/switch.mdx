@@ -29,6 +29,39 @@ away, with no save button.
 
 <Install name="switch" exports={["Switch"]} />
 
+## Examples
+
+### Checked
+
+`defaultChecked` starts it on.
+
+<Canvas of={Stories.Checked} />
+
+### Small
+
+`size="sm"` for dense tables and toolbars.
+
+<Canvas of={Stories.Small} />
+
+### Disabled
+
+`disabled` dims the switch and blocks the pointer.
+
+<Canvas of={Stories.Disabled} />
+
+### With label
+
+A Label connected with `htmlFor` becomes part of the hit area.
+
+<Canvas of={Stories.WithLabel} />
+
+### Settings list
+
+Each row has a label and a description on the left, with the switch on the
+right.
+
+<Canvas of={Stories.SettingsList} />
+
 ## Usage
 
 ```tsx
@@ -75,39 +108,6 @@ it keep its own state. Save the change as soon as it fires.
     "In a settings list, put the label and any description on the left and the switch on the right, so the switches line up.",
   ]}
 />
-
-## Examples
-
-### Checked
-
-`defaultChecked` starts it on.
-
-<Canvas of={Stories.Checked} />
-
-### Small
-
-`size="sm"` for dense tables and toolbars.
-
-<Canvas of={Stories.Small} />
-
-### Disabled
-
-`disabled` dims the switch and blocks the pointer.
-
-<Canvas of={Stories.Disabled} />
-
-### With label
-
-A Label connected with `htmlFor` becomes part of the hit area.
-
-<Canvas of={Stories.WithLabel} />
-
-### Settings list
-
-Each row has a label and a description on the left, with the switch on the
-right.
-
-<Canvas of={Stories.SettingsList} />
 
 ## Do's and don'ts
 

@@ -40,6 +40,50 @@ over to a search across every field and value, like a command menu.
 
 It installs the Button component and the `motion` package too.
 
+## Examples
+
+### Applied as chips
+
+The component only picks filters. Here the app shows each applied field as a
+chip beside the button, with a button to remove it.
+
+<Canvas of={Stories.AppliedAsChips} />
+
+### Default
+
+The menu on its own, keeping its own state. The Search filters button
+slides the whole menu, header and body, over to the search state, which
+lists every value until you type. Back, Escape or Backspace slides it home.
+
+<Canvas of={Stories.Default} />
+
+### Inline search
+
+`search="inline"` keeps a search box at the top of the menu. Typing turns it
+into results in place, and clearing the text brings the menu back.
+
+<Canvas of={Stories.InlineSearch} />
+
+### With selections
+
+`defaultValue` starts with values chosen. The fields that have any show a
+count. The trigger's content is yours, here with a dot to say filters are on.
+
+<Canvas of={Stories.WithSelections} />
+
+### Keyboard only
+
+Opened from the keyboard: arrows move, Right opens a field, Enter ticks a
+value, and Left or Backspace goes back to the field it came from.
+
+<Canvas of={Stories.KeyboardOnly} />
+
+### No matches
+
+A search with no results says so, using `emptyText`.
+
+<Canvas of={Stories.NoMatches} />
+
 ## Usage
 
 ```tsx
@@ -190,50 +234,6 @@ part of it:
   Give fields and values icons with the `icon` key. They help people scan a long
   menu, and they show in search results too.
 </Tip>
-
-## Examples
-
-### Applied as chips
-
-The component only picks filters. Here the app shows each applied field as a
-chip beside the button, with a button to remove it.
-
-<Canvas of={Stories.AppliedAsChips} />
-
-### Default
-
-The menu on its own, keeping its own state. The Search filters button
-slides the whole menu, header and body, over to the search state, which
-lists every value until you type. Back, Escape or Backspace slides it home.
-
-<Canvas of={Stories.Default} />
-
-### Inline search
-
-`search="inline"` keeps a search box at the top of the menu. Typing turns it
-into results in place, and clearing the text brings the menu back.
-
-<Canvas of={Stories.InlineSearch} />
-
-### With selections
-
-`defaultValue` starts with values chosen. The fields that have any show a
-count. The trigger's content is yours, here with a dot to say filters are on.
-
-<Canvas of={Stories.WithSelections} />
-
-### Keyboard only
-
-Opened from the keyboard: arrows move, Right opens a field, Enter ticks a
-value, and Left or Backspace goes back to the field it came from.
-
-<Canvas of={Stories.KeyboardOnly} />
-
-### No matches
-
-A search with no results says so, using `emptyText`.
-
-<Canvas of={Stories.NoMatches} />
 
 ## Do's and don'ts
 

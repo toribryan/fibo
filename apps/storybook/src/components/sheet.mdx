@@ -43,6 +43,27 @@ as editing a record or setting filters on a phone, without leaving the page.
 
 It installs Button for the close button.
 
+## Examples
+
+### Bottom
+
+From the bottom edge, as on a phone. Swipe it down to close.
+
+<Canvas of={Stories.Bottom} />
+
+### Left
+
+From the left edge, for navigation that slides over the page.
+
+<Canvas of={Stories.Left} />
+
+### Filters
+
+Sort, group and filter controls in a bottom sheet behind one icon button,
+as on a phone.
+
+<Canvas of={Stories.Filters} />
+
 ## Usage
 
 ```tsx
@@ -114,27 +135,6 @@ also sets which way the sheet is swiped to close. Always give it a SheetTitle.
     "Don't stack sheets on sheets.",
   ]}
 />
-
-## Examples
-
-### Bottom
-
-From the bottom edge, as on a phone. Swipe it down to close.
-
-<Canvas of={Stories.Bottom} />
-
-### Left
-
-From the left edge, for navigation that slides over the page.
-
-<Canvas of={Stories.Left} />
-
-### Filters
-
-Sort, group and filter controls in a bottom sheet behind one icon button,
-as on a phone.
-
-<Canvas of={Stories.Filters} />
 
 ## Do's and don'ts
 

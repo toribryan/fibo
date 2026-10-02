@@ -88,13 +88,14 @@ order:
 2. `## Features`: three or four bullets.
 3. `## Installation` with `<Install name="<name>" exports={[...]} />`, plus a
    line for any dependency it installs.
-4. `## Usage`: a small, complete code example and one sentence on the rule
+4. `## Examples`, one `<Canvas>` per story, each with a sentence on what it
+   shows. Examples come before the reference material, so the page shows the
+   part working before it explains it.
+5. `## Usage`: a small, complete code example and one sentence on the rule
    that matters most. Show the shape of any array prop as a type.
-5. `## Anatomy` with `<Anatomy root={...} />`, only when the part renders more
+6. `## Anatomy` with `<Anatomy root={...} />`, only when the part renders more
    than one element. List elements that exist in the DOM, never props.
-6. `## Guidelines` as `<UsageGuidelines>`.
-7. `## Examples`, one `<Canvas>` per story, each with a sentence on what it
-   shows.
+7. `## Guidelines` as `<UsageGuidelines>`.
 8. `## Do's and don'ts` with `<ComponentRules>` and live examples.
 9. `## API reference` with `<ArgTypes of={Stories.Default} />`, then
    `### Data attributes` with `<DataAttributes rows={[...]} />`.

@@ -62,7 +62,13 @@ const GROUPS: Record<Tier, string[]> = {
     "Overlays",
     "Feedback",
   ],
-  "special-components": ["Diagrams", "Navigation", "Display", "Feedback"],
+  "special-components": [
+    "Diagrams",
+    "Navigation",
+    "Forms",
+    "Display",
+    "Feedback",
+  ],
 }
 
 // The wave a Chapter scrubber makes under the pointer, frozen for a preview.
@@ -480,6 +486,26 @@ const PREVIEWS: Record<string, ReactNode> = {
         Semantic roles
       </span>
     </div>
+  ),
+  "voice-memo": (
+    <span className="flex items-start gap-2">
+      <span className="relative block h-[3.6rem] w-[5.6rem] rounded-[7%/11%] border border-border bg-muted shadow-sm">
+        <span className="absolute top-2 right-2 size-1 rounded-full bg-destructive" />
+        <span className="absolute bottom-1.5 left-2 font-serif text-lg leading-none text-muted-foreground">
+          fibo
+        </span>
+      </span>
+      <span className="flex w-28 flex-col gap-1 rounded-lg border border-border bg-popover p-2 text-[9px] leading-snug shadow-sm">
+        <span className="flex items-center gap-1 text-muted-foreground">
+          <span className="size-1 rounded-full bg-destructive" />
+          Listening…
+        </span>
+        <span>
+          Quick note for the design review.{" "}
+          <span className="text-muted-foreground">The token</span>
+        </span>
+      </span>
+    </span>
   ),
   "map-pin": (
     <span className="relative block h-28 w-48 overflow-hidden rounded-lg border border-border bg-muted">

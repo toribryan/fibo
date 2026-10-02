@@ -44,6 +44,47 @@ status is a small sticker of its own on the corner.
 
 It adds `--sticker-edge` and `--sticker-ink` to your theme.
 
+## Examples
+
+### Sizes
+
+The edge grows with the sticker: 2px up to 40, 4px at 64, 6px at 96.
+
+<Canvas of={Stories.Sizes} />
+
+### Status by shape
+
+Present, away and offline, each labelled and coloured with the success,
+warning and muted tokens. Each shape still reads without colour: a solid dot,
+a crescent and a ring.
+
+<Canvas of={Stories.Statuses} />
+
+### Cut-out, round and initials
+
+A transparent cut-out follows its shape. A photo with a background becomes
+round. With no image, the letters themselves are cut out.
+
+<Canvas of={Stories.Shapes} />
+
+### In a direct message list
+
+At 32px the edge and tilt are small enough for a dense list. Each row carries
+`group/sticker`, so hovering anywhere on it lifts the sticker.
+
+<Canvas of={Stories.DirectMessages} />
+
+### Stack
+
+StickerAvatarGroup overlaps stickers like a laptop lid, and
+StickerAvatarCount counts the rest.
+
+<Canvas of={Stories.Group} />
+
+### Without tilt or lift
+
+<Canvas of={Stories.Straight} />
+
 ## Usage
 
 ```tsx
@@ -110,47 +151,6 @@ the edge to be cut; without them the sticker falls back to round.
     </>,
   ]}
 />
-
-## Examples
-
-### Sizes
-
-The edge grows with the sticker: 2px up to 40, 4px at 64, 6px at 96.
-
-<Canvas of={Stories.Sizes} />
-
-### Status by shape
-
-Present, away and offline, each labelled and coloured with the success,
-warning and muted tokens. Each shape still reads without colour: a solid dot,
-a crescent and a ring.
-
-<Canvas of={Stories.Statuses} />
-
-### Cut-out, round and initials
-
-A transparent cut-out follows its shape. A photo with a background becomes
-round. With no image, the letters themselves are cut out.
-
-<Canvas of={Stories.Shapes} />
-
-### In a direct message list
-
-At 32px the edge and tilt are small enough for a dense list. Each row carries
-`group/sticker`, so hovering anywhere on it lifts the sticker.
-
-<Canvas of={Stories.DirectMessages} />
-
-### Stack
-
-StickerAvatarGroup overlaps stickers like a laptop lid, and
-StickerAvatarCount counts the rest.
-
-<Canvas of={Stories.Group} />
-
-### Without tilt or lift
-
-<Canvas of={Stories.Straight} />
 
 ## Do's and don'ts
 

@@ -48,6 +48,34 @@ toolbar or the actions for one row in a table.
   ]}
 />
 
+## Examples
+
+### Row actions
+
+An icon-only trigger at the end of a row. Its label names the row, so each
+trigger in a table is distinct.
+
+<Canvas of={Stories.RowActions} />
+
+### Checkboxes
+
+Items that toggle, such as which columns a table shows. The menu stays open
+while you toggle.
+
+<Canvas of={Stories.Checkboxes} />
+
+### Radio
+
+One choice from a group, such as the sort order.
+
+<Canvas of={Stories.Radio} />
+
+### Submenu
+
+A second level for a choice with its own options. The last item is disabled.
+
+<Canvas of={Stories.Submenu} />
+
 ## Usage
 
 ```tsx
@@ -128,34 +156,6 @@ after a separator.
     "Disable an item that can't be used right now rather than hiding it, so the menu doesn't change shape.",
   ]}
 />
-
-## Examples
-
-### Row actions
-
-An icon-only trigger at the end of a row. Its label names the row, so each
-trigger in a table is distinct.
-
-<Canvas of={Stories.RowActions} />
-
-### Checkboxes
-
-Items that toggle, such as which columns a table shows. The menu stays open
-while you toggle.
-
-<Canvas of={Stories.Checkboxes} />
-
-### Radio
-
-One choice from a group, such as the sort order.
-
-<Canvas of={Stories.Radio} />
-
-### Submenu
-
-A second level for a choice with its own options. The last item is disabled.
-
-<Canvas of={Stories.Submenu} />
 
 ## Do's and don'ts
 
