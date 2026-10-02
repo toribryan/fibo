@@ -22,6 +22,11 @@ import { Label } from "@workspace/ui/components/label"
 import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Spinner } from "@workspace/ui/components/spinner"
+import {
+  StickerAvatar,
+  StickerAvatarCount,
+  StickerAvatarGroup,
+} from "@workspace/ui/components/sticker-avatar"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -45,7 +50,7 @@ type Entry = {
 // The order groups appear in on the Catalog page, per tier.
 const GROUPS: Record<Tier, string[]> = {
   "base-components": ["Actions", "Forms", "Display", "Feedback"],
-  "special-components": ["Diagrams", "Navigation", "Feedback"],
+  "special-components": ["Diagrams", "Navigation", "Display", "Feedback"],
 }
 
 // The wave a Chapter scrubber makes under the pointer, frozen for a preview.
@@ -363,6 +368,18 @@ const PREVIEWS: Record<string, ReactNode> = {
         Semantic roles
       </span>
     </div>
+  ),
+  "sticker-avatar": (
+    <StickerAvatarGroup className="-space-x-2">
+      <StickerAvatar
+        name="Tori Bryan"
+        size={52}
+        status="present"
+        lift={false}
+      />
+      <StickerAvatar name="Ana Ruiz" size={52} status="away" lift={false} />
+      <StickerAvatarCount count={4} size={52} />
+    </StickerAvatarGroup>
   ),
   "floating-nav": (
     <span className="flex items-center gap-1 rounded-full border border-border bg-popover p-1 shadow-md">

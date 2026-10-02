@@ -59,7 +59,7 @@ const preview: Preview = {
           "Changelog",
           "Design skills",
           "Foundations",
-          ["Colors", "Typography", "Theme creator"],
+          ["Colors", "Typography"],
           "Base components",
           "Special components",
         ],

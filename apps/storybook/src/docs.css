@@ -168,16 +168,3 @@
     opacity: 1;
   }
 }
-
-/* The theme creator is a workspace: full width, no rail, no page title. */
-.sbdocs.sbdocs-wrapper:has(.fibo-studio) .sbdocs-toc--custom {
-  display: none;
-}
-
-.sbdocs.sbdocs-wrapper:has(.fibo-studio) {
-  padding: 1rem;
-}
-
-.sbdocs.sbdocs-wrapper:has(.fibo-studio) .sbdocs-content {
-  max-width: none;
-}
