@@ -107,7 +107,7 @@ describe("DataTableToolbar", () => {
     await screen.getByRole("checkbox", { name: "Select Maya Okafor" }).click()
     await expect
       .element(screen.getByRole("group", { name: "Bulk actions" }))
-      .toHaveTextContent("1 member selected")
+      .toMatchTextContent("1 member selected")
     await expect
       .element(screen.getByRole("textbox", { name: "Search members" }))
       .not.toBeInTheDocument()
@@ -135,12 +135,12 @@ describe("DataTableToolbar", () => {
     await screen.getByRole("checkbox", { name: /Select all/ }).click()
     await expect
       .element(screen.getByRole("group", { name: "Bulk actions" }))
-      .toHaveTextContent("2 members selected")
+      .toMatchTextContent("2 members selected")
     await screen.getByRole("button", { name: "Select all 247 members" }).click()
     expect(onValueChange).toHaveBeenLastCalledWith("all")
     await expect
       .element(screen.getByRole("group", { name: "Bulk actions" }))
-      .toHaveTextContent("All 247 members selected")
+      .toMatchTextContent("All 247 members selected")
     await expect
       .element(screen.getByRole("button", { name: /Select all 247/ }))
       .not.toBeInTheDocument()
