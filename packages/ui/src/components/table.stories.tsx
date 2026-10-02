@@ -45,7 +45,6 @@ const meta: Meta<typeof Table> = {
     TableCell,
     TableCaption,
   },
-  tags: ["new"],
   argTypes: { children: { control: false } },
   parameters: { controls: { exclude: ["children"] } },
   render: (args) => (

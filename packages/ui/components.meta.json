@@ -195,8 +195,7 @@
     "title": "Table",
     "description": "Rows and columns of data, at one compact density.",
     "tier": "base-components",
-    "group": "Display",
-    "status": "new"
+    "group": "Display"
   },
   "textarea": {
     "title": "Textarea",
