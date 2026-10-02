@@ -27,7 +27,7 @@ import {
 } from "storybook/internal/core-events"
 import { addons, types, type API } from "storybook/manager-api"
 
-import { OPEN_MENU } from "./site-nav-sync.js"
+import { MOBILE_QUERY, OPEN_MENU } from "./site-nav-sync.js"
 import { darkTheme, lightTheme } from "./theme.js"
 import {
   readTheme,
@@ -50,7 +50,7 @@ const STATUSES = ["new", "beta", "deprecated"]
 const ICON_BY_ID: Record<string, LucideIcon> = {
   "about-fibo--docs": RabbitIcon,
   "foundations-colors--docs": ContrastIcon,
-  "foundations-typography": TypeIcon,
+  "foundations-typography--docs": TypeIcon,
 }
 
 // Each group inside a shelf has an icon for what its parts do.
@@ -170,6 +170,28 @@ syncView()
 
 addons.register("fibo/site-nav", (api) => {
   api.on(STORY_CHANGED, syncView)
+  // On a phone the menu lists a component without its own rows, so a tap on
+  // it opens the component's docs and closes the menu, instead of expanding
+  // rows that are hidden.
+  const phone = window.matchMedia(MOBILE_QUERY)
+  document.addEventListener(
+    "click",
+    (event) => {
+      if (!phone.matches || !event.isTrusted) return
+      const row = (event.target as Element | null)?.closest?.<HTMLElement>(
+        '#storybook-explorer-menu [data-nodetype="component"]'
+      )
+      const id = row?.dataset.itemId
+      if (!id) return
+      event.preventDefault()
+      event.stopPropagation()
+      api.selectStory(id)
+      document
+        .querySelector<HTMLButtonElement>('button[aria-label="Close menu"]')
+        ?.click()
+    },
+    true
+  )
   // Storybook keeps the mobile menu's state to itself, so the nav's Menu
   // item presses the hidden bar's own button.
   api.on(OPEN_MENU, () => {
@@ -178,6 +200,18 @@ addons.register("fibo/site-nav", (api) => {
         'button[aria-label="Open navigation menu"]'
       )
       ?.click()
+    // On a phone the menu hides a component's own rows, so Storybook can't
+    // scroll to the open page; bring its component (or the page) into view.
+    requestAnimationFrame(() => {
+      const selected = document.querySelector<HTMLElement>(
+        '#storybook-explorer-menu [data-selected="true"]'
+      )
+      // Hidden rows have no offset parent; step back to the nearest shown one.
+      let row: Element | null = selected
+      while (row instanceof HTMLElement && row.offsetParent === null)
+        row = row.previousElementSibling
+      row?.scrollIntoView({ block: "center" })
+    })
   })
 })
 
