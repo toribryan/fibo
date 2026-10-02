@@ -8,6 +8,12 @@ Notable changes, newest first.
 
 ## October 2026
 
+- **Property tokens** for the status colours: `text-success`,
+  `border-success` and `fill-success` now read `--success-text`,
+  `--success-border` and `--success-icon`, and the same for destructive,
+  warning and info. Class names don't change. Each is held to the contrast
+  its property needs, 4.5:1 for text and 3:1 for borders and icons, and a
+  unit test checks every one in both themes. The Colors page explains them.
 - New **Sticker avatar** in a new Display group of Special components: an
   avatar cut out like a die-cut sticker. A transparent image gets a white
   paper edge that follows its shape, a photo with a background becomes a round

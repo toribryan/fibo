@@ -49,6 +49,38 @@
   --color-info-foreground: var(--info-foreground);
   --color-info-subtle: var(--info-subtle);
 
+  /*
+   * Property tokens (plans/003-property-tokens.md). Tailwind reads text-*
+   * from --text-color-* before --color-*, and the same for backgrounds,
+   * borders, fills and strokes, so `text-success` paints with the token
+   * tuned for text while `bg-success` keeps the solid fill. Class names
+   * don't change, and anything not listed here falls back to --color-*.
+   */
+  --text-color-destructive: var(--destructive-text);
+  --background-color-destructive: var(--destructive);
+  --background-color-destructive-subtle: var(--destructive-subtle);
+  --border-color-destructive: var(--destructive-border);
+  --fill-destructive: var(--destructive-icon);
+  --stroke-destructive: var(--destructive-icon);
+  --text-color-success: var(--success-text);
+  --background-color-success: var(--success);
+  --background-color-success-subtle: var(--success-subtle);
+  --border-color-success: var(--success-border);
+  --fill-success: var(--success-icon);
+  --stroke-success: var(--success-icon);
+  --text-color-warning: var(--warning-text);
+  --background-color-warning: var(--warning);
+  --background-color-warning-subtle: var(--warning-subtle);
+  --border-color-warning: var(--warning-border);
+  --fill-warning: var(--warning-icon);
+  --stroke-warning: var(--warning-icon);
+  --text-color-info: var(--info-text);
+  --background-color-info: var(--info);
+  --background-color-info-subtle: var(--info-subtle);
+  --border-color-info: var(--info-border);
+  --fill-info: var(--info-icon);
+  --stroke-info: var(--info-icon);
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-input-subtle: var(--input-subtle);
@@ -160,15 +192,27 @@
     var(--color-red-700) 20%,
     transparent
   );
+  --destructive-text: var(--destructive);
+  --destructive-border: var(--destructive);
+  --destructive-icon: var(--destructive);
   --success: var(--color-green-700);
   --success-foreground: var(--color-neutral-50);
   --success-subtle: color-mix(in oklch, var(--color-green-700) 6%, transparent);
+  --success-text: var(--success);
+  --success-border: var(--success);
+  --success-icon: var(--success);
   --warning: var(--color-amber-700);
   --warning-foreground: var(--color-neutral-50);
   --warning-subtle: color-mix(in oklch, var(--color-amber-700) 6%, transparent);
+  --warning-text: var(--warning);
+  --warning-border: var(--warning);
+  --warning-icon: var(--warning);
   --info: var(--color-blue-700);
   --info-foreground: var(--color-neutral-50);
   --info-subtle: color-mix(in oklch, var(--color-blue-700) 6%, transparent);
+  --info-text: var(--info);
+  --info-border: var(--info);
+  --info-icon: var(--info);
 
   --border: var(--color-neutral-200);
   --input: var(--color-neutral-200);
@@ -261,6 +305,9 @@
     var(--color-red-400) 40%,
     transparent
   );
+  --destructive-text: var(--destructive);
+  --destructive-border: var(--destructive);
+  --destructive-icon: var(--destructive);
   --success: var(--color-green-400);
   --success-foreground: var(--color-neutral-950);
   --success-subtle: color-mix(
@@ -268,6 +315,9 @@
     var(--color-green-400) 20%,
     transparent
   );
+  --success-text: var(--success);
+  --success-border: var(--success);
+  --success-icon: var(--success);
   --warning: var(--color-amber-400);
   --warning-foreground: var(--color-neutral-950);
   --warning-subtle: color-mix(
@@ -275,9 +325,15 @@
     var(--color-amber-400) 20%,
     transparent
   );
+  --warning-text: var(--warning);
+  --warning-border: var(--warning);
+  --warning-icon: var(--warning);
   --info: var(--color-blue-400);
   --info-foreground: var(--color-neutral-950);
   --info-subtle: color-mix(in oklch, var(--color-blue-400) 20%, transparent);
+  --info-text: var(--info);
+  --info-border: var(--info);
+  --info-icon: var(--info);
 
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
