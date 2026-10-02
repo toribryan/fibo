@@ -167,6 +167,14 @@ const PREVIEWS: Record<string, ReactNode> = {
       ))}
     </div>
   ),
+  menu: (
+    <div className="flex w-36 flex-col rounded-lg border border-border bg-popover p-1 text-sm shadow-md">
+      <span className="rounded-md bg-accent px-2 py-1.5">Edit</span>
+      <span className="px-2 py-1.5">Duplicate</span>
+      <span className="-mx-1 my-1 h-px bg-border" />
+      <span className="px-2 py-1.5 text-destructive">Delete</span>
+    </div>
+  ),
   tooltip: (
     <div className="flex flex-col items-center gap-1.5">
       <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground">

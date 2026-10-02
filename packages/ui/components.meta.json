@@ -82,6 +82,13 @@
     "tier": "base-components",
     "group": "Forms"
   },
+  "menu": {
+    "title": "Menu",
+    "description": "A short list of actions that opens from a button.",
+    "tier": "base-components",
+    "group": "Overlays",
+    "status": "new"
+  },
   "message-list": {
     "title": "Message list",
     "description": "A conversation that groups each person's messages under one heading, with a single tab stop.",
