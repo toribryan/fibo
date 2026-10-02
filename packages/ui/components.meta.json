@@ -75,6 +75,13 @@
     "tier": "base-components",
     "group": "Forms"
   },
+  "menu": {
+    "title": "Menu",
+    "description": "A short list of actions that opens from a button.",
+    "tier": "base-components",
+    "group": "Overlays",
+    "status": "new"
+  },
   "pixel-snail": {
     "title": "Pixel snail",
     "description": "A one-colour pixel snail that crawls on a loop while something loads.",
