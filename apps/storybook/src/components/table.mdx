@@ -187,7 +187,10 @@ Wider than its box, so it scrolls sideways. Tab to it and use the arrow keys.
 Every part takes the props of the HTML element it renders. Table's
 `className` goes on the `table`, not the scroll box.
 
-<ArgTypes of={Stories.Default} />
+<ArgTypes
+  of={Stories.Default}
+  exclude={["previewWidth", "rows", "selectedRow", "showCaption", "showFooter"]}
+/>
 
 ### Data attributes
 
