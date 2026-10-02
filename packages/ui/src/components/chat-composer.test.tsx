@@ -231,8 +231,8 @@ describe("Chat composer", () => {
       new DragEvent("drop", { bubbles: true, dataTransfer: data })
     )
     const list = screen.getByRole("list", { name: "Attachments" })
-    await expect.element(list).toHaveTextContent("shot.PNG")
-    await expect.element(list).toHaveTextContent("spec.pdf")
+    await expect.element(list).toMatchTextContent("shot.PNG")
+    await expect.element(list).toMatchTextContent("spec.pdf")
     expect(list.element().textContent).not.toContain("notes.txt")
   })
 
