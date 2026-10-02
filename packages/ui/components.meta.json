@@ -47,8 +47,7 @@
     "title": "Data table",
     "description": "A table for lists people work through: selection, cell types, locked rows and pinned columns.",
     "tier": "base-components",
-    "group": "Display",
-    "status": "new"
+    "group": "Display"
   },
   "filter-menu": {
     "title": "Filter menu",
@@ -226,5 +225,12 @@
     "description": "Says who's typing in a conversation, naming up to three people.",
     "tier": "base-components",
     "group": "Feedback"
+  },
+  "voice-memo": {
+    "title": "Voice memo",
+    "description": "A voice recorder with a running clock, a waveform that scrolls in as you talk, and controls to mark, pause and stop.",
+    "tier": "special-components",
+    "group": "Forms",
+    "status": "new"
   }
 }

@@ -481,6 +481,31 @@ const PREVIEWS: Record<string, ReactNode> = {
       </span>
     </div>
   ),
+  "voice-memo": (
+    <span className="flex w-40 flex-col items-center gap-2 rounded-2xl border border-border bg-card px-3 py-3">
+      <span className="text-[11px] font-semibold">New memory</span>
+      <span className="flex items-center gap-1 font-mono text-[9px] text-muted-foreground tabular-nums">
+        <span className="size-1 rounded-full bg-destructive" />
+        00:22.33
+      </span>
+      <span className="flex h-6 items-center gap-[2px]">
+        {[2, 4, 3, 7, 9, 5, 2, 2, 6, 10, 8, 4, 2, 5, 9, 7, 3, 2, 4, 6].map(
+          (h, i) => (
+            <span
+              key={i}
+              className="w-[2px] rounded-full bg-foreground"
+              style={{ height: h * 2 }}
+            />
+          )
+        )}
+      </span>
+      <span className="flex items-center gap-2">
+        <span className="size-4 rounded-full bg-secondary" />
+        <span className="size-6 rounded-full bg-primary" />
+        <span className="size-4 rounded-full bg-secondary" />
+      </span>
+    </span>
+  ),
   "map-marker": (
     <span className="relative block h-28 w-48 overflow-hidden rounded-lg border border-border bg-muted">
       <span className="absolute inset-x-0 top-10 h-2 bg-background" />
