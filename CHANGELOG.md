@@ -10,6 +10,10 @@ has the same history with links into the docs.
 
 ### Added
 
+- A Figma drift check: the `figma-drift` agent skill reads the Figma library
+  into `figma/snapshot.json`, and `pnpm figma:drift` reports where its colour
+  variables, radii and component variant properties differ from the code.
+
 - A Registry guide page in Storybook: a step-by-step walkthrough for
   designers, with a picker that reads the live registry files to show what
   each part brings into a project.
