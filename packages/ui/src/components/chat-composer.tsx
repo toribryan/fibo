@@ -10,6 +10,11 @@ import {
 } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 /*
@@ -373,17 +378,23 @@ function ComposerAction({
 }: ComposerActionProps) {
   const { state } = useComposer()
   return (
-    <Button
-      data-slot="chat-composer-action"
-      type="button"
-      variant="ghost"
-      size="icon-sm"
-      aria-label={label}
-      title={label}
-      disabled={disabled ?? state.disabled}
-      className={cn("rounded-full text-muted-foreground", className)}
-      {...props}
-    />
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Button
+            data-slot="chat-composer-action"
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={label}
+            disabled={disabled ?? state.disabled}
+            className={cn("rounded-full text-muted-foreground", className)}
+            {...props}
+          />
+        }
+      />
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   )
 }
 
