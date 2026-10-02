@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip"
 import { motion, useReducedMotion } from "motion/react"
-import { cva, type VariantProps } from "class-variance-authority"
+import { cva } from "class-variance-authority"
 import { SnailIcon } from "lucide-react"
 
 import { cn } from "@workspace/ui/lib/utils"
@@ -123,19 +123,8 @@ function sideSlots(items: IntegrationItem[]): Slot[] {
 
 const MAX_ITEMS = { corners: 4, orbit: 8, sides: 8 } as const
 
-const tileVariants = cva(
-  "flex items-center justify-center border border-border bg-card text-card-foreground shadow-xs [&_svg]:shrink-0",
-  {
-    variants: {
-      size: {
-        sm: "size-8 rounded-md [&_svg:not([class*='size-'])]:size-4",
-        default: "size-10 rounded-lg [&_svg:not([class*='size-'])]:size-5",
-        lg: "size-12 rounded-xl [&_svg:not([class*='size-'])]:size-6",
-      },
-    },
-    defaultVariants: { size: "default" },
-  }
-)
+const TILE =
+  "flex size-10 items-center justify-center rounded-lg border border-border bg-card text-card-foreground shadow-xs [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5"
 
 const HUB =
   "relative rounded-xl border border-border bg-background p-1.5 shadow-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
@@ -143,25 +132,15 @@ const HUB =
 // The face is square for an icon and widens for text, so a word or a count
 // never gets squeezed.
 const hubFaceVariants = cva(
-  "flex items-center justify-center rounded-lg border border-border text-foreground",
+  "flex h-11 min-w-11 items-center justify-center rounded-lg border border-border text-foreground [&_svg:not([class*='size-'])]:size-5",
   {
     variants: {
-      size: {
-        sm: "h-9 min-w-9 [&_svg:not([class*='size-'])]:size-4",
-        default: "h-11 min-w-11 [&_svg:not([class*='size-'])]:size-5",
-        lg: "h-14 min-w-14 [&_svg:not([class*='size-'])]:size-6",
-      },
       content: {
         icon: "",
-        text: "px-2.5 font-semibold tracking-tight whitespace-nowrap tabular-nums",
+        text: "px-2.5 text-base font-semibold tracking-tight whitespace-nowrap tabular-nums",
       },
     },
-    compoundVariants: [
-      { content: "text", size: "sm", class: "text-sm" },
-      { content: "text", size: "default", class: "text-base" },
-      { content: "text", size: "lg", class: "text-lg" },
-    ],
-    defaultVariants: { size: "default", content: "icon" },
+    defaultVariants: { content: "icon" },
   }
 )
 
@@ -246,47 +225,46 @@ function PreviewMedia({
   )
 }
 
-type IntegrationVisualProps = Omit<React.ComponentProps<"div">, "children"> &
-  Pick<VariantProps<typeof hubFaceVariants>, "size"> & {
-    /**
-     * What names the hub. An icon element sits in a square face; a string or
-     * number is set as text and the face widens to fit. Defaults to a snail,
-     * for syncs that take their time.
-     */
-    center?: React.ReactNode
-    /** The tools wired into the hub. */
-    items: IntegrationItem[]
-    /**
-     * Shown above the hub while it is hovered or focused, for looking at
-     * only. Pass any content, or `{ src, alt }` for an image, an animated
-     * image, or a video (`.mp4`, `.webm`) that plays muted on a loop.
-     */
-    preview?: React.ReactNode | IntegrationPreviewMedia
-    /**
-     * `corners` holds up to four, `orbit` and `sides` up to eight. Items past
-     * the limit are not drawn.
-     */
-    layout?: "corners" | "orbit" | "sides"
-    /** The plate behind the diagram. */
-    background?: "dots" | "grid" | "none"
-    /** Route stroke. */
-    routes?: "solid" | "dashed"
-    /**
-     * Which way the pulse travels along each active route. `through` runs
-     * left to right, into the hub from the left and out of it on the right,
-     * so `sides` reads as a pipeline.
-     */
-    pulse?: "inward" | "outward" | "through" | "none"
-    /** A slow ring breathing out from the hub. */
-    halo?: boolean
-    /** Accessible name for the diagram. */
-    label?: string
-    /**
-     * Accessible name for the hub, which becomes a button when there's a
-     * preview. Defaults to `center` when that's text, otherwise to `label`.
-     */
-    centerLabel?: string
-  }
+type IntegrationVisualProps = Omit<React.ComponentProps<"div">, "children"> & {
+  /**
+   * What names the hub. An icon element sits in a square face; a string or
+   * number is set as text and the face widens to fit. Defaults to a snail,
+   * for syncs that take their time.
+   */
+  center?: React.ReactNode
+  /** The tools wired into the hub. */
+  items: IntegrationItem[]
+  /**
+   * Shown above the hub while it is hovered or focused, for looking at
+   * only. Pass any content, or `{ src, alt }` for an image, an animated
+   * image, or a video (`.mp4`, `.webm`) that plays muted on a loop.
+   */
+  preview?: React.ReactNode | IntegrationPreviewMedia
+  /**
+   * `corners` holds up to four, `orbit` and `sides` up to eight. Items past
+   * the limit are not drawn.
+   */
+  layout?: "corners" | "orbit" | "sides"
+  /** The plate behind the diagram. */
+  background?: "dots" | "grid" | "none"
+  /** Route stroke. */
+  routes?: "solid" | "dashed"
+  /**
+   * Which way the pulse travels along each active route. `through` runs
+   * left to right, into the hub from the left and out of it on the right,
+   * so `sides` reads as a pipeline.
+   */
+  pulse?: "inward" | "outward" | "through" | "none"
+  /** A slow ring breathing out from the hub. */
+  halo?: boolean
+  /** Accessible name for the diagram. */
+  label?: string
+  /**
+   * Accessible name for the hub, which becomes a button when there's a
+   * preview. Defaults to `center` when that's text, otherwise to `label`.
+   */
+  centerLabel?: string
+}
 
 /**
  * A hub and the tools wired into it, on a plate. Pulses run along the routes
@@ -302,7 +280,6 @@ function IntegrationVisual({
   routes = "solid",
   pulse = "inward",
   halo = true,
-  size = "default",
   label = "Integrations",
   centerLabel,
   className,
@@ -327,7 +304,6 @@ function IntegrationVisual({
       <div
         data-slot="integration-visual-hub-face"
         className={hubFaceVariants({
-          size,
           content: textCenter ? "text" : "icon",
         })}
       >
@@ -448,7 +424,7 @@ function IntegrationVisual({
             data-slot="integration-visual-item"
             data-status={item.status ?? "active"}
             className={cn(
-              tileVariants({ size }),
+              TILE,
               "absolute z-10 -translate-x-1/2 -translate-y-1/2 data-[status=idle]:text-muted-foreground"
             )}
             style={{
