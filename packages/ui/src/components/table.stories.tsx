@@ -1,3 +1,4 @@
+import type * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { Badge } from "./badge.js"
@@ -86,7 +87,116 @@ const meta: Meta<typeof Table> = {
 export default meta
 type Story = StoryObj<typeof Table>
 
-export const Default: Story = {}
+type PlaygroundArgs = React.ComponentProps<typeof Table> & {
+  previewWidth: "100%" | "480px" | "320px"
+  rows: number
+  selectedRow: "none" | "1" | "2" | "3"
+  showCaption: boolean
+  showFooter: boolean
+}
+
+/*
+ * The playground. Table's parts only take HTML attributes, so its controls
+ * change what the story renders instead.
+ */
+export const Default: StoryObj<PlaygroundArgs> = {
+  args: {
+    previewWidth: "100%",
+    rows: 5,
+    selectedRow: "none",
+    showCaption: true,
+    showFooter: false,
+  },
+  argTypes: {
+    previewWidth: {
+      name: "width",
+      description: "The width it sits in. Narrower than the table, it scrolls.",
+      control: "inline-radio",
+      options: ["100%", "480px", "320px"],
+    },
+    rows: {
+      description: "How many body rows.",
+      control: { type: "range", min: 1, max: 5, step: 1 },
+    },
+    selectedRow: {
+      name: "selected row",
+      description: "Sets data-selected on one row.",
+      control: "inline-radio",
+      options: ["none", "1", "2", "3"],
+    },
+    showCaption: {
+      name: "caption",
+      description: "Names the table with a TableCaption.",
+      control: "boolean",
+    },
+    showFooter: {
+      name: "footer",
+      description: "Adds a TableFooter with the average.",
+      control: "boolean",
+    },
+  },
+  render: ({
+    previewWidth,
+    rows,
+    selectedRow,
+    showCaption,
+    showFooter,
+    ...args
+  }) => {
+    const agents = AGENTS.slice(0, rows)
+    const average = Math.round(
+      agents.reduce((sum, agent) => sum + agent.adherence, 0) / agents.length
+    )
+    return (
+      <div style={{ width: previewWidth, maxWidth: "100%" }}>
+        <Table {...args} aria-label={showCaption ? undefined : "Agents"}>
+          {showCaption ? (
+            <TableCaption>Agents on the support floor today.</TableCaption>
+          ) : null}
+          <TableHeader>
+            <TableRow>
+              <TableHead>Agent</TableHead>
+              <TableHead>Team</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Adherence</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {agents.map((agent, index) => (
+              <TableRow
+                key={agent.name}
+                data-selected={
+                  selectedRow === String(index + 1) ? true : undefined
+                }
+              >
+                <TableCell className="font-medium">{agent.name}</TableCell>
+                <TableCell>{agent.team}</TableCell>
+                <TableCell>
+                  <Badge variant={STATUS_VARIANT[agent.status]}>
+                    {agent.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {agent.adherence}%
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          {showFooter ? (
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={3}>Average</TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {average}%
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          ) : null}
+        </Table>
+      </div>
+    )
+  },
+}
 
 export const WithFooter: Story = {
   name: "With footer",
