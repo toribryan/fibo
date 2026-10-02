@@ -208,6 +208,10 @@ export const Window: Story = {
   render: (args) => <Windows {...args} />,
 }
 
+export const Unread: Story = {
+  args: { unreadFrom: "7" },
+}
+
 export const Divider: Story = {
   name: "With a divider",
   args: { dividers: { "5": "New" } },
