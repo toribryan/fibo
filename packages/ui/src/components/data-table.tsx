@@ -599,7 +599,11 @@ function DataTableFilters({
 function textOf(node: React.ReactNode): string | undefined {
   if (typeof node === "string" || typeof node === "number") return String(node)
   if (Array.isArray(node)) {
-    const text = node.map(textOf).filter(Boolean).join(" ").trim()
+    const text = node
+      .map((child) => textOf(child as React.ReactNode))
+      .filter(Boolean)
+      .join(" ")
+      .trim()
     return text || undefined
   }
   return undefined
