@@ -76,3 +76,6 @@ brand/out/
 brand/photos/*
 !brand/photos/README.md
 brand/kit/img/
+
+# vitest browser failure screenshots
+.vitest
