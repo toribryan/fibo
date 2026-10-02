@@ -90,6 +90,7 @@ function SiteNav() {
       aria-label="Site"
       items={ITEMS}
       value={shown}
+      size="sm"
       hideOnScroll
       onValueChange={(value, event) => {
         if (event.metaKey || event.ctrlKey) return
