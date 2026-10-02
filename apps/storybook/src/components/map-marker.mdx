@@ -20,7 +20,7 @@ places it and moves it as the map pans and zooms.
 
 ## Features
 
-- A dot, an icon pin or a pill with a short label such as a price, in two sizes.
+- A dot, an icon or a pill with a short label such as a price, in two sizes.
 - Five colours from fibo's status roles, for when colour means something:
   open or closed, available or full.
 - A preview card with an image, meta line, title and description, plus any
@@ -80,10 +80,6 @@ createRoot(element).render(
 new maplibregl.Marker({ element }).setLngLat([-122.42, 37.77]).addTo(map)
 ```
 
-An icon marker is a pin whose tail points at the place, so anchor it by its
-bottom, `anchor="bottom"` in `react-map-gl` or MapLibre. Dots and labels sit
-centred on the place, the libraries' default.
-
 `label` names the marker for screen readers, so give every marker one, even
 when it shows a price.
 
@@ -97,11 +93,6 @@ Every part the component renders, with the `data-slot` it carries.
     slot: "map-marker",
     note: "The button on the map. Carries data-type, data-variant, data-size and, while open, data-popup-open.",
     children: [
-      {
-        name: "head",
-        slot: "map-marker-head",
-        note: "An icon marker's round part, which holds the icon. The tail under it points at the place.",
-      },
       {
         name: "preview",
         slot: "map-marker-preview",
@@ -146,9 +137,8 @@ clear which preview belongs to which marker.
 
 ### Icon markers
 
-`type="icon"` is a pin: an icon in a round head, with a tail that points at
-the place, for maps where the kind of place matters. It lifts off the map on
-hover and grows from its tip when open. Without an `icon`, it shows a map pin.
+`type="icon"` puts an icon in a round marker, for maps where the kind of
+place matters. Without an `icon`, it shows a map pin.
 
 <Canvas of={Stories.IconMarkers} />
 
