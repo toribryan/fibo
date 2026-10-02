@@ -332,6 +332,56 @@ for (const name of files) {
   }
 }
 
+// --- Conventions ----------------------------------------------------------
+
+// One size scale on both sides, written smallest first, so `sm` means the
+// same step on every part and a picker always reads small to large. Icon-only
+// sizes follow the text sizes as `icon` or `icon-<step>`.
+const SIZES = ["xs", "sm", "default", "lg", "xl"]
+const rank = (option) => {
+  const icon = option.match(/^icon(?:-(\w+))?$/)
+  const step = icon ? (icon[1] ?? "default") : option
+  const at = SIZES.indexOf(step)
+  return at === -1 ? -1 : at + (icon ? SIZES.length : 0)
+}
+
+function checkSizes(subject, options, { orderSeverity = "error" } = {}) {
+  const off = options.filter((option) => rank(option) === -1)
+  if (off.length > 0) {
+    add(
+      "error",
+      "conventions",
+      subject,
+      `size options off the scale: ${off.join(", ")} (use ${SIZES.join(", ")})`
+    )
+    return
+  }
+  const sorted = [...options].sort((a, b) => rank(a) - rank(b))
+  if (sorted.join() !== options.join()) {
+    add(
+      orderSeverity,
+      "conventions",
+      subject,
+      `size options out of order: ${options.join(", ")} (want ${sorted.join(", ")})`
+    )
+  }
+}
+
+for (const [component, properties] of Object.entries(snapshot.components)) {
+  if (Array.isArray(properties.size)) {
+    // The Plugin API can't reorder variant options, so this one is a warning
+    // for a person to fix by dragging the values in the properties panel.
+    checkSizes(`Figma ${component}.size`, properties.size, {
+      orderSeverity: "warn",
+    })
+  }
+}
+for (const name of files) {
+  const { variants, props } = codeProps(path.join(componentsDir, `${name}.tsx`))
+  const size = variants.get("size") ?? props.get("size")
+  if (Array.isArray(size)) checkSizes(`${name}.tsx size`, size)
+}
+
 // --- Report ---------------------------------------------------------------
 
 const order = { error: 0, warn: 1, info: 2 }

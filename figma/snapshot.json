@@ -84,7 +84,7 @@
         "Dark": "neutral/950"
       },
       "success-subtle": {
-        "Light": "alpha/green-700/8",
+        "Light": "alpha/green-700/6",
         "Dark": "alpha/green-400/20"
       },
       "warning": {
@@ -96,7 +96,7 @@
         "Dark": "neutral/950"
       },
       "warning-subtle": {
-        "Light": "alpha/amber-700/8",
+        "Light": "alpha/amber-700/6",
         "Dark": "alpha/amber-400/20"
       },
       "info": {
@@ -108,7 +108,7 @@
         "Dark": "neutral/950"
       },
       "info-subtle": {
-        "Light": "alpha/blue-700/8",
+        "Light": "alpha/blue-700/6",
         "Dark": "alpha/blue-400/20"
       },
       "border": {
@@ -184,7 +184,7 @@
         "Dark": "alpha/red-400/40"
       },
       "input-subtle": {
-        "Light": "alpha/neutral-200/30",
+        "Light": "alpha/neutral-200/20",
         "Dark": "alpha/white/05"
       },
       "input-subtle-hover": {
@@ -210,10 +210,6 @@
       "popover-overlay": {
         "Light": "alpha/white/85",
         "Dark": "alpha/neutral-900/85"
-      },
-      "muted-subtle": {
-        "Light": "neutral/50",
-        "Dark": "alpha/white/05"
       },
       "backdrop": {
         "Light": "alpha/neutral-950/20",
@@ -357,7 +353,7 @@
       "state": ["default", "hover", "active"]
     },
     "Reactions Trigger": {
-      "size": ["inline", "bar"],
+      "type": ["inline", "floating"],
       "state": ["default", "hover", "open"]
     },
     "Reactions Panel": {},
