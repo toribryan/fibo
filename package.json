@@ -34,6 +34,7 @@
     "format:write": "prettier --write . --cache",
     "registry:build": "pnpm --filter registry build",
     "21st:export": "pnpm --filter registry export:21st",
+    "figma:drift": "node figma/drift.mjs",
     "prepare": "husky"
   },
   "devDependencies": {

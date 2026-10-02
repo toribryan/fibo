@@ -68,11 +68,6 @@ const meta: Meta<Args> = {
       control: "inline-radio",
       options: ["inward", "outward", "through", "none"],
     },
-    size: {
-      control: "inline-radio",
-      options: ["sm", "default", "lg"],
-      description: "Scales the tiles and the hub.",
-    },
     halo: { control: "boolean" },
     hub: {
       name: "center content",
@@ -101,7 +96,6 @@ const meta: Meta<Args> = {
     background: "dots",
     routes: "solid",
     pulse: "inward",
-    size: "default",
     halo: true,
     count: 4,
     hub: "icon",
@@ -215,7 +209,6 @@ export const Plates: Story = {
               {...args}
               center={hub === "text" ? hubText : args.center}
               background={background}
-              size="sm"
               items={tools.slice(0, count)}
             />
           </div>
