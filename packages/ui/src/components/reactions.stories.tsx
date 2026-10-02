@@ -44,14 +44,14 @@ const meta: Meta<typeof Reactions> = {
     },
   },
   argTypes: {
-    variant: {
+    type: {
       control: "inline-radio",
       options: ["inline", "floating"],
     },
     position: {
       control: "select",
       options: ["bottom-right", "bottom-left", "top-right", "top-left"],
-      description: "Viewport corner. Applies to the floating variant only.",
+      description: "Viewport corner. Applies to the floating type only.",
     },
     showCounts: { control: "boolean" },
     particles: { control: { type: "range", min: 0, max: 20, step: 1 } },
@@ -62,7 +62,7 @@ const meta: Meta<typeof Reactions> = {
     choices: { control: false },
   },
   args: {
-    variant: "inline",
+    type: "inline",
     defaultReactions: seeded,
     showCounts: true,
     particles: 7,
@@ -128,17 +128,17 @@ export const WithoutCounts: Story = {
 
 export const Floating: Story = {
   args: {
-    variant: "floating",
+    type: "floating",
   },
   ...pinned,
   render: (args) => (
     <div className="min-h-[28rem] p-8">
       <p className="max-w-prose text-base text-muted-foreground">
-        The floating variant is fixed to a corner of the viewport and stays put
-        as the page scrolls. It sits on the same translucent bar the site nav
-        uses, clears the safe area on a notched phone, and counts every reaction
-        on the item beside its trigger. Particles rise from the bar itself
-        rather than from the emoji that was picked.
+        The floating type is fixed to a corner of the viewport and stays put as
+        the page scrolls. It sits on the same translucent bar the site nav uses,
+        clears the safe area on a notched phone, and counts every reaction on
+        the item beside its trigger. Particles rise from the bar itself rather
+        than from the emoji that was picked.
       </p>
       <Reactions {...args} />
     </div>
