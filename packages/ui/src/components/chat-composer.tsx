@@ -612,6 +612,10 @@ function ComposerDropZone({
   children,
   label = "Drop files to attach",
   accept,
+  onDragEnter,
+  onDragOver,
+  onDragLeave,
+  onDrop,
   ...props
 }: React.ComponentProps<"div"> & {
   /** Shown over the zone while files are dragged across it. */
@@ -633,26 +637,32 @@ function ComposerDropZone({
       data-dragging={dragging ? "" : undefined}
       className={cn("relative", className)}
       onDragEnter={(event) => {
-        if (!hasFiles(event)) return
+        // A caller's handler runs first and can take the drag over by
+        // calling preventDefault, as with ComposerFrame's click.
+        onDragEnter?.(event)
+        if (event.defaultPrevented || !hasFiles(event)) return
         event.preventDefault()
         depth.current++
         setDragging(true)
       }}
       onDragOver={(event) => {
-        if (!hasFiles(event)) return
+        onDragOver?.(event)
+        if (event.defaultPrevented || !hasFiles(event)) return
         event.preventDefault()
         event.dataTransfer.dropEffect = "copy"
       }}
-      onDragLeave={() => {
+      onDragLeave={(event) => {
+        onDragLeave?.(event)
         depth.current = Math.max(0, depth.current - 1)
         if (depth.current === 0) setDragging(false)
       }}
       onDrop={(event) => {
+        onDrop?.(event)
         // Reset first, so the hint never sticks if the composer was
         // disabled mid-drag.
         depth.current = 0
         setDragging(false)
-        if (!hasFiles(event)) return
+        if (event.defaultPrevented || !hasFiles(event)) return
         event.preventDefault()
         const files = Array.from(event.dataTransfer.files).filter((file) =>
           matchesAccept(file, accept)
