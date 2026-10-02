@@ -7,7 +7,6 @@ import { Pagination } from "./pagination.js"
 const meta: Meta<typeof Pagination> = {
   title: "Base components/Pagination",
   component: Pagination,
-  tags: ["new"],
   argTypes: {
     pageCount: { control: { type: "number", min: 1 } },
     pageSize: { control: { type: "number", min: 1 } },

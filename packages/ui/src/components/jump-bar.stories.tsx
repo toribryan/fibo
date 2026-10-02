@@ -16,7 +16,6 @@ import { TypingIndicator } from "./typing-indicator.js"
 const meta: Meta<JumpBarProps> = {
   title: "Base components/Jump bar",
   component: JumpBar,
-  tags: ["new"],
   argTypes: {
     type: {
       control: "inline-radio",

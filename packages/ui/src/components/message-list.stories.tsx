@@ -94,7 +94,6 @@ type Args = Omit<MessageListProps, "messages">
 const meta: Meta<MessageListProps> = {
   title: "Base components/Message list",
   component: MessageList,
-  tags: ["new"],
   argTypes: {
     windowMinutes: { control: { type: "range", min: 0, max: 30, step: 1 } },
     windowFrom: { control: "inline-radio", options: ["previous", "first"] },
