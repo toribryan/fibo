@@ -66,9 +66,24 @@ What it compares, and how:
   only are notes.
 - **Conventions.** Every `size` option, in code and in Figma, comes from
   `xs`, `sm`, `default`, `lg`, `xl` or `icon-<step>`, listed smallest
-  first. Off-scale names are errors. Out-of-order options are errors in
-  code and warnings in Figma, because the Plugin API can't reorder variant
-  options: a person drags the values into order in the properties panel.
+  first. Off-scale names and out-of-order options are errors on both sides.
+
+### Fixing option order in Figma
+
+The Plugin API has no call to reorder a variant property's values, and
+renaming a value keeps its slot. A value that leaves the set and comes back
+is appended at the end, so to move `default` after `sm`, in one
+`use_figma` call:
+
+1. Rename each `size=default, …` variant to `size=sm, state=parked<i>`, a
+   unique name so no two variants clash (a clash fails the whole call).
+2. Read `componentPropertyDefinitions` once. Figma only recomputes the
+   options on a read, so without it nothing moves.
+3. Rename each variant back to its original name.
+
+The default variant, the one that drops in from the library, is whichever
+sits top-left on the canvas, not first in the layer list. Leave `default`
+there.
 
 ## 4. Triage
 
