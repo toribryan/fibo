@@ -25,7 +25,7 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "build:site": "pnpm build && rm -rf dist && cp -R apps/storybook/storybook-static dist && cp -R apps/registry/public/r dist/r && cp apps/registry/public/llms.txt dist/llms.txt",
+    "build:site": "pnpm build && rm -rf dist && cp -R apps/storybook/storybook-static dist && cp -R apps/registry/public/r dist/r && cp -R apps/registry/public/codemods dist/codemods && cp apps/registry/public/llms.txt dist/llms.txt",
     "storybook": "turbo run dev --filter=storybook",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
