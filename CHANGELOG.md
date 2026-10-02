@@ -16,6 +16,8 @@ has the same history with links into the docs.
   CI runs it on every pull request.
 - Badge `success`, `warning` and `info` variants, tinted like `destructive`.
 - Input `size`, `sm` or `default`, to match Select and Button in dense forms.
+- Floating nav `size`, `sm` or `default`: `sm` gives 36px items and 16px icons
+  for a compact pill.
 - A way to retire a part: a `deprecated` entry in `components.meta.json`
   drives a docs banner, a sidebar and catalog pill, a notice printed on
   `shadcn add`, a line in `llms.txt`, and a codemod served at
