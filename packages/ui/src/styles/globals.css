@@ -88,6 +88,9 @@
   --color-ring: var(--ring);
   --color-ring-subtle: var(--ring-subtle);
 
+  --color-sticker-edge: var(--sticker-edge);
+  --color-sticker-ink: var(--sticker-ink);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -226,6 +229,13 @@
   --ring: var(--color-neutral-400);
   --ring-subtle: color-mix(in oklch, var(--color-neutral-400) 50%, transparent);
 
+  /*
+   * A sticker is paper: its edge is white and the marks printed on it are
+   * dark in both themes, so these two keep their values in .dark on purpose.
+   */
+  --sticker-edge: var(--color-white);
+  --sticker-ink: var(--color-neutral-900);
+
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);
   --chart-3: var(--color-neutral-600);
@@ -331,6 +341,9 @@
   --input-subtle-hover: oklch(1 0 0 / 10%);
   --ring: var(--color-neutral-500);
   --ring-subtle: color-mix(in oklch, var(--color-neutral-500) 50%, transparent);
+
+  --sticker-edge: var(--color-white);
+  --sticker-ink: var(--color-neutral-900);
 
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);
