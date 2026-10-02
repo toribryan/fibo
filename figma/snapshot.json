@@ -317,6 +317,34 @@
       "dropLabel": "TEXT",
       "state": ["default", "focused", "disabled", "dragging"]
     },
+    "Typing indicator": {
+      "text": "TEXT",
+      "icon": "INSTANCE_SWAP",
+      "indicator": ["dots", "custom"]
+    },
+    "Message divider": {
+      "label": "TEXT",
+      "show label": "BOOLEAN",
+      "unread": ["false", "true"]
+    },
+    "Message": {
+      "author": "TEXT",
+      "time": "TEXT",
+      "body": "TEXT",
+      "reply": "BOOLEAN",
+      "reply author": "TEXT",
+      "reply text": "TEXT",
+      "show time": "BOOLEAN",
+      "type": ["first", "continuation", "system", "deleted"]
+    },
+    "Jump bar": {
+      "unread label": "TEXT",
+      "mark read label": "TEXT",
+      "new label": "TEXT",
+      "history label": "TEXT",
+      "jump label": "TEXT",
+      "type": ["unread-above", "new-below", "history"]
+    },
     "Chapter scrubber": {
       "orientation": ["vertical", "horizontal"],
       "variant": ["tick", "dot"],
