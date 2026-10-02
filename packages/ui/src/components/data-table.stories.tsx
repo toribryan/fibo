@@ -55,92 +55,92 @@ import {
 } from "./select.js"
 
 const STATUS = {
-  "On shift": "success",
-  "On break": "warning",
-  "Time off": "info",
-  Offline: "secondary",
+  Active: "success",
+  Away: "warning",
+  Invited: "info",
+  Deactivated: "secondary",
 } as const
 
-type Agent = {
+type Member = {
   id: string
   name: string
   initials: string
   email: string
   team: string
-  channels: string
+  role: string
   status: keyof typeof STATUS
-  adherence: number
-  shift: string
+  projects: number
+  lastActive: string
   lock?: string
 }
 
-const AGENTS: Agent[] = [
+const MEMBERS: Member[] = [
   {
     id: "maya",
     name: "Maya Okafor",
     initials: "MO",
     email: "maya@example.com",
-    team: "Tier 1 Support",
-    channels: "Chat, Email",
-    status: "On shift",
-    adherence: 97,
-    shift: "8:00 to 16:30",
+    team: "Design",
+    role: "Admin",
+    status: "Active",
+    projects: 12,
+    lastActive: "Today",
   },
   {
     id: "priya",
     name: "Priya Raman",
     initials: "PR",
     email: "priya@example.com",
-    team: "Billing",
-    channels: "Email",
-    status: "On break",
-    adherence: 91,
-    shift: "9:00 to 17:30",
+    team: "Engineering",
+    role: "Editor",
+    status: "Away",
+    projects: 8,
+    lastActive: "Yesterday",
   },
   {
     id: "jordan",
     name: "Jordan Alvarez",
     initials: "JA",
     email: "jordan@example.com",
-    team: "Tier 2 Escalations",
-    channels: "Phone, Chat",
-    status: "On shift",
-    adherence: 88,
-    shift: "7:00 to 15:30",
+    team: "Marketing",
+    role: "Editor",
+    status: "Active",
+    projects: 5,
+    lastActive: "Today",
   },
   {
     id: "sam",
     name: "Sam Whitfield",
     initials: "SW",
     email: "sam@example.com",
-    team: "Chat",
-    channels: "Chat",
-    status: "Time off",
-    adherence: 94,
-    shift: "None",
+    team: "Support",
+    role: "Viewer",
+    status: "Invited",
+    projects: 0,
+    lastActive: "Never",
   },
   {
     id: "elena",
     name: "Elena Marsh",
     initials: "EM",
     email: "elena@example.com",
-    team: "Workforce Ops",
-    channels: "Chat, Email",
-    status: "On shift",
-    adherence: 99,
-    shift: "8:00 to 16:30",
-    lock: "Workforce admins can't be removed",
+    team: "Operations",
+    role: "Owner",
+    status: "Active",
+    projects: 21,
+    lastActive: "Today",
+    lock: "The workspace owner can't be removed",
   },
   {
     id: "rosa",
     name: "Rosa Delgado",
     initials: "RD",
     email: "rosa@example.com",
-    team: "Phone",
-    channels: "Phone",
-    status: "Offline",
-    adherence: 90,
-    shift: "14:00 to 22:30",
+    team: "Engineering",
+    role: "Viewer",
+    status: "Deactivated",
+    projects: 3,
+    lastActive: "Aug 14",
   },
 ]
 
@@ -173,7 +173,7 @@ function RowActions({ name }: { name: string }) {
   )
 }
 
-function AgentsToolbar({
+function MembersToolbar({
   children,
 }: {
   /** The bulk actions shown while rows are selected. */
@@ -188,8 +188,8 @@ function AgentsToolbar({
             <Input
               size="sm"
               className="pl-8"
-              placeholder="Search 248 agents"
-              aria-label="Search agents"
+              placeholder="Search 248 members"
+              aria-label="Search members"
             />
           </div>
         }
@@ -217,7 +217,7 @@ function AgentsToolbar({
       </DataTableFilters>
       <DataTableActions>
         <DataTableAction icon={<PlusIcon data-icon="inline-start" />}>
-          Add agent
+          Add member
         </DataTableAction>
       </DataTableActions>
       {children ?? <DataTableBulkActions onDelete={() => {}} />}
@@ -225,15 +225,15 @@ function AgentsToolbar({
   )
 }
 
-function AgentsTable({
-  agents = AGENTS,
+function MembersTable({
+  members = MEMBERS,
   secondary = false,
   pinned = true,
   footer,
   toolbar,
   ...props
 }: Partial<React.ComponentProps<typeof DataTable>> & {
-  agents?: Agent[]
+  members?: Member[]
   secondary?: boolean
   pinned?: boolean
   footer?: React.ReactNode
@@ -243,74 +243,74 @@ function AgentsTable({
   const end = pinned ? "end" : "none"
   return (
     <DataTable
-      aria-label="Agents"
-      rowIds={agents.map((agent) => agent.id)}
-      noun={{ one: "agent", other: "agents" }}
+      aria-label="Members"
+      rowIds={members.map((member) => member.id)}
+      noun={{ one: "member", other: "members" }}
       {...props}
     >
       {toolbar}
       <DataTableContent>
         <DataTableHeader>
           <DataTableHead type="person" pinned={start} className="w-56">
-            Agent
+            Member
           </DataTableHead>
           <DataTableHead className="w-44">Team</DataTableHead>
-          <DataTableHead className="w-32">Channels</DataTableHead>
+          <DataTableHead className="w-32">Role</DataTableHead>
           <DataTableHead type="status">Status</DataTableHead>
-          <DataTableHead type="numeric">Adherence</DataTableHead>
-          <DataTableHead className="w-32">Shift</DataTableHead>
+          <DataTableHead type="numeric">Projects</DataTableHead>
+          <DataTableHead className="w-32">Last active</DataTableHead>
           <DataTableHead type="actions" pinned={end}>
             <span className="sr-only">Actions</span>
           </DataTableHead>
         </DataTableHeader>
         <DataTableBody>
-          {agents.map((agent) => (
+          {members.map((member) => (
             <DataTableRow
-              key={agent.id}
-              id={agent.id}
-              lockedReason={agent.lock}
+              key={member.id}
+              id={member.id}
+              lockedReason={member.lock}
             >
               <DataTableCell
                 type="person"
                 pinned={start}
-                avatar={{ fallback: agent.initials }}
-                secondary={secondary ? agent.email : undefined}
+                avatar={{ fallback: member.initials }}
+                secondary={secondary ? member.email : undefined}
               >
-                {agent.name}
+                {member.name}
               </DataTableCell>
-              <DataTableCell>{agent.team}</DataTableCell>
-              <DataTableCell>{agent.channels}</DataTableCell>
+              <DataTableCell>{member.team}</DataTableCell>
+              <DataTableCell>{member.role}</DataTableCell>
               <DataTableCell type="status">
-                <Badge variant={STATUS[agent.status]}>{agent.status}</Badge>
+                <Badge variant={STATUS[member.status]}>{member.status}</Badge>
               </DataTableCell>
-              <DataTableCell type="numeric">{agent.adherence}%</DataTableCell>
-              <DataTableCell>{agent.shift}</DataTableCell>
+              <DataTableCell type="numeric">{member.projects}</DataTableCell>
+              <DataTableCell>{member.lastActive}</DataTableCell>
               <DataTableCell type="actions" pinned={end}>
-                <RowActions name={agent.name} />
+                <RowActions name={member.name} />
               </DataTableCell>
             </DataTableRow>
           ))}
         </DataTableBody>
       </DataTableContent>
       <DataTableCards>
-        {agents.map((agent) => (
+        {members.map((member) => (
           <DataTableCard
-            key={agent.id}
-            id={agent.id}
-            title={agent.name}
-            avatar={{ fallback: agent.initials }}
+            key={member.id}
+            id={member.id}
+            title={member.name}
+            avatar={{ fallback: member.initials }}
             status={
-              <Badge variant={STATUS[agent.status]}>{agent.status}</Badge>
+              <Badge variant={STATUS[member.status]}>{member.status}</Badge>
             }
-            lockedReason={agent.lock}
+            lockedReason={member.lock}
           >
-            <DataTableCardField label="Team">{agent.team}</DataTableCardField>
-            <DataTableCardField label="Shift">{agent.shift}</DataTableCardField>
-            <DataTableCardField label="Channels">
-              {agent.channels}
+            <DataTableCardField label="Team">{member.team}</DataTableCardField>
+            <DataTableCardField label="Last active">
+              {member.lastActive}
             </DataTableCardField>
-            <DataTableCardField label="Adherence">
-              {agent.adherence}%
+            <DataTableCardField label="Role">{member.role}</DataTableCardField>
+            <DataTableCardField label="Projects">
+              {member.projects}
             </DataTableCardField>
           </DataTableCard>
         ))}
@@ -371,7 +371,7 @@ const meta: Meta<typeof DataTable> = {
     },
   },
   args: { onValueChange: fn() },
-  render: (args) => <AgentsTable {...args} toolbar={<AgentsToolbar />} />,
+  render: (args) => <MembersTable {...args} toolbar={<MembersToolbar />} />,
 }
 
 export default meta
@@ -404,9 +404,9 @@ function bulkActionsFor(preset: BulkActionsPreset) {
       return (
         <DataTableBulkActions
           onDelete={() => {}}
-          moreActions={<MenuItem>Add skill</MenuItem>}
+          moreActions={<MenuItem>Add to project</MenuItem>}
         >
-          <DataTableBulkAction>Assign schedule</DataTableBulkAction>
+          <DataTableBulkAction>Change role</DataTableBulkAction>
           <DataTableBulkAction
             single
             icon={<PencilIcon data-icon="inline-start" />}
@@ -446,14 +446,14 @@ function footerFor(preset: FooterPreset, totalCount?: number) {
     )
   }
   if (preset === "pagination") {
-    const total = totalCount ?? AGENTS.length
+    const total = totalCount ?? MEMBERS.length
     return (
       <DataTableFooter className="justify-end">
         <Pagination
-          pageCount={Math.max(1, Math.ceil(total / AGENTS.length))}
-          pageSize={AGENTS.length}
+          pageCount={Math.max(1, Math.ceil(total / MEMBERS.length))}
+          pageSize={MEMBERS.length}
           totalCount={total}
-          noun="agents"
+          noun="members"
         />
       </DataTableFooter>
     )
@@ -545,18 +545,18 @@ export const Default: StoryObj<PlaygroundArgs> = {
     ...args
   }) => (
     <div style={{ width: previewWidth, maxWidth: "100%" }}>
-      <AgentsTable
+      <MembersTable
         {...args}
-        agents={
+        members={
           lockedRow
-            ? AGENTS
-            : AGENTS.map((agent) => ({ ...agent, lock: undefined }))
+            ? MEMBERS
+            : MEMBERS.map((member) => ({ ...member, lock: undefined }))
         }
         secondary={secondaryText}
         pinned={pinnedColumns}
         toolbar={
           showToolbar ? (
-            <AgentsToolbar>{bulkActionsFor(bulkActions)}</AgentsToolbar>
+            <MembersToolbar>{bulkActionsFor(bulkActions)}</MembersToolbar>
           ) : undefined
         }
         footer={footerFor(footerContent, args.totalCount)}
@@ -565,7 +565,7 @@ export const Default: StoryObj<PlaygroundArgs> = {
   ),
   play: async ({ args, canvas, userEvent }) => {
     const all = canvas.getByRole("checkbox", {
-      name: "Select all agents on this page",
+      name: "Select all members on this page",
     })
     const priya = canvas.getByRole("checkbox", { name: "Select Priya Raman" })
 
@@ -576,12 +576,12 @@ export const Default: StoryObj<PlaygroundArgs> = {
     await expect(all).toHaveAttribute("aria-checked", "mixed")
     await expect(
       canvas.getByRole("group", { name: "Bulk actions" })
-    ).toHaveTextContent("1 agent selected")
+    ).toHaveTextContent("1 member selected")
     await expect(
-      canvas.queryByRole("button", { name: "Add agent" })
+      canvas.queryByRole("button", { name: "Add member" })
     ).not.toBeInTheDocument()
     await expect(canvas.getByRole("status")).toHaveTextContent(
-      "1 agent selected"
+      "1 member selected"
     )
 
     // Select all skips Elena, whose row is locked.
@@ -605,13 +605,13 @@ export const Default: StoryObj<PlaygroundArgs> = {
 
 export const Locked: Story = {
   name: "Locked row",
-  render: (args) => <AgentsTable {...args} agents={AGENTS.slice(3, 6)} />,
+  render: (args) => <MembersTable {...args} members={MEMBERS.slice(3, 6)} />,
 }
 
 export const SecondaryText: Story = {
   name: "Secondary text",
   render: (args) => (
-    <AgentsTable {...args} secondary defaultValue={new Set(["priya"])} />
+    <MembersTable {...args} secondary defaultValue={new Set(["priya"])} />
   ),
 }
 
@@ -619,7 +619,7 @@ export const Pinned: Story = {
   name: "Pinned columns",
   render: (args) => (
     <div className="max-w-2xl">
-      <AgentsTable {...args} />
+      <MembersTable {...args} />
     </div>
   ),
 }
@@ -629,7 +629,7 @@ export const WithPagination: Story = {
   render: function Render(args) {
     const [page, setPage] = React.useState(1)
     return (
-      <AgentsTable
+      <MembersTable
         {...args}
         totalCount={248}
         footer={
@@ -640,7 +640,7 @@ export const WithPagination: Story = {
               pageCount={42}
               pageSize={6}
               totalCount={248}
-              noun="agents"
+              noun="members"
             />
           </DataTableFooter>
         }
@@ -652,14 +652,14 @@ export const WithPagination: Story = {
 export const Picker: Story = {
   render: function Render(args) {
     const [value, setValue] = React.useState<DataTableSelection>(
-      new Set(["refund", "shipping"])
+      new Set(["onboarding", "release"])
     )
     return (
       <DataTable
         {...args}
-        aria-label="Articles"
-        rowIds={["refund", "outage", "shipping"]}
-        noun={{ one: "article", other: "articles" }}
+        aria-label="Documents"
+        rowIds={["onboarding", "brand", "release"]}
+        noun={{ one: "document", other: "documents" }}
         value={value}
         onValueChange={setValue}
       >
@@ -670,9 +670,9 @@ export const Picker: Story = {
           </DataTableHeader>
           <DataTableBody>
             {[
-              ["refund", "How to process a refund", "Internal"],
-              ["outage", "Escalation policy for outages", "External"],
-              ["shipping", "Shipping delays FAQ", "External"],
+              ["onboarding", "Onboarding checklist", "Workspace"],
+              ["brand", "Brand guidelines", "Public"],
+              ["release", "Release notes", "Public"],
             ].map(([id, title, access]) => (
               <DataTableRow key={id} id={id!}>
                 <DataTableCell type="primary" icon={<FileTextIcon />}>
@@ -715,12 +715,12 @@ export const BulkActionPatterns: Story = {
               onDelete={() => {}}
               moreActions={
                 <>
-                  <MenuItem>Add skill</MenuItem>
-                  <MenuItem>Change shift</MenuItem>
+                  <MenuItem>Add to project</MenuItem>
+                  <MenuItem>Resend invite</MenuItem>
                 </>
               }
             >
-              <DataTableBulkAction>Assign schedule</DataTableBulkAction>
+              <DataTableBulkAction>Change role</DataTableBulkAction>
               <DataTableBulkAction>Change team</DataTableBulkAction>
             </DataTableBulkActions>,
           ],
@@ -739,11 +739,11 @@ export const BulkActionPatterns: Story = {
       ).map(([label, bulk]) => (
         <section key={label} aria-label={label} className="flex flex-col gap-2">
           <h3 className="text-sm font-medium">{label}</h3>
-          <AgentsTable
+          <MembersTable
             {...args}
-            agents={AGENTS.slice(0, 2)}
+            members={MEMBERS.slice(0, 2)}
             defaultValue={new Set(["maya", "priya"])}
-            toolbar={<AgentsToolbar>{bulk}</AgentsToolbar>}
+            toolbar={<MembersToolbar>{bulk}</MembersToolbar>}
           />
         </section>
       ))}
@@ -754,12 +754,12 @@ export const BulkActionPatterns: Story = {
 export const ReviewQueue: Story = {
   name: "Review queue",
   render: (args) => (
-    <AgentsTable
+    <MembersTable
       {...args}
       secondary
       defaultValue={new Set(["priya", "sam"])}
       toolbar={
-        <AgentsToolbar>
+        <MembersToolbar>
           <DataTableBulkActions>
             <Button size="sm">
               <CheckIcon data-icon="inline-start" />
@@ -770,7 +770,7 @@ export const ReviewQueue: Story = {
               Deny
             </Button>
           </DataTableBulkActions>
-        </AgentsToolbar>
+        </MembersToolbar>
       }
     />
   ),
@@ -780,32 +780,32 @@ export const Directory: Story = {
   render: function Render(args) {
     const [showSelectedOnly, setShowSelectedOnly] = React.useState(false)
     const [value, setValue] = React.useState<DataTableSelection>(new Set())
-    const agents = showSelectedOnly
-      ? AGENTS.filter((agent) => value === "all" || value.has(agent.id))
-      : AGENTS
+    const members = showSelectedOnly
+      ? MEMBERS.filter((member) => value === "all" || value.has(member.id))
+      : MEMBERS
     return (
-      <AgentsTable
+      <MembersTable
         {...args}
-        agents={agents}
+        members={members}
         totalCount={248}
         value={value}
         onValueChange={setValue}
         showSelectedOnly={showSelectedOnly}
         onShowSelectedOnlyChange={setShowSelectedOnly}
-        toolbar={<AgentsToolbar />}
+        toolbar={<MembersToolbar />}
       />
     )
   },
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(
-      canvas.getByRole("checkbox", { name: "Select all agents on this page" })
+      canvas.getByRole("checkbox", { name: "Select all members on this page" })
     )
     await userEvent.click(
-      canvas.getByRole("button", { name: "Select all 247 agents" })
+      canvas.getByRole("button", { name: "Select all 247 members" })
     )
     await expect(
       canvas.getByRole("group", { name: "Bulk actions" })
-    ).toHaveTextContent("All 247 agents selected")
+    ).toHaveTextContent("All 247 members selected")
 
     // By keyboard: focus landed on Clear when its neighbour went away, and
     // Enter clears and hands focus to select all.
@@ -813,7 +813,7 @@ export const Directory: Story = {
     await expect(clear).toHaveFocus()
     await userEvent.keyboard("{Enter}")
     await expect(
-      canvas.getByRole("checkbox", { name: "Select all agents on this page" })
+      canvas.getByRole("checkbox", { name: "Select all members on this page" })
     ).toHaveFocus()
   },
 }
@@ -822,10 +822,10 @@ export const NarrowScroll: Story = {
   name: "Narrow, scroll",
   render: (args) => (
     <div className="w-[375px]">
-      <AgentsTable
+      <MembersTable
         {...args}
         narrowLayout="scroll"
-        toolbar={<AgentsToolbar />}
+        toolbar={<MembersToolbar />}
       />
     </div>
   ),
@@ -835,18 +835,18 @@ export const NarrowCards: Story = {
   name: "Narrow, cards",
   render: (args) => (
     <div className="w-[375px]">
-      <AgentsTable
+      <MembersTable
         {...args}
         narrowLayout="cards"
         defaultValue={new Set(["priya"])}
         toolbar={
-          <AgentsToolbar>
+          <MembersToolbar>
             <DataTableBulkActions onDelete={() => {}}>
               <DataTableBulkAction icon={<DownloadIcon />}>
                 Export
               </DataTableBulkAction>
             </DataTableBulkActions>
-          </AgentsToolbar>
+          </MembersToolbar>
         }
       />
     </div>

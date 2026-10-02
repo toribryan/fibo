@@ -54,21 +54,21 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-export function Agents({ agents }: { agents: Agent[] }) {
+export function Members({ members }: { members: Member[] }) {
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Agent</TableHead>
-          <TableHead className="text-right">Adherence</TableHead>
+          <TableHead>Member</TableHead>
+          <TableHead className="text-right">Projects</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {agents.map((agent) => (
-          <TableRow key={agent.id}>
-            <TableCell className="font-medium">{agent.name}</TableCell>
+        {members.map((member) => (
+          <TableRow key={member.id}>
+            <TableCell className="font-medium">{member.name}</TableCell>
             <TableCell className="text-right tabular-nums">
-              {agent.adherence}%
+              {member.projects}
             </TableCell>
           </TableRow>
         ))}
@@ -130,7 +130,7 @@ For selection, pinned columns and bulk actions, use Data table.
     "Use a table for data people compare across rows. For a list of things to pick from, use a list.",
     "Keep rows one line high. A second line belongs in Data table's secondary text, and nothing goes taller.",
     "Right-align numbers and their headers; left-align everything else.",
-    "Write headers as short nouns in sentence case: Agent, Team, Adherence.",
+    "Write headers as short nouns in sentence case: Member, Team, Projects.",
     "Put totals in TableFooter, not as a last body row.",
   ]}
 />
@@ -163,7 +163,7 @@ Wider than its box, so it scrolls sideways. Tab to it and use the arrow keys.
       positive: {
         component: (
           <div className="flex w-40 justify-between text-sm">
-            <span>Adherence</span>
+            <span>Projects</span>
             <span className="tabular-nums">97%</span>
           </div>
         ),

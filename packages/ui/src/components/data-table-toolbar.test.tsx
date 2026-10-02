@@ -21,10 +21,14 @@ import {
 } from "./data-table.js"
 import { MenuItem } from "./menu.js"
 
-const AGENTS = [
+const MEMBERS = [
   { id: "maya", name: "Maya Okafor" },
   { id: "priya", name: "Priya Raman" },
-  { id: "elena", name: "Elena Marsh", lock: "Admins can't be removed" },
+  {
+    id: "elena",
+    name: "Elena Marsh",
+    lock: "The workspace owner can't be removed",
+  },
 ]
 
 function Example({
@@ -48,9 +52,9 @@ function Example({
   return (
     <div style={{ width: 800 }}>
       <DataTable
-        aria-label="Agents"
-        rowIds={AGENTS.map((agent) => agent.id)}
-        noun={{ one: "agent", other: "agents" }}
+        aria-label="Members"
+        rowIds={MEMBERS.map((member) => member.id)}
+        noun={{ one: "member", other: "members" }}
         totalCount={totalCount}
         onValueChange={onValueChange}
         showSelectedOnly={showSelectedOnly}
@@ -58,10 +62,10 @@ function Example({
       >
         <DataTableToolbar>
           <DataTableFilters>
-            <input aria-label="Search agents" />
+            <input aria-label="Search members" />
           </DataTableFilters>
           <DataTableActions>
-            <Button size="sm">Add agent</Button>
+            <Button size="sm">Add member</Button>
           </DataTableActions>
           {bulkActions ?? (
             <DataTableBulkActions onDelete={onDelete}>
@@ -71,16 +75,16 @@ function Example({
         </DataTableToolbar>
         <DataTableContent>
           <DataTableHeader>
-            <DataTableHead type="primary">Agent</DataTableHead>
+            <DataTableHead type="primary">Member</DataTableHead>
           </DataTableHeader>
           <DataTableBody>
-            {AGENTS.map((agent) => (
+            {MEMBERS.map((member) => (
               <DataTableRow
-                key={agent.id}
-                id={agent.id}
-                lockedReason={agent.lock}
+                key={member.id}
+                id={member.id}
+                lockedReason={member.lock}
               >
-                <DataTableCell type="primary">{agent.name}</DataTableCell>
+                <DataTableCell type="primary">{member.name}</DataTableCell>
               </DataTableRow>
             ))}
           </DataTableBody>
@@ -94,7 +98,7 @@ describe("DataTableToolbar", () => {
   it("swaps filters and actions for the selection while rows are selected", async () => {
     const screen = await render(<Example />)
     await expect
-      .element(screen.getByRole("button", { name: "Add agent" }))
+      .element(screen.getByRole("button", { name: "Add member" }))
       .toBeInTheDocument()
     await expect
       .element(screen.getByRole("button", { name: "Delete" }))
@@ -103,9 +107,9 @@ describe("DataTableToolbar", () => {
     await screen.getByRole("checkbox", { name: "Select Maya Okafor" }).click()
     await expect
       .element(screen.getByRole("group", { name: "Bulk actions" }))
-      .toHaveTextContent("1 agent selected")
+      .toHaveTextContent("1 member selected")
     await expect
-      .element(screen.getByRole("textbox", { name: "Search agents" }))
+      .element(screen.getByRole("textbox", { name: "Search members" }))
       .not.toBeInTheDocument()
     await expect
       .element(screen.getByRole("button", { name: "Delete" }))
@@ -131,12 +135,12 @@ describe("DataTableToolbar", () => {
     await screen.getByRole("checkbox", { name: /Select all/ }).click()
     await expect
       .element(screen.getByRole("group", { name: "Bulk actions" }))
-      .toHaveTextContent("2 agents selected")
-    await screen.getByRole("button", { name: "Select all 247 agents" }).click()
+      .toHaveTextContent("2 members selected")
+    await screen.getByRole("button", { name: "Select all 247 members" }).click()
     expect(onValueChange).toHaveBeenLastCalledWith("all")
     await expect
       .element(screen.getByRole("group", { name: "Bulk actions" }))
-      .toHaveTextContent("All 247 agents selected")
+      .toHaveTextContent("All 247 members selected")
     await expect
       .element(screen.getByRole("button", { name: /Select all 247/ }))
       .not.toBeInTheDocument()
@@ -190,7 +194,7 @@ describe("DataTableToolbar", () => {
     await expect.element(edit).toHaveAttribute("aria-disabled", "true")
     await expect
       .element(edit)
-      .toHaveAccessibleDescription("Works on one agent at a time")
+      .toHaveAccessibleDescription("Works on one member at a time")
   })
 
   it("puts More between the actions and Delete", async () => {
