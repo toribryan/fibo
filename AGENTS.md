@@ -28,6 +28,7 @@ Node 24 (pinned in `.nvmrc`).
 | `.agents/skills/`                  | Agent skills; `.claude/skills/` links here                           |
 | `.claude/agents/`                  | Claude Code subagents                                                |
 | `plans/`                           | Numbered design docs, see `plans/README.md`                          |
+| `figma/`                           | Last-read Figma snapshot and the drift check against code            |
 | `brand/`                           | Brand kit source: the rabbit, logo, cards, posters, motion prototype |
 
 ## Commands
@@ -45,6 +46,7 @@ pnpm typecheck        # tsc in every workspace; run build first on a clean tree
 pnpm test             # unit and story tests in Chromium, with axe checks
 pnpm format:check     # Prettier
 pnpm format:write
+pnpm figma:drift      # compare figma/snapshot.json with the code
 ```
 
 ## Definition of done
@@ -82,6 +84,16 @@ Use the `add-component` skill (`.agents/skills/add-component/SKILL.md`). It
 covers the source file, stories, docs page, metadata and checks, and porting
 from another codebase. The `component-reviewer` subagent reviews the result
 against the conventions below.
+
+## Figma drift
+
+Use the `figma-drift` skill (`.agents/skills/figma-drift/SKILL.md`) to check
+the Figma library against the code. It reads Figma through the Figma MCP
+server into `figma/snapshot.json`, then `pnpm figma:drift` compares Color
+variables with `globals.css`, radii with `--radius`, and component variant
+properties with cva variants and props. Intended differences live in
+`figma/drift.config.json`, each with a reason. Run it after changing a token
+or a component's variants.
 
 ## Conventions
 
