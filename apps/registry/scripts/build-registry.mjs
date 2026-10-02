@@ -163,14 +163,50 @@ const animations = Object.keys(themeVars)
   .filter((name) => name.startsWith("animate-"))
   .map((name) => name.slice("animate-".length))
 
+// Property tokens (plans/003-property-tokens.md): `--text-color-success`
+// in @theme is what `text-success` reads. Each maps a utility to the theme
+// variable that serves it and the token behind that.
+const PROPERTY_UTILITIES = {
+  "text-color": "text",
+  "background-color": "bg",
+  "border-color": "border",
+  fill: "fill",
+  stroke: "stroke",
+}
+const propertyTokens = Object.entries(themeVars).flatMap(([name, value]) => {
+  const match = name.match(
+    /^(text-color|background-color|border-color|fill|stroke)-(.+)$/
+  )
+  if (!match) return []
+  return [
+    {
+      name,
+      value,
+      utility: `${PROPERTY_UTILITIES[match[1]]}-${match[2]}`,
+      ref: value.match(/^var\(--([\w-]+)\)$/)?.[1],
+    },
+  ]
+})
+
 // The extension tokens and animations a component's classes use.
 function tokensFor(source) {
   const used = (name) => new RegExp(`-${name}(?![\\w-])`).test(source)
-  const tokens = extensionTokens.filter(used)
+  const colorTokens = extensionTokens.filter(used)
+  const properties = propertyTokens.filter(({ utility }) =>
+    new RegExp(`(?<![\\w-])${utility}(?![\\w-])`).test(source)
+  )
+  const tokens = [
+    ...new Set([
+      ...colorTokens,
+      ...properties
+        .map(({ ref }) => ref)
+        .filter((ref) => ref && extensionTokens.includes(ref)),
+    ]),
+  ]
   const animationsUsed = animations.filter((name) =>
     new RegExp(`\\banimate-${name}(?![\\w-])`).test(source)
   )
-  if (tokens.length === 0 && animationsUsed.length === 0) return {}
+  if (!tokens.length && !properties.length && !animationsUsed.length) return {}
   const pick = (values) =>
     Object.fromEntries(tokens.map((name) => [name, values[name]]))
   const css = Object.fromEntries(
@@ -182,7 +218,8 @@ function tokensFor(source) {
   return {
     cssVars: {
       theme: Object.fromEntries([
-        ...tokens.map((name) => [`color-${name}`, `var(--${name})`]),
+        ...colorTokens.map((name) => [`color-${name}`, `var(--${name})`]),
+        ...properties.map(({ name, value }) => [name, value]),
         ...animationsUsed.map((name) => [
           `animate-${name}`,
           themeVars[`animate-${name}`],
