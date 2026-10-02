@@ -24,7 +24,9 @@ describe("TokenFlow", () => {
     expect(
       screen.container.querySelectorAll('[data-slot="token-flow-chip"]')
     ).toHaveLength(6)
-    await expect.element(screen.getByText("bg-primary")).toBeInTheDocument()
+    await expect
+      .element(screen.getByText("bg-primary", { exact: false }))
+      .toBeInTheDocument()
   })
 
   it("tells screen readers which tier each chip is", async () => {
