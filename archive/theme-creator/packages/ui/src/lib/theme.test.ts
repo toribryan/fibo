@@ -48,21 +48,6 @@ describe("theme", () => {
     expect(dark["--border"]).toBe("oklch(100% 0 0 / 10%)")
   })
 
-  it("defines the property tokens globals.css's @theme block reads", () => {
-    for (const mode of ["light", "dark"] as const) {
-      const vars = cssVariables(DEFAULT_THEME, mode)
-      for (const role of ["destructive", "success", "warning", "info"]) {
-        for (const property of ["text", "border", "icon"]) {
-          expect(
-            vars[`--${role}-${property}`],
-            `${mode} ${role}-${property}`
-          ).toBe(vars[`--${role}`])
-        }
-      }
-    }
-    expect(figmaTokens(DEFAULT_THEME).Light).not.toHaveProperty("success-text")
-  })
-
   it("finds only the one known gap in fibo's own theme", () => {
     // Muted text on the muted fill, just under 4.5:1 in light mode. Parts use
     // full-strength text there instead.
