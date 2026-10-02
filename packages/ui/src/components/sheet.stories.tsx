@@ -37,7 +37,6 @@ const meta: Meta<typeof Sheet> = {
     SheetDescription,
     SheetClose,
   },
-  tags: ["new"],
   argTypes: {
     side: {
       control: "inline-radio",

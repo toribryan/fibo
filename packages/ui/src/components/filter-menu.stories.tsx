@@ -69,7 +69,6 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 400))
 const meta: Meta<typeof FilterMenu> = {
   title: "Special components/Filter menu",
   component: FilterMenu,
-  tags: ["new"],
   argTypes: {
     triggerLabel: { control: "text" },
     placeholder: { control: "text" },

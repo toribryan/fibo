@@ -55,7 +55,9 @@ If unsure, it is a base component.
 
 - `title: "Base components/<Name>"` or `"Special components/<Name>"`.
 - No `autodocs` tag; the MDX page is the docs. Add `tags: ["new"]` for a
-  new part (it shows a pill in the sidebar).
+  new part (it shows a pill in the sidebar). At most three parts are new at
+  once: take the tag and the `"status": "new"` off the oldest new part. The
+  registry build fails otherwise.
 - A `Default` story driven entirely by args, so the playground controls work.
 - `argTypes` for every visual prop (`inline-radio` for small unions, ranges
   for numbers). Set `control: false` on data and callback props, and list them

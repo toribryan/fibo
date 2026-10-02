@@ -47,7 +47,6 @@ const meta: Meta<MenuStoryArgs> = {
     MenuShortcut,
     MenuSubTrigger,
   },
-  tags: ["new"],
   argTypes: {
     side: {
       control: "inline-radio",

@@ -41,8 +41,7 @@
     "title": "Command menu",
     "description": "A Cmd+K palette with nested pages, recent commands, ranked search and a preview pane.",
     "tier": "special-components",
-    "group": "Navigation",
-    "status": "new"
+    "group": "Navigation"
   },
   "data-table": {
     "title": "Data table",
@@ -55,15 +54,13 @@
     "title": "Filter menu",
     "description": "A filter menu of fields and values that turns into a search as you type.",
     "tier": "special-components",
-    "group": "Navigation",
-    "status": "new"
+    "group": "Navigation"
   },
   "floating-nav": {
     "title": "Floating nav",
     "description": "A pill of destinations that floats above the bottom of a phone screen and steps aside while you scroll.",
     "tier": "special-components",
-    "group": "Navigation",
-    "status": "new"
+    "group": "Navigation"
   },
   "input": {
     "title": "Input",
@@ -81,8 +78,7 @@
     "title": "Jump bar",
     "description": "Takes people to unread messages, new messages or the present in a conversation.",
     "tier": "base-components",
-    "group": "Actions",
-    "status": "new"
+    "group": "Actions"
   },
   "kbd": {
     "title": "Kbd",
@@ -107,22 +103,19 @@
     "title": "Menu",
     "description": "A short list of actions that opens from a button.",
     "tier": "base-components",
-    "group": "Overlays",
-    "status": "new"
+    "group": "Overlays"
   },
   "message-list": {
     "title": "Message list",
     "description": "A conversation that groups each person's messages under one heading, with a single tab stop.",
     "tier": "base-components",
-    "group": "Display",
-    "status": "new"
+    "group": "Display"
   },
   "pagination": {
     "title": "Pagination",
     "description": "Moves through a long list one page at a time.",
     "tier": "base-components",
-    "group": "Navigation",
-    "status": "new"
+    "group": "Navigation"
   },
   "pixel-snail": {
     "title": "Pixel snail",
@@ -158,8 +151,7 @@
     "title": "Sheet",
     "description": "A panel that slides in from an edge for a focused task.",
     "tier": "base-components",
-    "group": "Overlays",
-    "status": "new"
+    "group": "Overlays"
   },
   "skeleton": {
     "title": "Skeleton",
@@ -191,8 +183,7 @@
     "title": "Sticker avatar",
     "description": "An avatar cut out like a die-cut sticker, with a paper edge that follows its shape and a status told by shape.",
     "tier": "special-components",
-    "group": "Display",
-    "status": "new"
+    "group": "Display"
   },
   "switch": {
     "title": "Switch",
@@ -229,14 +220,12 @@
     "title": "Tooltip",
     "description": "A short label that appears when a control is hovered or focused.",
     "tier": "base-components",
-    "group": "Overlays",
-    "status": "new"
+    "group": "Overlays"
   },
   "typing-indicator": {
     "title": "Typing indicator",
     "description": "Says who's typing in a conversation, naming up to three people.",
     "tier": "base-components",
-    "group": "Feedback",
-    "status": "new"
+    "group": "Feedback"
   }
 }
