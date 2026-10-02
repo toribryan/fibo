@@ -37,6 +37,28 @@ name of an icon button or why something is locked.
   exports={["Tooltip", "TooltipContent", "TooltipProvider", "TooltipTrigger"]}
 />
 
+## Examples
+
+### Sides
+
+The side it prefers. It flips to the other side when there isn't room.
+
+<Canvas of={Stories.Sides} />
+
+### Icon buttons
+
+A formatting toolbar in one TooltipProvider. Each tooltip names its button
+and shows the shortcut.
+
+<Canvas of={Stories.IconButtons} />
+
+### Reason
+
+A lock that explains why a row can't be changed. The lock is a focusable
+trigger, so keyboard users can reach the reason too.
+
+<Canvas of={Stories.Reason} />
+
 ## Usage
 
 ```tsx
@@ -88,28 +110,6 @@ anything the name doesn't.
     "Don't use a tooltip for information people need to finish a task. Show it on the page.",
   ]}
 />
-
-## Examples
-
-### Sides
-
-The side it prefers. It flips to the other side when there isn't room.
-
-<Canvas of={Stories.Sides} />
-
-### Icon buttons
-
-A formatting toolbar in one TooltipProvider. Each tooltip names its button
-and shows the shortcut.
-
-<Canvas of={Stories.IconButtons} />
-
-### Reason
-
-A lock that explains why a row can't be changed. The lock is a focusable
-trigger, so keyboard users can reach the reason too.
-
-<Canvas of={Stories.Reason} />
 
 ## Do's and don'ts
 

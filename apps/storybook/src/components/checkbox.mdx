@@ -29,6 +29,27 @@ list. The change applies when the form is submitted.
 
 <Install name="checkbox" exports={["Checkbox"]} />
 
+## Examples
+
+### Checked
+
+`defaultChecked` starts it ticked.
+
+<Canvas of={Stories.Checked} />
+
+### Indeterminate
+
+`indeterminate` shows a dash for a group that's partly on, such as a select
+all checkbox with some rows selected. Screen readers hear “mixed”.
+
+<Canvas of={Stories.Indeterminate} />
+
+### Disabled
+
+`disabled` dims the box and blocks the pointer.
+
+<Canvas of={Stories.Disabled} />
+
 ## Usage
 
 ```tsx
@@ -77,27 +98,6 @@ Every part the component renders, with the `data-slot` it carries.
     "For a setting that applies immediately, use a switch instead.",
   ]}
 />
-
-## Examples
-
-### Checked
-
-`defaultChecked` starts it ticked.
-
-<Canvas of={Stories.Checked} />
-
-### Indeterminate
-
-`indeterminate` shows a dash for a group that's partly on, such as a select
-all checkbox with some rows selected. Screen readers hear “mixed”.
-
-<Canvas of={Stories.Indeterminate} />
-
-### Disabled
-
-`disabled` dims the box and blocks the pointer.
-
-<Canvas of={Stories.Disabled} />
 
 ## Do's and don'ts
 

@@ -56,38 +56,6 @@ that's where his character comes from.
 No animation library: every frame is state and a timer, drawn as SVG
 rectangles.
 
-## Usage
-
-```tsx
-import { PixelSnail } from "@/components/ui/pixel-snail"
-
-export function ProjectsLoading() {
-  return <PixelSnail label="Loading your projects" />
-}
-```
-
-`PixelSnail` is the loading indicator. `PixelSnailSprite` is the snail without
-a frame: a bare `<g>` for placing inside your own SVG. Its origin is under the
-middle of his foot, so a `transform` that moves him to a point stands him
-on it.
-
-```tsx
-import { PixelSnailSprite } from "@/components/ui/pixel-snail"
-
-export function SnailOnALine() {
-  return (
-    <svg viewBox="0 0 200 40" className="text-foreground">
-      <line x1={0} y1={30} x2={200} y2={30} stroke="currentColor" />
-      <PixelSnailSprite
-        transform="translate(100 30)"
-        pixel={1.5}
-        mode="dance"
-      />
-    </svg>
-  )
-}
-```
-
 ## How he moves
 
 Everything the snail does follows three rules.
@@ -203,6 +171,59 @@ const look = {
 }
 ```
 
+## Examples
+
+### Loading
+
+The default: he crawls in place over a dotted ground, as a status region
+announcing "Loading".
+
+<Canvas of={Stories.Default} />
+
+### Sizes
+
+`size` sets one art pixel to 2, 3 or 4 screen pixels.
+
+<Canvas of={Stories.Sizes} />
+
+### Loading panel
+
+In an empty panel with a line saying what's happening and a way out.
+
+<Canvas of={Stories.LoadingPanel} />
+
+## Usage
+
+```tsx
+import { PixelSnail } from "@/components/ui/pixel-snail"
+
+export function ProjectsLoading() {
+  return <PixelSnail label="Loading your projects" />
+}
+```
+
+`PixelSnail` is the loading indicator. `PixelSnailSprite` is the snail without
+a frame: a bare `<g>` for placing inside your own SVG. Its origin is under the
+middle of his foot, so a `transform` that moves him to a point stands him
+on it.
+
+```tsx
+import { PixelSnailSprite } from "@/components/ui/pixel-snail"
+
+export function SnailOnALine() {
+  return (
+    <svg viewBox="0 0 200 40" className="text-foreground">
+      <line x1={0} y1={30} x2={200} y2={30} stroke="currentColor" />
+      <PixelSnailSprite
+        transform="translate(100 30)"
+        pixel={1.5}
+        mode="dance"
+      />
+    </svg>
+  )
+}
+```
+
 ## Anatomy
 
 <Anatomy
@@ -252,27 +273,6 @@ holding one rectangle per pixel.
   Keep sound optional and quiet. `onAssemble` is there for syncing it, but on
   most pages the snail should be seen and not heard.
 </Tip>
-
-## Examples
-
-### Loading
-
-The default: he crawls in place over a dotted ground, as a status region
-announcing "Loading".
-
-<Canvas of={Stories.Default} />
-
-### Sizes
-
-`size` sets one art pixel to 2, 3 or 4 screen pixels.
-
-<Canvas of={Stories.Sizes} />
-
-### Loading panel
-
-In an empty panel with a line saying what's happening and a way out.
-
-<Canvas of={Stories.LoadingPanel} />
 
 ## Do's and don'ts
 

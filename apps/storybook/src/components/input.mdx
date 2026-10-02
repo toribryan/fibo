@@ -28,6 +28,26 @@ It fills the width of its container.
 
 <Install name="input" exports={["Input"]} />
 
+## Examples
+
+### Small
+
+`size="sm"` matches a small Select or Button in dense forms and toolbars.
+
+<Canvas of={Stories.Small} />
+
+### Invalid
+
+`aria-invalid` turns the border and the focus ring destructive.
+
+<Canvas of={Stories.Invalid} />
+
+### Disabled
+
+`disabled` dims the input and blocks the pointer.
+
+<Canvas of={Stories.Disabled} />
+
 ## Usage
 
 ```tsx
@@ -62,26 +82,6 @@ personal details.
     "For more than one line, use a Textarea.",
   ]}
 />
-
-## Examples
-
-### Small
-
-`size="sm"` matches a small Select or Button in dense forms and toolbars.
-
-<Canvas of={Stories.Small} />
-
-### Invalid
-
-`aria-invalid` turns the border and the focus ring destructive.
-
-<Canvas of={Stories.Invalid} />
-
-### Disabled
-
-`disabled` dims the input and blocks the pointer.
-
-<Canvas of={Stories.Disabled} />
 
 ## Do's and don'ts
 

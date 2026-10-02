@@ -51,6 +51,53 @@ stays, ready to copy or download as a Markdown file.
 It installs fibo's Button for the copy and close actions, `lucide-react`
 for their icons and `class-variance-authority` for the sizes.
 
+## Examples
+
+### Listening
+
+While listening, the pinhole glows, the clock runs and the words fill in.
+
+<Canvas of={Stories.Listening} />
+
+### Below
+
+`side="bottom"` opens the transcript under the device, for narrow columns.
+
+<Canvas of={Stories.Below} />
+
+### Small
+
+`size="sm"` fits a toolbar or a sidebar.
+
+<Canvas of={Stories.Small} />
+
+### Wordmark
+
+`wordmark` changes the word raised on the device.
+
+<Canvas of={Stories.Wordmark} />
+
+### Your own service
+
+`transcript` and `interim` show text from elsewhere. Here a slider stands in
+for a service streaming words back.
+
+<Canvas of={Stories.OwnService} />
+
+### Scripted
+
+`simulate` types out a script in place of the microphone, so a preview, or
+this page, can show a finished transcript to copy and download without
+anyone speaking.
+
+<Canvas of={Stories.Scripted} />
+
+### Saving notes
+
+`onComplete` hands back each finished transcript, here saved to a list.
+
+<Canvas of={Stories.SavingNotes} />
+
 ## Usage
 
 With no props it transcribes through the browser. Once stopped, the
@@ -191,53 +238,6 @@ Every part the component renders, with the `data-slot` it carries.
     "Give each memo a title people will recognise, such as the meeting. It heads the Markdown file and names it.",
   ]}
 />
-
-## Examples
-
-### Listening
-
-While listening, the pinhole glows, the clock runs and the words fill in.
-
-<Canvas of={Stories.Listening} />
-
-### Below
-
-`side="bottom"` opens the transcript under the device, for narrow columns.
-
-<Canvas of={Stories.Below} />
-
-### Small
-
-`size="sm"` fits a toolbar or a sidebar.
-
-<Canvas of={Stories.Small} />
-
-### Wordmark
-
-`wordmark` changes the word raised on the device.
-
-<Canvas of={Stories.Wordmark} />
-
-### Your own service
-
-`transcript` and `interim` show text from elsewhere. Here a slider stands in
-for a service streaming words back.
-
-<Canvas of={Stories.OwnService} />
-
-### Scripted
-
-`simulate` types out a script in place of the microphone, so a preview, or
-this page, can show a finished transcript to copy and download without
-anyone speaking.
-
-<Canvas of={Stories.Scripted} />
-
-### Saving notes
-
-`onComplete` hands back each finished transcript, here saved to a list.
-
-<Canvas of={Stories.SavingNotes} />
 
 ## Do's and don'ts
 

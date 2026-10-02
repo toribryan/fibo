@@ -29,6 +29,39 @@ dialog, confirming or cancelling a step. The label says what will happen.
 
 <Install name="button" exports={["Button", "buttonVariants"]} />
 
+## Examples
+
+### Kinds
+
+Six variants, from most to least emphasis. `destructive` is a tinted fill,
+not a solid red, so it never outshouts the primary action.
+
+<Canvas of={Stories.AllVariants} />
+
+### Sizes
+
+Four text sizes, `xs` to `lg`, and four square `icon` sizes to match.
+
+<Canvas of={Stories.AllSizes} />
+
+### With an icon
+
+Mark the icon with `data-icon` and the padding on that side tightens.
+
+<Canvas of={Stories.WithIcon} />
+
+### Icon only
+
+An `icon` size, named with `aria-label`.
+
+<Canvas of={Stories.IconOnly} />
+
+### Disabled
+
+`disabled` dims the button and ignores the pointer.
+
+<Canvas of={Stories.Disabled} />
+
 ## Usage
 
 ```tsx
@@ -68,39 +101,6 @@ variant.
   <code>{"nativeButton={false}"}</code>. It keeps the look and gets link
   semantics.
 </Tip>
-
-## Examples
-
-### Kinds
-
-Six variants, from most to least emphasis. `destructive` is a tinted fill,
-not a solid red, so it never outshouts the primary action.
-
-<Canvas of={Stories.AllVariants} />
-
-### Sizes
-
-Four text sizes, `xs` to `lg`, and four square `icon` sizes to match.
-
-<Canvas of={Stories.AllSizes} />
-
-### With an icon
-
-Mark the icon with `data-icon` and the padding on that side tightens.
-
-<Canvas of={Stories.WithIcon} />
-
-### Icon only
-
-An `icon` size, named with `aria-label`.
-
-<Canvas of={Stories.IconOnly} />
-
-### Disabled
-
-`disabled` dims the button and ignores the pointer.
-
-<Canvas of={Stories.Disabled} />
 
 ## Do's and don'ts
 
