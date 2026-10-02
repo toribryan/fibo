@@ -8,12 +8,9 @@ import {
   AvatarGroupCount,
   AvatarImage,
 } from "./avatar.js"
-
-// A drawn portrait inlined as a data URL, so the stories load no network
-// images and Chromatic snapshots stay stable.
-const PORTRAIT = `data:image/svg+xml,${encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#d4d4d4"/><circle cx="32" cy="26" r="12" fill="#525252"/><path d="M10 64c2-14 11-21 22-21s20 7 22 21z" fill="#525252"/></svg>`
-)}`
+// A local image, so the stories load nothing from the network and Chromatic
+// snapshots stay stable.
+import bonzo from "../assets/bonzo.webp"
 
 const meta: Meta<typeof Avatar> = {
   title: "Base components/Avatar",
@@ -31,8 +28,8 @@ const meta: Meta<typeof Avatar> = {
   args: { size: "default" },
   render: (args) => (
     <Avatar {...args}>
-      <AvatarImage src={PORTRAIT} alt="Ada Lovelace" />
-      <AvatarFallback>AL</AvatarFallback>
+      <AvatarImage src={bonzo} alt="Bonzo" />
+      <AvatarFallback>BO</AvatarFallback>
     </Avatar>
   ),
 }
@@ -56,8 +53,8 @@ export const Sizes: Story = {
     <div className="flex items-end gap-3">
       {(["sm", "default", "lg"] as const).map((size) => (
         <Avatar key={size} size={size}>
-          <AvatarImage src={PORTRAIT} alt="Ada Lovelace" />
-          <AvatarFallback>AL</AvatarFallback>
+          <AvatarImage src={bonzo} alt="Bonzo" />
+          <AvatarFallback>BO</AvatarFallback>
         </Avatar>
       ))}
     </div>
@@ -68,8 +65,8 @@ export const WithBadge: Story = {
   name: "With badge",
   render: (args) => (
     <Avatar {...args} size="lg">
-      <AvatarImage src={PORTRAIT} alt="Ada Lovelace, online" />
-      <AvatarFallback>AL</AvatarFallback>
+      <AvatarImage src={bonzo} alt="Bonzo, online" />
+      <AvatarFallback>BO</AvatarFallback>
       <AvatarBadge className="bg-success" />
     </Avatar>
   ),
@@ -78,7 +75,11 @@ export const WithBadge: Story = {
 export const Group: Story = {
   render: () => (
     <AvatarGroup>
-      {["AL", "GH", "KJ"].map((initials) => (
+      <Avatar>
+        <AvatarImage src={bonzo} alt="Bonzo" />
+        <AvatarFallback>BO</AvatarFallback>
+      </Avatar>
+      {["GH", "KJ"].map((initials) => (
         <Avatar key={initials}>
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
