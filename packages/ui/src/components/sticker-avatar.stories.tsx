@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { ComponentProps } from "react"
 import { expect, waitFor } from "storybook/test"
 
+import { Badge } from "./badge.js"
 import {
   StickerAvatar,
   StickerAvatarCount,
@@ -100,18 +101,30 @@ export const Sizes: Story = {
 
 const STATUSES: StickerAvatarStatus[] = ["online", "idle", "dnd", "offline"]
 
+const STATUS_NAMES: Record<StickerAvatarStatus, string> = {
+  online: "Online",
+  idle: "Idle",
+  dnd: "Do not disturb",
+  offline: "Offline",
+}
+
 export const Statuses: Story = {
   name: "Status by shape",
   render: () => (
-    <div className="flex gap-8">
+    <div className="flex flex-wrap justify-center gap-8">
       {STATUSES.map((status) => (
-        <StickerAvatar
-          key={status}
-          name="Ghost"
-          src={ghostSrc()}
-          size={64}
-          status={status}
-        />
+        <div key={status} className="flex flex-col items-center gap-4">
+          <StickerAvatar
+            name="Ghost"
+            src={ghostSrc()}
+            size={64}
+            status={status}
+          />
+          {/* The sticker already says its status to screen readers. */}
+          <Badge variant="outline" aria-hidden="true">
+            {STATUS_NAMES[status]}
+          </Badge>
+        </div>
       ))}
     </div>
   ),
@@ -157,7 +170,10 @@ export const DirectMessages: Story = {
             size={32}
             status={person.status}
           />
-          <span className="truncate font-medium">{person.name}</span>
+          <span className="flex min-w-0 flex-col leading-tight">
+            <span className="truncate font-medium">{person.name}</span>
+            <span className="text-xs">{STATUS_NAMES[person.status]}</span>
+          </span>
         </button>
       ))}
     </nav>
