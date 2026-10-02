@@ -64,7 +64,7 @@ the reactions; the component builds the rest.
   root={{
     name: "Reactions",
     slot: "reactions",
-    note: "The root. Carries data-variant.",
+    note: "The root. Carries data-type.",
     children: [
       {
         name: "pill",
@@ -166,7 +166,7 @@ floating bar.
 
 ### Floating
 
-`variant="floating"` pins a bar to a viewport corner, chosen with `position`.
+`type="floating"` pins a bar to a viewport corner, chosen with `position`.
 
 <Canvas of={Stories.Floating} />
 
@@ -231,7 +231,7 @@ floating bar.
       when: "Always.",
     },
     {
-      attribute: "data-variant",
+      attribute: "data-type",
       element: "The root",
       when: (
         <>
