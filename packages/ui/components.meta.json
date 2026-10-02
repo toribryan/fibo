@@ -82,6 +82,13 @@
     "group": "Overlays",
     "status": "new"
   },
+  "pagination": {
+    "title": "Pagination",
+    "description": "Moves through a long list one page at a time.",
+    "tier": "base-components",
+    "group": "Navigation",
+    "status": "new"
+  },
   "pixel-snail": {
     "title": "Pixel snail",
     "description": "A one-colour pixel snail that crawls on a loop while something loads.",
