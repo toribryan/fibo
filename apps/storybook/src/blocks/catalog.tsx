@@ -189,6 +189,16 @@ const PREVIEWS: Record<string, ReactNode> = {
       <XIcon className="size-3.5 text-muted-foreground" />
     </span>
   ),
+  "typing-indicator": (
+    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+      <span className="flex gap-0.5">
+        {[0, 1, 2].map((i) => (
+          <span key={i} className="size-1 rounded-full bg-current" />
+        ))}
+      </span>
+      Ana and Ben are typing…
+    </div>
+  ),
   "token-flow": (
     <div className="flex items-center gap-1.5 font-mono text-[10px]">
       {["oklch(0.205 0 0)", "neutral-900", "bg-primary"].map((label, index) => (
