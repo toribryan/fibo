@@ -6,7 +6,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 /*
  * The wrapper scrolls sideways so a wide table never widens the page. While
- * it overflows it joins the tab order, so keyboard users can scroll it too.
+ * it overflows it's a named region in the tab order, so keyboard users can
+ * scroll it too.
  */
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   const containerRef = React.useRef<HTMLDivElement>(null)
@@ -31,7 +32,11 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
       ref={containerRef}
       data-slot="table-container"
       tabIndex={overflowing ? 0 : undefined}
-      className="relative w-full overflow-x-auto rounded-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+      role={overflowing ? "region" : undefined}
+      aria-label={
+        overflowing ? (props["aria-label"] ?? "Scrollable table") : undefined
+      }
+      className="relative w-full overflow-x-auto outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle focus-visible:ring-inset"
     >
       <table
         data-slot="table"
