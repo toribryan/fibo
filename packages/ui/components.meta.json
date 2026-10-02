@@ -37,6 +37,13 @@
     "group": "Navigation",
     "status": "new"
   },
+  "data-table": {
+    "title": "Data table",
+    "description": "A table for lists people work through: selection, cell types, locked rows and pinned columns.",
+    "tier": "base-components",
+    "group": "Display",
+    "status": "new"
+  },
   "filter-menu": {
     "title": "Filter menu",
     "description": "A filter menu of fields and values that turns into a search as you type.",
@@ -178,6 +185,13 @@
     "description": "Turns a setting on or off, taking effect at once.",
     "tier": "base-components",
     "group": "Forms"
+  },
+  "table": {
+    "title": "Table",
+    "description": "Rows and columns of data, at one compact density.",
+    "tier": "base-components",
+    "group": "Display",
+    "status": "new"
   },
   "textarea": {
     "title": "Textarea",

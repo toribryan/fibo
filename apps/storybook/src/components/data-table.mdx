@@ -1,0 +1,389 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/data-table.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Data table
+
+Data table is the one table for lists people work through: selection in the
+first column, six cell types, locked rows that say why, and columns pinned to
+either edge. It matches the Data table in the Figma library.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- A checkbox column with select all, which skips locked rows and shows a
+  dash while only some rows are selected.
+- Shift+click selects a range, and Escape clears the selection.
+- Six cell types: primary, text, person, status, numeric and actions. A
+  second line on a cell makes its row 52 pixels.
+- Columns pinned to the start or end, with shadows while there's more to
+  scroll. Pinning switches off under 32rem.
+- Selection changes are announced: “3 agents selected”, “Selection cleared”.
+
+## Installation
+
+<Install
+  name="data-table"
+  exports={[
+    "DataTable",
+    "DataTableContent",
+    "DataTableHeader",
+    "DataTableHead",
+    "DataTableBody",
+    "DataTableRow",
+    "DataTableCell",
+    "DataTableFooter",
+    "DataTableSelectionCount",
+    "useDataTableSelection",
+  ]}
+/>
+
+It installs Table, Checkbox, Avatar and Tooltip.
+
+## Usage
+
+```tsx
+import { Badge } from "@/components/ui/badge"
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableContent,
+  DataTableHead,
+  DataTableHeader,
+  DataTableRow,
+  useDataTableSelection,
+} from "@/components/ui/data-table"
+
+export function Agents({ agents }: { agents: Agent[] }) {
+  const selection = useDataTableSelection()
+  return (
+    <DataTable
+      aria-label="Agents"
+      rowIds={agents.map((agent) => agent.id)}
+      noun={{ one: "agent", other: "agents" }}
+      {...selection}
+    >
+      <DataTableContent>
+        <DataTableHeader>
+          <DataTableHead type="person" pinned="start">
+            Agent
+          </DataTableHead>
+          <DataTableHead type="status">Status</DataTableHead>
+        </DataTableHeader>
+        <DataTableBody>
+          {agents.map((agent) => (
+            <DataTableRow
+              key={agent.id}
+              id={agent.id}
+              lockedReason={
+                agent.isAdmin ? "Admins can't be removed" : undefined
+              }
+            >
+              <DataTableCell
+                type="person"
+                pinned="start"
+                avatar={{ src: agent.photo, fallback: agent.initials }}
+              >
+                {agent.name}
+              </DataTableCell>
+              <DataTableCell type="status">
+                <Badge variant="success">{agent.status}</Badge>
+              </DataTableCell>
+            </DataTableRow>
+          ))}
+        </DataTableBody>
+      </DataTableContent>
+    </DataTable>
+  )
+}
+```
+
+Give each head the same `type` and `pinned` as its column's cells. The first
+column is primary or person: its text names the row's checkbox.
+
+```ts
+type DataTableSelection = Set<string> | "all"
+```
+
+`"all"` means every row that matches, on every page. Changing one row while
+everything is selected keeps this page's rows and drops the rest.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "DataTable",
+    slot: "data-table",
+    children: [
+      {
+        name: "DataTableContent",
+        slot: "data-table-content",
+        note: "A Table.",
+        children: [
+          {
+            name: "DataTableHeader",
+            slot: "data-table-header",
+            children: [
+              { name: "Select all", slot: "data-table-select-all" },
+              { name: "DataTableHead", slot: "data-table-head" },
+            ],
+          },
+          {
+            name: "DataTableBody",
+            slot: "data-table-body",
+            children: [
+              {
+                name: "DataTableRow",
+                slot: "data-table-row",
+                children: [
+                  { name: "Select", slot: "data-table-select" },
+                  {
+                    name: "DataTableCell",
+                    slot: "data-table-cell",
+                    children: [
+                      {
+                        name: "Secondary text",
+                        slot: "data-table-secondary",
+                      },
+                      { name: "Lock", slot: "data-table-lock" },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "DataTableFooter",
+        slot: "data-table-footer",
+        children: [
+          {
+            name: "DataTableSelectionCount",
+            slot: "data-table-selection-count",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Selection is always the first column, and row actions are always the last, pinned to the end.",
+    "Pin the row's name to the start and at most one must-see column, usually status, to the end.",
+    "Rows are 40 pixels, or 52 with secondary text. Nothing goes taller.",
+    "Lock a row that can't be selected, and say why in lockedReason.",
+    "In a picker, put DataTableSelectionCount in the footer, so people see how many they've chosen.",
+  ]}
+/>
+
+## Examples
+
+### Locked row
+
+Elena's row can't be selected. The lock explains why on hover or focus, and
+select all leaves her out.
+
+<Canvas of={Stories.Locked} />
+
+### Secondary text
+
+A second line under each name, as in a review queue. Rows grow to 52 pixels.
+
+<Canvas of={Stories.SecondaryText} />
+
+### Pinned columns
+
+Narrower than the table, so the middle scrolls while the name and actions
+stay put. Shadows show there's more under them.
+
+<Canvas of={Stories.Pinned} />
+
+### With pagination
+
+Pagination in the footer. The table only ever holds one page; the app loads
+the rest.
+
+<Canvas of={Stories.WithPagination} />
+
+### Picker
+
+Choosing rows for a form, with the count in the footer instead of actions.
+
+<Canvas of={Stories.Picker} />
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 items-center gap-2 rounded-md border border-border px-3 py-2 text-sm">
+            <span className="size-4 rounded-sm border border-input bg-input-subtle opacity-50" />
+            <span className="font-medium">Elena Marsh</span>
+            <span className="text-xs text-muted-foreground">Locked</span>
+          </div>
+        ),
+        description: "Show why a row can't be selected.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 items-center gap-2 rounded-md border border-border px-3 py-2 text-sm">
+            <span className="size-4 rounded-sm border border-input bg-input-subtle opacity-50" />
+            <span className="font-medium">Elena Marsh</span>
+          </div>
+        ),
+        description:
+          "Don't disable a row without a reason. People can't tell it's on purpose.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+DataTable takes the selection props below. Head and Cell take `type` and
+`pinned`; Cell also takes `secondary`, `icon` and `avatar`; Row takes `id`
+and `lockedReason`. Every part also takes the props of the element it
+renders.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="data-table"',
+      element: "Root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-scroll-start, data-scroll-end",
+      element: "Root",
+      when: "There's more table to scroll to on that side.",
+    },
+    {
+      attribute: 'data-slot="data-table-content"',
+      element: "table",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="data-table-header"',
+      element: "thead",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="data-table-select-all"',
+      element: "Select all header",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="data-table-head"',
+      element: "Column header",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="data-table-body"',
+      element: "tbody",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="data-table-row"',
+      element: "Row",
+      when: "Always.",
+    },
+    {
+      attribute: "data-row-id",
+      element: "Row",
+      when: "Always: the row's id.",
+    },
+    {
+      attribute: "data-selected",
+      element: "Row",
+      when: "The row is selected.",
+    },
+    {
+      attribute: "data-locked",
+      element: "Row",
+      when: "The row has a lockedReason.",
+    },
+    {
+      attribute: 'data-slot="data-table-select"',
+      element: "Row checkbox cell",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="data-table-cell"',
+      element: "Cell",
+      when: "Always.",
+    },
+    {
+      attribute: "data-type",
+      element: "Head, cell",
+      when: "Always: primary, text, person, status, numeric or actions.",
+    },
+    {
+      attribute: "data-pinned",
+      element: "Head, cell",
+      when: "The column is pinned: start or end.",
+    },
+    {
+      attribute: 'data-slot="data-table-secondary"',
+      element: "Second line",
+      when: "The cell has secondary text.",
+    },
+    {
+      attribute: 'data-slot="data-table-lock"',
+      element: "Lock",
+      when: "The row is locked, on its primary or person cell.",
+    },
+    {
+      attribute: 'data-slot="data-table-footer"',
+      element: "Footer",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="data-table-selection-count"',
+      element: "Selection count",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "It's a native table, not a grid: checkboxes and buttons are ordinary Tab stops.",
+    "Name it with aria-label or aria-labelledby on DataTable.",
+    "Each row checkbox is named from its primary cell, “Select Maya Okafor”, and select all says its scope, “Select all agents on this page”.",
+    "A locked row's checkbox is disabled and described by the reason. The lock is focusable, so keyboard users can open its tooltip.",
+    "Selection changes are announced through a status region, and Escape clears the selection.",
+    "Status badges sit on the background, so their tints keep AA contrast on selected and hovered rows.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Table", "Checkbox", "Pagination", "Menu"]} />
+
+## References
+
+- [plans/003-data-table.md](https://github.com/toribryan/fibo/blob/main/plans/003-data-table.md)
+- [WAI-ARIA APG: Table pattern](https://www.w3.org/WAI/ARIA/apg/patterns/table/)
+- [Shopify Polaris: Index table](https://polaris-react.shopify.com/components/tables/index-table)
+- [React Aria: Table](https://react-aria.adobe.com/Table)

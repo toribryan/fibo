@@ -113,8 +113,9 @@ and buttons that work as plain Tab stops.
 - When the toolbar swaps back to idle, focus moves to the select all
   checkbox, so it is never lost with the removed Clear button.
 - Escape clears the selection; Shift+click selects a range.
-- An unselectable row's checkbox is `aria-disabled`, and the lock is a
-  focusable Tooltip trigger whose reason is also in `aria-describedby`.
+- An unselectable row's checkbox is disabled and described by the reason.
+  The lock is a focusable Tooltip trigger described by the same reason, so
+  keyboard users reach it there.
 - Sortable headers hold a button, with `aria-sort` on the sorted `<th>` only.
 
 **Pinning and narrow widths.** Pinned cells use `position: sticky` with
