@@ -28,7 +28,6 @@ type Args = ComponentProps<typeof StickerAvatar> & {
 const meta: Meta<Args> = {
   title: "Special components/Sticker avatar",
   component: StickerAvatar,
-  tags: ["new"],
   parameters: {
     layout: "centered",
     controls: { exclude: ["src"] },

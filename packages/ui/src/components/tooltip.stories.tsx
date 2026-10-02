@@ -20,7 +20,6 @@ const meta: Meta<TooltipStoryArgs> = {
   title: "Base components/Tooltip",
   component: TooltipContent,
   subcomponents: { Tooltip, TooltipTrigger, TooltipProvider },
-  tags: ["new"],
   argTypes: {
     label: { control: "text" },
     children: { control: false },
