@@ -49,8 +49,8 @@ const PLACES: Place[] = [
   {
     id: "park",
     label: "Sunflower Park",
-    x: 44,
-    y: 75,
+    x: 46,
+    y: 66,
     meta: "Park · 9 min walk",
     description: "A ring of sunflowers around a fountain.",
     price: "Free",
@@ -237,20 +237,10 @@ function StandInMap({ children }: { children?: ReactNode }) {
   )
 }
 
-// What a map library's marker does with its anchor: an icon marker is a pin,
-// so its tip sits on the place; dots and labels are centred on it.
-function Pin({
-  place,
-  anchor = "center",
-  children,
-}: {
-  place: Place
-  anchor?: "center" | "bottom"
-  children: ReactNode
-}) {
+function Pin({ place, children }: { place: Place; children: ReactNode }) {
   return (
     <div
-      className={`absolute -translate-x-1/2 ${anchor === "bottom" ? "-translate-y-full" : "-translate-y-1/2"}`}
+      className="absolute -translate-x-1/2 -translate-y-1/2"
       style={{ left: `${place.x}%`, top: `${place.y}%` }}
     >
       {children}
@@ -397,7 +387,7 @@ export const IconMarkers: Story = {
   render: () => (
     <StandInMap>
       {PLACES.map((place) => (
-        <Pin key={place.id} place={place} anchor="bottom">
+        <Pin key={place.id} place={place}>
           <MapMarker
             type="icon"
             icon={ICONS[place.id]}
@@ -430,7 +420,7 @@ export const Colours: Story = {
   render: () => (
     <StandInMap>
       {PLACES.map((place) => (
-        <Pin key={place.id} place={place} anchor="bottom">
+        <Pin key={place.id} place={place}>
           <MapMarker
             type="icon"
             variant={STATUS[place.id]!.variant}
