@@ -129,6 +129,14 @@ export const Compact: Story = {
   args: { size: "sm" },
 }
 
+export const TextItems: Story = {
+  name: "Text items",
+  args: {
+    size: "sm",
+    items: items.slice(0, 3).map(({ value, label }) => ({ value, label })),
+  },
+}
+
 export const Static: Story = {
   args: { position: "static" },
   parameters: { frame: "none" },
