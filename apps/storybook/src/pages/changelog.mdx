@@ -16,6 +16,13 @@ Notable changes, newest first.
   `preview="none"`. Neither had a Figma counterpart.
 - The success, warning and info tints are lighter in light mode, so their
   text clears AA contrast at badge size.
+- fibo can now **retire a part** without surprising anyone who installed it.
+  A deprecated part carries a red pill in the sidebar and catalog, a banner
+  on its docs page with what to use instead, a notice when it's installed,
+  and a codemod that rewrites a project for you.
+- **Spinner** is the first through it: it ships deprecated in favour of an
+  indeterminate **Progress**, and is removed in 0.3.0. Run the codemod on its
+  page to migrate.
 - New **Floating nav** in Special components: a pill of destinations that
   floats above the bottom of a phone screen. The current item slides open to
   show its name, and the bar can step aside while the page scrolls down.
