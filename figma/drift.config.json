@@ -27,7 +27,8 @@
     "Message.type": "Code picks first, continuation, system or deleted from grouping rules and message data, not a prop.",
     "Message divider.unread": "Code draws the unread divider above the message named by unreadFrom.",
     "Data table.selection": "In code the selection is state, from value or defaultValue; Figma shows each state as a variant.",
-    "Data table.width": "Code reads the container's width and switches at 32rem; Figma picks narrow by hand."
+    "Data table.width": "Code reads the container's width and switches at 32rem; Figma picks narrow by hand.",
+    "Floating nav item.type": "Code makes an item text-only when it has no icon; designers pick it by hand."
   },
   "codeOnlyProps": {
     "reactions.position": "Which viewport corner the floating bar pins to; Figma shows the bar on its own."
@@ -43,7 +44,9 @@
     "Integration hub": "integration-visual",
     "Token chip": "token-flow",
     "Message": "message-list",
-    "Message divider": "message-list"
+    "Message divider": "message-list",
+    "Map marker preview": "map-marker",
+    "Floating nav item": "floating-nav"
   },
   "codeOnlyComponents": {}
 }
