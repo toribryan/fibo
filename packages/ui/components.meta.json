@@ -145,6 +145,13 @@
       "codemod": "spinner-to-progress"
     }
   },
+  "sticker-avatar": {
+    "title": "Sticker avatar",
+    "description": "An avatar cut out like a die-cut sticker, with a paper edge that follows its shape and a status told by shape.",
+    "tier": "special-components",
+    "group": "Display",
+    "status": "new"
+  },
   "switch": {
     "title": "Switch",
     "description": "Turns a setting on or off, taking effect at once.",
