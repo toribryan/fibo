@@ -12,30 +12,24 @@ import { Install } from "../blocks/install"
 
 # Voice memo
 
-A voice recorder modelled on the clip-on memo devices that stick to the back
-of a phone: an aluminium recorder docked on the edge, a running clock, a
-waveform that glides in from the right as you talk, and controls to mark a
-moment, pause and stop.
+A brushed aluminium recorder, after the clip-on memo devices that hold to the
+back of a phone, that writes down what you say. Press it and a transcript
+opens beside it, filling in as you talk; press it again and the transcript
+stays, ready to copy.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- A brushed aluminium device, docked against the left edge. Its pinhole
-  glows with your voice while recording. Hover and it lifts; click it to
-  record or pause; pull it out and let go, and it snaps back as if a magnet
-  caught it.
-- A waveform that glides in from the right and fades off the left into the
-  device, with silence drawn as dots so pauses in speech show as gaps.
-- Mark a moment while you talk. The mark lands as a tick on the bar it was
-  made over and scrolls away with it, and `onStop` hands back every mark's
-  time.
-- A clock to the hundredth of a second that leaves pauses out, with a
-  recording light: red while recording, amber while paused.
-- An optional status line for the device: connected, connecting or
-  disconnected, and its battery.
-- Draws in fibo's tokens, so the aluminium is silver in the light theme and
-  space grey in the dark.
+- One button. The device itself starts and stops listening, and its
+  pinhole glows red while it does.
+- A live transcript beside the device: settled words in full, the words
+  still being worked out fainter after them. It follows the newest words
+  unless you scroll up to reread.
+- Uses the browser's own speech recognition, with nothing to install, or
+  shows text from your own service through `transcript` and `interim`.
+- Aluminium drawn in fibo's tokens, silver in the light theme and space
+  grey in the dark, that lifts on hover and presses in on a click.
 
 ## Installation
 
@@ -46,58 +40,41 @@ moment, pause and stop.
     "voiceMemoVariants",
     "formatElapsed",
     "type VoiceMemoProps",
-    "type VoiceMemoState",
-    "type VoiceMemoResult",
   ]}
 />
 
-It installs `motion` for the device's drag and spring, `lucide-react` for
-the control icons and `class-variance-authority` for the sizes.
+It installs fibo's Button for the copy and close actions, `lucide-react`
+for their icons and `class-variance-authority` for the sizes.
 
 ## Usage
 
-The component draws and times a take; your code does the recording. Start a
-`MediaRecorder` when the state turns to `recording`, and pass its stream in
-so the waveform follows the voice:
+With no props it transcribes through the browser, and hands back the text
+when it stops:
 
 ```tsx
-import { useRef, useState } from "react"
-
 import { VoiceMemo } from "@/components/ui/voice-memo"
 
-export function Recorder() {
-  const [stream, setStream] = useState<MediaStream | null>(null)
-  const recorder = useRef<MediaRecorder | null>(null)
-
-  return (
-    <VoiceMemo
-      stream={stream}
-      simulate={false}
-      onStateChange={async (state) => {
-        if (state === "recording" && !recorder.current) {
-          const media = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          })
-          recorder.current = new MediaRecorder(media)
-          recorder.current.start()
-          setStream(media)
-        }
-        if (state === "paused") recorder.current?.pause()
-        if (state === "recording") recorder.current?.resume()
-      }}
-      onStop={({ duration, marks }) => {
-        recorder.current?.stop()
-        recorder.current = null
-        setStream(null)
-      }}
-    />
-  )
+export function Notes() {
+  return <VoiceMemo onComplete={(text) => saveNote(text)} />
 }
 ```
 
-`onStop` receives `{ duration: number; marks: number[] }`, both in
-milliseconds. Set `simulate={false}` in production: it's on by default so a
-preview has a voice to draw before anything is wired up.
+With your own speech-to-text service, pass what it has settled as
+`transcript` and what it's still guessing as `interim`. The browser's
+recogniser stays off:
+
+```tsx
+<VoiceMemo
+  recording={recording}
+  onRecordingChange={setRecording}
+  transcript={final}
+  interim={partial}
+/>
+```
+
+Browser recognition works in Chrome, Edge and Safari, and sends audio to the
+browser maker's servers to transcribe. Where it isn't available, or for
+speech that must stay on your own servers, bring your own service.
 
 ## Anatomy
 
@@ -107,55 +84,48 @@ Every part the component renders, with the `data-slot` it carries.
   root={{
     name: "VoiceMemo",
     slot: "voice-memo",
-    note: "A group named by the title. Carries data-state and data-size.",
+    note: "Carries data-recording while listening, data-side and data-size.",
     children: [
-      {
-        name: "header",
-        slot: "voice-memo-header",
-        children: [
-          { name: "title", slot: "voice-memo-title" },
-          { name: "light", slot: "voice-memo-light" },
-          {
-            name: "time",
-            slot: "voice-memo-time",
-            note: "The clock, a timer role.",
-          },
-        ],
-      },
       {
         name: "device",
         slot: "voice-memo-device",
-        note: "The aluminium recorder, hidden from screen readers. Carries data-pressed while held and data-dragging while pulled.",
-      },
-      {
-        name: "waveform",
-        slot: "voice-memo-waveform",
-        note: "Hidden from screen readers.",
+        note: "The aluminium recorder, a toggle button named Transcribe.",
         children: [
           {
-            name: "bar",
-            slot: "voice-memo-bar",
-            note: "One per sample, newest on the right. Carries data-marked when a mark landed on it.",
+            name: "light",
+            slot: "voice-memo-light",
+            note: "While listening.",
           },
         ],
       },
       {
-        name: "controls",
-        slot: "voice-memo-controls",
+        name: "transcript",
+        slot: "voice-memo-transcript",
+        note: "While listening, and after, until it's closed.",
         children: [
-          { name: "mark", slot: "voice-memo-mark" },
           {
-            name: "toggle",
-            slot: "voice-memo-toggle",
-            note: "Start, pause or resume.",
+            name: "header",
+            slot: "voice-memo-header",
+            children: [
+              {
+                name: "time",
+                slot: "voice-memo-time",
+                note: "While listening.",
+              },
+              {
+                name: "copy",
+                slot: "voice-memo-copy",
+                note: "Once stopped, with text to copy.",
+              },
+              {
+                name: "close",
+                slot: "voice-memo-close",
+                note: "Once stopped.",
+              },
+            ],
           },
-          { name: "stop", slot: "voice-memo-stop" },
+          { name: "text", slot: "voice-memo-text" },
         ],
-      },
-      {
-        name: "status",
-        slot: "voice-memo-status",
-        note: "Only with a connection.",
       },
       {
         name: "announcer",
@@ -170,70 +140,60 @@ Every part the component renders, with the `data-slot` it carries.
 
 <UsageGuidelines
   guidelines={[
-    "Use it for quick spoken notes: one take, started and stopped in a tap. For long sessions with editing, use a full audio editor.",
-    "Name the memo with a title people will recognise later, such as the meeting or the day. The title also names the group for screen readers.",
-    "Wire marks to something people see afterwards, such as highlights in the transcript. A mark that leads nowhere teaches people to stop marking.",
-    "Show the status line only when a separate device does the recording. A phone's own microphone needs no connection or battery.",
-    "Turn simulate off once a stream or level is wired in.",
-    "Leave the device on when a separate recorder does the listening, and turn it off with device={false} for a phone's own microphone, where it would stand for nothing.",
-    "Keep the wordmark to one short word. It's stamped up the device's length and has room for about six letters.",
+    "Use it for quick spoken notes: one take, started and stopped with a press. For long recordings that need editing, use a full transcription tool.",
+    "Do something with the text in onComplete, such as saving it as a note. A transcript that vanishes when closed teaches people not to bother.",
+    "Open the transcript to the right where there's room beside the device, and below it in narrow columns and on phones.",
+    "Keep the wordmark to one short word. It's raised across the bottom of the device and has room for about six letters.",
+    "Set lang to the language people speak. The recogniser doesn't detect it.",
+    "Leave simulate for previews and demos. In production it would type out the same script for everyone.",
   ]}
 />
 
 ## Examples
 
-### Recording
+### Listening
 
-`defaultState="recording"` starts the clock and the waveform at once, for a
-recorder opened by a hardware button.
+While listening, the pinhole glows, the clock runs and the words fill in.
 
-<Canvas of={Stories.Recording} />
+<Canvas of={Stories.Listening} />
 
-### Paused
+### Below
 
-Paused, the waveform holds still in a quieter colour and the light turns
-amber. A mark lands on the last bar.
+`side="bottom"` opens the transcript under the device, for narrow columns.
 
-<Canvas of={Stories.Paused} />
+<Canvas of={Stories.Below} />
 
 ### Small
 
-`size="sm"` fits a sheet or a sidebar, with fewer bars and smaller controls.
+`size="sm"` fits a toolbar or a sidebar.
 
 <Canvas of={Stories.Small} />
 
-### Connection
+### Wordmark
 
-`connection` and `battery` describe a separate recording device. Leave both
-out for a phone's own microphone.
+`wordmark` changes the word raised on the device.
 
-<Canvas of={Stories.Connection} />
+<Canvas of={Stories.Wordmark} />
 
-### With a microphone
+### Your own service
 
-Asks for the microphone, records with `MediaRecorder`, and passes the stream
-to the waveform. The clip plays back once saved.
+`transcript` and `interim` show text from elsewhere. Here a slider stands in
+for a service streaming words back.
 
-<Canvas of={Stories.WithMicrophone} />
+<Canvas of={Stories.OwnService} />
 
-### Saving memos
+### With the microphone
 
-Each stopped take lands in a list with its length, and the next take is
-named after it.
+Without `simulate`, the browser asks for the microphone and transcribes what
+you say.
 
-<Canvas of={Stories.SavingMemos} />
+<Canvas of={Stories.Microphone} />
 
-### Without the device
+### Saving notes
 
-`device={false}` leaves the recorder out, for a phone's own microphone.
+`onComplete` hands back each finished transcript, here saved to a list.
 
-<Canvas of={Stories.WithoutDevice} />
-
-### On a phone
-
-Dark and edge to edge, the way a memo device's app shows a take in progress.
-
-<Canvas of={Stories.OnAPhone} />
+<Canvas of={Stories.SavingNotes} />
 
 ## Do's and don'ts
 
@@ -241,21 +201,13 @@ Dark and edge to edge, the way a memo device's app shows a take in progress.
   rules={[
     {
       positive: {
-        component: (
-          <div className="w-72">
-            <VoiceMemo size="sm" title="Standup, 2 October" simulate={false} />
-          </div>
-        ),
-        description: "Name a memo for what it holds.",
+        component: <VoiceMemo size="sm" wordmark="notes" />,
+        description: "Raise one short word on the device.",
       },
       negative: {
-        component: (
-          <div className="w-72">
-            <VoiceMemo size="sm" title="Recording 47" simulate={false} />
-          </div>
-        ),
+        component: <VoiceMemo size="sm" wordmark="Meeting notes" />,
         description:
-          "Don't fall back on a counter when there's something better to call it. Nobody finds Recording 47 a week later.",
+          "Don't fit a phrase onto it. The lettering runs off the edge.",
       },
     },
   ]}
@@ -267,8 +219,8 @@ Dark and edge to edge, the way a memo device's app shows a take in progress.
 
 ### Data attributes
 
-Style the recorder by state, for example with
-`data-[state=recording]:border-destructive`.
+Style the device by state, for example with
+`data-recording:[&_[data-slot=voice-memo-transcript]]:border-destructive`.
 
 <DataAttributes
   rows={[
@@ -278,12 +230,16 @@ Style the recorder by state, for example with
       when: "Always.",
     },
     {
-      attribute: "data-state",
+      attribute: "data-recording",
+      element: "The root",
+      when: "While listening.",
+    },
+    {
+      attribute: "data-side",
       element: "The root",
       when: (
         <>
-          Always. <code>idle</code>, <code>recording</code> or{" "}
-          <code>paused</code>.
+          Always. <code>right</code> or <code>bottom</code>.
         </>
       ),
     },
@@ -297,34 +253,9 @@ Style the recorder by state, for example with
       ),
     },
     {
-      attribute: 'data-slot="voice-memo-device"',
-      element: "The device",
-      when: "With device on.",
-    },
-    {
-      attribute: "data-pressed",
-      element: "The device",
-      when: "Held down without moving.",
-    },
-    {
-      attribute: "data-dragging",
-      element: "The device",
-      when: "Being pulled out.",
-    },
-    {
-      attribute: "data-marked",
-      element: "A bar",
-      when: "A mark landed on it.",
-    },
-    {
-      attribute: "data-connection",
-      element: "The status line",
-      when: (
-        <>
-          With a connection. <code>connected</code>, <code>connecting</code> or{" "}
-          <code>disconnected</code>.
-        </>
-      ),
+      attribute: 'data-slot="voice-memo-transcript"',
+      element: "The transcript",
+      when: "While open.",
     },
   ]}
 />
@@ -333,25 +264,22 @@ Style the recorder by state, for example with
 
 <UsageGuidelines
   guidelines={[
-    "The recorder is a group named by its title. Each control is a button named for what it does: Start recording, Pause recording, Resume recording, Mark this moment, Stop and save.",
-    "The toggle keeps focus as it changes from pause to resume, so Space pauses and resumes without moving.",
-    "Starting, pausing, marking and saving are announced once in a status region, with the time in words. The clock itself isn't announced on every tick.",
-    "The waveform is decoration and hidden from screen readers; the state and time carry the same information.",
-    "The device is a pointer shortcut for the toggle, so it's hidden from screen readers and out of the tab order. Everything it does, the toggle does in words.",
-    "Mark and stop are disabled until a take starts.",
-    "With reduced motion, the waveform steps a few times a second instead of gliding, the device doesn't lift or press in, and it returns from a pull with a short ease instead of a spring.",
-    "The clock and the waveform are written straight to the page each frame, so React renders only when a new bar arrives, about eleven times a second.",
+    "The device is a toggle button named Transcribe, pressed while listening. Enter or Space starts and stops it, and focus stays on it.",
+    "Starting and stopping are announced once in a status region, with the word count when it stops. The words themselves aren't read out as they arrive, which would talk over the speaker.",
+    "The transcript is a region the device points to with aria-controls. Its text is a log that takes focus, so it can be scrolled and read by keyboard.",
+    "Once stopped, Tab moves from the device to copy and close.",
+    "Failures, such as a blocked microphone or a browser without recognition, show in the transcript and are announced.",
+    "With reduced motion, the device doesn't lift or press in, the light holds still, and the transcript fades in without growing.",
   ]}
 />
 
 ## Related components
 
-<RelatedComponents names={["Chat composer", "Progress", "Typing indicator"]} />
+<RelatedComponents names={["Chat composer", "Typing indicator", "Toast"]} />
 
 ## References
 
-- [MediaStream Recording API](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API), for recording the take
-- [`AnalyserNode`](https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode), for the waveform's loudness
+- [Web Speech API `SpeechRecognition`](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition), for transcribing in the browser
+- [WAI-ARIA button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/), for the device as a toggle
 - [JPG card holder](https://chanhdai.com/components/jpg-card-holder) by
-  Chánh Đại, whose drag, rubber band and crossfaded shadows the device follows
-- [ARIA `timer` role](https://www.w3.org/TR/wai-aria-1.2/#timer), for the clock
+  Chánh Đại, whose material rendering and crossfaded shadows the device follows
