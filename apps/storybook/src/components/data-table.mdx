@@ -27,6 +27,9 @@ either edge. It matches the Data table in the Figma library.
 - Columns pinned to the start or end, with shadows while there's more to
   scroll. Pinning switches off under 32rem.
 - Selection changes are announced: “3 agents selected”, “Selection cleared”.
+- One toolbar row for every action: filters and create actions while idle,
+  then the selection and bulk actions in the same place while rows are
+  selected, with Select all matching for the rows on other pages.
 
 ## Installation
 
@@ -42,11 +45,16 @@ either edge. It matches the Data table in the Figma library.
     "DataTableCell",
     "DataTableFooter",
     "DataTableSelectionCount",
+    "DataTableToolbar",
+    "DataTableFilters",
+    "DataTableActions",
+    "DataTableBulkActions",
+    "DataTableBulkAction",
     "useDataTableSelection",
   ]}
 />
 
-It installs Table, Checkbox, Avatar and Tooltip.
+It installs Table, Checkbox, Avatar, Tooltip, Button and Menu.
 
 ## Usage
 
@@ -125,6 +133,48 @@ everything is selected keeps this page's rows and drops the rest.
     slot: "data-table",
     children: [
       {
+        name: "DataTableToolbar",
+        slot: "data-table-toolbar",
+        children: [
+          {
+            name: "DataTableFilters",
+            slot: "data-table-filters",
+            note: "Idle.",
+          },
+          {
+            name: "DataTableActions",
+            slot: "data-table-actions",
+            note: "Idle.",
+          },
+          { name: "Clear", slot: "data-table-clear", note: "Selecting." },
+          {
+            name: "Selected label",
+            slot: "data-table-selected-label",
+            note: "Selecting.",
+          },
+          {
+            name: "Select all matching",
+            slot: "data-table-select-all-matching",
+            note: "The page is selected and more rows match.",
+          },
+          {
+            name: "Show selected only",
+            slot: "data-table-show-selected-only",
+            note: "With onShowSelectedOnlyChange.",
+          },
+          {
+            name: "DataTableBulkActions",
+            slot: "data-table-bulk-actions",
+            note: "Selecting.",
+            children: [
+              { name: "DataTableBulkAction", slot: "data-table-bulk-action" },
+              { name: "More actions" },
+              { name: "Delete", slot: "data-table-delete" },
+            ],
+          },
+        ],
+      },
+      {
         name: "DataTableContent",
         slot: "data-table-content",
         note: "A Table.",
@@ -186,10 +236,33 @@ everything is selected keeps this page's rows and drops the rest.
     "Rows are 40 pixels, or 52 with secondary text. Nothing goes taller.",
     "Lock a row that can't be selected, and say why in lockedReason.",
     "In a picker, put DataTableSelectionCount in the footer, so people see how many they've chosen.",
+    "Put every action in the toolbar. Don't add hover actions or a floating bar; they split actions across places.",
+    "Keep the bulk action order: your actions, then More, then Delete. Approve comes before Deny.",
+    "Give a bulk action that works on one row `single`, so it stays in place, dimmed, while more are selected.",
   ]}
 />
 
 ## Examples
+
+### Bulk action patterns
+
+The patterns from the Figma library: Delete alone, a safe action before
+Delete, several actions with More, and an action that works on one row.
+
+<Canvas of={Stories.BulkActionPatterns} />
+
+### Review queue
+
+Approve then Deny, and no Delete. Second lines carry the details.
+
+<Canvas of={Stories.ReviewQueue} />
+
+### Directory
+
+248 agents across pages, one of them locked. Select the page, then Select all
+247 agents; Show selected only filters the rows, which the app does.
+
+<Canvas of={Stories.Directory} />
 
 ### Locked row
 
@@ -275,6 +348,61 @@ renders.
       attribute: "data-scroll-start, data-scroll-end",
       element: "Root",
       when: "There's more table to scroll to on that side.",
+    },
+    {
+      attribute: 'data-slot="data-table-toolbar"',
+      element: "Toolbar",
+      when: "Always.",
+    },
+    {
+      attribute: "data-selecting",
+      element: "Toolbar",
+      when: "Rows are selected and it shows bulk actions.",
+    },
+    {
+      attribute: 'data-slot="data-table-filters"',
+      element: "Filters",
+      when: "Nothing is selected.",
+    },
+    {
+      attribute: 'data-slot="data-table-actions"',
+      element: "Create actions",
+      when: "Nothing is selected.",
+    },
+    {
+      attribute: 'data-slot="data-table-clear"',
+      element: "Clear button",
+      when: "Rows are selected.",
+    },
+    {
+      attribute: 'data-slot="data-table-selected-label"',
+      element: "Selected count",
+      when: "Rows are selected.",
+    },
+    {
+      attribute: 'data-slot="data-table-select-all-matching"',
+      element: "Select all matching",
+      when: "The page is selected and more rows match.",
+    },
+    {
+      attribute: 'data-slot="data-table-show-selected-only"',
+      element: "Show selected only",
+      when: "Rows are selected and onShowSelectedOnlyChange is set.",
+    },
+    {
+      attribute: 'data-slot="data-table-bulk-actions"',
+      element: "Bulk actions",
+      when: "Rows are selected.",
+    },
+    {
+      attribute: 'data-slot="data-table-bulk-action"',
+      element: "Bulk action button",
+      when: "Rows are selected.",
+    },
+    {
+      attribute: 'data-slot="data-table-delete"',
+      element: "Delete",
+      when: "onDelete is set.",
     },
     {
       attribute: 'data-slot="data-table-content"',
@@ -373,6 +501,9 @@ renders.
     "Each row checkbox is named from its primary cell, “Select Maya Okafor”, and select all says its scope, “Select all agents on this page”.",
     "A locked row's checkbox is disabled and described by the reason. The lock is focusable, so keyboard users can open its tooltip.",
     "Selection changes are announced through a status region, and Escape clears the selection.",
+    "The toolbar is a group named “Filters and actions” or “Bulk actions”, not a toolbar role, so its controls stay ordinary Tab stops and arrow keys stay with the search field.",
+    "When the focused control goes away, such as Clear or Select all matching, focus moves to Clear, or to select all when nothing is selected, instead of the page.",
+    "A single-row action that's dimmed stays focusable and is described by why: “Works on one agent at a time”.",
     "Status badges sit on the background, so their tints keep AA contrast on selected and hovered rows.",
   ]}
 />
