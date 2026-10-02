@@ -31,6 +31,8 @@ type FloatingNavProps = Omit<React.ComponentProps<"nav">, "onChange"> & {
   ) => void
   /** `active` shows only the current item's label; `always` stacks every label under its icon. */
   labels?: "active" | "always"
+  /** `sm` tightens the pill: 36px items and 16px icons instead of 44px and 20px. */
+  size?: "default" | "sm"
   /** `fixed` floats above the page at the bottom of the viewport; `static` sits in the flow. */
   position?: "fixed" | "static"
   /** Slides the bar away while the page scrolls down and back when it scrolls up. */
@@ -42,11 +44,34 @@ const floatingNavItemVariants = cva(
   {
     variants: {
       labels: {
-        active: "h-11 min-w-11 px-3 text-sm",
-        always: "h-14 min-w-16 flex-col gap-0.5 px-3 text-[11px] leading-4",
+        active: "",
+        always: "flex-col gap-0.5 leading-4",
       },
+      size: { default: "", sm: "" },
     },
-    defaultVariants: { labels: "active" },
+    compoundVariants: [
+      {
+        labels: "active",
+        size: "default",
+        className: "h-11 min-w-11 px-3 text-sm",
+      },
+      {
+        labels: "always",
+        size: "default",
+        className: "h-14 min-w-16 px-3 text-[11px]",
+      },
+      {
+        labels: "active",
+        size: "sm",
+        className: "h-9 min-w-9 px-2.5 text-[13px]",
+      },
+      {
+        labels: "always",
+        size: "sm",
+        className: "h-12 min-w-14 px-2 text-[10px]",
+      },
+    ],
+    defaultVariants: { labels: "active", size: "default" },
   }
 )
 
@@ -89,6 +114,7 @@ function FloatingNav({
   defaultValue,
   onValueChange,
   labels = "active",
+  size = "default",
   position = "fixed",
   hideOnScroll = false,
   className,
@@ -108,6 +134,7 @@ function FloatingNav({
       data-slot="floating-nav"
       data-position={position}
       data-labels={labels}
+      data-size={size}
       data-hidden={hidden ? "" : undefined}
       aria-label={ariaLabel}
       // A keyboard user tabbing into a hidden bar brings it back.
@@ -130,7 +157,10 @@ function FloatingNav({
           hidden ? { y: "calc(100% + 2rem)", opacity: 0 } : { y: 0, opacity: 1 }
         }
         transition={transition}
-        className="pointer-events-auto flex max-w-full [scrollbar-width:none] items-center gap-1 overflow-x-auto rounded-full border border-border bg-popover-overlay p-1.5 shadow-lg backdrop-blur-md"
+        className={cn(
+          "pointer-events-auto flex max-w-full [scrollbar-width:none] items-center overflow-x-auto rounded-full border border-border bg-popover-overlay shadow-lg backdrop-blur-md",
+          size === "sm" ? "gap-0.5 p-1" : "gap-1 p-1.5"
+        )}
       >
         {items.map((item) => {
           const current = item.value === value
@@ -152,7 +182,12 @@ function FloatingNav({
               ) : null}
               <span
                 aria-hidden="true"
-                className="relative flex size-5 items-center justify-center [&_svg]:size-5 [&_svg]:shrink-0"
+                className={cn(
+                  "relative flex items-center justify-center [&_svg]:shrink-0",
+                  size === "sm"
+                    ? "size-4 [&_svg]:size-4"
+                    : "size-5 [&_svg]:size-5"
+                )}
               >
                 {item.icon}
               </span>
@@ -165,7 +200,11 @@ function FloatingNav({
                   initial={false}
                   animate={
                     current
-                      ? { width: "auto", opacity: 1, marginLeft: 8 }
+                      ? {
+                          width: "auto",
+                          opacity: 1,
+                          marginLeft: size === "sm" ? 6 : 8,
+                        }
                       : { width: 0, opacity: 0, marginLeft: 0 }
                   }
                   transition={transition}
@@ -181,7 +220,7 @@ function FloatingNav({
             "data-current": current ? "" : undefined,
             "aria-current": current ? ("page" as const) : undefined,
             onClick: handleClick,
-            className: floatingNavItemVariants({ labels }),
+            className: floatingNavItemVariants({ labels, size }),
           }
           return (
             <li key={item.value} className="flex">
