@@ -160,7 +160,7 @@ export const DirectMessages: Story = {
         <button
           key={person.name}
           type="button"
-          className="group/sticker flex items-center gap-3.5 rounded-md px-2.5 py-2 text-left text-muted-foreground outline-none hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+          className="group/sticker flex items-center gap-3.5 rounded-md px-2.5 py-2 text-left text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
         >
           <StickerAvatar
             aria-hidden="true"
