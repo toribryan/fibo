@@ -135,7 +135,7 @@ function useControllable<T>(
     if (value === undefined) setOwn(next)
     onChange?.(next)
   }
-  return [current, set] as const
+  return [current, set, setOwn] as const
 }
 
 const noSubscription = () => () => {}
@@ -234,14 +234,18 @@ function CommandMenu({
 }: CommandMenuProps) {
   const text = { ...DEFAULT_LABELS, ...labels }
   const [open, setOpen] = useControllable(openProp, defaultOpen, onOpenChange)
-  const [initialRecent] = React.useState(
-    () => readStored(storageKey) ?? defaultRecent
-  )
-  const [recent, setRecent] = useControllable(
+  const [recent, setRecent, restoreRecent] = useControllable(
     recentProp,
-    initialRecent,
+    defaultRecent,
     onRecentChange
   )
+  // Read after mount: the server has no storage, so reading it while
+  // rendering would make the first client render differ from the server's.
+  const restore = React.useEffectEvent(() => {
+    const stored = readStored(storageKey)
+    if (stored) restoreRecent(stored)
+  })
+  React.useEffect(() => restore(), [storageKey])
   const [query, setQuery] = React.useState("")
   const [path, setPath] = React.useState<CommandMenuItem[]>([])
   // Null until the first page change, so opening the menu doesn't also
