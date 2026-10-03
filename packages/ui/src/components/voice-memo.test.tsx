@@ -194,4 +194,78 @@ describe("VoiceMemo", () => {
     await screen.getByRole("button", { name: "Close transcript" }).click()
     await expect.element(screen.getByRole("log")).not.toBeInTheDocument()
   })
+
+  it("starts and stops a session its parent switches", async () => {
+    const onComplete = vi.fn()
+    const before = Date.now()
+    const screen = await render(
+      <VoiceMemo recording transcript="Ship it" onComplete={onComplete} />
+    )
+    await screen.rerender(
+      <VoiceMemo
+        recording={false}
+        transcript="Ship it"
+        onComplete={onComplete}
+      />
+    )
+    expect(onComplete).toHaveBeenCalledOnce()
+    const memo = onComplete.mock.lastCall![1]
+    expect(memo.startedAt.getTime()).toBeGreaterThanOrEqual(before)
+    expect(memo.duration).toBeLessThan(10_000)
+  })
+
+  it("switches off and keeps the message when the recogniser fails", async () => {
+    const scope = window as unknown as { SpeechRecognition?: unknown }
+    const original = scope.SpeechRecognition
+    const instances: {
+      onerror: ((event: { error: string }) => void) | null
+    }[] = []
+    scope.SpeechRecognition = class {
+      continuous = false
+      interimResults = false
+      lang = ""
+      onresult = null
+      onerror = null
+      onend = null
+      constructor() {
+        instances.push(this)
+      }
+      start() {}
+      stop() {}
+      abort() {}
+    }
+    const onComplete = vi.fn()
+    const onRecordingChange = vi.fn()
+    try {
+      const screen = await render(
+        <VoiceMemo
+          defaultRecording
+          onComplete={onComplete}
+          onRecordingChange={onRecordingChange}
+        />
+      )
+      await expect.poll(() => instances.at(-1)?.onerror).toBeTypeOf("function")
+      instances.at(-1)!.onerror!({ error: "not-allowed" })
+      await expect
+        .element(screen.getByRole("button", { name: "Transcribe" }))
+        .toHaveAttribute("aria-pressed", "false")
+      expect(onRecordingChange).toHaveBeenLastCalledWith(false)
+      expect(onComplete).not.toHaveBeenCalled()
+      await expect
+        .element(screen.getByRole("log"))
+        .toHaveTextContent("Allow the microphone to transcribe.")
+    } finally {
+      scope.SpeechRecognition = original
+    }
+  })
+
+  it("hands focus back to the device when the transcript closes", async () => {
+    const screen = await render(
+      <VoiceMemo defaultRecording transcript="Hello" />
+    )
+    const device = screen.getByRole("button", { name: "Transcribe" })
+    await device.click()
+    await screen.getByRole("button", { name: "Close transcript" }).click()
+    await expect.element(device).toHaveFocus()
+  })
 })
