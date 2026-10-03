@@ -127,6 +127,35 @@ function join(...parts: string[]) {
     .join(" ")
 }
 
+const FILLERS = /,?\s*\b(?:u+m+|u+h+|e+r+m+|h+m+|u+h+m+)\b,?/gi
+const ASKS =
+  /^(?:who|what|when|where|why|how|which|whose|is|are|am|was|were|can|could|would|should|shall|will|do|does|did|have|has|had|may|might|isn't|aren't|can't|won't|don't|doesn't|didn't)\b/i
+
+/*
+ * Light grammar for a settled phrase, since browser recognisers mostly
+ * return lowercase words with no punctuation. Drops filler sounds and a
+ * word said twice in a row, except the doubles English allows, capitalises
+ * "I" and each sentence, and ends the phrase with a full stop, or a
+ * question mark when it opens like a question. Punctuation the recogniser
+ * already added is kept.
+ */
+function tidyPhrase(phrase: string) {
+  let text = phrase
+    .replace(FILLERS, " ")
+    .replace(/\b(?!(?:had|that)\b)(\w+)(\s+\1\b)+/gi, "$1")
+    .replace(/\bi\b(?=$|\s|'|’)/g, "I")
+    .replace(/\s+([,.?!])/g, "$1")
+    .replace(/\s+/g, " ")
+    .replace(/^[\s,]+|[\s,]+$/g, "")
+  if (!text) return ""
+  text = text.replace(
+    /(^|[.?!]\s+)(\p{Ll})/gu,
+    (_, lead, letter) => lead + letter.toUpperCase()
+  )
+  if (!/[.?!…]$/.test(text)) text += ASKS.test(text) ? "?" : "."
+  return text
+}
+
 function countWords(text: string) {
   return text.split(/\s+/).filter(Boolean).length
 }
@@ -318,7 +347,7 @@ function VoiceMemo({
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i]!
         if (result.isFinal) {
-          const text = result[0]!.transcript.trim()
+          const text = tidyPhrase(result[0]!.transcript)
           settled = join(settled, text)
           if (text) segments.current.push({ at: elapsed(), text })
         } else pending = join(pending, result[0]!.transcript)
@@ -869,6 +898,7 @@ export {
   voiceMemoVariants,
   formatElapsed,
   transcriptToMarkdown,
+  tidyPhrase,
   type VoiceMemoProps,
   type VoiceMemoResult,
   type VoiceMemoSegment,

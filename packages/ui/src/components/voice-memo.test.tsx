@@ -1,7 +1,12 @@
 import { describe, expect, it, vi } from "vitest"
 import { render } from "vitest-browser-react"
 
-import { VoiceMemo, formatElapsed, transcriptToMarkdown } from "./voice-memo.js"
+import {
+  VoiceMemo,
+  formatElapsed,
+  tidyPhrase,
+  transcriptToMarkdown,
+} from "./voice-memo.js"
 
 describe("formatElapsed", () => {
   it("shows minutes and seconds", () => {
@@ -12,6 +17,45 @@ describe("formatElapsed", () => {
 
   it("never goes below zero", () => {
     expect(formatElapsed(-50)).toBe("00:00")
+  })
+})
+
+describe("tidyPhrase", () => {
+  it("capitalises and ends a sentence", () => {
+    expect(tidyPhrase("so i think we should ship it")).toBe(
+      "So I think we should ship it."
+    )
+    expect(tidyPhrase("i'm not sure i've seen it")).toBe(
+      "I'm not sure I've seen it."
+    )
+  })
+
+  it("ends a phrase that opens like a question with a question mark", () => {
+    expect(tidyPhrase("what time is the meeting")).toBe(
+      "What time is the meeting?"
+    )
+  })
+
+  it("drops fillers and a word said twice", () => {
+    expect(tidyPhrase("um the the drift check passes")).toBe(
+      "The drift check passes."
+    )
+    expect(tidyPhrase("did you see it, uh, yesterday")).toBe(
+      "Did you see it yesterday?"
+    )
+    expect(tidyPhrase("hmm")).toBe("")
+  })
+
+  it("keeps doubles English allows and words that start like fillers", () => {
+    expect(tidyPhrase("she had had enough")).toBe("She had had enough.")
+    expect(tidyPhrase("an umbrella")).toBe("An umbrella.")
+  })
+
+  it("keeps punctuation that's already there", () => {
+    expect(tidyPhrase("Already punctuated.")).toBe("Already punctuated.")
+    expect(tidyPhrase("so yeah. and then we left")).toBe(
+      "So yeah. And then we left."
+    )
   })
 })
 
