@@ -373,8 +373,9 @@ everything is selected keeps this page's rows and drops the rest.
 ## API reference
 
 DataTable takes the selection props below. Head and Cell take `type` and
-`pinned`; Cell also takes `secondary`, `icon` and `avatar`; Row takes `id`
-and `lockedReason`. Every part also takes the props of the element it
+`pinned`; Cell also takes `secondary`, `icon` and `avatar`; Row takes `id`,
+`lockedReason` and `label`, which names its checkbox when no primary or person
+cell does. Every part also takes the props of the element it
 renders.
 
 <ArgTypes
@@ -598,9 +599,10 @@ renders.
   guidelines={[
     "It's a native table, not a grid: checkboxes and buttons are ordinary Tab stops.",
     "Name it with aria-label or aria-labelledby on DataTable.",
-    "Each row checkbox is named from its primary cell, “Select Maya Okafor”, and select all says its scope, “Select all members on this page”.",
+    "Each row checkbox is named from its primary or person cell, “Select Maya Okafor”, or from the row's label when it has neither. Select all says its scope, “Select all members on this page”.",
     "A locked row's checkbox is disabled and described by the reason. The lock is focusable, so keyboard users can open its tooltip.",
-    "Selection changes are announced through a status region, and Escape clears the selection.",
+    "Selection changes are announced through a status region once they take effect, so a change a controlled parent turns down isn't announced. Escape clears the selection.",
+    "Changing one row while every match is selected keeps only this page's rows, and says so: “3 members selected, on this page only”.",
     "The toolbar is a group named “Filters and actions” or “Bulk actions”, not a toolbar role, so its controls stay ordinary Tab stops and arrow keys stay with the search field.",
     "When the focused control goes away, such as Clear or Select all matching, focus moves to Clear, or to select all when nothing is selected, instead of the page.",
     "A single-row action that's dimmed stays focusable and is described by why: “Works on one member at a time”.",
