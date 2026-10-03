@@ -127,10 +127,16 @@ export const Default: Story = {
         '[data-slot="integration-visual-preview"]'
       )
     await expect(preview()).toBeNull()
+    const hub = page.getByRole("button", { name: "Integrations" })
+
+    // Hovering the hub opens the preview, and leaving it closes it.
+    await userEvent.hover(hub)
+    await waitFor(() => expect(preview()).not.toBeNull())
+    await userEvent.unhover(hub)
+    await waitFor(() => expect(preview()).toBeNull())
 
     // The hub is a named button, and focusing it opens the preview.
     await userEvent.tab()
-    const hub = page.getByRole("button", { name: "Integrations" })
     await expect(hub).toHaveFocus()
     await waitFor(() => expect(preview()).not.toBeNull())
 

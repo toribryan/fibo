@@ -55,9 +55,10 @@ const SIZES: Record<
 }
 
 const CARD_WIDTH = 248
+const LABEL_MAX_WIDTH = 220
 const GAP = 16
-// The card flips to the rail's other side when it would come closer than
-// this to the viewport's edge.
+// The preview keeps this far from the viewport's edge, flipping to the
+// rail's other side, narrowing or sliding along it to do so.
 const VIEWPORT_MARGIN = 8
 // Measured sizes stand in for these until the card first renders.
 const CARD_FALLBACK_HEIGHT = 120
@@ -265,6 +266,9 @@ function ChapterScrubber({
   const [engaged, setEngaged] = React.useState(false)
   const [flipped, setFlipped] = React.useState(false)
   const [previewSize, setPreviewSize] = React.useState(0)
+  // Room across the rail on the chosen side. On a narrow screen neither side
+  // may fit the card, so it takes whichever has more and narrows to fit.
+  const [room, setRoom] = React.useState(Infinity)
   // Where the rail sits on screen. The preview is portalled to the body so
   // no clipping ancestor can cut it off, and is placed from this.
   const [anchor, setAnchor] = React.useState<{
@@ -309,13 +313,15 @@ function ChapterScrubber({
     reportActive(chapter, index)
   }, [engaged, activeIndex, chapters])
 
+  const [previewWidth, setPreviewWidth] = React.useState(0)
   // The preview is clamped to the rail's length, which needs its size along
   // the rail.
   React.useLayoutEffect(() => {
     const node = previewRef.current
     if (!node) return
     setPreviewSize(vertical ? node.offsetHeight : node.offsetWidth)
-  }, [activeIndex, vertical, preview])
+    setPreviewWidth(node.offsetWidth)
+  }, [activeIndex, vertical, preview, room])
 
   // Measure the rail, and decide which side the preview opens on, before
   // paint, so it never shows a frame on the wrong side. While engaged, the
@@ -327,11 +333,31 @@ function ChapterScrubber({
     if (!root || !view) return
     const measure = () => {
       const rect = root.getBoundingClientRect()
+      // On touch a tap leaves the rail focused, so the preview would stay
+      // pinned over the page once the rail scrolls away. Let it go instead.
+      if (
+        rect.bottom < 0 ||
+        rect.top > view.innerHeight ||
+        rect.right < 0 ||
+        rect.left > view.innerWidth
+      ) {
+        const focused = root.ownerDocument.activeElement
+        if (focused instanceof HTMLElement && root.contains(focused)) {
+          focused.blur()
+        }
+        focusedRef.current = null
+        hoveringRef.current = false
+        rawStrength.set(0)
+        setEngaged(false)
+        return
+      }
       setAnchor({ rect, width: view.innerWidth, height: view.innerHeight })
       const node = previewRef.current
       const need =
         (vertical
-          ? (node?.offsetWidth ?? CARD_WIDTH)
+          ? preview === "card"
+            ? CARD_WIDTH
+            : (node?.scrollWidth ?? LABEL_MAX_WIDTH)
           : (node?.offsetHeight ?? CARD_FALLBACK_HEIGHT)) +
         GAP +
         VIEWPORT_MARGIN
@@ -343,7 +369,11 @@ function ChapterScrubber({
       let useAfter = wantsAfter
       if (useAfter && after < need && before >= need) useAfter = false
       if (!useAfter && before < need && after >= need) useAfter = true
+      if (before < need && after < need) useAfter = after >= before
       setFlipped(useAfter !== wantsAfter)
+      if (vertical) {
+        setRoom((useAfter ? after : before) - GAP - VIEWPORT_MARGIN)
+      }
     }
     measure()
     view.addEventListener("scroll", measure, true)
@@ -352,7 +382,7 @@ function ChapterScrubber({
       view.removeEventListener("scroll", measure, true)
       view.removeEventListener("resize", measure)
     }
-  }, [engaged, preferredSide, vertical, preview])
+  }, [engaged, preferredSide, vertical, preview, rawStrength])
 
   const opposite: Record<Side, Side> = {
     left: "right",
@@ -374,6 +404,18 @@ function ChapterScrubber({
   const previewScale = useTransform(strength, [0, 1], [0.97, 1])
   const drift = resolvedSide === "right" || resolvedSide === "bottom" ? -6 : 6
   const previewShift = useTransform(strength, [0, 1], [drift, 0])
+  // A horizontal rail's preview runs along it from the rail's start, so near
+  // either screen edge it is nudged back inside.
+  const alongShift = useTransform(previewOffset, (offset) => {
+    if (vertical || !anchor) return offset
+    const start = anchor.rect.left + offset
+    const end = start + previewWidth
+    if (end > anchor.width - VIEWPORT_MARGIN) {
+      return offset - (end - (anchor.width - VIEWPORT_MARGIN))
+    }
+    if (start < VIEWPORT_MARGIN) return offset + (VIEWPORT_MARGIN - start)
+    return offset
+  })
 
   const engageAt = (pointerRow: number, activeAt: number) => {
     rawPointer.set(pointerRow)
@@ -489,7 +531,6 @@ function ChapterScrubber({
         role="listbox"
         aria-label={label}
         aria-orientation={orientation}
-        aria-activedescendant={engaged ? optionId(activeIndex) : undefined}
         className={cn("flex", vertical ? "w-full flex-col" : "h-full flex-row")}
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
@@ -565,10 +606,12 @@ function ChapterScrubber({
                 // the rail and ease it in, as a transform on top.
                 ...(vertical
                   ? { y: previewOffset, x: previewShift }
-                  : { x: previewOffset, y: previewShift }),
+                  : { x: alongShift, y: previewShift }),
                 scale: previewScale,
                 opacity: strength,
-                ...(preview === "card" ? { width: CARD_WIDTH } : null),
+                ...(preview === "card"
+                  ? { width: Math.min(CARD_WIDTH, room) }
+                  : { maxWidth: Math.min(LABEL_MAX_WIDTH, room) }),
                 ...placement,
               }}
               className={cn(
@@ -581,7 +624,7 @@ function ChapterScrubber({
                 }[resolvedSide],
                 preview === "card"
                   ? "rounded-xl border border-border bg-popover p-3 text-popover-foreground shadow-md"
-                  : "w-max max-w-[220px] rounded-md border border-border bg-popover px-2 py-1 text-popover-foreground shadow-sm",
+                  : "w-max rounded-md border border-border bg-popover px-2 py-1 text-popover-foreground shadow-sm",
                 previewClassName
               )}
             >

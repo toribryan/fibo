@@ -19,6 +19,21 @@ describe("Reactions", () => {
     ).toBe("1.2K")
   })
 
+  it("shortens counts in the locale it's given", async () => {
+    const screen = await render(
+      <Reactions
+        particles={0}
+        locale="fr"
+        defaultReactions={[{ ...heart, count: 1234 }]}
+      />
+    )
+    const pill = screen.getByRole("button", { name: /^Heart/ })
+    expect(
+      pill.element().querySelector('[data-slot="reactions-pill-count"]')
+        ?.textContent
+    ).toMatch(/^1,2\sk$/)
+  })
+
   it("drops a reaction once nobody holds it", async () => {
     const screen = await render(
       <Reactions

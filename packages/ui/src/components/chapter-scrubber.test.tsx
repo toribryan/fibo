@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
+import { page } from "vitest/browser"
 import { render } from "vitest-browser-react"
 
 import { ChapterScrubber, type Chapter } from "./chapter-scrubber.js"
@@ -54,5 +55,57 @@ describe("ChapterScrubber", () => {
       />
     )
     expect(onActiveChange).toHaveBeenCalledOnce()
+  })
+
+  it("names the focused option by focus, not an active descendant", async () => {
+    const screen = await render(<ChapterScrubber chapters={chapters} />)
+    const option = screen.getByRole("option", { name: "Chapter 2" })
+    ;(option.element() as HTMLElement).focus()
+    await expect.element(option).toHaveFocus()
+    await expect
+      .element(screen.getByRole("listbox"))
+      .not.toHaveAttribute("aria-activedescendant")
+  })
+
+  it("narrows the card to stay on screen when neither side fits it", async () => {
+    await page.viewport(360, 640)
+    try {
+      const screen = await render(
+        <div style={{ paddingLeft: 170 }}>
+          <ChapterScrubber chapters={chapters} />
+        </div>
+      )
+      const option = screen.getByRole("option", { name: "Chapter 1" })
+      ;(option.element() as HTMLElement).focus()
+      const preview = () =>
+        document.querySelector<HTMLElement>(
+          '[data-slot="chapter-scrubber-preview"]'
+        )
+      await expect.poll(() => preview()?.style.width).not.toBe("248px")
+      const rect = preview()!.getBoundingClientRect()
+      expect(rect.left).toBeGreaterThanOrEqual(0)
+      expect(rect.right).toBeLessThanOrEqual(360)
+    } finally {
+      await page.viewport(414, 896)
+    }
+  })
+
+  it("lets go once the rail scrolls out of view", async () => {
+    const onActiveChange = vi.fn()
+    const screen = await render(
+      <div style={{ paddingBottom: 3000 }}>
+        <ChapterScrubber chapters={chapters} onActiveChange={onActiveChange} />
+      </div>
+    )
+    const option = screen.getByRole("option", { name: "Chapter 2" })
+    ;(option.element() as HTMLElement).focus()
+    await expect.poll(() => onActiveChange.mock.lastCall?.[1]).toBe(1)
+    window.scrollTo(0, 2000)
+    try {
+      await expect.poll(() => onActiveChange.mock.lastCall?.[1]).toBe(-1)
+      await expect.element(option).not.toHaveFocus()
+    } finally {
+      window.scrollTo(0, 0)
+    }
   })
 })
