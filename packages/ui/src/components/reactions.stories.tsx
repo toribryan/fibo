@@ -28,7 +28,7 @@ const pinned = {
 }
 
 const meta: Meta<typeof Reactions> = {
-  title: "Special components/Feedback/Reactions",
+  title: "Special components/Reactions",
   component: Reactions,
   parameters: {
     // Data and callbacks stay in the props table; the playground shows the

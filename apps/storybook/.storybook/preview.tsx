@@ -60,12 +60,12 @@ const preview: Preview = {
           "Design skills",
           "Foundations",
           ["Colors", "Typography"],
-          // Groups in the order the Catalog page shows them. Parts in a group
-          // keep the stories' import order, which is alphabetical by file.
+          // Base groups in the order the Catalog page shows them. Parts keep
+          // the stories' import order, which is alphabetical by file, and
+          // special parts sit straight under their shelf.
           "Base components",
           ["Actions", "Forms", "Display", "Navigation", "Overlays", "Feedback"],
           "Special components",
-          ["Diagrams", "Navigation", "Forms", "Display", "Feedback"],
         ],
       },
     },

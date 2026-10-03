@@ -67,10 +67,11 @@ has the same history with links into the docs.
 
 ### Changed
 
-- Storybook groups parts by what they do: titles are
-  `<Shelf>/<Group>/<Name>`, and docs live at
-  `/?path=/docs/<tier>-<group>-<name>--docs`. Links without a group still
-  open the right page.
+- Storybook groups base parts by what they do: their titles are
+  `Base components/<Group>/<Name>`, and their docs live at
+  `/?path=/docs/base-components-<group>-<name>--docs`. Special parts stay
+  straight under their shelf. Links without a group still open the right
+  page.
 - **Breaking:** Reactions' `variant` prop is now `type` (`inline` or
   `floating`), and its root carries `data-type` instead of `data-variant`,
   matching the Figma property.

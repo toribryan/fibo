@@ -30,8 +30,9 @@ const packageName = (spec) =>
     : spec.split("/")[0]
 
 // Storybook is the site, so a component's docs page is a path off the root.
+// Base parts sit in a group in Storybook's sidebar; special parts don't.
 const docsUrl = (name, info) =>
-  `${homepage}/?path=/docs/${info.tier}-${info.group.toLowerCase()}-${name}--docs`
+  `${homepage}/?path=/docs/${info.tier}-${info.tier === "base-components" ? `${info.group.toLowerCase()}-` : ""}${name}--docs`
 
 const codemodsDir = path.join(registryDir, "codemods")
 const codemodUrl = (name) => `${homepage}/codemods/${name}.js`

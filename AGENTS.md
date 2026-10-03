@@ -110,10 +110,11 @@ or a component's variants.
 - **Two shelves.** Standard parts are titled `Base components/<Group>/<Name>`
   and depend on nothing beyond Base UI, `class-variance-authority` and
   `lucide-react`. Playful, specific parts are titled
-  `Special components/<Group>/<Name>` and may use `motion`. The group is the
-  part's `group` in `components.meta.json`; the sidebar shows each shelf as a
-  heading with its groups as folders, in the order `storySort` sets in
-  `preview.tsx`, which matches the Catalog page.
+  `Special components/<Name>` and may use `motion`. A base part's group is its
+  `group` in `components.meta.json`; the sidebar shows each shelf as a
+  heading, base parts in their groups as folders, in the order `storySort`
+  sets in `preview.tsx`, which matches the Catalog page. Special parts sit
+  straight under their heading.
 - **Tokens.** Semantic tokens only in components (`bg-primary`,
   `text-muted-foreground`). Primitive ramps (`neutral-*`, `red-*`, `green-*`,
   `amber-*`, `blue-*`) belong in `globals.css`. There is no brand hue:
@@ -161,7 +162,8 @@ the registry is built.
 The site is static. `vercel.json` runs `pnpm build:site`, which puts the
 built Storybook at the root of `dist/` with the registry at `dist/r/` and
 `llms.txt` beside it. So fibo.toribryan.com opens on Storybook, a component's
-docs live at `/?path=/docs/<tier>-<group>-<name>--docs`, and installs resolve
+docs live at `/?path=/docs/base-components-<group>-<name>--docs` or
+`/?path=/docs/special-components-<name>--docs`, and installs resolve
 `/r/<name>.json`. Nothing that needs a server at request time will work there.
 
 `pnpm 21st:export` writes a copy of each Special component that has a demo in
