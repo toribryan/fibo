@@ -165,6 +165,9 @@ describe("DataTable", () => {
     expect(onValueChange).toHaveBeenLastCalledWith(
       new Set(["maya", "priya", "sam"])
     )
+    await expect
+      .element(screen.getByRole("status"))
+      .toHaveTextContent("3 members selected, on this page only")
   })
 
   it("keeps a controlled selection until the parent changes it", async () => {
@@ -176,6 +179,34 @@ describe("DataTable", () => {
     await maya.click()
     expect(onValueChange).toHaveBeenLastCalledWith(new Set(["maya"]))
     await expect.element(maya).toHaveAttribute("aria-checked", "false")
+    // Nothing changed, so nothing is announced.
+    await expect.element(screen.getByRole("status")).toHaveTextContent("")
+  })
+
+  it("names a row's checkbox with label when no cell names it", async () => {
+    const screen = await render(
+      <DataTable aria-label="Reports" rowIds={["weekly", "monthly"]}>
+        <DataTableContent>
+          <DataTableHeader>
+            <DataTableHead>Updated</DataTableHead>
+          </DataTableHeader>
+          <DataTableBody>
+            <DataTableRow id="weekly" label="Weekly report">
+              <DataTableCell>Monday</DataTableCell>
+            </DataTableRow>
+            <DataTableRow id="monthly" label="Ignored">
+              <DataTableCell type="primary">Monthly report</DataTableCell>
+            </DataTableRow>
+          </DataTableBody>
+        </DataTableContent>
+      </DataTable>
+    )
+    await expect
+      .element(screen.getByRole("checkbox", { name: "Select Weekly report" }))
+      .toBeInTheDocument()
+    await expect
+      .element(screen.getByRole("checkbox", { name: "Select Monthly report" }))
+      .toBeInTheDocument()
   })
 
   it("disables select all when every row is locked", async () => {

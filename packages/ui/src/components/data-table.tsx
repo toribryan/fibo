@@ -199,25 +199,38 @@ function DataTable({
       if (next !== "all" && next.size === 0 && showSelectedOnly) {
         onShowSelectedOnlyChange?.(false)
       }
+    },
+    [valueProp, onValueChange, showSelectedOnly, onShowSelectedOnlyChange]
+  )
+
+  // Announced from the value that lands rather than the one asked for, so a
+  // parent that turns a change down isn't contradicted.
+  const announce = React.useEffectEvent(
+    (next: DataTableSelection, previous: DataTableSelection) => {
       if (next === "all") {
         setAnnouncement(`All ${countLabel(matching, noun)} selected`)
-      } else if (next.size === 0) {
-        setAnnouncement("Selection cleared")
-      } else {
-        const selected = [...next].filter((id) => !locked.has(id)).length
-        setAnnouncement(`${countLabel(selected, noun)} selected`)
+        return
       }
-    },
-    [
-      valueProp,
-      onValueChange,
-      matching,
-      locked,
-      noun,
-      showSelectedOnly,
-      onShowSelectedOnlyChange,
-    ]
+      if (next.size === 0) {
+        setAnnouncement("Selection cleared")
+        return
+      }
+      const selected = [...next].filter((id) => !locked.has(id)).length
+      // Leaving "all" keeps only this page's rows, which would otherwise go
+      // unsaid while the count drops from every match to a handful.
+      const narrowed = previous === "all" && matching > selectable.length
+      setAnnouncement(
+        `${countLabel(selected, noun)} selected${narrowed ? ", on this page only" : ""}`
+      )
+    }
   )
+  const previousValue = React.useRef(value)
+  React.useEffect(() => {
+    const previous = previousValue.current
+    if (previous === value) return
+    previousValue.current = value
+    announce(value, previous)
+  }, [value])
 
   // Leaving "all" for a set keeps everything on this page but the change;
   // rows on other pages can't be listed without their ids.
@@ -976,12 +989,15 @@ function DataTableBody(props: React.ComponentProps<typeof TableBody>) {
 function DataTableRow({
   className,
   id,
+  label,
   lockedReason,
   children,
   ...props
 }: Omit<React.ComponentProps<typeof TableRow>, "id"> & {
   /** The row's id, the same one it has in rowIds and the selection. */
   id: string
+  /** Names the row's checkbox when no primary or person cell does. */
+  label?: string
   /** Why the row can't be selected. Setting it locks the row. */
   lockedReason?: React.ReactNode
 }) {
@@ -997,13 +1013,17 @@ function DataTableRow({
     [id, locked, registerLocked]
   )
 
-  // The first primary or person cell names the row's checkbox. Only one
-  // element can carry the id, so the row hands it out after render.
+  // The first primary or person cell names the row's checkbox, or `label`
+  // when there's none. Only one element can carry the id, so the row hands
+  // it out after render.
   const rowRef = React.useRef<HTMLTableRowElement>(null)
+  const fallbackRef = React.useRef<HTMLSpanElement>(null)
   React.useLayoutEffect(() => {
-    const name = rowRef.current?.querySelector("[data-row-name]")
-    if (name && name.id !== labelId) name.id = labelId
-  }, [children, labelId])
+    const cell = rowRef.current?.querySelector("[data-row-name]")
+    const fallback = fallbackRef.current
+    if (fallback) fallback.id = cell ? "" : labelId
+    if (cell && cell.id !== labelId) cell.id = labelId
+  }, [children, label, labelId])
 
   const row = React.useMemo(
     () => ({ id, labelId, reasonId, lockedReason }),
@@ -1040,6 +1060,11 @@ function DataTableRow({
           <span id={selectId} hidden>
             Select
           </span>
+          {label ? (
+            <span ref={fallbackRef} hidden>
+              {label}
+            </span>
+          ) : null}
           {locked ? (
             <span id={reasonId} hidden>
               {lockedReason}
