@@ -16,7 +16,19 @@ const meta: Meta<typeof Checkbox> = {
 export default meta
 type Story = StoryObj<typeof Checkbox>
 
-export const Default: Story = {}
+export const Default: Story = {
+  play: async ({ canvas, userEvent }) => {
+    const box = canvas.getByRole("checkbox", {
+      name: "Accept terms and conditions",
+    })
+    await expect(box).not.toBeChecked()
+    await userEvent.click(box)
+    await expect(box).toBeChecked()
+    await expect(box).toHaveFocus()
+    await userEvent.keyboard(" ")
+    await expect(box).not.toBeChecked()
+  },
+}
 
 export const Checked: Story = {
   args: {

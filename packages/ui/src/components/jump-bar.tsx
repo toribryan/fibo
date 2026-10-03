@@ -185,8 +185,22 @@ function useAtBottom(element: HTMLElement | null, threshold = 150) {
       const resize = new ResizeObserver(notify)
       resize.observe(element)
       for (const child of element.children) resize.observe(child)
+      // Messages appended later are new children, which need watching too.
+      const mutations = new MutationObserver((records) => {
+        for (const record of records) {
+          for (const node of record.addedNodes) {
+            if (node instanceof Element) resize.observe(node)
+          }
+          for (const node of record.removedNodes) {
+            if (node instanceof Element) resize.unobserve(node)
+          }
+        }
+        notify()
+      })
+      mutations.observe(element, { childList: true })
       return () => {
         element.removeEventListener("scroll", notify)
+        mutations.disconnect()
         resize.disconnect()
       }
     },
