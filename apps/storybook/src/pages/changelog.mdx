@@ -8,6 +8,26 @@ Notable changes, newest first.
 
 ## October 2026
 
+- **Voice memo** keeps the transcript when `lang` changes mid-recording, and
+  says "Couldn't copy" when the clipboard turns the copy down.
+- **Chapter scrubber** fits its preview to the screen: where neither side has
+  room, as on a phone, it opens on the roomier side and narrows to fit, and it
+  closes once the rail scrolls out of view. Its options take focus themselves,
+  so the listbox no longer points at them with `aria-activedescendant`.
+- **Reactions** takes a `locale` for its shortened counts, English by
+  default, so the server and the browser write the same text.
+- **Command menu** reads stored recents after it mounts, so hydration
+  matches, and takes `modal`: `false` opens it without locking the page's
+  scroll or moving focus, for a menu inside a card or a cover.
+- **Token flow** takes `orientation`, and `vertical` stacks the tiers at
+  every width.
+- **Data table** rows take a `label` for their checkbox when no primary or
+  person cell names them. Selection is announced once it lands, so a change a
+  controlled parent turns down isn't, and unticking a row while every match is
+  selected says the selection is now this page only.
+- The data attributes tables for **Voice memo**, **Map pin**, **Command
+  menu**, **Reactions** and **Sticker avatar** list every `data-slot`.
+
 - **Voice memo** starts and ends a session however `recording` changes, so
   `defaultRecording` and a parent's own stop now date the memo and call
   `onComplete`. A microphone error switches the device off, and closing the
