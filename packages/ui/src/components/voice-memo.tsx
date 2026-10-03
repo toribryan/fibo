@@ -580,6 +580,7 @@ function Device({
     shade: `${id}-shade`,
     sheen: `${id}-sheen`,
     clip: `${id}-clip`,
+    edges: `${id}-edges`,
   }
   const { width, height, radius } = DEVICE
 
@@ -631,8 +632,7 @@ function Device({
               <feComposite in="SourceGraphic" operator="in" />
             </filter>
           ))}
-          {/* Lit from the top left. In user space, so the wordmark picks up
-              the same shading as the face it's raised from. */}
+          {/* Lit from the top left. */}
           <linearGradient
             id={ids.shade}
             gradientUnits="userSpaceOnUse"
@@ -674,6 +674,65 @@ function Device({
               style={{ stopColor: "var(--color-background)", stopOpacity: 0 }}
             />
           </linearGradient>
+          {/* The rim of raised lettering lit from the top left: a bright
+              line along the edges facing the light, where the shape shifted
+              away from it leaves them uncovered, a hard shadow along the far
+              edges and a soft one cast beyond them. */}
+          <filter
+            id={ids.edges}
+            x="-5%"
+            y="-20%"
+            width="110%"
+            height="140%"
+            colorInterpolationFilters="sRGB"
+          >
+            <feOffset in="SourceAlpha" dx="0.7" dy="0.8" result="down" />
+            <feComposite
+              in="SourceAlpha"
+              in2="down"
+              operator="out"
+              result="top"
+            />
+            <feComposite
+              in="down"
+              in2="SourceAlpha"
+              operator="out"
+              result="under"
+            />
+            <feFlood
+              style={{
+                floodColor: "var(--color-background)",
+                floodOpacity: 0.85,
+              }}
+            />
+            <feComposite in2="top" operator="in" result="lit" />
+            <feFlood
+              style={{
+                floodColor: "var(--color-foreground)",
+                floodOpacity: 0.3,
+              }}
+            />
+            <feComposite in2="under" operator="in" result="shade" />
+            <feGaussianBlur in="down" stdDeviation="0.9" result="soft" />
+            <feComposite
+              in="soft"
+              in2="SourceAlpha"
+              operator="out"
+              result="cast"
+            />
+            <feFlood
+              style={{
+                floodColor: "var(--color-foreground)",
+                floodOpacity: 0.12,
+              }}
+            />
+            <feComposite in2="cast" operator="in" result="glow" />
+            <feMerge>
+              <feMergeNode in="glow" />
+              <feMergeNode in="shade" />
+              <feMergeNode in="lit" />
+            </feMerge>
+          </filter>
           <clipPath id={ids.clip}>
             <rect width={width} height={height} rx={radius} />
           </clipPath>
@@ -702,28 +761,6 @@ function Device({
           rx={radius}
           fill={`url(#${ids.shade})`}
         />
-        {/* Raised lettering: a lit edge above, a shadow below, and the face
-            itself in the body's own shading. Drawn before the grey and the
-            grain, which cover it like the rest of the metal. */}
-        <g fontSize={50} className="font-serif">
-          {[
-            { dy: -0.9, className: "fill-background opacity-90" },
-            { dy: 0.9, className: "fill-foreground opacity-25" },
-            { dy: 0, className: "fill-muted" },
-          ].map((layer) => (
-            <text
-              key={layer.dy}
-              x={14}
-              y={height - 16 + layer.dy}
-              className={layer.className}
-            >
-              {wordmark}
-            </text>
-          ))}
-          <text x={14} y={height - 16} fill={`url(#${ids.shade})`}>
-            {wordmark}
-          </text>
-        </g>
         {/* Anodised aluminium is a mid grey; the muted role alone is near
             white in the light theme. */}
         <rect
@@ -747,25 +784,19 @@ function Device({
           className="fill-background opacity-35"
         />
 
-        {/* The lettering's edges again, over the grain: speckle would
-            otherwise break up the only thing that says the letters are
-            raised. */}
-        <g fontSize={50} fill="none" strokeWidth={0.7} className="font-serif">
-          <text
-            x={14}
-            y={height - 16.5}
-            className="stroke-background opacity-80"
-          >
-            {wordmark}
-          </text>
-          <text
-            x={14}
-            y={height - 15.5}
-            className="stroke-foreground opacity-25"
-          >
-            {wordmark}
-          </text>
-        </g>
+        {/* Raised lettering, over the grain so speckle can't break up its
+            edges. A filter draws them from the word's merged shape, so where
+            letters overlap, as the f and i do, no edge shows inside the
+            join. */}
+        <text
+          x={14}
+          y={height - 16}
+          fontSize={50}
+          filter={`url(#${ids.edges})`}
+          className="font-serif"
+        >
+          {wordmark}
+        </text>
 
         {/* The reflection slides along as the device lifts, the way light
             moves across metal you tilt. */}
