@@ -29,12 +29,7 @@ const DEFAULT_CHOICES: Reaction[] = [
   { emoji: "\u{1F525}", label: "Fire" },
 ]
 
-const compact = new Intl.NumberFormat(undefined, {
-  notation: "compact",
-  maximumFractionDigits: 1,
-})
-
-function formatCount(count: number) {
+function formatCount(count: number, compact: Intl.NumberFormat) {
   return count < 1000 ? String(count) : compact.format(count)
 }
 
@@ -274,6 +269,8 @@ type ReactionsProps = Omit<React.ComponentProps<"div">, "onChange"> &
     triggerLabel?: string
     /** Accessible name of the group of choices. */
     panelLabel?: string
+    /** Locale for counts of a thousand and up. */
+    locale?: string
   }
 
 function Reactions({
@@ -289,6 +286,7 @@ function Reactions({
   particles = 7,
   triggerLabel = "Add reaction",
   panelLabel = "Pick a reaction",
+  locale = "en",
   "aria-label": ariaLabel = "Reactions",
   ...props
 }: ReactionsProps) {
@@ -302,6 +300,16 @@ function Reactions({
   const [pulse, setPulse] = React.useState<{ emoji: string; nonce: number }>()
   const [open, setOpen] = React.useState(false)
   const [announcement, setAnnouncement] = React.useState("")
+  // A fixed locale rather than the runtime's, so the server and the browser
+  // write the same count and hydration matches.
+  const compact = React.useMemo(
+    () =>
+      new Intl.NumberFormat(locale, {
+        notation: "compact",
+        maximumFractionDigits: 1,
+      }),
+    [locale]
+  )
 
   const isControlled = reactionsProp !== undefined
   const items = isControlled ? reactionsProp : uncontrolled
@@ -411,7 +419,7 @@ function Reactions({
       data-slot="reactions-badge"
       className="inline-flex h-8 min-w-6 shrink-0 items-center justify-center px-1.5 text-xs font-medium text-muted-foreground tabular-nums"
     >
-      <span aria-hidden="true">{formatCount(total)}</span>
+      <span aria-hidden="true">{formatCount(total, compact)}</span>
       <span className="sr-only">{describeCount(total)}</span>
     </span>
   )
@@ -479,7 +487,7 @@ function Reactions({
                 aria-hidden="true"
                 className="font-medium text-muted-foreground tabular-nums group-data-active/pill:text-primary"
               >
-                {formatCount(item.count ?? 0)}
+                {formatCount(item.count ?? 0, compact)}
               </span>
             )}
           </button>
