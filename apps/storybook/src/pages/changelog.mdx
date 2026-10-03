@@ -8,6 +8,21 @@ Notable changes, newest first.
 
 ## October 2026
 
+- **Voice memo** starts and ends a session however `recording` changes, so
+  `defaultRecording` and a parent's own stop now date the memo and call
+  `onComplete`. A microphone error switches the device off, and closing the
+  transcript hands focus back to the device.
+- **Select** no longer animates its popup under reduced motion.
+- **Data table** keeps its callbacks stable across renders, so rows re-render
+  less, and no longer pulls focus back in after you've left it.
+- **Filter menu** scrolls only its list to the highlighted row, never the
+  page.
+- **Chapter scrubber** calls `onActiveChange` only when the active chapter
+  changes.
+- **Jump bar** notices messages added after it mounts.
+- **Floating nav** re-measures its labels when they or its size change, and a
+  hidden bar no longer catches taps.
+
 - **Voice memo** tidies what the browser hears. Each settled phrase drops
   filler sounds and words said twice, capitalises "I" and each sentence, and
   ends with a full stop, or a question mark when it opens like a question.

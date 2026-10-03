@@ -107,7 +107,7 @@ describe("jumpTo", () => {
   })
 })
 
-function Probe() {
+function Probe({ content = 1000 }: { content?: number }) {
   const [box, setBox] = useState<HTMLDivElement | null>(null)
   const atBottom = useAtBottom(box, 50)
   return (
@@ -115,9 +115,11 @@ function Probe() {
       <div
         ref={setBox}
         data-testid="box"
-        style={{ height: 100, overflow: "auto" }}
+        // A stable gutter, so a scrollbar appearing doesn't resize the box
+        // and stand in for the content being watched.
+        style={{ height: 100, overflow: "auto", scrollbarGutter: "stable" }}
       >
-        <div style={{ height: 1000 }} />
+        <div style={{ height: content }} />
       </div>
       <output>{atBottom ? "bottom" : "away"}</output>
     </>
@@ -131,5 +133,17 @@ describe("useAtBottom", () => {
     await expect.element(screen.getByText("away")).toBeInTheDocument()
     box.scrollTop = box.scrollHeight
     await expect.element(screen.getByText("bottom")).toBeInTheDocument()
+  })
+
+  it("notices content appended after it subscribed", async () => {
+    const screen = await render(<Probe content={10} />)
+    const box = screen.getByTestId("box").element() as HTMLElement
+    await expect.element(screen.getByText("bottom")).toBeInTheDocument()
+    // Past the effects, so the hook has subscribed before the content lands.
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    const message = document.createElement("div")
+    message.style.height = "1000px"
+    box.append(message)
+    await expect.element(screen.getByText("away")).toBeInTheDocument()
   })
 })
