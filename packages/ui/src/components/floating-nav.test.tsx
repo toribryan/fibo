@@ -58,8 +58,33 @@ describe("FloatingNav", () => {
     const nav = screen.getByRole("navigation")
     await scrollTo(400)
     await expect.element(nav).toHaveAttribute("data-hidden")
+    const list = screen.getByRole("list").element()
+    expect(getComputedStyle(list).pointerEvents).toBe("none")
     screen.getByRole("link", { name: "Saved" }).element().focus()
     await expect.element(nav).not.toHaveAttribute("data-hidden")
+    expect(getComputedStyle(list).pointerEvents).toBe("auto")
+  })
+
+  it("measures the current label again when it changes", async () => {
+    const withIcons = (home: string) =>
+      [
+        { value: "home", label: home, icon: <svg />, href: "#home" },
+        { value: "saved", label: "Saved", icon: <svg />, href: "#saved" },
+      ] satisfies FloatingNavItem[]
+    const screen = await render(
+      <FloatingNav items={withIcons("Home")} value="home" />
+    )
+    // Past the measure that waits for fonts, which would otherwise catch
+    // the new label by chance.
+    await document.fonts.ready
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    await screen.rerender(
+      <FloatingNav items={withIcons("Home and everything")} value="home" />
+    )
+    const label = screen.getByText("Home and everything").element()
+    await expect
+      .poll(() => label.getBoundingClientRect().width)
+      .toBeGreaterThanOrEqual(label.scrollWidth)
   })
 
   it("never hides without hideOnScroll", async () => {

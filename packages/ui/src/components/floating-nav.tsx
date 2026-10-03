@@ -113,9 +113,10 @@ function useHiddenOnScroll(enabled: boolean) {
  * into. Motion would measure "auto" on screen instead, which inside a zoomed
  * or scaled parent comes out in the wrong units, so the label ends a few
  * pixels short and snaps. scrollWidth isn't scaled. Measured again once web
- * fonts load, since they change the width.
+ * fonts load, since they change the width, and whenever `key` changes: the
+ * labels, their number or the size they're set in.
  */
-function useLabelWidths(count: number, enabled: boolean) {
+function useLabelWidths(key: string, enabled: boolean) {
   const labels = React.useRef<(HTMLSpanElement | null)[]>([])
   const [widths, setWidths] = React.useState<number[]>([])
 
@@ -134,7 +135,7 @@ function useLabelWidths(count: number, enabled: boolean) {
     return () => {
       cancelled = true
     }
-  }, [count, enabled])
+  }, [key, enabled])
 
   return [labels, widths] as const
 }
@@ -160,7 +161,7 @@ function FloatingNav({
   const indicatorId = React.useId()
   const transition = reduceMotion ? { duration: 0 } : SPRING
   const [labelRefs, labelWidths] = useLabelWidths(
-    items.length,
+    [size, ...items.map((item) => item.label)].join("\n"),
     labels !== "always"
   )
 
@@ -194,7 +195,10 @@ function FloatingNav({
         transition={transition}
         className={cn(
           "pointer-events-auto flex max-w-full [scrollbar-width:none] items-center overflow-x-auto rounded-full border border-border bg-popover-overlay shadow-lg backdrop-blur-md",
-          size === "sm" ? "gap-0.5 p-1" : "gap-1 p-1.5"
+          size === "sm" ? "gap-0.5 p-1" : "gap-1 p-1.5",
+          // Out of sight, it mustn't catch taps meant for the page beneath.
+          // Its items stay focusable, so tabbing in still brings it back.
+          hidden && "pointer-events-none"
         )}
       >
         {items.map((item, index) => {
