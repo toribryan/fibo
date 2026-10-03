@@ -207,6 +207,35 @@ the edge to be cut; without them the sticker falls back to round.
       ),
     },
     {
+      attribute: 'data-slot="sticker-avatar-image"',
+      element: "The photo",
+      when: "Once the cutout's edge is drawn, or on a round sticker.",
+    },
+    {
+      attribute: 'data-slot="sticker-avatar-fallback"',
+      element: "The initials",
+      when: "On an initials sticker.",
+    },
+    {
+      attribute: 'data-slot="sticker-avatar-status"',
+      element: "The status sticker",
+      when: (
+        <>
+          With <code>status</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="sticker-avatar-group"',
+      element: "StickerAvatarGroup's root",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="sticker-avatar-count"',
+      element: "StickerAvatarCount's root",
+      when: "Always.",
+    },
+    {
       attribute: "--sticker-edge",
       element: "Any ancestor, or the root",
       when: "Overrides the paper colour. Read when the edge is drawn.",

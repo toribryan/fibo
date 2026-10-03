@@ -268,6 +268,51 @@ a portal on the body, so style it with `previewClassName`.
       element: "The pin",
       when: "Its preview is open.",
     },
+    {
+      attribute: 'data-slot="map-pin-image"',
+      element: "The preview's image",
+      when: (
+        <>
+          With <code>image</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="map-pin-meta"',
+      element: "The preview's meta line",
+      when: (
+        <>
+          With <code>meta</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="map-pin-title"',
+      element: "The preview's title",
+      when: (
+        <>
+          With <code>title</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="map-pin-description"',
+      element: "The preview's description",
+      when: (
+        <>
+          With <code>description</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="map-pin-content"',
+      element: "The preview's extra content",
+      when: (
+        <>
+          With <code>children</code>.
+        </>
+      ),
+    },
   ]}
 />
 

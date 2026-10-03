@@ -262,6 +262,59 @@ The particles fly in one fixed layer, `reactions-particles`, added to
         </>
       ),
     },
+    {
+      attribute: 'data-slot="reactions-pill"',
+      element: "Each pill",
+      when: "Inline only.",
+    },
+    {
+      attribute: 'data-slot="reactions-pill-emoji"',
+      element: "A pill's emoji",
+      when: "Inline only.",
+    },
+    {
+      attribute: 'data-slot="reactions-pill-count"',
+      element: "A pill's count",
+      when: (
+        <>
+          Inline only, while <code>showCounts</code> is on.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="reactions-picker"',
+      element: "The trigger and panel's wrapper",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="reactions-trigger"',
+      element: "The trigger",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="reactions-badge"',
+      element: "The total count",
+      when: (
+        <>
+          Floating only, while <code>showCounts</code> is on.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="reactions-panel"',
+      element: "The panel",
+      when: "While open. Portalled to the body.",
+    },
+    {
+      attribute: 'data-slot="reactions-choice"',
+      element: "Each choice",
+      when: "While the panel is open.",
+    },
+    {
+      attribute: 'data-slot="reactions-particles"',
+      element: "The particle layer",
+      when: "On the body, from the first burst.",
+    },
   ]}
 />
 
