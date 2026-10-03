@@ -30,6 +30,8 @@ stays, ready to copy or download as a Markdown file.
   how long, then a paragraph per phrase led by its timestamp.
 - Uses the browser's own speech recognition, with nothing to install, or
   shows text from your own service through `transcript` and `interim`.
+- Tidies what the browser hears: fillers and doubled words dropped, "I" and
+  each sentence capitalised, a full stop or question mark at the end.
 - Aluminium drawn in fibo's tokens, silver in the light theme and space
   grey in the dark, that lifts on hover and presses in on a click.
 
@@ -42,6 +44,7 @@ stays, ready to copy or download as a Markdown file.
     "voiceMemoVariants",
     "formatElapsed",
     "transcriptToMarkdown",
+    "tidyPhrase",
     "type VoiceMemoProps",
     "type VoiceMemoResult",
     "type VoiceMemoSegment",
@@ -155,6 +158,10 @@ recogniser stays off:
   interim={partial}
 />
 ```
+
+Text from your own service is shown as you pass it. To give it the same
+light grammar as the browser's, run each settled phrase through
+`tidyPhrase` first.
 
 Browser recognition works in Chrome, Edge and Safari, and sends audio to the
 browser maker's servers to transcribe. Where it isn't available, or for
