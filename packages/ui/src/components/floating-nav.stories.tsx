@@ -47,7 +47,7 @@ function Feed() {
 }
 
 const meta: Meta<typeof FloatingNav> = {
-  title: "Special components/Navigation/Floating nav",
+  title: "Special components/Floating nav",
   component: FloatingNav,
   parameters: {
     layout: "centered",

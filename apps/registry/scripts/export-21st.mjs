@@ -56,8 +56,9 @@ const packageName = (spec) =>
     ? spec.split("/").slice(0, 2).join("/")
     : spec.split("/")[0]
 
+// Base parts sit in a group in Storybook's sidebar; special parts don't.
 const docsUrl = (name, info) =>
-  `${homepage}/?path=/docs/${info.tier}-${info.group.toLowerCase()}-${name}--docs`
+  `${homepage}/?path=/docs/${info.tier}-${info.tier === "base-components" ? `${info.group.toLowerCase()}-` : ""}${name}--docs`
 
 function mapRoles(code, file) {
   const mapped = roles.reduce(
