@@ -199,4 +199,34 @@ describe("FilterMenu", () => {
       )
       .toBeInTheDocument()
   })
+
+  it("scrolls the list, not the page, to the highlighted row", async () => {
+    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView")
+    const many: FilterField[] = [
+      {
+        id: "owner",
+        label: "Owner",
+        options: Array.from({ length: 30 }, (_, i) => ({
+          value: `person-${i}`,
+          label: `Person ${i + 1}`,
+        })),
+      },
+    ]
+    try {
+      const screen = await openMenu(<FilterMenu fields={many} />)
+      await userEvent.click(screen.getByRole("option", { name: /^Owner/ }))
+      const list = page.getByRole("listbox").element() as HTMLElement
+      await userEvent.keyboard("{End}")
+      await expect.poll(() => list.scrollTop).toBeGreaterThan(0)
+      const row = page
+        .getByRole("option", { name: "Person 30" })
+        .element()
+        .getBoundingClientRect()
+      const bounds = list.getBoundingClientRect()
+      expect(row.bottom).toBeLessThanOrEqual(bounds.bottom + 1)
+      expect(scrollIntoView).not.toHaveBeenCalled()
+    } finally {
+      scrollIntoView.mockRestore()
+    }
+  })
 })
