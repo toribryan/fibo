@@ -98,6 +98,8 @@ type DataTableRowContextValue = {
 const DataTableRowContext =
   React.createContext<DataTableRowContextValue | null>(null)
 
+const DEFAULT_NOUN: DataTableNoun = { one: "row", other: "rows" }
+
 function countLabel(count: number, noun: DataTableNoun) {
   return `${count.toLocaleString("en-US")} ${count === 1 ? noun.one : noun.other}`
 }
@@ -137,7 +139,7 @@ function DataTable({
   className,
   rowIds,
   totalCount,
-  noun = { one: "row", other: "rows" },
+  noun: nounProp = DEFAULT_NOUN,
   value: valueProp,
   defaultValue,
   onValueChange,
@@ -156,6 +158,11 @@ function DataTable({
   const anchorRef = React.useRef<string | null>(null)
   const rootRef = React.useRef<HTMLDivElement>(null)
   const total = totalCount ?? rowIds.length
+  // Keyed on the words, so a noun written inline keeps the callbacks and
+  // context below stable from one render to the next.
+  const { one, other } = nounProp
+  const noun = React.useMemo(() => ({ one, other }), [one, other])
+  const onPage = React.useMemo(() => new Set(rowIds), [rowIds])
 
   const selectable = React.useMemo(
     () => rowIds.filter((id) => !locked.has(id)),
@@ -175,7 +182,7 @@ function DataTable({
     value === "all"
       ? matching
       : rowIds.filter((id) => value.has(id) && !locked.has(id)).length +
-        [...value].filter((id) => !rowIds.includes(id)).length
+        [...value].filter((id) => !onPage.has(id)).length
 
   const selectedOnPage = selectable.filter(isSelected).length
   const pageState =
@@ -307,6 +314,9 @@ function DataTable({
   // hidden by Show selected only, a More menu whose trigger is gone), focus
   // would fall to the page. Send it to Clear, or to select all when idle.
   const lastFocusedRef = React.useRef<Element | null>(null)
+  // Set while focus is leaving, until it turns up again somewhere in the
+  // table, popups and menus it renders in portals included.
+  const leavingRef = React.useRef(false)
   React.useEffect(() => {
     const root = rootRef.current
     if (!root) return
@@ -317,6 +327,7 @@ function DataTable({
     return () => root.removeEventListener("focusin", onFocusIn)
   }, [])
   React.useLayoutEffect(() => {
+    if (!lastFocusedRef.current) return
     const restore = () => {
       const root = rootRef.current
       const last = lastFocusedRef.current
@@ -344,6 +355,33 @@ function DataTable({
     const frame = requestAnimationFrame(restore)
     return () => cancelAnimationFrame(frame)
   })
+
+  // Once someone has left the table, a later refresh must not pull focus
+  // back into it. React's focus events, unlike the DOM's, bubble out of the
+  // portals the table's menus render in, so moving into one isn't leaving.
+  const onFocus = (event: React.FocusEvent<HTMLDivElement>) => {
+    leavingRef.current = false
+    props.onFocus?.(event)
+  }
+  const onBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    leavingRef.current = true
+    props.onBlur?.(event)
+    queueMicrotask(() => {
+      if (!leavingRef.current) return
+      const active = document.activeElement
+      if (active && active !== document.body) {
+        lastFocusedRef.current = null
+        return
+      }
+      // Focus fell to the page, which is also how a closing menu leaves it
+      // for a frame before handing it back; wait to see where it lands.
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          if (leavingRef.current) lastFocusedRef.current = null
+        })
+      )
+    })
+  }
 
   const context = React.useMemo<DataTableContextValue>(
     () => ({
@@ -404,6 +442,8 @@ function DataTable({
           className
         )}
         {...props}
+        onFocus={onFocus}
+        onBlur={onBlur}
       >
         {children}
         <span role="status" className="sr-only">
@@ -963,7 +1003,7 @@ function DataTableRow({
   React.useLayoutEffect(() => {
     const name = rowRef.current?.querySelector("[data-row-name]")
     if (name && name.id !== labelId) name.id = labelId
-  })
+  }, [children, labelId])
 
   const row = React.useMemo(
     () => ({ id, labelId, reasonId, lockedReason }),

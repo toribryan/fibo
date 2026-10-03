@@ -32,20 +32,22 @@ function Example(props: {
   defaultValue?: DataTableSelection
   onValueChange?: (value: DataTableSelection) => void
   totalCount?: number
+  members?: typeof MEMBERS
 }) {
+  const { members = MEMBERS, ...rest } = props
   return (
     <DataTable
       aria-label="Members"
-      rowIds={MEMBERS.map((member) => member.id)}
+      rowIds={members.map((member) => member.id)}
       noun={{ one: "member", other: "members" }}
-      {...props}
+      {...rest}
     >
       <DataTableContent>
         <DataTableHeader>
           <DataTableHead type="primary">Member</DataTableHead>
         </DataTableHeader>
         <DataTableBody>
-          {MEMBERS.map((member) => (
+          {members.map((member) => (
             <DataTableRow
               key={member.id}
               id={member.id}
@@ -231,5 +233,36 @@ describe("DataTable", () => {
       .toBeInTheDocument()
     const named = screen.container.querySelectorAll("[data-row-name][id]")
     expect(named).toHaveLength(1)
+  })
+
+  it("moves focus on when the focused row goes", async () => {
+    const screen = await render(<Example />)
+    screen
+      .getByRole("checkbox", { name: "Select Maya Okafor" })
+      .element()
+      .focus()
+    await screen.rerender(<Example members={MEMBERS.slice(1)} />)
+    await expect
+      .element(
+        screen.getByRole("checkbox", {
+          name: "Select all members on this page",
+        })
+      )
+      .toHaveFocus()
+  })
+
+  it("doesn't pull focus back once someone has left the table", async () => {
+    // Long enough for the frames a closing menu is given to hand focus back.
+    const frames = () => new Promise((resolve) => setTimeout(resolve, 100))
+    const screen = await render(<Example />)
+    const box = screen
+      .getByRole("checkbox", { name: "Select Maya Okafor" })
+      .element() as HTMLElement
+    box.focus()
+    box.blur()
+    await frames()
+    await screen.rerender(<Example members={MEMBERS.slice(1)} />)
+    await frames()
+    expect(document.activeElement).toBe(document.body)
   })
 })
