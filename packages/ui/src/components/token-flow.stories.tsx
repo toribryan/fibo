@@ -37,10 +37,15 @@ const meta: Meta<typeof TokenFlow> = {
       description: "Pins the theme. Leave unset to follow the toolbar.",
     },
     showUse: { control: "boolean" },
+    orientation: {
+      control: "inline-radio",
+      options: ["horizontal", "vertical"],
+    },
   },
   args: {
     rows,
     showUse: false,
+    orientation: "horizontal",
   },
 }
 
@@ -60,6 +65,13 @@ export const SingleRow: Story = {
   name: "Single row",
   args: {
     rows: rows.slice(0, 1),
+    showUse: true,
+  },
+}
+
+export const Vertical: Story = {
+  args: {
+    orientation: "vertical",
     showUse: true,
   },
 }
