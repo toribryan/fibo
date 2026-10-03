@@ -86,6 +86,14 @@ shortcut.
 
 <Canvas of={Stories.Controlled} />
 
+### Non-modal
+
+`modal={false}` opens the menu without trapping focus, locking the page's
+scroll or moving focus into it, and opening a page leaves focus where it is.
+Use it for a menu shown inside a card or a cover rather than over the page.
+
+<Canvas of={Stories.NonModal} />
+
 ## Usage
 
 ```tsx
@@ -354,6 +362,11 @@ document, so two menus with the same `hotkey` would both open.
 <UsageGuidelines
   guidelines={[
     "It's a modal dialog named by label. Focus moves to the search box when it opens, stays inside while it's open, and returns to the trigger when it closes.",
+    <>
+      With <code>modal</code> set to <code>false</code> it doesn't trap or move
+      focus, so keep it for a menu that's part of the page, such as a demo in a
+      card, where people choose to reach into it.
+    </>,
     "The search box is a combobox that points at the highlighted command with aria-activedescendant, so screen readers read each one as the arrows move.",
     "On a page, the search box is named after it, such as Command menu, Change theme, and the back button says where it goes. Items that open a page say so.",
     "Escape steps back one level at a time: it clears the search, then leaves the page, then closes the menu without running anything.",
