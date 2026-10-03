@@ -228,12 +228,16 @@ function ChapterScrubber({
 }: ChapterScrubberProps) {
   const vertical = orientation === "vertical"
   const preset = SIZES[variant][size]
-  const metrics: Metrics = {
-    rowSize: rowSize ?? preset.rowSize,
-    rest: restLength ?? preset.rest,
-    peak: peakLength ?? preset.peak,
-    thickness: preset.thickness,
-  }
+  // One object across renders, so the memoised marks skip a re-render.
+  const metrics = React.useMemo<Metrics>(
+    () => ({
+      rowSize: rowSize ?? preset.rowSize,
+      rest: restLength ?? preset.rest,
+      peak: peakLength ?? preset.peak,
+      thickness: preset.thickness,
+    }),
+    [rowSize, restLength, peakLength, preset]
+  )
   const preferredSide: Side = side ?? (vertical ? "right" : "top")
 
   const reduceMotion = useReducedMotion()
@@ -287,12 +291,23 @@ function ChapterScrubber({
     setActiveIndex(index)
   }, [])
 
+  // Reports changes only: nothing on mount while idle, and nothing when a
+  // re-render leaves the same chapter active.
+  const reportActive = React.useEffectEvent(
+    (chapter: Chapter | null, index: number) => onActiveChange?.(chapter, index)
+  )
+  const reportedRef = React.useRef<{ chapter: Chapter | null; index: number }>({
+    chapter: null,
+    index: -1,
+  })
   React.useEffect(() => {
-    onActiveChange?.(
-      engaged ? (chapters[activeIndex] ?? null) : null,
-      engaged ? activeIndex : -1
-    )
-  }, [engaged, activeIndex, chapters, onActiveChange])
+    const chapter = engaged ? (chapters[activeIndex] ?? null) : null
+    const index = engaged ? activeIndex : -1
+    const reported = reportedRef.current
+    if (reported.chapter === chapter && reported.index === index) return
+    reportedRef.current = { chapter, index }
+    reportActive(chapter, index)
+  }, [engaged, activeIndex, chapters])
 
   // The preview is clamped to the rail's length, which needs its size along
   // the rail.
