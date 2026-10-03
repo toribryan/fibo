@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { render } from "vitest-browser-react"
 
 import { ChapterScrubber, type Chapter } from "./chapter-scrubber.js"
@@ -24,5 +24,35 @@ describe("ChapterScrubber", () => {
       '[role="option"][tabindex="0"]'
     )
     expect(tabbable).toHaveLength(1)
+  })
+
+  it("reports the active chapter only when it changes", async () => {
+    const onActiveChange = vi.fn()
+    const screen = await render(
+      <ChapterScrubber
+        chapters={chapters}
+        onActiveChange={(chapter, index) => onActiveChange(chapter, index)}
+      />
+    )
+    await screen.rerender(
+      <ChapterScrubber
+        chapters={chapters}
+        onActiveChange={(chapter, index) => onActiveChange(chapter, index)}
+      />
+    )
+    expect(onActiveChange).not.toHaveBeenCalled()
+
+    const option = screen.getByRole("option", { name: "Chapter 3" })
+    ;(option.element() as HTMLElement).focus()
+    await expect.poll(() => onActiveChange.mock.calls.length).toBe(1)
+    expect(onActiveChange).toHaveBeenLastCalledWith(chapters[2], 2)
+
+    await screen.rerender(
+      <ChapterScrubber
+        chapters={chapters}
+        onActiveChange={(chapter, index) => onActiveChange(chapter, index)}
+      />
+    )
+    expect(onActiveChange).toHaveBeenCalledOnce()
   })
 })
