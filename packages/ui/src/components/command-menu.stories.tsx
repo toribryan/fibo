@@ -207,6 +207,7 @@ const meta: Meta<typeof CommandMenu> = {
     label: { control: "text" },
     hotkey: { control: "text" },
     hints: { control: "boolean" },
+    modal: { control: "boolean" },
     maxRecent: { control: { type: "range", min: 0, max: 10, step: 1 } },
     groups: { control: false },
     trigger: { control: false },
@@ -224,6 +225,7 @@ const meta: Meta<typeof CommandMenu> = {
     label: "Command menu",
     hotkey: "k",
     hints: true,
+    modal: true,
     maxRecent: 5,
     onSelect: fn(),
     onOpenChange: fn(),
@@ -392,6 +394,23 @@ function ControlledExample(args: ComponentProps<typeof CommandMenu>) {
       />
     </div>
   )
+}
+
+export const NonModal: Story = {
+  name: "Non-modal",
+  args: { modal: false },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    const trigger = canvas.getByRole("button", { name: /Search/ })
+    await userEvent.click(trigger)
+    const search = await page.findByRole("combobox", { name: "Command menu" })
+    await settle()
+    // Focus stays where it was until someone moves it in.
+    await expect(trigger).toHaveFocus()
+    await userEvent.click(search)
+    await userEvent.keyboard("{Escape}")
+    await waitFor(() => expect(page.queryByRole("dialog")).toBeNull())
+  },
 }
 
 export const Controlled: Story = {
