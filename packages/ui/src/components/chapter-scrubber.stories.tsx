@@ -154,22 +154,30 @@ export const Default: Story = {
     await expect(last).toHaveFocus()
     await userEvent.keyboard("{Enter}")
     await expect(last).toHaveAttribute("aria-selected", "true")
+    // The pointer previews the chapter under it, and a click picks it.
+    const preview = () =>
+      // Portalled to the body, outside the story's canvas.
+      canvasElement.ownerDocument.querySelector(
+        '[data-slot="chapter-scrubber-preview"]'
+      )!
+    // Placed by coordinates, since the wave follows where the pointer is.
+    const box = options[1]!.getBoundingClientRect()
+    await userEvent.pointer({
+      target: options[1]!,
+      coords: {
+        clientX: box.left + box.width / 2,
+        clientY: box.top + box.height / 2,
+      },
+    })
+    await waitFor(() => expect(preview()).toHaveTextContent(talk[1]!.title))
+    await userEvent.click(options[1]!)
+    await expect(options[1]).toHaveAttribute("aria-selected", "true")
     // End on the settled preview, so the axe check that follows measures the
     // colours people see rather than a frame of the fade.
-    await waitFor(() =>
-      expect(
-        getComputedStyle(
-          // Portalled to the body, outside the story's canvas.
-          canvasElement.ownerDocument.querySelector(
-            '[data-slot="chapter-scrubber-preview"]'
-          )!
-        ).opacity
-      ).toBe("1")
-    )
-    await expect(args.onCurrentIndexChange).toHaveBeenCalledTimes(1)
-    await expect(
-      (args.onCurrentIndexChange as ReturnType<typeof fn>).mock.calls[0]?.[0]
-    ).toBe(options.length - 1)
+    await waitFor(() => expect(getComputedStyle(preview()).opacity).toBe("1"))
+    const calls = (args.onCurrentIndexChange as ReturnType<typeof fn>).mock
+      .calls
+    await expect(calls.map((call) => call[0])).toEqual([options.length - 1, 1])
   },
 }
 

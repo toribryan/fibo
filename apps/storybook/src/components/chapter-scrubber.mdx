@@ -159,7 +159,9 @@ Every part the component renders, with the `data-slot` it carries. You pass
     </>,
     <>
       Leave <code>side</code> unset in most layouts. It prefers right or top and
-      flips on its own near the viewport edge.
+      flips on its own near the viewport edge. Where neither side has room, as
+      on a phone, it opens on the roomier side and narrows to fit, and it closes
+      once the rail scrolls out of view.
     </>,
     <>
       Set <code>currentIndex</code> from your scroll or playback position so the
