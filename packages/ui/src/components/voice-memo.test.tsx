@@ -268,4 +268,69 @@ describe("VoiceMemo", () => {
     await screen.getByRole("button", { name: "Close transcript" }).click()
     await expect.element(device).toHaveFocus()
   })
+
+  it("keeps the transcript when the language changes mid-recording", async () => {
+    const scope = window as unknown as { SpeechRecognition?: unknown }
+    const original = scope.SpeechRecognition
+    type Result = { isFinal: boolean; 0: { transcript: string } }
+    const instances: {
+      lang: string
+      onresult:
+        ((event: { resultIndex: number; results: Result[] }) => void) | null
+    }[] = []
+    scope.SpeechRecognition = class {
+      continuous = false
+      interimResults = false
+      lang = ""
+      onresult = null
+      onerror = null
+      onend = null
+      constructor() {
+        instances.push(this)
+      }
+      start() {}
+      stop() {}
+      abort() {}
+    }
+    const say = (text: string) =>
+      instances.at(-1)!.onresult!({
+        resultIndex: 0,
+        results: [{ isFinal: true, 0: { transcript: text } }],
+      })
+    try {
+      const screen = await render(<VoiceMemo defaultRecording lang="en-US" />)
+      await expect.poll(() => instances.at(-1)?.onresult).toBeTypeOf("function")
+      say("ship it")
+      await expect
+        .element(screen.getByRole("log"))
+        .toHaveTextContent("Ship it.")
+      await screen.rerender(<VoiceMemo defaultRecording lang="fr-FR" />)
+      await expect.poll(() => instances.at(-1)?.lang).toBe("fr-FR")
+      say("on y va")
+      await expect
+        .element(screen.getByRole("log"))
+        .toHaveTextContent("Ship it. On y va.")
+    } finally {
+      scope.SpeechRecognition = original
+    }
+  })
+
+  it("says so when the transcript can't be copied", async () => {
+    const writeText = vi
+      .spyOn(navigator.clipboard, "writeText")
+      .mockRejectedValue(new Error("denied"))
+    try {
+      const screen = await render(
+        <VoiceMemo defaultRecording transcript="Hello" />
+      )
+      await screen.getByRole("button", { name: "Transcribe" }).click()
+      await screen.getByRole("button", { name: "Copy transcript" }).click()
+      expect(writeText).toHaveBeenCalledWith("Hello")
+      await expect
+        .element(screen.getByRole("status"))
+        .toHaveTextContent("Couldn't copy")
+    } finally {
+      writeText.mockRestore()
+    }
+  })
 })

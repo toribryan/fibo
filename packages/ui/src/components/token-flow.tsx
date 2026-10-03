@@ -236,6 +236,11 @@ type TokenFlowProps = Omit<React.ComponentProps<"div">, "children"> & {
   showUse?: boolean
   /** Force a theme instead of following the document's `dark` class. */
   theme?: "light" | "dark"
+  /**
+   * `horizontal` wires the tiers left to right, stacking them only on narrow
+   * screens; `vertical` stacks them top to bottom at every width.
+   */
+  orientation?: "horizontal" | "vertical"
 }
 
 /**
@@ -249,6 +254,7 @@ function TokenFlow({
   rows,
   showUse = false,
   theme,
+  orientation = "horizontal",
   className,
   ...props
 }: TokenFlowProps) {
@@ -256,6 +262,8 @@ function TokenFlow({
   const isDark = theme ? theme === "dark" : documentDark === true
   const live = theme !== undefined || documentDark !== null
   const narrow = useMediaQuery("(max-width: 639px)")
+  const horizontal = orientation === "horizontal"
+  const vertical = !horizontal || narrow
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)")
   const plate = React.useRef<HTMLDivElement>(null)
   const inView = useInView(plate)
@@ -281,12 +289,25 @@ function TokenFlow({
         aria-hidden
       />
 
-      <div className="relative grid grid-cols-1 items-center gap-y-6 sm:grid-cols-[auto_minmax(2rem,1fr)_auto_minmax(2rem,1fr)_auto] sm:gap-x-3 sm:gap-y-3">
+      <div
+        className={cn(
+          "relative grid grid-cols-1 items-center gap-y-6",
+          horizontal &&
+            "sm:grid-cols-[auto_minmax(2rem,1fr)_auto_minmax(2rem,1fr)_auto] sm:gap-x-3 sm:gap-y-3"
+        )}
+      >
         <div className="contents" aria-hidden>
           {TIERS.map((tier, i) => (
             <div key={tier} className="contents">
-              {i > 0 ? <div className="hidden sm:block" /> : null}
-              <p className="hidden text-center font-mono text-[10px] tracking-wide text-muted-foreground uppercase sm:block">
+              {i > 0 ? (
+                <div className={cn("hidden", horizontal && "sm:block")} />
+              ) : null}
+              <p
+                className={cn(
+                  "hidden text-center font-mono text-[10px] tracking-wide text-muted-foreground uppercase",
+                  horizontal && "sm:block"
+                )}
+              >
                 {tier}
               </p>
             </div>
@@ -298,7 +319,11 @@ function TokenFlow({
           return (
             <div
               key={`${row.semantic}-${i}`}
-              className="flex flex-col items-center gap-1.5 sm:col-span-5 sm:grid sm:grid-cols-subgrid sm:gap-0"
+              className={cn(
+                "flex flex-col items-center gap-1.5",
+                horizontal &&
+                  "sm:col-span-5 sm:grid sm:grid-cols-subgrid sm:gap-0"
+              )}
             >
               <Chip color={value.base}>
                 <span className="sr-only">{TIERS[0]} </span>
@@ -308,7 +333,7 @@ function TokenFlow({
                   reduceMotion={reduceMotion}
                 />
               </Chip>
-              <Wire delay={i * 0.5} vertical={narrow} active={pulse} />
+              <Wire delay={i * 0.5} vertical={vertical} active={pulse} />
               <Chip color={value.base}>
                 <span className="sr-only">{TIERS[1]} </span>
                 <ScrambleText
@@ -317,7 +342,7 @@ function TokenFlow({
                   reduceMotion={reduceMotion}
                 />
               </Chip>
-              <Wire delay={i * 0.5 + 0.8} vertical={narrow} active={pulse} />
+              <Wire delay={i * 0.5 + 0.8} vertical={vertical} active={pulse} />
               <div className="flex flex-col items-center gap-1 justify-self-center">
                 <Chip color={value.base}>
                   <span className="sr-only">{TIERS[2]} </span>
