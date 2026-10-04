@@ -159,6 +159,18 @@ describe("MessageList", () => {
     )
   })
 
+  it("shows a continuation row's time when the row is tapped", async () => {
+    const screen = await render(<MessageList messages={thread} />)
+    const row = screen.getByRole("article", { name: /^Ana, 9:01/ }).element()
+    const time = row.querySelector("time")!
+    expect(getComputedStyle(time).opacity).toBe("0")
+    row.dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, pointerType: "touch" })
+    )
+    await expect.element(row).toHaveFocus()
+    expect(getComputedStyle(time).opacity).toBe("1")
+  })
+
   it("is one tab stop, moved by the arrow keys", async () => {
     const screen = await render(
       <>
