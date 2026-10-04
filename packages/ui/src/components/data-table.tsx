@@ -19,6 +19,7 @@ import {
   columnFilteringFeature,
   columnPinningFeature,
   columnVisibilityFeature,
+  constructFilterFn,
   createFacetedRowModel,
   createFacetedUniqueValues,
   createFilteredRowModel,
@@ -174,7 +175,13 @@ const dataTableFeatures = tableFeatures({
   filterFns: {
     includesString: filterFn_includesString,
     equals: filterFn_equals,
-    arrHas: filterFn_arrHas,
+    // A lone value, as a hand-written link might carry, reads as a list of
+    // one; arrHas would otherwise test it letter by letter and match nothing.
+    arrHas: constructFilterFn({
+      ...filterFn_arrHas,
+      resolveFilterValue: (value: unknown) =>
+        Array.isArray(value) ? value : [value],
+    }),
   },
   columnFacetingFeature,
   facetedRowModel: createFacetedRowModel(),
@@ -434,6 +441,30 @@ function useSearchParamsAtom<T>(
   return atom
 }
 
+type FilterScalar = string | number | boolean
+
+const isFilterScalar = (value: unknown): value is FilterScalar =>
+  typeof value === "string" ||
+  typeof value === "boolean" ||
+  (typeof value === "number" && Number.isFinite(value))
+
+/*
+ * A link can carry anything, and TanStack reads a filter's id and hands its
+ * value straight to the filter function, so `[null]` would throw there. Only
+ * what Data table's filters take gets through: a column id, and a word,
+ * number or flag, or a list of them, once a column.
+ */
+function isColumnFilter(entry: unknown): entry is ColumnFiltersState[number] {
+  if (typeof entry !== "object" || entry === null) return false
+  const { id, value } = entry as { id?: unknown; value?: unknown }
+  if (typeof id !== "string" || id === "") return false
+  return Array.isArray(value)
+    ? value.length > 0 && value.every(isFilterScalar)
+    : isFilterScalar(value)
+}
+
+const SORT_DIRECTIONS: Record<string, boolean> = { asc: false, desc: true }
+
 /** Codecs for useSearchParamsAtom, one per slice a link usually carries. */
 const dataTableCodecs = {
   /** Text, such as the search. Empty leaves the param out. */
@@ -441,18 +472,27 @@ const dataTableCodecs = {
     parse: (text) => text ?? "",
     serialize: (value) => value || null,
   } satisfies SearchParamCodec<string>,
-  /** Sorting as `column.direction` pairs: `name.asc,projects.desc`. */
+  /**
+   * Sorting as `column.direction` pairs: `name.asc,projects.desc`. A pair
+   * with no direction sorts up; empty ids and repeats of a column are left
+   * out.
+   */
   sorting: {
-    parse: (text) =>
-      (text ?? "")
-        .split(",")
-        .filter(Boolean)
-        .map((pair) => {
-          const at = pair.lastIndexOf(".")
-          return at === -1
-            ? { id: pair, desc: false }
-            : { id: pair.slice(0, at), desc: pair.slice(at + 1) === "desc" }
-        }),
+    parse: (text) => {
+      const sorting: SortingState = []
+      for (const pair of (text ?? "").split(",")) {
+        const at = pair.lastIndexOf(".")
+        const direction = at === -1 ? undefined : pair.slice(at + 1)
+        const desc =
+          direction !== undefined && Object.hasOwn(SORT_DIRECTIONS, direction)
+            ? SORT_DIRECTIONS[direction]
+            : undefined
+        const id = desc === undefined ? pair : pair.slice(0, at)
+        if (!id || sorting.some((sort) => sort.id === id)) continue
+        sorting.push({ id, desc: desc ?? false })
+      }
+      return sorting
+    },
     serialize: (value) =>
       value.map(({ id, desc }) => `${id}.${desc ? "desc" : "asc"}`).join(",") ||
       null,
@@ -463,25 +503,42 @@ const dataTableCodecs = {
       if (!text) return []
       try {
         const value: unknown = JSON.parse(text)
-        return Array.isArray(value) ? (value as ColumnFiltersState) : []
+        if (!Array.isArray(value)) return []
+        // One filter a column: TanStack would apply the last and the facet
+        // menu would show the first.
+        return value
+          .filter(isColumnFilter)
+          .filter(
+            (filter, index, all) =>
+              all.findIndex(({ id }) => id === filter.id) === index
+          )
       } catch {
         return []
       }
     },
     serialize: (value) => (value.length ? JSON.stringify(value) : null),
   } satisfies SearchParamCodec<ColumnFiltersState>,
-  /** The page, counting from 1, at a fixed page size. Page 1 leaves it out. */
-  pagination: (pageSize: number): SearchParamCodec<PaginationState> => ({
-    parse: (text) => {
-      const page = Number.parseInt(text ?? "", 10)
-      return {
-        pageIndex: Number.isFinite(page) && page > 1 ? page - 1 : 0,
-        pageSize,
-      }
-    },
-    serialize: (value) =>
-      value.pageIndex > 0 ? String(value.pageIndex + 1) : null,
-  }),
+  /**
+   * The page, counting from 1, at a fixed page size. Page 1 leaves it out,
+   * and so does anything but a whole number a page index can hold.
+   */
+  pagination: (pageSize: number): SearchParamCodec<PaginationState> => {
+    // A size the table can't page by shows every row rather than none.
+    const size = pageSize > 0 ? pageSize : EVERY_ROW.pageSize
+    return {
+      parse: (text) => {
+        const page = /^[1-9]\d*$/.test(text ?? "") ? Number(text) : 0
+        return {
+          pageIndex: Number.isSafeInteger(page) && page > 1 ? page - 1 : 0,
+          pageSize: size,
+        }
+      },
+      serialize: (value) =>
+        Number.isSafeInteger(value.pageIndex) && value.pageIndex > 0
+          ? String(value.pageIndex + 1)
+          : null,
+    }
+  },
 }
 
 type LegacySelection = {

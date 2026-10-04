@@ -432,6 +432,7 @@ describe("useSearchParamsAtom", () => {
     url.searchParams.delete("q")
     url.searchParams.delete("sort")
     url.searchParams.delete("page")
+    url.searchParams.delete("filters")
     window.history.replaceState(window.history.state, "", url)
   })
 
@@ -578,6 +579,90 @@ describe("useSearchParamsAtom", () => {
     expect(pages.serialize({ pageIndex: 0, pageSize: 25 })).toBeNull()
 
     expect(dataTableCodecs.columnFilters.parse("{broken")).toEqual([])
+  })
+
+  it("drops malformed column filters from a link instead of throwing", () => {
+    const { parse } = dataTableCodecs.columnFilters
+    for (const text of [
+      "[null]",
+      '[1, "team"]',
+      '[{"value":["Design"]}]',
+      '[{"id":3,"value":["Design"]}]',
+      '[{"id":"team"}]',
+      '[{"id":"team","value":null}]',
+      '[{"id":"team","value":{"nested":true}}]',
+      '[{"id":"team","value":[["Design"]]}]',
+      '{"id":"team","value":["Design"]}',
+      "null",
+    ]) {
+      expect(parse(text), text).toEqual([])
+    }
+    expect(
+      parse('[null,{"id":"team","value":["Design"]},{"id":"team","value":7}]')
+    ).toEqual([{ id: "team", value: ["Design"] }])
+    expect(parse('[{"id":"team","value":"Design"}]')).toEqual([
+      { id: "team", value: "Design" },
+    ])
+  })
+
+  it("filters on a lone value from a link as a list of one", async () => {
+    setSearch({ filters: '[{"id":"team","value":"Engineering"}]' })
+    function Filtered() {
+      const columnFilters = useSearchParamsAtom(
+        "filters",
+        dataTableCodecs.columnFilters
+      )
+      return <Example atoms={{ columnFilters }} />
+    }
+    await render(<Filtered />)
+    await expect.poll(bodyNames).toEqual(["Priya Raman", "Sam Whitfield"])
+  })
+
+  it("renders every row for a filters param it can't read", async () => {
+    setSearch({ filters: "[null]" })
+    function Filtered() {
+      const columnFilters = useSearchParamsAtom(
+        "filters",
+        dataTableCodecs.columnFilters
+      )
+      return <Example atoms={{ columnFilters }} />
+    }
+    await render(<Filtered />)
+    await expect.poll(bodyNames).toHaveLength(5)
+  })
+
+  it("reads only well-formed sorting from a link", () => {
+    const { parse } = dataTableCodecs.sorting
+    expect(parse(".asc,,name.sideways")).toEqual([
+      { id: "name.sideways", desc: false },
+    ])
+    expect(parse("name.desc,name.asc,team")).toEqual([
+      { id: "name", desc: true },
+      { id: "team", desc: false },
+    ])
+  })
+
+  it("reads only a whole, safe page number from a link", () => {
+    const pages = dataTableCodecs.pagination(25)
+    for (const text of [
+      "-3",
+      "0",
+      "2.5",
+      "2abc",
+      "1e3",
+      "NaN",
+      "Infinity",
+      "99999999999999999999",
+      " 2",
+    ]) {
+      expect(pages.parse(text), text).toEqual({ pageIndex: 0, pageSize: 25 })
+    }
+    expect(pages.parse("12")).toEqual({ pageIndex: 11, pageSize: 25 })
+    expect(pages.serialize({ pageIndex: NaN, pageSize: 25 })).toBeNull()
+    expect(pages.serialize({ pageIndex: -1, pageSize: 25 })).toBeNull()
+    // A size the table can't page by shows every row rather than none.
+    expect(dataTableCodecs.pagination(0).parse("2").pageSize).toBe(Infinity)
+    expect(dataTableCodecs.pagination(NaN).parse("2").pageSize).toBe(Infinity)
   })
 })
 
