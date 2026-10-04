@@ -92,9 +92,10 @@ function split(source) {
 
 async function inlineComponent(spec) {
   const name = path.basename(spec)
-  const { imports, body } = split(
-    await readFile(path.join(componentsDir, `${name}.tsx`), "utf8")
-  )
+  const file = spec.startsWith("@workspace/ui/lib/")
+    ? path.join(uiDir, "src/lib", `${name}.ts`)
+    : path.join(componentsDir, `${name}.tsx`)
+  const { imports, body } = split(await readFile(file, "utf8"))
   for (const { spec: nested } of imports) {
     if (nested.startsWith("@workspace/ui/components/")) {
       throw new Error(
@@ -215,7 +216,10 @@ async function assemble(source, file, own) {
       throw new Error(
         `${file} imports ${statement.spec}. A demo may import only the component it shows; build the rest from plain elements.`
       )
-    } else if (statement.spec.startsWith("@workspace/ui/components/")) {
+    } else if (
+      statement.spec.startsWith("@workspace/ui/components/") ||
+      statement.spec.startsWith("@workspace/ui/lib/")
+    ) {
       const dep = await inlineComponent(statement.spec)
       usesCn ||= dep.imports.some((i) => i.spec === "@workspace/ui/lib/utils")
       inlined.push(dep)

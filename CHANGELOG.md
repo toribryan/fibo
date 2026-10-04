@@ -70,6 +70,10 @@ https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
 
 ### Fixed
 
+- Integration visual, Pixel snail and Token flow keep pausing off screen
+  when given a `ref`, which used to replace the ref they watch the viewport
+  with. They share a `mergeRefs` helper in `lib/`, which the registry ships
+  with each of them as a `registry:lib` file.
 - Typing indicator: the dots no longer get clipped at the top of their bounce.
 - Registry parts now bring the tokens they use that a stock shadcn theme
   lacks, such as `--primary-hover`, `--ring-subtle` and the status colours.

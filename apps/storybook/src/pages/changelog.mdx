@@ -13,6 +13,10 @@ Notable changes, newest first.
   toolbar, the announcement and the footer count. Bulk actions act on every
   selected row, hidden ones included, and Delete's description gives the
   count. Rows a refetch drops still leave the selection.
+- **Integration visual**, **Pixel snail** and **Token flow** keep resting
+  off screen when you pass them a `ref`. Before, your ref replaced the one
+  they watch the viewport with, so they ran everywhere. The registry ships
+  the small `mergeRefs` helper they share into `lib/`.
 
 - **Data table** runs on TanStack Table. `useDataTable` takes your rows and
   columns, and the table sorts, searches, filters and pages them itself.

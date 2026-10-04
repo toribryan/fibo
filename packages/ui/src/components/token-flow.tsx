@@ -2,6 +2,7 @@
 
 import * as React from "react"
 
+import { mergeRefs } from "@workspace/ui/lib/merge-refs"
 import { cn } from "@workspace/ui/lib/utils"
 
 type TokenRow = {
@@ -262,6 +263,7 @@ function TokenFlow({
   theme,
   orientation = "horizontal",
   className,
+  ref,
   ...props
 }: TokenFlowProps) {
   const documentDark = useIsDark()
@@ -272,12 +274,14 @@ function TokenFlow({
   const vertical = !horizontal || narrow
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)")
   const plate = React.useRef<HTMLDivElement>(null)
+  // A caller's ref would otherwise replace the one that pauses it off screen.
+  const plateRef = React.useMemo(() => mergeRefs(plate, ref), [ref])
   const inView = useInView(plate)
   const pulse = inView && !reduceMotion
 
   return (
     <div
-      ref={plate}
+      ref={plateRef}
       data-slot="token-flow"
       className={cn(
         "relative overflow-hidden rounded-xl border border-border bg-muted px-6 py-4",

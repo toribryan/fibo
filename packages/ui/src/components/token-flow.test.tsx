@@ -1,3 +1,4 @@
+import * as React from "react"
 import { describe, expect, it, vi } from "vitest"
 import { page } from "vitest/browser"
 import { render } from "vitest-browser-react"
@@ -69,6 +70,32 @@ describe("TokenFlow", () => {
     } finally {
       await page.viewport(414, 896)
     }
+  })
+
+  it("rests off screen when given a ref, and hands the ref its root", async () => {
+    const ref = React.createRef<HTMLDivElement>()
+    const pulses = () =>
+      screen.container.querySelectorAll("line.stroke-muted-foreground").length
+    const screen = await render(
+      <div style={{ marginTop: "200vh" }}>
+        <TokenFlow
+          ref={ref}
+          rows={[
+            {
+              base: "oklch(0.205 0 0)",
+              primitive: "neutral-900",
+              semantic: "bg-primary",
+            },
+          ]}
+        />
+      </div>
+    )
+    const root = screen.container.querySelector('[data-slot="token-flow"]')!
+    expect(ref.current).toBe(root)
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(pulses()).toBe(0)
+    root.scrollIntoView()
+    await expect.poll(pulses).toBe(2)
   })
 
   it("settles on the new value when motion is turned off mid-scramble", async () => {
