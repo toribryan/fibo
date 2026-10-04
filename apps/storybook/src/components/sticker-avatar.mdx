@@ -243,12 +243,13 @@ the edge to be cut; without them the sticker falls back to round.
   ]}
 />
 
-## Tokens
+### Tokens
 
 `--sticker-edge` is white and `--sticker-ink` is near-black in both themes.
 That is deliberate: a sticker is paper, and paper doesn't change colour when
 the room gets dark. A hairline and a shadow keep the white edge visible on a
-light page.
+light page; the shadow is `--sticker-shadow`, the same in both themes for the
+same reason.
 
 The status sticker is the exception. Its disc is the page colour, not paper,
 because it is coloured with fibo's semantic tokens: `success` for present,
