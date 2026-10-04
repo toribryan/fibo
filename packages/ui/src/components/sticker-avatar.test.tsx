@@ -1,3 +1,4 @@
+import type * as React from "react"
 import { describe, expect, it } from "vitest"
 import { render } from "vitest-browser-react"
 
@@ -98,6 +99,23 @@ describe("StickerAvatar", () => {
     expect(box.height).toBe(48)
     const art = sticker.element().querySelector("img")!
     expect(art.getBoundingClientRect().width).toBe(68)
+  })
+
+  it("bakes again when the edge colour changes", async () => {
+    const edged = (color: string) => (
+      <StickerAvatar
+        name="Ghost"
+        src={ghostSrc()}
+        style={{ "--sticker-edge": color } as React.CSSProperties}
+      />
+    )
+    const screen = await render(edged("rgb(255, 0, 0)"))
+    const sticker = screen.getByRole("img", { name: "Ghost" })
+    await expect.element(sticker).toHaveAttribute("data-shape", "cutout")
+    const art = () => sticker.element().querySelector("img")?.src
+    const red = art()
+    await screen.rerender(edged("rgb(0, 0, 255)"))
+    await expect.poll(art).not.toBe(red)
   })
 
   it("counts the rest of a group", async () => {
