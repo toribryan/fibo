@@ -8,6 +8,23 @@ Notable changes, newest first.
 
 ## October 2026
 
+- **Sticker avatar** casts its shadow with a new `--sticker-shadow` token,
+  bakes again when `--sticker-edge` changes, and keeps only the 64 most
+  recent stickers in memory.
+- **Integration visual** and **Pixel snail** rest while they're off screen.
+  A preview clip pauses if reduced motion turns on after it started, and
+  tools that share a title no longer collide.
+- **Reactions** cancels particles it hasn't thrown yet when it unmounts, and
+  takes its particle layer off the page once the last one lands.
+- **Token flow** settles on the new value when motion turns off mid-scramble.
+- **Floating nav** marks a current button item with `aria-current="true"`;
+  `"page"` stays on links.
+- **Message list** shows a continuation row's time when the row is tapped.
+- **Table** names its scroll region or the table, never both, and a caption
+  names the region when there's no `aria-label`.
+- **Pagination** keeps its page on the last one when the page count shrinks,
+  so it doesn't jump back when the count grows.
+
 - **Voice memo** keeps the transcript when `lang` changes mid-recording, and
   says "Couldn't copy" when the clipboard turns the copy down.
 - **Chapter scrubber** fits its preview to the screen: where neither side has
