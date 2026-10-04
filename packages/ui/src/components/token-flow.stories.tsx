@@ -41,6 +41,7 @@ const meta: Meta<typeof TokenFlow> = {
       control: "inline-radio",
       options: ["horizontal", "vertical"],
     },
+    rows: { control: false },
   },
   args: {
     rows,

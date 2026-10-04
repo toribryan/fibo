@@ -59,6 +59,11 @@ function Pagination({
   const [uncontrolledPage, setUncontrolledPage] = React.useState(defaultPage)
   const lastPage = Math.max(1, pageCount)
   const page = Math.min(Math.max(1, pageProp ?? uncontrolledPage), lastPage)
+  // Pages taken away keep the stored page with them, so it can't jump back
+  // to a page the reader left when the count grows again.
+  if (pageProp === undefined && uncontrolledPage !== page) {
+    setUncontrolledPage(page)
+  }
 
   const goTo = (next: number) => {
     if (next < 1 || next > lastPage || next === page) return

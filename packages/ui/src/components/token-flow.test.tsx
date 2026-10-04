@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { page } from "vitest/browser"
 import { render } from "vitest-browser-react"
 
@@ -68,6 +68,48 @@ describe("TokenFlow", () => {
       expect(bottom!.top).toBeGreaterThan(top!.bottom)
     } finally {
       await page.viewport(414, 896)
+    }
+  })
+
+  it("settles on the new value when motion is turned off mid-scramble", async () => {
+    // A stand-in for the reduced-motion query that the test can flip.
+    const listeners = new Set<() => void>()
+    let reduce = false
+    const matchMedia = window.matchMedia.bind(window)
+    const spy = vi.spyOn(window, "matchMedia").mockImplementation((query) =>
+      query.includes("prefers-reduced-motion")
+        ? ({
+            get matches() {
+              return reduce
+            },
+            addEventListener: (_: string, listener: () => void) =>
+              listeners.add(listener),
+            removeEventListener: (_: string, listener: () => void) =>
+              listeners.delete(listener),
+          } as unknown as MediaQueryList)
+        : matchMedia(query)
+    )
+    try {
+      const rows = [
+        {
+          base: "oklch(1 0 0)",
+          primitive: "white",
+          semantic: "bg-background",
+          dark: { base: "oklch(0.145 0 0)", primitive: "neutral-950" },
+        },
+      ]
+      const screen = await render(<TokenFlow rows={rows} theme="light" />)
+      await screen.rerender(<TokenFlow rows={rows} theme="dark" />)
+      const shown = () =>
+        screen.container.querySelector(
+          '[data-slot="token-flow-chip"] .absolute'
+        )?.textContent
+      await expect.poll(shown).not.toBe("oklch(0.145 0 0)")
+      reduce = true
+      listeners.forEach((listener) => listener())
+      await expect.poll(shown).toBe("oklch(0.145 0 0)")
+    } finally {
+      spy.mockRestore()
     }
   })
 })

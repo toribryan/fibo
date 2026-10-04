@@ -90,6 +90,7 @@
 
   --color-sticker-edge: var(--sticker-edge);
   --color-sticker-ink: var(--sticker-ink);
+  --color-sticker-shadow: var(--sticker-shadow);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -247,10 +248,12 @@
 
   /*
    * A sticker is paper: its edge is white and the marks printed on it are
-   * dark in both themes, so these two keep their values in .dark on purpose.
+   * dark in both themes, and it casts the same shadow on either page, so
+   * these three keep their values in .dark on purpose.
    */
   --sticker-edge: var(--color-white);
   --sticker-ink: var(--color-neutral-900);
+  --sticker-shadow: color-mix(in oklch, var(--color-black) 30%, transparent);
 
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);
@@ -360,6 +363,7 @@
 
   --sticker-edge: var(--color-white);
   --sticker-ink: var(--color-neutral-900);
+  --sticker-shadow: color-mix(in oklch, var(--color-black) 30%, transparent);
 
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);

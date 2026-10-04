@@ -7,17 +7,28 @@ import { cn } from "@workspace/ui/lib/utils"
 /*
  * The wrapper scrolls sideways so a wide table never widens the page. While
  * it overflows it's a named region in the tab order, so keyboard users can
- * scroll it too.
+ * scroll it too. The name goes on one of the two, never both, so it isn't
+ * announced twice: `aria-label` moves to the region, and a caption names it
+ * when there's no label.
  */
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({
+  className,
+  "aria-label": label,
+  ...props
+}: React.ComponentProps<"table">) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const [overflowing, setOverflowing] = React.useState(false)
+  const [captionId, setCaptionId] = React.useState<string>()
 
   React.useEffect(() => {
     const container = containerRef.current
     if (!container) return
-    const update = () =>
+    const update = () => {
       setOverflowing(container.scrollWidth > container.clientWidth + 1)
+      setCaptionId(
+        container.querySelector(":scope > table > caption")?.id || undefined
+      )
+    }
     update()
     const observer = new ResizeObserver(update)
     observer.observe(container)
@@ -34,8 +45,11 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
       tabIndex={overflowing ? 0 : undefined}
       role={overflowing ? "region" : undefined}
       aria-label={
-        overflowing ? (props["aria-label"] ?? "Scrollable table") : undefined
+        overflowing && (label || !captionId)
+          ? (label ?? "Scrollable table")
+          : undefined
       }
+      aria-labelledby={overflowing && !label ? captionId : undefined}
       className="relative w-full overflow-x-auto outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle focus-visible:ring-inset"
     >
       <table
@@ -44,6 +58,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
           "w-full caption-bottom border-separate border-spacing-0 text-sm",
           className
         )}
+        aria-label={overflowing ? undefined : label}
         {...props}
       />
     </div>
@@ -132,10 +147,14 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
 
 function TableCaption({
   className,
+  id,
   ...props
 }: React.ComponentProps<"caption">) {
+  // Table reads this id to name its scroll region after the caption.
+  const fallbackId = React.useId()
   return (
     <caption
+      id={id ?? fallbackId}
       data-slot="table-caption"
       className={cn("mt-4 text-sm text-muted-foreground", className)}
       {...props}
