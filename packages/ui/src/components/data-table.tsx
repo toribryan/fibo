@@ -1924,19 +1924,38 @@ function useRowModelInputs() {
 function ModelRows() {
   const { table } = useDataTableRoot()
   const inputs = useRowModelInputs()
+  // TanStack keeps a row's object until the data changes, so new columns or
+  // a new lockedReason over the same data have to reach the memo as props.
+  const columns = table.getVisibleLeafColumns()
+  const lockedReason = table.options.meta?.lockedReason
   return table
     .getRowModel()
-    .rows.map((row) => <ModelRow key={row.id} row={row} inputs={inputs} />)
+    .rows.map((row) => (
+      <ModelRow
+        key={row.id}
+        row={row}
+        inputs={inputs}
+        columns={columns}
+        lockedReason={lockedReason?.(row.original)}
+      />
+    ))
 }
 
 const ModelRow = React.memo(function ModelRow({
   row,
+  lockedReason,
 }: {
   row: DataTableAnyRow
   /** Changes when visibility or pinning does, so the memo lets those through. */
   inputs: unknown
+  /** The visible columns, which change when the column definitions do. */
+  columns: unknown
+  /** Why the row can't be selected, as a value, so an inline function doesn't redraw every row. */
+  lockedReason: React.ReactNode
 }) {
-  const lockedReason = row.table.options.meta?.lockedReason?.(row.original)
+  // Its own selection redraws its cells, so a renderer that reads
+  // row.getIsSelected() follows the checkbox; other rows stay put.
+  useRowSelected(row.id)
   return (
     <RowFrame id={row.id} lockedReason={lockedReason}>
       {row.getVisibleCells().map((cell) => {
@@ -2228,6 +2247,8 @@ function ModelCards({
 }
 
 function ModelCard({ row }: { row: DataTableAnyRow }) {
+  // As in ModelRow: a renderer that reads row.getIsSelected() follows it.
+  useRowSelected(row.id)
   const cells = row.getVisibleCells()
   const typeOf = (cell: (typeof cells)[number]) =>
     cell.column.columnDef.meta?.type ?? "text"

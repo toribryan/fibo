@@ -371,6 +371,53 @@ describe("DataTable on useDataTable", () => {
     expect(renders.get("sam")).toBe(before.sam)
     expect(ownerRenders).toBe(ownerBefore)
   })
+
+  it("redraws the body when the columns change but the data doesn't", async () => {
+    const shouting = member.columns([
+      member.accessor("name", {
+        header: "Member",
+        meta: { type: "primary" },
+        cell: ({ getValue }) => getValue().toUpperCase(),
+      }),
+    ])
+    const screen = await render(<Example />)
+    expect(bodyNames()[0]).toBe("Maya Okafor")
+    await screen.rerender(<Example columns={shouting} />)
+    await expect.poll(() => bodyNames()[0]).toBe("MAYA OKAFOR")
+    expect(
+      screen.container.querySelectorAll(
+        '[data-slot="data-table-row"]:first-child > td'
+      )
+    ).toHaveLength(2)
+  })
+
+  it("locks rows when lockedReason changes but the data doesn't", async () => {
+    const screen = await render(<Example />)
+    const maya = screen.getByRole("checkbox", { name: "Select Maya Okafor" })
+    await expect.element(maya).toBeEnabled()
+    await screen.rerender(
+      <Example
+        lockedReason={(row) => (row.id === "maya" ? "Maya owns it" : row.lock)}
+      />
+    )
+    await expect.element(maya).toBeDisabled()
+    await expect.element(maya).toHaveAccessibleDescription("Maya owns it")
+  })
+
+  it("redraws a cell that reads its row's selection", async () => {
+    const marked = member.columns([
+      member.accessor("name", {
+        header: "Member",
+        meta: { type: "primary" },
+        cell: ({ row, getValue }) =>
+          row.getIsSelected() ? `${getValue()} (selected)` : getValue(),
+      }),
+    ])
+    const screen = await render(<Example columns={marked} />)
+    await screen.getByRole("checkbox", { name: "Select Maya Okafor" }).click()
+    await expect.poll(() => bodyNames()[0]).toBe("Maya Okafor (selected)")
+    expect(bodyNames()[1]).toBe("Priya Raman")
+  })
 })
 
 function extraMembers(count: number): Member[] {
