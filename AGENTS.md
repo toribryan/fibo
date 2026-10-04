@@ -109,7 +109,10 @@ or a component's variants.
 
 - **Two shelves.** Standard parts are titled `Base components/<Group>/<Name>`
   and depend on nothing beyond Base UI, `class-variance-authority` and
-  `lucide-react`. Playful, specific parts are titled
+  `lucide-react`. One named exception: Data table also depends on
+  `@tanstack/react-table` and the `@tanstack/react-store` it brings, for its
+  row models and state (`plans/005-data-table-on-tanstack.md`); no other
+  part may. Playful, specific parts are titled
   `Special components/<Name>` and may use `motion`. A base part's group is its
   `group` in `components.meta.json`; the sidebar shows each shelf as a
   heading, base parts in their groups as folders, in the order `storySort`
@@ -179,4 +182,5 @@ After changing a published component, re-run it and publish the update.
   `apps/registry/public`, `apps/registry/21st` or `dist`. They are generated
   and gitignored.
 - Skip the husky pre-commit hook. If Prettier rejects a commit, fix the file.
-- Add a dependency to a Components-shelf part beyond the three listed above.
+- Add a dependency to a Components-shelf part beyond the three listed above,
+  except `@tanstack/react-table` and `@tanstack/react-store` in Data table.

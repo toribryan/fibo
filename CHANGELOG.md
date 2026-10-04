@@ -10,6 +10,15 @@ has the same history with links into the docs.
 
 ### Added
 
+- Data table on TanStack Table: `useDataTable` takes your rows and columns,
+  and the table sorts, searches, filters, pages and selects them. New parts
+  draw each piece: `DataTableSearch`, `DataTableFacetFilter` with counts per
+  value, `DataTableColumns` to show and hide columns, `DataTablePagination`,
+  and sortable heads. `DataTableContent`, `DataTableCards` and their header
+  and body render from the table when given no children.
+  `useSearchParamsAtom` keeps sorting, filters, the search and the page in
+  the URL. See `plans/005-data-table-on-tanstack.md`.
+
 - An Open in Figma link at the top of each component's docs page, for the
   parts with a Figma page. Each part's page is its `figma` node in
   `components.meta.json`.
@@ -41,6 +50,16 @@ has the same history with links into the docs.
   parts use.
 - A `brand/` folder with the brand kit's source: the rabbit, the logo,
   the social card and poster generators, and the motion prototype.
+
+### Deprecated
+
+- Data table's `rowIds`, `totalCount`, `value`, `defaultValue` and
+  `onValueChange` props, `useDataTableSelection`, and hand-written
+  `DataTableRow`, `DataTableCell` and `DataTableHead`. Use `useDataTable`
+  and `<DataTable table={table}>`; the old API runs on the same table until
+  it's removed in 0.3.0. The part itself isn't deprecated. List each use
+  with `pnpm dlx jscodeshift --parser tsx --dry -t
+https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
 
 ### Removed
 
