@@ -258,13 +258,23 @@ function useDataTable<TData extends RowData, TSelected = null>(
     initialState,
     meta,
     enableRowSelection,
+    autoResetPageIndex,
     ...options
   }: DataTableOptions<TData>,
   selector?: (state: TableState<DataTableFeatures>) => TSelected
 ) {
+  // URL atoms restore after mount, and a filter landing then mustn't send
+  // the page that came with it back to the first. Held off for one frame.
+  const [mounted, setMounted] = React.useState(false)
+  React.useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true))
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
   return dataTableHook.useAppTable<TData, TSelected>(
     {
       ...options,
+      autoResetPageIndex: autoResetPageIndex ?? (mounted ? undefined : false),
       initialState: { pagination: EVERY_ROW, ...initialState },
       meta: { ...meta, lockedReason },
       enableRowSelection:
@@ -287,21 +297,23 @@ type SearchParamCodec<T> = {
 }
 
 function readSearchParam<T>(key: string, codec: SearchParamCodec<T>) {
-  if (typeof window === "undefined") return codec.parse(null)
   return codec.parse(new URLSearchParams(window.location.search).get(key))
 }
 
 /**
  * An atom kept in the URL's `key` param, for a table's sorting, filters or
- * page. It starts from the URL, writes back with history.replaceState, so
- * the back button isn't filled with every keystroke, and follows back and
- * forward. On the server it starts from the codec's empty value.
+ * page. It writes back with history.replaceState, so the back button isn't
+ * filled with every keystroke, and follows back and forward. It starts from
+ * the codec's empty value on the server and on the first client render, so
+ * hydration matches; the URL's value applies after mount, before paint.
  */
 function useSearchParamsAtom<T>(
   key: string,
   codec: SearchParamCodec<T>
 ): Atom<T> {
-  const [atom] = React.useState(() => createAtom(readSearchParam(key, codec)))
+  // The empty value at first, on the server and the client alike, so
+  // hydration matches; the URL's value lands once mounted.
+  const [atom] = React.useState(() => createAtom(codec.parse(null)))
   // Codecs are often written inline; the latest one is used without
   // resubscribing.
   const codecRef = React.useRef(codec)
@@ -309,7 +321,10 @@ function useSearchParamsAtom<T>(
     codecRef.current = codec
   })
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
+    // Read before the writer subscribes, so restoring from the URL doesn't
+    // write it back.
+    atom.set(readSearchParam(key, codecRef.current))
     const write = (value: T) => {
       const params = new URLSearchParams(window.location.search)
       const text = codecRef.current.serialize(value)
@@ -1742,6 +1757,7 @@ function DataTableHeader({
       <TableRow>
         <TableHead
           data-slot="data-table-select-all"
+          scope="col"
           className={selectColumnClasses}
         >
           <SelectAllCheckbox />
@@ -1765,6 +1781,7 @@ function ModelHeaderRows() {
       {index === 0 ? (
         <TableHead
           data-slot="data-table-select-all"
+          scope="col"
           rowSpan={groups.length > 1 ? groups.length : undefined}
           className={selectColumnClasses}
         >
@@ -1800,6 +1817,7 @@ function ModelHead({
       pinned={pinnedOf(column)}
       className={meta?.className}
       colSpan={header.colSpan > 1 ? header.colSpan : undefined}
+      scope={header.colSpan > 1 ? "colgroup" : "col"}
       aria-sort={
         sorted === "asc"
           ? "ascending"
@@ -1850,6 +1868,7 @@ function HeadCell({
   return (
     <TableHead
       data-slot="data-table-head"
+      scope="col"
       data-type={type}
       data-pinned={pinned === "none" ? undefined : pinned}
       className={cn(

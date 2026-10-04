@@ -262,7 +262,9 @@ selector, `useDataTable(options, (state) => state.rowSelection)`, and read
 
 Sorting, column filters, the search and the page can be owned outside the
 table, as atoms. `useSearchParamsAtom` keeps one in the URL with
-`history.replaceState`, so typing a search doesn't fill the back button:
+`history.replaceState`, so typing a search doesn't fill the back button. It
+starts from the empty value on the server and in the first render, so
+hydration matches, and applies the URL's value once mounted, before paint:
 
 ```tsx
 const sorting = useSearchParamsAtom("sort", dataTableCodecs.sorting)
@@ -838,7 +840,7 @@ for the one release they remain.
 <UsageGuidelines
   guidelines={[
     "It's a native table, not a grid: checkboxes and buttons are ordinary Tab stops. TanStack Table only works out the rows; the markup is Data table's.",
-    "A sortable head holds a button named by the column. Only the sorted head carries aria-sort, ascending or descending, so the order is announced once, where it applies.",
+    'Every head carries scope="col". A sortable head holds a button named by the column. Only the sorted head carries aria-sort, ascending or descending, so the order is announced once, where it applies.',
     "DataTableSearch is a search field; give it an aria-label when there's no visible label. Facet filter menus name each choice with its count, “Active 3”, and say how many are ticked on the button.",
     "Name it with aria-label or aria-labelledby on DataTable.",
     "Each row checkbox is named from its primary or person cell, “Select Maya Okafor”, or from the row's label when it has neither. Select all says its scope, “Select all members on this page”.",

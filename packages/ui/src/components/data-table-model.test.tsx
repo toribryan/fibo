@@ -2,6 +2,8 @@ import * as React from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { page, userEvent } from "vitest/browser"
 import { render } from "vitest-browser-react"
+import { renderToString } from "react-dom/server"
+import { useSelector } from "@tanstack/react-store"
 
 import {
   createDataTableColumnHelper,
@@ -101,16 +103,6 @@ function Example({
   )
 }
 
-// Vitest's locators read a <th> without scope as a cell, though browsers
-// and screen readers treat one in a header row as a column header.
-function head(name: string) {
-  const found = [
-    ...document.querySelectorAll<HTMLElement>('[data-slot="data-table-head"]'),
-  ].find((th) => th.textContent === name)
-  if (!found) throw new Error(`No head named ${name}`)
-  return found
-}
-
 const bodyNames = () =>
   [
     ...document.querySelectorAll(
@@ -121,7 +113,9 @@ const bodyNames = () =>
 describe("DataTable on useDataTable", () => {
   it("renders a head and a row for every column and row", async () => {
     const screen = await render(<Example />)
-    expect(head("Team")).toBeTruthy()
+    await expect
+      .element(screen.getByRole("columnheader", { name: "Team", exact: true }))
+      .toHaveAttribute("scope", "col")
     expect(bodyNames()).toEqual([
       "Maya Okafor",
       "Priya Raman",
@@ -136,21 +130,24 @@ describe("DataTable on useDataTable", () => {
 
   it("sorts from a head's button, with aria-sort on that head only", async () => {
     const screen = await render(<Example />)
-    const member = () => head("Member")
-    const sort = screen.getByRole("button", { name: "Member" })
-    expect(member().hasAttribute("aria-sort")).toBe(false)
+    const member = screen.getByRole("columnheader", {
+      name: "Member",
+      exact: true,
+    })
+    const sort = member.getByRole("button", { name: "Member" })
+    await expect.element(member).not.toHaveAttribute("aria-sort")
 
     await sort.click()
-    await expect.element(member()).toHaveAttribute("aria-sort", "ascending")
+    await expect.element(member).toHaveAttribute("aria-sort", "ascending")
     expect(bodyNames()[0]).toBe("Elena Marsh")
     expect(screen.container.querySelectorAll("th[aria-sort]").length).toBe(1)
 
     await sort.click()
-    await expect.element(member()).toHaveAttribute("aria-sort", "descending")
+    await expect.element(member).toHaveAttribute("aria-sort", "descending")
     expect(bodyNames()[0]).toBe("Sam Whitfield")
 
     await sort.click()
-    await expect.element(member()).not.toHaveAttribute("aria-sort")
+    await expect.element(member).not.toHaveAttribute("aria-sort")
     expect(bodyNames()[0]).toBe("Maya Okafor")
   })
 
@@ -231,12 +228,8 @@ describe("DataTable on useDataTable", () => {
     await screen.getByRole("button", { name: "Columns" }).click()
     await page.getByRole("menuitemcheckbox", { name: "Team" }).click()
     await expect
-      .poll(() =>
-        [...document.querySelectorAll('[data-slot="data-table-head"]')].map(
-          (th) => th.textContent
-        )
-      )
-      .toEqual(["Member", "Projects"])
+      .element(screen.getByRole("columnheader", { name: "Team", exact: true }))
+      .not.toBeInTheDocument()
     expect(
       screen.container.querySelectorAll(
         '[data-slot="data-table-row"]:first-child > td'
@@ -359,6 +352,9 @@ describe("DataTable on useDataTable", () => {
       <Example columns={counted} onRender={() => ownerRenders++} />
     )
     expect(rowRenders()).toBe(5)
+    // useDataTable re-renders its owner once, a frame after mounting.
+    await new Promise((resolve) => requestAnimationFrame(resolve))
+    await new Promise((resolve) => setTimeout(resolve, 50))
     const before = { ...Object.fromEntries(renders) }
     const ownerBefore = ownerRenders
 
@@ -391,6 +387,7 @@ describe("useSearchParamsAtom", () => {
     const url = new URL(window.location.href)
     url.searchParams.delete("q")
     url.searchParams.delete("sort")
+    url.searchParams.delete("page")
     window.history.replaceState(window.history.state, "", url)
   })
 
@@ -415,7 +412,41 @@ describe("useSearchParamsAtom", () => {
       .element(screen.getByRole("searchbox", { name: "Search members" }))
       .toHaveValue("priya")
     expect(bodyNames()).toEqual(["Priya Raman"])
-    expect(head("Member").getAttribute("aria-sort")).toBe("descending")
+    await expect
+      .element(
+        screen.getByRole("columnheader", { name: "Member", exact: true })
+      )
+      .toHaveAttribute("aria-sort", "descending")
+  })
+
+  it("renders the empty value on the server, whatever the URL holds", () => {
+    setSearch({ q: "priya", sort: "name.desc" })
+    function Probe() {
+      const query = useSearchParamsAtom("q", dataTableCodecs.text)
+      return <output>[{useSelector(query)}]</output>
+    }
+    expect(renderToString(<Probe />)).toContain("[<!-- -->]")
+    const html = renderToString(<UrlExample />)
+    // Every row and no sort: the URL isn't read until the table mounts.
+    for (const { name } of MEMBERS) expect(html).toContain(name)
+    expect(html).not.toContain("aria-sort")
+    expect(html).not.toContain('value="priya"')
+  })
+
+  it("restores the page along with the search it was on", async () => {
+    setSearch({ q: "e", page: "2" })
+    function Paged() {
+      const globalFilter = useSearchParamsAtom("q", dataTableCodecs.text)
+      const pagination = useSearchParamsAtom(
+        "page",
+        dataTableCodecs.pagination(2)
+      )
+      return <Example atoms={{ globalFilter, pagination }} />
+    }
+    await render(<Paged />)
+    // "e" leaves Maya, Priya, Jordan, Elena and Sam; page 2 holds two.
+    await expect.poll(bodyNames).toEqual(["Jordan Alvarez", "Elena Marsh"])
+    expect(new URLSearchParams(window.location.search).get("page")).toBe("2")
   })
 
   it("writes changes back without adding history entries", async () => {
