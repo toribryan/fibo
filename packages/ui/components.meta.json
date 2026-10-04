@@ -52,7 +52,7 @@
   },
   "data-table": {
     "title": "Data table",
-    "description": "A table for lists people work through: selection, cell types, locked rows and pinned columns.",
+    "description": "A table for lists people work through, on TanStack Table: sorting, search, filters with counts, pages, selection, cell types, locked rows and pinned columns.",
     "tier": "base-components",
     "group": "Display",
     "figma": "230-2"
