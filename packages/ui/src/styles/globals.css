@@ -91,6 +91,7 @@
   --color-sticker-edge: var(--sticker-edge);
   --color-sticker-ink: var(--sticker-ink);
   --color-sticker-shadow: var(--sticker-shadow);
+  --color-particle-shadow: var(--particle-shadow);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -255,6 +256,12 @@
   --sticker-ink: var(--color-neutral-900);
   --sticker-shadow: color-mix(in oklch, var(--color-black) 30%, transparent);
 
+  /*
+   * Reactions' flying emoji cast a soft shadow so they read over any page,
+   * the same in both themes, as the sticker's does.
+   */
+  --particle-shadow: color-mix(in oklch, var(--color-black) 18%, transparent);
+
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);
   --chart-3: var(--color-neutral-600);
@@ -364,6 +371,8 @@
   --sticker-edge: var(--color-white);
   --sticker-ink: var(--color-neutral-900);
   --sticker-shadow: color-mix(in oklch, var(--color-black) 30%, transparent);
+
+  --particle-shadow: color-mix(in oklch, var(--color-black) 18%, transparent);
 
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);

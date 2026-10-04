@@ -1,3 +1,4 @@
+import * as React from "react"
 import { DatabaseIcon } from "lucide-react"
 import { describe, expect, it, vi } from "vitest"
 import { render } from "vitest-browser-react"
@@ -53,6 +54,25 @@ describe("IntegrationVisual", () => {
     screen.container
       .querySelector('[data-slot="integration-visual"]')!
       .scrollIntoView()
+    await expect.poll(() => pulses(screen.container)).toBe(4)
+  })
+
+  it("still rests off screen when given a ref, and hands the ref its root", async () => {
+    const ref = React.createRef<HTMLDivElement>()
+    const pulses = (container: HTMLElement) =>
+      container.querySelectorAll("path.stroke-muted-foreground").length
+    const screen = await render(
+      <div style={{ marginTop: "200vh" }}>
+        <IntegrationVisual ref={ref} items={items(4)} />
+      </div>
+    )
+    const root = screen.container.querySelector(
+      '[data-slot="integration-visual"]'
+    )!
+    expect(ref.current).toBe(root)
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(pulses(screen.container)).toBe(0)
+    root.scrollIntoView()
     await expect.poll(() => pulses(screen.container)).toBe(4)
   })
 

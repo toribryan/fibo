@@ -16,10 +16,12 @@ const meta = JSON.parse(
   await readFile(path.join(root, "packages/ui/components.meta.json"), "utf8")
 )
 const transformedDir = path.join(registryDir, "registry/ui")
+const libDir = path.join(root, "packages/ui/src/lib")
+const transformedLibDir = path.join(registryDir, "registry/lib")
 const homepage = process.env.FIBO_SITE_URL || "https://fibo.toribryan.com"
 
 const rewrites = [
-  [/@workspace\/ui\/lib\/utils/g, "@/lib/utils"],
+  [/@workspace\/ui\/lib\//g, "@/lib/"],
   [/@workspace\/ui\/components\//g, "@/components/ui/"],
   [/@workspace\/ui\/hooks\//g, "@/hooks/"],
 ]
@@ -235,6 +237,8 @@ function tokensFor(source) {
 
 await rm(transformedDir, { recursive: true, force: true })
 await mkdir(transformedDir, { recursive: true })
+await rm(transformedLibDir, { recursive: true, force: true })
+await mkdir(transformedLibDir, { recursive: true })
 
 const files = (await readdir(componentsDir))
   .filter((f) => f.endsWith(".tsx") && !/\.(stories|test)\.tsx$/.test(f))
@@ -267,6 +271,22 @@ if (fresh.length > MAX_NEW) {
   )
 }
 
+// Copies a helper from packages/ui/src/lib into the registry and returns its
+// file name. A helper may import only React, so it brings no dependencies.
+async function shipLib(name) {
+  const file = `${name}.ts`
+  const source = await readFile(path.join(libDir, file), "utf8")
+  for (const [, spec] of source.matchAll(/from\s+["']([^"']+)["']/g)) {
+    if (spec !== "react") {
+      throw new Error(
+        `packages/ui/src/lib/${file} imports ${spec}. A shipped helper may import only react; extend build-registry.mjs.`
+      )
+    }
+  }
+  await writeFile(path.join(transformedLibDir, file), source)
+  return file
+}
+
 const items = []
 for (const file of files) {
   const name = file.replace(/\.tsx$/, "")
@@ -280,11 +300,16 @@ for (const file of files) {
 
   const dependencies = new Set()
   const registryDependencies = new Set()
+  const libFiles = []
   for (const [, spec] of source.matchAll(/from\s+["']([^"']+)["']/g)) {
     if (spec.startsWith("@workspace/ui/components/")) {
       registryDependencies.add(`${homepage}/r/${path.basename(spec)}.json`)
     } else if (spec === "@workspace/ui/lib/utils") {
       registryDependencies.add("utils")
+    } else if (spec.startsWith("@workspace/ui/lib/")) {
+      // Helpers other than shadcn's utils travel with each part that uses
+      // them, as a registry:lib file shadcn writes into the app's lib folder.
+      libFiles.push(await shipLib(path.basename(spec)))
     } else if (spec.startsWith("@workspace/") || spec.startsWith(".")) {
       continue
     } else {
@@ -321,7 +346,13 @@ for (const file of files) {
     },
     dependencies: [...dependencies],
     registryDependencies: [...registryDependencies],
-    files: [{ path: `registry/ui/${file}`, type: "registry:ui" }],
+    files: [
+      { path: `registry/ui/${file}`, type: "registry:ui" },
+      ...libFiles.map((lib) => ({
+        path: `registry/lib/${lib}`,
+        type: "registry:lib",
+      })),
+    ],
     ...tokensFor(source),
   })
 }

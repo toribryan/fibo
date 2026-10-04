@@ -156,6 +156,9 @@ workspace imports rewritten to `@/lib/utils` and `@/components/ui/*`, writes
 each component's imports. Tokens are read from `globals.css`: each component
 ships the ones its classes use that a stock `shadcn init` lacks (the
 `STOCK_TOKENS` list in the build script), and `@fibo/theme` ships all of them.
+A helper in `packages/ui/src/lib/` other than `utils` (such as `mergeRefs`)
+ships as a `registry:lib` file with each part that imports it, and may
+import only React; `pnpm 21st:export` inlines it like `cn`.
 
 `pnpm --filter registry smoke` installs every item into a fresh `shadcn init`
 app, builds it, and fails if a class in an installed file compiles to nothing.

@@ -592,6 +592,8 @@ function countLabel(count: number, noun: DataTableNoun) {
 
 type SelectionSummary = {
   count: number
+  /** Selected rows the filters hide, which the count includes. */
+  hiddenCount: number
   totalCount: number
   matchingCount: number
   pageState: "none" | "some" | "all"
@@ -601,17 +603,40 @@ type SelectionSummary = {
 }
 
 /*
- * The selected rows there are to act on: those in the data that match the
- * filters, as getFilteredSelectedRowModel has them. Ids left behind by a
- * refetch or hidden by a filter would otherwise be counted, and deleted,
- * though nobody can see them. With manualPagination the data is one page,
- * so every id counts; the app owns the rest.
+ * The selected rows there are to act on: every selected row still in the
+ * data, as getSelectedRowModel has them, whether or not a filter hides it.
+ * Ids a refetch left behind would otherwise be counted, and deleted, though
+ * the rows are gone. With manualPagination the data is one page, so every
+ * id counts; the app owns the rest.
  */
 function selectedRowIds(table: DataTableAnyTable): string[] {
   if (table.options.manualPagination) {
     return Object.keys(table.atoms.rowSelection.get())
   }
-  return table.getFilteredSelectedRowModel().flatRows.map((row) => row.id)
+  return table.getSelectedRowModel().flatRows.map((row) => row.id)
+}
+
+// Selected rows in the data that the filters leave out.
+function hiddenSelectedCount(table: DataTableAnyTable) {
+  return (
+    table.getSelectedRowModel().flatRows.length -
+    table.getFilteredSelectedRowModel().flatRows.length
+  )
+}
+
+// “5 members selected, 2 hidden by filters”: the toolbar and the announcer
+// say the same thing.
+function selectionLabel(summary: SelectionSummary, noun: DataTableNoun) {
+  if (summary.isAll && summary.hiddenCount === 0) {
+    return `All ${countLabel(summary.matchingCount, noun)} selected`
+  }
+  return `${countLabel(summary.count, noun)} selected${hiddenSuffix(summary.hiddenCount)}`
+}
+
+function hiddenSuffix(hiddenCount: number) {
+  return hiddenCount > 0
+    ? `, ${hiddenCount.toLocaleString("en-US")} hidden by filters`
+    : ""
 }
 
 function summarize(
@@ -633,6 +658,7 @@ function summarize(
         : "some"
 
   let count: number
+  let hiddenCount = 0
   let totalCount: number
   let matchingCount: number
   let isAll: boolean
@@ -651,6 +677,10 @@ function summarize(
       .getFilteredRowModel()
       .flatRows.filter((row) => row.getCanSelect()).length
     count = selectedRowIds(table).length
+    hiddenCount = hiddenSelectedCount(table)
+    // Out of the rows that match plus the selected ones the filters hide,
+    // so the count never runs past the total.
+    totalCount += hiddenCount
     isAll =
       matchingCount > selectableOnPage &&
       count > 0 &&
@@ -658,13 +688,14 @@ function summarize(
   }
   return {
     count,
+    hiddenCount,
     totalCount,
     matchingCount,
     pageState,
     selectableOnPage,
     isAll,
     canSelectAllMatching:
-      !isAll && pageState === "all" && count < matchingCount,
+      !isAll && pageState === "all" && count - hiddenCount < matchingCount,
   }
 }
 
@@ -828,8 +859,9 @@ function ModelDataTable({
     () => selectedRowIds(table).length > 0
   )
 
-  // Drop ids the count leaves out, so table.getSelectedRowIds(), which bulk
+  // Drop ids a refetch left behind, so table.getSelectedRowIds(), which bulk
   // actions read, agrees with the toolbar, the footer and the announcer.
+  // Rows a filter hides stay selected, and the toolbar says how many.
   const stale = useSelector(table.store, () => {
     const selection = Object.keys(table.atoms.rowSelection.get())
     const kept = selectedRowIds(table)
@@ -1212,18 +1244,15 @@ function DataTableAnnouncer() {
       setAnnouncement("Selection cleared")
       return
     }
-    if (summary.isAll) {
-      setAnnouncement(`All ${countLabel(summary.matchingCount, noun)} selected`)
-      return
-    }
     // Leaving "all" keeps only this page's rows, which would otherwise go
     // unsaid while the count drops from every match to a handful.
     const narrowed =
       legacy !== null &&
+      !summary.isAll &&
       wasAll &&
       summary.matchingCount > summary.selectableOnPage
     setAnnouncement(
-      `${countLabel(summary.count, noun)} selected${narrowed ? ", on this page only" : ""}`
+      `${selectionLabel(summary, noun)}${narrowed ? ", on this page only" : ""}`
     )
   })
 
@@ -1262,8 +1291,8 @@ function DataTableToolbar({
     narrow,
     cards,
   } = useDataTableRoot()
-  const { count, matchingCount, isAll, canSelectAllMatching } =
-    useSelectionSummary()
+  const summary = useSelectionSummary()
+  const { count, matchingCount, canSelectAllMatching } = summary
   const selecting = count > 0
 
   return (
@@ -1299,9 +1328,7 @@ function DataTableToolbar({
             data-slot="data-table-selected-label"
             className="text-sm font-medium whitespace-nowrap tabular-nums"
           >
-            {isAll
-              ? `All ${countLabel(count, noun)} selected`
-              : `${countLabel(count, noun)} selected`}
+            {selectionLabel(summary, noun)}
           </span>
           {canSelectAllMatching && !narrow ? (
             <Button
@@ -1682,13 +1709,23 @@ function DataTableBulkActions({
   /** Delete's label, such as “Remove” or “Archive”. */
   deleteLabel?: string
 }) {
-  const { narrow } = useDataTableRoot()
-  const { count } = useSelectionSummary()
+  const { narrow, noun } = useDataTableRoot()
+  const { count, hiddenCount } = useSelectionSummary()
+  const countId = React.useId()
   if (count === 0) return null
   const hasOthers =
     React.Children.toArray(children).length > 0 || Boolean(moreActions)
+  // Every action reaches every selected row, hidden ones too, so Delete
+  // says how many before it's pressed.
+  const reach = `${countLabel(count, noun)}${
+    hiddenCount > 0
+      ? `, including ${hiddenCount.toLocaleString("en-US")} hidden by filters`
+      : ""
+  }`
   return (
     <div
+      role="group"
+      aria-label={`Actions on ${countLabel(count, noun)}`}
       data-slot="data-table-bulk-actions"
       className={cn("ml-auto flex items-center gap-1.5", className)}
       {...props}
@@ -1715,12 +1752,16 @@ function DataTableBulkActions({
           {hasOthers ? (
             <span aria-hidden="true" className="mx-1 h-5 w-px bg-border" />
           ) : null}
+          <span id={countId} hidden>
+            {reach}
+          </span>
           {narrow ? (
             <Button
               data-slot="data-table-delete"
               variant="destructive"
               size="icon-sm"
               aria-label={deleteLabel}
+              aria-describedby={countId}
               onClick={onDelete}
             >
               <Trash2Icon />
@@ -1730,6 +1771,7 @@ function DataTableBulkActions({
               data-slot="data-table-delete"
               variant="destructive"
               size="sm"
+              aria-describedby={countId}
               onClick={onDelete}
             >
               <Trash2Icon data-icon="inline-start" />
@@ -2618,13 +2660,16 @@ function DataTablePagination(
   )
 }
 
-/** “2 of 6 members selected”, for a picker's footer. */
+/**
+ * “2 of 6 members selected”, for a picker's footer, with “, 1 hidden by
+ * filters” while a filter hides selected rows.
+ */
 function DataTableSelectionCount({
   className,
   ...props
 }: React.ComponentProps<"span">) {
   const { noun } = useDataTableRoot()
-  const { count, totalCount } = useSelectionSummary()
+  const { count, hiddenCount, totalCount } = useSelectionSummary()
   return (
     <span
       data-slot="data-table-selection-count"
@@ -2632,6 +2677,7 @@ function DataTableSelectionCount({
       {...props}
     >
       {count.toLocaleString("en-US")} of {countLabel(totalCount, noun)} selected
+      {hiddenSuffix(hiddenCount)}
     </span>
   )
 }

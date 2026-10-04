@@ -156,6 +156,28 @@ describe("Reactions", () => {
       .toHaveAccessibleName("Heart")
   })
 
+  it("shades its particles with the --particle-shadow token", async () => {
+    const root = document.documentElement
+    root.style.setProperty("--particle-shadow", "rgb(255, 0, 0)")
+    try {
+      const screen = await render(
+        <Reactions particles={1} defaultReactions={[heart]} />
+      )
+      await screen.getByRole("button", { name: /^Heart/ }).click()
+      const find = () =>
+        document.querySelector<HTMLElement>(
+          '[data-slot="reactions-particles"] > *'
+        )
+      await expect.poll(find).toBeTruthy()
+      const particle = find()!
+      expect(particle.getAttribute("style")).not.toMatch(/rgb|oklch|#/)
+      expect(getComputedStyle(particle).filter).toContain("rgb(255, 0, 0)")
+      await screen.unmount()
+    } finally {
+      root.style.removeProperty("--particle-shadow")
+    }
+  })
+
   it("throws nothing more once unmounted, and clears its layer", async () => {
     const particles = () =>
       document.querySelector('[data-slot="reactions-particles"]')

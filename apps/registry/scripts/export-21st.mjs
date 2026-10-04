@@ -43,6 +43,11 @@ const roles = [
   ["popover-overlay", "popover/85"],
   ["ring-subtle", "ring/50"],
 ]
+// Tokens with no stock role to fall back on, written out as their value.
+// Each sits inside an arbitrary class, so spaces are underscores.
+const literals = [
+  ["var(--particle-shadow)", "color-mix(in_oklch,black_18%,transparent)"],
+]
 const utilities =
   "bg|text|border|ring|outline|fill|stroke|from|via|to|shadow|divide|decoration|caret|accent|placeholder"
 const fiboOnly = new RegExp(
@@ -61,13 +66,17 @@ const docsUrl = (name, info) =>
   `${homepage}/?path=/docs/${info.tier}-${info.tier === "base-components" ? `${info.group.toLowerCase()}-` : ""}${name}--docs`
 
 function mapRoles(code, file) {
+  const literal = literals.reduce(
+    (out, [token, value]) => out.replaceAll(token, value),
+    code
+  )
   const mapped = roles.reduce(
     (out, [role, replacement]) =>
       out.replace(
         new RegExp(`\\b(${utilities})-${role}(?![\\w-])`, "g"),
         (_, utility) => `${utility}-${replacement}`
       ),
-    code
+    literal
   )
   const leftover = mapped.match(fiboOnly)
   if (leftover) {
@@ -92,9 +101,10 @@ function split(source) {
 
 async function inlineComponent(spec) {
   const name = path.basename(spec)
-  const { imports, body } = split(
-    await readFile(path.join(componentsDir, `${name}.tsx`), "utf8")
-  )
+  const file = spec.startsWith("@workspace/ui/lib/")
+    ? path.join(uiDir, "src/lib", `${name}.ts`)
+    : path.join(componentsDir, `${name}.tsx`)
+  const { imports, body } = split(await readFile(file, "utf8"))
   for (const { spec: nested } of imports) {
     if (nested.startsWith("@workspace/ui/components/")) {
       throw new Error(
@@ -215,7 +225,10 @@ async function assemble(source, file, own) {
       throw new Error(
         `${file} imports ${statement.spec}. A demo may import only the component it shows; build the rest from plain elements.`
       )
-    } else if (statement.spec.startsWith("@workspace/ui/components/")) {
+    } else if (
+      statement.spec.startsWith("@workspace/ui/components/") ||
+      statement.spec.startsWith("@workspace/ui/lib/")
+    ) {
       const dep = await inlineComponent(statement.spec)
       usesCn ||= dep.imports.some((i) => i.spec === "@workspace/ui/lib/utils")
       inlined.push(dep)

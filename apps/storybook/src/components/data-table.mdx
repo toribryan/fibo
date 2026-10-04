@@ -36,6 +36,8 @@ Data table in the Figma library.
 - Sorting, search, filters and the page can live in the URL, so a link opens
   the same view.
 - Selection changes are announced: “3 members selected”, “Selection cleared”.
+  Selected rows a filter hides stay selected and are counted: “5 members
+  selected, 2 hidden by filters”.
 - One toolbar row for every action: search, filters and create actions while
   idle, then the selection and bulk actions in the same place while rows are
   selected.
@@ -260,9 +262,15 @@ that row and the toolbar, not the table. To read state there, pass a
 selector, `useDataTable(options, (state) => state.rowSelection)`, and read
 `table.state`, or use `table.Subscribe`. Act on the selection with
 `table.getSelectedRowIds()` and `table.resetRowSelection()`. The selection
-holds only rows in the data that match the filters: ids a refetch drops or
-a filter hides leave it, so the count and the ids agree. With
-`manualPagination`, ids on other pages stay, since the app owns those.
+holds every selected row still in the data: ids a refetch drops leave it,
+but rows a search or filter hides stay selected, and the toolbar, the
+announcement and DataTableSelectionCount say how many, as in “5 members
+selected, 2 hidden by filters”. Bulk actions act on all of them, hidden
+ones included, and Delete's description gives the count. The header
+checkbox speaks for the page; Select all matching adds every row the
+filters let through and keeps the hidden ones; Clear and Escape clear
+everything. With `manualPagination`, ids on other pages stay, since the app
+owns those.
 
 Sorting, column filters, the search and the page can be owned outside the
 table, as atoms. `useSearchParamsAtom` keeps one in the URL with
