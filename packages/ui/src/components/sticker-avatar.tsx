@@ -122,6 +122,10 @@ type BakeOptions = {
 
 type Baked = { url: string; shape: "cutout" | "round" }
 
+// Each bake holds a data URL, so a long scrolling list of people must not
+// keep every one it has ever shown. A Map iterates in insertion order, so
+// re-inserting on a hit makes the first key the least recently used.
+const MAX_BAKES = 64
 const bakes = new Map<string, Promise<Baked>>()
 
 /*
@@ -134,7 +138,11 @@ function bakeSticker(src: string, options: BakeOptions): Promise<Baked> {
   const dpr = Math.min(2, window.devicePixelRatio || 1)
   const key = JSON.stringify([src, options, dpr])
   const cached = bakes.get(key)
-  if (cached) return cached
+  if (cached) {
+    bakes.delete(key)
+    bakes.set(key, cached)
+    return cached
+  }
 
   const job = (async (): Promise<Baked> => {
     const img = await loadReadableImage(src)
@@ -228,6 +236,7 @@ function bakeSticker(src: string, options: BakeOptions): Promise<Baked> {
   })()
 
   bakes.set(key, job)
+  if (bakes.size > MAX_BAKES) bakes.delete(bakes.keys().next().value!)
   job.catch(() => bakes.delete(key))
   return job
 }
@@ -235,9 +244,9 @@ function bakeSticker(src: string, options: BakeOptions): Promise<Baked> {
 // A hairline keeps white paper visible on a white page, then the lift
 // shadow. Both are drop-shadows, so they follow the cut, not the box.
 const PAPER_SHADOW =
-  "[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_calc(var(--sticker-edge-width)*0.35)_calc(var(--sticker-edge-width)*0.5)_rgb(0_0_0/0.3))] transition-[filter] duration-200"
+  "[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_calc(var(--sticker-edge-width)*0.35)_calc(var(--sticker-edge-width)*0.5)_var(--sticker-shadow))] transition-[filter] duration-200"
 const PAPER_SHADOW_LIFTED =
-  "motion-safe:group-hover/sticker-avatar:[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_calc(var(--sticker-edge-width)*1.1)_calc(var(--sticker-edge-width)*1.4)_rgb(0_0_0/0.3))] motion-safe:group-hover/sticker:[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_calc(var(--sticker-edge-width)*1.1)_calc(var(--sticker-edge-width)*1.4)_rgb(0_0_0/0.3))]"
+  "motion-safe:group-hover/sticker-avatar:[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_calc(var(--sticker-edge-width)*1.1)_calc(var(--sticker-edge-width)*1.4)_var(--sticker-shadow))] motion-safe:group-hover/sticker:[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_calc(var(--sticker-edge-width)*1.1)_calc(var(--sticker-edge-width)*1.4)_var(--sticker-shadow))]"
 
 // Each status keeps the semantic token it means everywhere else in fibo.
 const STATUS_FILL: Record<StickerAvatarStatus, string> = {
@@ -263,7 +272,7 @@ function StatusSticker({
       data-slot="sticker-avatar-status"
       data-status={status}
       aria-hidden="true"
-      className="absolute -right-[6%] -bottom-[6%] size-[34%] min-h-[11px] min-w-[11px] rotate-[calc(var(--sticker-tilt)*-2)] [filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_1px_1px_rgb(0_0_0/0.3))]"
+      className="absolute -right-[6%] -bottom-[6%] size-[34%] min-h-[11px] min-w-[11px] rotate-[calc(var(--sticker-tilt)*-2)] [filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_1px_1px_var(--sticker-shadow))]"
     >
       {/* Unlike the avatar's edge, this disc is the page colour, not paper:
           fibo's status tokens are tuned for the page in each theme, and on
@@ -348,27 +357,40 @@ function StickerAvatar({
     baked?: Baked
     failed?: "load" | "taint"
   } | null>(null)
+  const request = React.useRef<string | null>(null)
 
+  // `--sticker-edge` can be overridden on any ancestor, or through `style`,
+  // so it is read after every render: a new value bakes a new sticker, and
+  // the same request is not started twice.
   React.useEffect(() => {
-    if (!src || !ref.current) return
-    let current = true
-    // `--sticker-edge` can be overridden on any ancestor, or through `style`.
+    if (!src || !ref.current) {
+      request.current = null
+      return
+    }
     const color =
       getComputedStyle(ref.current).getPropertyValue("--sticker-edge").trim() ||
       "#ffffff"
-    bakeSticker(src, { size, edge: edgeWidth, color, cutout, pixelated }).then(
-      (baked) => current && setResult({ src, baked }),
+    const options = { size, edge: edgeWidth, color, cutout, pixelated }
+    const key = JSON.stringify([src, options])
+    if (request.current === key) return
+    request.current = key
+    bakeSticker(src, options).then(
+      (baked) => request.current === key && setResult({ src, baked }),
       (error: unknown) =>
-        current &&
+        request.current === key &&
         setResult({
           src,
           failed: error instanceof StickerError ? error.reason : "load",
         })
     )
-    return () => {
-      current = false
-    }
-  }, [src, size, edgeWidth, cutout, pixelated])
+  })
+
+  React.useEffect(
+    () => () => {
+      request.current = null
+    },
+    []
+  )
 
   const settled = src && result?.src === src ? result : null
   const shape: StickerAvatarShape | "loading" = !src
