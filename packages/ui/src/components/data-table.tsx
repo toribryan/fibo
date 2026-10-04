@@ -263,11 +263,11 @@ type PageResetKey = "sorting" | "columnFilters" | "globalFilter"
  */
 function resetPageOnChange<T>(
   key: PageResetKey,
-  tableRef: React.RefObject<DataTableAnyTable | null>,
+  getTable: () => DataTableAnyTable | null,
   onChange: ((updater: Updater<T>) => void) | undefined
 ) {
   return (updater: Updater<T>) => {
-    const table = tableRef.current
+    const table = getTable()
     if (!table) return onChange?.(updater)
     const before = table.atoms[key].get() as T
     const changed = !Object.is(functionalUpdate(updater, before), before)
@@ -309,7 +309,12 @@ function useDataTable<TData extends RowData, TSelected = null>(
     autoResetPageIndex === undefined &&
     options.autoResetAll === undefined &&
     !options.manualPagination
-  const tableRef = React.useRef<DataTableAnyTable | null>(null)
+  // The change handlers go in before the table exists; they run later, from
+  // events, and find it here.
+  const [built] = React.useState(() =>
+    createAtom<DataTableAnyTable | null>(null)
+  )
+  const getTable = () => built.get()
 
   const table = dataTableHook.useAppTable<TData, TSelected>(
     {
@@ -319,17 +324,17 @@ function useDataTable<TData extends RowData, TSelected = null>(
         ? {
             onSortingChange: resetPageOnChange(
               "sorting",
-              tableRef,
+              getTable,
               onSortingChange
             ),
             onColumnFiltersChange: resetPageOnChange(
               "columnFilters",
-              tableRef,
+              getTable,
               onColumnFiltersChange
             ),
             onGlobalFilterChange: resetPageOnChange(
               "globalFilter",
-              tableRef,
+              getTable,
               onGlobalFilterChange
             ),
           }
@@ -354,7 +359,7 @@ function useDataTable<TData extends RowData, TSelected = null>(
   )
 
   React.useLayoutEffect(() => {
-    tableRef.current = table as unknown as DataTableAnyTable
+    built.set(() => table as unknown as DataTableAnyTable)
   })
 
   const { data } = options
