@@ -65,4 +65,12 @@ describe("Pagination", () => {
     const screen = await render(<Pagination page={9} pageCount={4} />)
     await expect.element(screen.getByText("Page 4 of 4")).toBeInTheDocument()
   })
+
+  it("keeps an uncontrolled page clamped when pages are taken away", async () => {
+    const screen = await render(<Pagination defaultPage={5} pageCount={5} />)
+    await screen.rerender(<Pagination defaultPage={5} pageCount={2} />)
+    await expect.element(screen.getByText("Page 2 of 2")).toBeInTheDocument()
+    await screen.rerender(<Pagination defaultPage={5} pageCount={5} />)
+    await expect.element(screen.getByText("Page 2 of 5")).toBeInTheDocument()
+  })
 })
