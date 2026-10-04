@@ -142,7 +142,10 @@ function launchParticle(emoji: string, x: number, y: number) {
   const lean =
     Math.abs(inward) > 0.5 ? Math.sign(inward) : Math.random() < 0.5 ? -1 : 1
 
-  node.style.cssText = `position:absolute;left:${x}px;top:${y}px;font-size:${size}rem;line-height:1;will-change:transform,opacity;filter:drop-shadow(0 2px 6px rgb(0 0 0 / 0.18))`
+  // The shadow is a class, not inline, so it reads a token like every other
+  // colour and Tailwind sees it to generate.
+  node.className = "[filter:drop-shadow(0_2px_6px_var(--particle-shadow))]"
+  node.style.cssText = `position:absolute;left:${x}px;top:${y}px;font-size:${size}rem;line-height:1;will-change:transform,opacity`
   layer.append(node)
 
   // Sway alternates sides on the way up so the path reads as an S-curve

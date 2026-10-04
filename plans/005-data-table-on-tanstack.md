@@ -100,6 +100,23 @@ from a `lockedReason` option. Shift ranges go through
 reads `shiftKey`. The announcements, Escape to clear, Shift+click ranges and
 focus return keep their current behaviour and tests.
 
+**Rows a filter hides.** Pruning the selection to the filtered rows, or
+keeping hidden rows selected. Chosen, by the owner: they stay selected. The
+one source is the selected rows still in the data (`getSelectedRowModel`);
+ids a refetch drops are pruned, so `getSelectedRowIds()` never lists a row
+that's gone. The hidden count is the selected rows the filtered model
+leaves out, and the toolbar, the announcement and the footer count all say
+it: “5 members selected, 2 hidden by filters”. The footer's total is the
+matching rows plus those hidden selected ones, so the count never runs past
+it. The page checkbox reflects the page only. Select all matching adds the
+filtered rows and keeps the hidden ones, since `toggleAllRowsSelected`
+spreads the old selection; Clear and Escape clear everything. Bulk actions
+act on every selected row, hidden ones included, so the bulk actions group
+is labelled with the count, and Delete's description repeats it with how
+many are hidden. Someone filtering to find more rows to add shouldn't lose
+the ones they already picked, and saying the hidden count keeps a bulk
+delete from reaching rows nobody mentioned.
+
 **Semantics.** Unchanged from plan 003: a native `<table>`, not
 `role="grid"`, with `aria-sort` on the sorted `<th>` only.
 

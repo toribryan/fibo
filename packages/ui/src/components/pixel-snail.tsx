@@ -2,6 +2,7 @@
 
 import * as React from "react"
 
+import { mergeRefs } from "@workspace/ui/lib/merge-refs"
 import { cn } from "@workspace/ui/lib/utils"
 
 type Pixel = [x: number, y: number]
@@ -469,10 +470,13 @@ function PixelSnailSprite({
   assembleDelay,
   onAssemble,
   transform,
+  ref,
   ...props
 }: PixelSnailSpriteProps) {
   const reduceMotion = useReducedMotion()
   const sprite = React.useRef<SVGGElement>(null)
+  // A caller's ref would otherwise replace the one that pauses it off screen.
+  const spriteRef = React.useMemo(() => mergeRefs(sprite, ref), [ref])
   const inView = useInView(sprite)
   const still = reduceMotion || look !== null || !inView
   const step = useCrawl(pace, still || mode !== "crawl")
@@ -497,7 +501,7 @@ function PixelSnailSprite({
   const origin = `scale(${pixel * flip} ${pixel}) translate(${-FOOT_MIDDLE} -11)`
   return (
     <g
-      ref={sprite}
+      ref={spriteRef}
       data-slot="pixel-snail-sprite"
       fill="currentColor"
       shapeRendering="crispEdges"
@@ -540,10 +544,13 @@ function PixelSnail({
   ground = true,
   label = "Loading",
   className,
+  ref,
   ...props
 }: PixelSnailProps) {
   const reduceMotion = useReducedMotion()
   const root = React.useRef<HTMLDivElement>(null)
+  // A caller's ref would otherwise replace the one that pauses it off screen.
+  const rootRef = React.useMemo(() => mergeRefs(root, ref), [ref])
   const inView = useInView(root)
   const step = useCrawl(pace, reduceMotion || !inView)
   const [trackWidth, setTrackWidth] = React.useState(0)
@@ -588,7 +595,7 @@ function PixelSnail({
 
   return (
     <div
-      ref={root}
+      ref={rootRef}
       data-slot="pixel-snail"
       data-travel={travel || undefined}
       role="status"
