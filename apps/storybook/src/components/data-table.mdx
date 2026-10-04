@@ -259,7 +259,10 @@ changes; each part subscribes to what it shows, so ticking a row re-renders
 that row and the toolbar, not the table. To read state there, pass a
 selector, `useDataTable(options, (state) => state.rowSelection)`, and read
 `table.state`, or use `table.Subscribe`. Act on the selection with
-`table.getSelectedRowIds()` and `table.resetRowSelection()`.
+`table.getSelectedRowIds()` and `table.resetRowSelection()`. The selection
+holds only rows in the data that match the filters: ids a refetch drops or
+a filter hides leave it, so the count and the ids agree. With
+`manualPagination`, ids on other pages stay, since the app owns those.
 
 Sorting, column filters, the search and the page can be owned outside the
 table, as atoms. `useSearchParamsAtom` keeps one in the URL with

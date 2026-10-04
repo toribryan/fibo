@@ -25,6 +25,7 @@ import {
   DataTableSelectionCount,
   DataTableToolbar,
   useDataTable,
+  useDataTableContext,
   useDataTableFacets,
   useSearchParamsAtom,
   type DataTableOptions,
@@ -414,6 +415,73 @@ describe("DataTable on useDataTable", () => {
     await screen.getByRole("checkbox", { name: "Select Maya Okafor" }).click()
     await expect.poll(() => bodyNames()[0]).toBe("Maya Okafor (selected)")
     expect(bodyNames()[1]).toBe("Priya Raman")
+  })
+})
+
+describe("selection after the rows change", () => {
+  let ids: string[] = []
+  function SelectedIds() {
+    const table = useDataTableContext()
+    return (
+      <button type="button" onClick={() => (ids = table.getSelectedRowIds())}>
+        Read selection
+      </button>
+    )
+  }
+  function Counted(
+    props: Partial<DataTableOptions<Member>> & { members?: Member[] }
+  ) {
+    return (
+      <Example {...props}>
+        <DataTableFooter>
+          <DataTableSelectionCount />
+          <SelectedIds />
+        </DataTableFooter>
+      </Example>
+    )
+  }
+
+  it("counts only selected rows still in the data after a refetch", async () => {
+    const twelve = extraMembers(12)
+    const screen = await render(<Counted members={twelve} />)
+    await screen
+      .getByRole("checkbox", { name: "Select all members on this page" })
+      .click()
+    await expect
+      .element(screen.getByRole("group", { name: "Bulk actions" }))
+      .toHaveTextContent("12 members selected")
+
+    await screen.rerender(<Counted members={twelve.slice(4)} />)
+    await expect
+      .element(screen.getByRole("group", { name: "Bulk actions" }))
+      .toHaveTextContent("8 members selected")
+    await expect
+      .element(screen.getByText("8 of 8 members selected"))
+      .toBeInTheDocument()
+    await expect
+      .element(screen.getByRole("status").last())
+      .toHaveTextContent("8 members selected")
+    await screen.getByRole("button", { name: "Read selection" }).click()
+    expect(ids).toEqual(twelve.slice(4).map((row) => row.id))
+  })
+
+  it("counts only selected rows that match the filters", async () => {
+    const screen = await render(
+      <Counted
+        initialState={{
+          globalFilter: "priya",
+          rowSelection: { maya: true, priya: true },
+        }}
+      />
+    )
+    await expect
+      .element(screen.getByRole("group", { name: "Bulk actions" }))
+      .toHaveTextContent("1 member selected")
+    await expect
+      .element(screen.getByText("1 of 1 member selected"))
+      .toBeInTheDocument()
+    await screen.getByRole("button", { name: "Read selection" }).click()
+    expect(ids).toEqual(["priya"])
   })
 })
 

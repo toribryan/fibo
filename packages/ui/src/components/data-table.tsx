@@ -600,6 +600,20 @@ type SelectionSummary = {
   canSelectAllMatching: boolean
 }
 
+/*
+ * The selected rows there are to act on: those in the data that match the
+ * filters, as getFilteredSelectedRowModel has them. Ids left behind by a
+ * refetch or hidden by a filter would otherwise be counted, and deleted,
+ * though nobody can see them. With manualPagination the data is one page,
+ * so every id counts; the app owns the rest.
+ */
+function selectedRowIds(table: DataTableAnyTable): string[] {
+  if (table.options.manualPagination) {
+    return Object.keys(table.atoms.rowSelection.get())
+  }
+  return table.getFilteredSelectedRowModel().flatRows.map((row) => row.id)
+}
+
 function summarize(
   table: DataTableAnyTable,
   legacy: LegacySelection | null
@@ -636,7 +650,7 @@ function summarize(
     matchingCount = table
       .getFilteredRowModel()
       .flatRows.filter((row) => row.getCanSelect()).length
-    count = Object.keys(table.atoms.rowSelection.get()).length
+    count = selectedRowIds(table).length
     isAll =
       matchingCount > selectableOnPage &&
       count > 0 &&
@@ -806,13 +820,28 @@ function ModelDataTable({
     [table]
   )
   const hasSelection = React.useCallback(
-    () => Object.keys(table.atoms.rowSelection.get()).length > 0,
+    () => selectedRowIds(table).length > 0,
     [table]
   )
   const selecting = useSelector(
-    table.atoms.rowSelection,
-    (selection) => Object.keys(selection).length > 0
+    table.store,
+    () => selectedRowIds(table).length > 0
   )
+
+  // Drop ids the count leaves out, so table.getSelectedRowIds(), which bulk
+  // actions read, agrees with the toolbar, the footer and the announcer.
+  const stale = useSelector(table.store, () => {
+    const selection = Object.keys(table.atoms.rowSelection.get())
+    const kept = selectedRowIds(table)
+    return selection.length !== kept.length
+  })
+  React.useEffect(() => {
+    if (!stale) return
+    const kept = new Set(selectedRowIds(table))
+    table.setRowSelection((old) =>
+      Object.fromEntries(Object.entries(old).filter(([id]) => kept.has(id)))
+    )
+  }, [stale, table])
 
   // The app filters its own rows for Show selected only, so once nothing is
   // selected there's nothing left to show.
