@@ -60,6 +60,8 @@ const meta: Meta<typeof Reactions> = {
     reactions: { control: false },
     defaultReactions: { control: false },
     choices: { control: false },
+    onReactionsChange: { control: false },
+    onReact: { control: false },
   },
   args: {
     type: "inline",
