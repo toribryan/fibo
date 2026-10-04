@@ -152,4 +152,20 @@ describe("FloatingNav", () => {
       .element(screen.getByRole("link", { name: "Saved" }))
       .not.toHaveAttribute("aria-current")
   })
+
+  it("marks a current button as current, not as a page", async () => {
+    const screen = await render(
+      <FloatingNav
+        position="static"
+        defaultValue="home"
+        items={[
+          { value: "home", label: "Home" },
+          { value: "saved", label: "Saved" },
+        ]}
+      />
+    )
+    await expect
+      .element(screen.getByRole("button", { name: "Home" }))
+      .toHaveAttribute("aria-current", "true")
+  })
 })

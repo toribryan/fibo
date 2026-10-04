@@ -264,7 +264,13 @@ function FloatingNav({
           const itemProps = {
             "data-slot": "floating-nav-item",
             "data-current": current ? "" : undefined,
-            "aria-current": current ? ("page" as const) : undefined,
+            // "page" only means something on a link; a button item marks
+            // the current one of a set.
+            "aria-current": current
+              ? item.href !== undefined
+                ? ("page" as const)
+                : ("true" as const)
+              : undefined,
             onClick: handleClick,
             className: cn(
               floatingNavItemVariants({ labels, size }),
