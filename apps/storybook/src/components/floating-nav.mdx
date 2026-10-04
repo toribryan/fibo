@@ -297,8 +297,9 @@ Style parts by slot or state, for example with
       <code>aria-label</code>. Name it when a page has more than one.
     </>,
     <>
-      The current item carries <code>aria-current="page"</code>. Hidden labels
-      stay in the DOM, so every item keeps its name.
+      The current item carries <code>aria-current="page"</code> when it is a
+      link, or <code>aria-current="true"</code> when it is a button. Hidden
+      labels stay in the DOM, so every item keeps its name.
     </>,
     "Items are plain links and buttons in the tab order. Tabbing into a hidden bar brings it back.",
     'Every item is at least 44px square, or 36px with size="sm", well above the 24px minimum target. With reduced motion the indicator and the bar move without animating.',
