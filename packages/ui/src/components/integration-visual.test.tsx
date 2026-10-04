@@ -1,5 +1,5 @@
 import { DatabaseIcon } from "lucide-react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { render } from "vitest-browser-react"
 
 import {
@@ -38,5 +38,45 @@ describe("IntegrationVisual", () => {
     )
     expect(hub?.hasAttribute("tabindex")).toBe(false)
     expect(hub?.tagName).toBe("DIV")
+  })
+
+  it("runs its pulses and halo only while on screen", async () => {
+    const pulses = (container: HTMLElement) =>
+      container.querySelectorAll("path.stroke-muted-foreground").length
+    const screen = await render(
+      <div style={{ marginTop: "200vh" }}>
+        <IntegrationVisual items={items(4)} />
+      </div>
+    )
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(pulses(screen.container)).toBe(0)
+    screen.container
+      .querySelector('[data-slot="integration-visual"]')!
+      .scrollIntoView()
+    await expect.poll(() => pulses(screen.container)).toBe(4)
+  })
+
+  it("draws tools that share a title", async () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {})
+    try {
+      const screen = await render(
+        <IntegrationVisual
+          items={[
+            { title: "Sheet", icon: <DatabaseIcon /> },
+            { title: "Sheet", icon: <DatabaseIcon /> },
+          ]}
+        />
+      )
+      expect(
+        screen.container.querySelectorAll(
+          '[data-slot="integration-visual-item"]'
+        )
+      ).toHaveLength(2)
+      expect(error.mock.calls.flat().map(String).join(" ")).not.toContain(
+        "same key"
+      )
+    } finally {
+      error.mockRestore()
+    }
   })
 })
