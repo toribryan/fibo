@@ -86,6 +86,11 @@ https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
 
 ### Changed
 
+- Data table keeps selected rows that a search or filter hides, and the
+  toolbar, announcement and `DataTableSelectionCount` add “, 2 hidden by
+  filters”. Bulk actions and `table.getSelectedRowIds()` cover every
+  selected row still in the data, hidden ones included; rows a refetch
+  drops still leave the selection.
 - Storybook groups base parts by what they do: their titles are
   `Base components/<Group>/<Name>`, and their docs live at
   `/?path=/docs/base-components-<group>-<name>--docs`. Special parts stay

@@ -10,6 +10,7 @@ import {
   DataTable,
   DataTableActions,
   DataTableBody,
+  DataTableBulkActions,
   DataTableCell,
   DataTableColumns,
   DataTableContent,
@@ -70,11 +71,13 @@ function Example({
   members = MEMBERS,
   columns = COLUMNS,
   children,
+  bulk,
   onRender,
   ...options
 }: Partial<DataTableOptions<Member>> & {
   members?: Member[]
   children?: React.ReactNode
+  bulk?: React.ReactNode
   onRender?: () => void
 }) {
   onRender?.()
@@ -96,6 +99,7 @@ function Example({
           <DataTableActions>
             <DataTableColumns />
           </DataTableActions>
+          {bulk}
         </DataTableToolbar>
         <DataTableContent />
         {children}
@@ -428,14 +432,29 @@ describe("selection after the rows change", () => {
       </button>
     )
   }
-  function Counted(
-    props: Partial<DataTableOptions<Member>> & { members?: Member[] }
-  ) {
+  function ClearSearch() {
+    const table = useDataTableContext()
+    return (
+      <button type="button" onClick={() => table.setGlobalFilter("")}>
+        Clear search
+      </button>
+    )
+  }
+  function Counted({
+    children,
+    ...props
+  }: Partial<DataTableOptions<Member>> & {
+    members?: Member[]
+    children?: React.ReactNode
+    bulk?: React.ReactNode
+  }) {
     return (
       <Example {...props}>
         <DataTableFooter>
           <DataTableSelectionCount />
           <SelectedIds />
+          <ClearSearch />
+          {children}
         </DataTableFooter>
       </Example>
     )
@@ -465,7 +484,41 @@ describe("selection after the rows change", () => {
     expect(ids).toEqual(twelve.slice(4).map((row) => row.id))
   })
 
-  it("counts only selected rows that match the filters", async () => {
+  it("keeps selected rows that a column filter hides, and says so", async () => {
+    const screen = await render(
+      <Counted
+        initialState={{
+          columnFilters: [{ id: "team", value: ["Engineering"] }],
+          rowSelection: { maya: true, priya: true },
+        }}
+      />
+    )
+    expect(bodyNames()).toEqual(["Priya Raman", "Sam Whitfield"])
+    await expect
+      .element(screen.getByRole("group", { name: "Bulk actions" }))
+      .toHaveTextContent("2 members selected, 1 hidden by filters")
+    await expect
+      .element(screen.getByText("2 of 3 members selected, 1 hidden by filters"))
+      .toBeInTheDocument()
+
+    await screen.getByRole("checkbox", { name: "Select Sam Whitfield" }).click()
+    await expect
+      .element(screen.getByRole("status").last())
+      .toHaveTextContent("3 members selected, 1 hidden by filters")
+    await screen.getByRole("button", { name: "Read selection" }).click()
+    expect([...ids].sort()).toEqual(["maya", "priya", "sam"])
+
+    // The header checkbox speaks for the page, which is all selected.
+    await expect
+      .element(
+        screen.getByRole("checkbox", {
+          name: "Select all members on this page",
+        })
+      )
+      .toBeChecked()
+  })
+
+  it("drops the hidden count once the filter that hid them is cleared", async () => {
     const screen = await render(
       <Counted
         initialState={{
@@ -476,12 +529,75 @@ describe("selection after the rows change", () => {
     )
     await expect
       .element(screen.getByRole("group", { name: "Bulk actions" }))
-      .toHaveTextContent("1 member selected")
+      .toHaveTextContent("2 members selected, 1 hidden by filters")
+    await screen.getByRole("button", { name: "Clear search" }).click()
+    expect(bodyNames()).toHaveLength(5)
     await expect
-      .element(screen.getByText("1 of 1 member selected"))
+      .element(screen.getByRole("group", { name: "Bulk actions" }))
+      .toHaveTextContent("2 members selected")
+    await expect
+      .element(screen.getByRole("group", { name: "Bulk actions" }))
+      .not.toHaveTextContent("hidden")
+    await expect
+      .element(screen.getByText("2 of 5 members selected"))
+      .toBeInTheDocument()
+  })
+
+  it("selects every matching row and keeps the hidden ones", async () => {
+    const twelve = extraMembers(12)
+    const screen = await render(
+      <Counted
+        members={[...MEMBERS, ...twelve]}
+        initialState={{
+          globalFilter: "extra",
+          pagination: { pageIndex: 0, pageSize: 5 },
+          rowSelection: { maya: true },
+        }}
+      >
+        <DataTablePagination />
+      </Counted>
+    )
+    await screen
+      .getByRole("checkbox", { name: "Select all members on this page" })
+      .click()
+    await expect
+      .element(screen.getByRole("group", { name: "Bulk actions" }))
+      .toMatchTextContent(/6 members selected, 1 hidden by filters/)
+    await screen.getByRole("button", { name: "Select all 12 members" }).click()
+    await expect
+      .element(screen.getByRole("group", { name: "Bulk actions" }))
+      .toHaveTextContent("13 members selected, 1 hidden by filters")
+    await expect
+      .element(screen.getByRole("status").last())
+      .toHaveTextContent("13 members selected, 1 hidden by filters")
+    await expect
+      .element(
+        screen.getByText("13 of 13 members selected, 1 hidden by filters")
+      )
       .toBeInTheDocument()
     await screen.getByRole("button", { name: "Read selection" }).click()
-    expect(ids).toEqual(["priya"])
+    expect([...ids].sort()).toEqual(
+      ["maya", ...twelve.map((row) => row.id)].sort()
+    )
+  })
+
+  it("says how many rows a bulk action acts on, hidden ones included", async () => {
+    const onDelete = vi.fn()
+    const screen = await render(
+      <Counted
+        bulk={<DataTableBulkActions onDelete={onDelete} />}
+        initialState={{
+          globalFilter: "priya",
+          rowSelection: { maya: true, priya: true },
+        }}
+      />
+    )
+    await expect
+      .element(screen.getByRole("group", { name: "Actions on 2 members" }))
+      .toBeInTheDocument()
+    await expect
+      .element(screen.getByRole("button", { name: "Delete" }))
+      .toHaveAccessibleDescription("2 members, including 1 hidden by filters")
   })
 })
 
