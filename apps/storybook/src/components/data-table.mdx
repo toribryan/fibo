@@ -12,57 +12,91 @@ import { Install } from "../blocks/install"
 # Data table
 
 Data table is the one table for lists people work through: selection in the
-first column, six cell types, locked rows that say why, and columns pinned to
-either edge. It matches the Data table in the Figma library.
+first column, six cell types, sorting, search and filters, locked rows that
+say why, and columns pinned to either edge. TanStack Table works out the rows
+and keeps the state; Data table draws them in a native table that matches the
+Data table in the Figma library.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
+- One hook, `useDataTable`, takes your rows and columns. Sorting, search,
+  filters with counts, pages, selection and which columns show all work
+  without code of your own.
 - A checkbox column with select all, which skips locked rows and shows a
-  dash while only some rows are selected.
-- Shift+click selects a range, and Escape clears the selection.
+  dash while only some rows are selected. Select all matching reaches the
+  rows on other pages.
+- Shift+click selects a range, in the order the rows are shown, and Escape
+  clears the selection.
 - Six cell types: primary, text, person, status, numeric and actions. A
   second line on a cell makes its row 52 pixels.
 - Columns pinned to the start or end, with shadows while there's more to
   scroll. Pinning switches off under 32rem.
+- Sorting, search, filters and the page can live in the URL, so a link opens
+  the same view.
 - Selection changes are announced: “3 members selected”, “Selection cleared”.
-- One toolbar row for every action: filters and create actions while idle,
-  then the selection and bulk actions in the same place while rows are
-  selected, with Select all matching for the rows on other pages.
+- One toolbar row for every action: search, filters and create actions while
+  idle, then the selection and bulk actions in the same place while rows are
+  selected.
 - Under 32rem it keeps working: the table scrolls under an icon-only
-  toolbar, or each row becomes a card. Sort and filters move into a sheet.
+  toolbar, or each row becomes a card read from the same rows. Filters move
+  into a sheet.
 
 ## Installation
 
 <Install
   name="data-table"
   exports={[
+    "useDataTable",
+    "createDataTableColumnHelper",
     "DataTable",
-    "DataTableContent",
-    "DataTableHeader",
-    "DataTableHead",
-    "DataTableBody",
-    "DataTableRow",
-    "DataTableCell",
-    "DataTableFooter",
-    "DataTableSelectionCount",
     "DataTableToolbar",
     "DataTableFilters",
+    "DataTableSearch",
+    "DataTableFacetFilter",
     "DataTableActions",
+    "DataTableAction",
+    "DataTableColumns",
     "DataTableBulkActions",
     "DataTableBulkAction",
-    "DataTableAction",
+    "DataTableContent",
     "DataTableCards",
-    "DataTableCard",
-    "DataTableCardField",
-    "useDataTableSelection",
+    "DataTableFooter",
+    "DataTablePagination",
+    "DataTableSelectionCount",
   ]}
 />
 
-It installs Table, Checkbox, Avatar, Tooltip, Button, Menu and Sheet.
+It installs Table, Checkbox, Avatar, Tooltip, Button, Input, Menu, Sheet and
+Pagination, and the `@tanstack/react-table` and `@tanstack/react-store`
+packages. Data table is the one base component that depends on a package
+beyond Base UI, class-variance-authority and lucide-react; plan 005 says why.
 
 ## Examples
+
+### URL-synced state
+
+Sorting, the search, filters and the page each live in a search param.
+Sort, page or search and watch the params below the table change. Back and
+forward follow them.
+
+<Canvas of={Stories.UrlSynced} />
+
+### Faceted filters
+
+Each filter menu shows how many rows hold each value under the other
+filters, so a choice never leads to an empty table. Status and Team here.
+
+<Canvas of={Stories.FacetedFilters} />
+
+### Column visibility and pinning
+
+Columns shows and hides every column that can hide; Last active starts
+hidden. The name is pinned to the start and actions to the end, so the
+middle scrolls under them.
+
+<Canvas of={Stories.ColumnVisibility} />
 
 ### Bulk action patterns
 
@@ -79,8 +113,9 @@ Approve then Deny, and no Delete. Second lines carry the details.
 
 ### Directory
 
-248 members across pages, one of them locked. Select the page, then Select all
-247 members; Show selected only filters the rows, which the app does.
+Pages of five, one row locked. Select the page, then Select all 5 members;
+Show selected only filters the rows, which the app does from the selection
+it keeps in an atom.
 
 <Canvas of={Stories.Directory} />
 
@@ -97,17 +132,11 @@ A second line under each name, as in a review queue. Rows grow to 52 pixels.
 
 <Canvas of={Stories.SecondaryText} />
 
-### Pinned columns
-
-Narrower than the table, so the middle scrolls while the name and actions
-stay put. Shadows show there's more under them.
-
-<Canvas of={Stories.Pinned} />
-
 ### With pagination
 
-Pagination in the footer. The table only ever holds one page; the app loads
-the rest.
+DataTablePagination in the footer, four rows to a page. Sorting, the search
+and filters start it again from the first page; new data keeps the page,
+so one restored from a link survives rows that load later.
 
 <Canvas of={Stories.WithPagination} />
 
@@ -120,93 +149,239 @@ Choosing rows for a form, with the count in the footer instead of actions.
 ### Narrow, scroll
 
 The default under 32rem: the table scrolls sideways, pinning switches off,
-the search fills the toolbar, and sort and filters move behind Filters.
+the search fills the toolbar, and filters move behind Filters.
 
 <Canvas of={Stories.NarrowScroll} />
 
 ### Narrow, cards
 
 `narrowLayout="cards"`: each row becomes a card, select all moves into the
-toolbar, and bulk actions show their icons. Cards need a DataTableToolbar,
-since that's where select all goes.
+toolbar, and bulk actions show their icons. Cards read the same rows as the
+table, so the search, sort and pages work the same. Cards need a
+DataTableToolbar, since that's where select all goes.
 
 Narrow, the toolbar keeps the count, Clear and bulk actions. Select all
 matching and Show selected only aren't offered, as in the Figma library.
-Keep filter values in state you own: the controls move between the toolbar
-and the Filters sheet as the width crosses 32rem.
 
 <Canvas of={Stories.NarrowCards} />
+
+### Legacy API
+
+The `rowIds` and `value` props and hand-written rows, which still work until
+0.3.0. See [Migrating to the table API](#migrating-to-the-table-api).
+
+<Canvas of={Stories.LegacyApi} />
 
 ## Usage
 
 ```tsx
 import { Badge } from "@/components/ui/badge"
 import {
+  createDataTableColumnHelper,
   DataTable,
-  DataTableBody,
-  DataTableCell,
   DataTableContent,
-  DataTableHead,
-  DataTableHeader,
-  DataTableRow,
-  useDataTableSelection,
+  DataTableFilters,
+  DataTableSearch,
+  DataTableToolbar,
+  useDataTable,
 } from "@/components/ui/data-table"
 
+// Outside the component, so the rows aren't worked out again every render.
+const column = createDataTableColumnHelper<Member>()
+const columns = column.columns([
+  column.accessor("name", {
+    header: "Member",
+    meta: {
+      type: "person",
+      avatar: (member: Member) => ({
+        src: member.photo,
+        fallback: member.initials,
+      }),
+    },
+  }),
+  column.accessor("status", {
+    header: "Status",
+    filterFn: "arrHas",
+    meta: { type: "status" },
+    cell: ({ getValue }) => <Badge variant="success">{getValue()}</Badge>,
+  }),
+])
+
 export function Members({ members }: { members: Member[] }) {
-  const selection = useDataTableSelection()
+  const table = useDataTable({
+    data: members,
+    columns,
+    lockedReason: (member) =>
+      member.isOwner ? "The workspace owner can't be removed" : undefined,
+    initialState: { columnPinning: { start: ["name"], end: [] } },
+  })
   return (
     <DataTable
+      table={table}
       aria-label="Members"
-      rowIds={members.map((member) => member.id)}
       noun={{ one: "member", other: "members" }}
-      {...selection}
     >
-      <DataTableContent>
-        <DataTableHeader>
-          <DataTableHead type="person" pinned="start">
-            Member
-          </DataTableHead>
-          <DataTableHead type="status">Status</DataTableHead>
-        </DataTableHeader>
-        <DataTableBody>
-          {members.map((member) => (
-            <DataTableRow
-              key={member.id}
-              id={member.id}
-              lockedReason={
-                member.isOwner
-                  ? "The workspace owner can't be removed"
-                  : undefined
-              }
-            >
-              <DataTableCell
-                type="person"
-                pinned="start"
-                avatar={{ src: member.photo, fallback: member.initials }}
-              >
-                {member.name}
-              </DataTableCell>
-              <DataTableCell type="status">
-                <Badge variant="success">{member.status}</Badge>
-              </DataTableCell>
-            </DataTableRow>
-          ))}
-        </DataTableBody>
-      </DataTableContent>
+      <DataTableToolbar>
+        <DataTableFilters
+          search={<DataTableSearch aria-label="Search members" />}
+        />
+      </DataTableToolbar>
+      <DataTableContent />
     </DataTable>
   )
 }
 ```
 
-Give each head the same `type` and `pinned` as its column's cells. The first
-column is primary or person: its text names the row's checkbox.
+Every row needs an `id`, or pass `getRowId`: selection is kept by id, so it
+survives sorting, filtering and paging. Keep `columns` and `data` stable
+between renders. A column's `meta` sets how it draws:
 
 ```ts
-type DataTableSelection = Set<string> | "all"
+type DataTableColumnMeta = {
+  type?: "primary" | "text" | "person" | "status" | "numeric" | "actions"
+  label?: string // in the Columns menu, filters and cards
+  className?: string // on the head and every cell, such as a width
+  secondary?: (row: Row) => ReactNode
+  avatar?: (row: Row) => { src?: string; fallback: string } | undefined
+  icon?: ReactNode
+}
 ```
 
-`"all"` means every row that matches, on every page. Changing one row while
-everything is selected keeps this page's rows and drops the rest.
+The first primary or person column names each row's checkbox. Every row
+shows until you give the table a page size, in
+`initialState.pagination` or a pagination atom, and put DataTablePagination
+in the footer.
+
+### Reading and owning state
+
+The component that calls `useDataTable` doesn't re-render when the state
+changes; each part subscribes to what it shows, so ticking a row re-renders
+that row and the toolbar, not the table. To read state there, pass a
+selector, `useDataTable(options, (state) => state.rowSelection)`, and read
+`table.state`, or use `table.Subscribe`. Act on the selection with
+`table.getSelectedRowIds()` and `table.resetRowSelection()`. The selection
+holds only rows in the data that match the filters: ids a refetch drops or
+a filter hides leave it, so the count and the ids agree. With
+`manualPagination`, ids on other pages stay, since the app owns those.
+
+Sorting, column filters, the search and the page can be owned outside the
+table, as atoms. `useSearchParamsAtom` keeps one in the URL with
+`history.replaceState`, so typing a search doesn't fill the back button. It
+starts from the empty value on the server and in the first render, so
+hydration matches, and applies the URL's value once mounted, before paint:
+
+```tsx
+const sorting = useSearchParamsAtom("sort", dataTableCodecs.sorting)
+const globalFilter = useSearchParamsAtom("q", dataTableCodecs.text)
+const columnFilters = useSearchParamsAtom(
+  "filters",
+  dataTableCodecs.columnFilters
+)
+const pagination = useSearchParamsAtom("page", dataTableCodecs.pagination(25))
+
+const table = useDataTable({
+  data,
+  columns,
+  atoms: { sorting, globalFilter, columnFilters, pagination },
+})
+```
+
+Selection, column visibility and pinning stay in the table. For rows that
+page on a server, set `manualSorting`, `manualFiltering`,
+`manualPagination` and `rowCount`, and load the rows the atoms describe.
+
+### Features
+
+`dataTableFeatures` registers only what Data table uses, so a table carries
+nothing else: sorting (`text`, `alphanumeric`, `basic` and `datetime`
+comparators), column and global filtering (`includesString`, `equals` and
+`arrHas`), faceted unique values, pagination, row selection, column
+visibility and column pinning. Grouping, expanding, resizing, ordering and
+row pinning are left out.
+
+## Migrating to the table API
+
+The `rowIds`, `totalCount`, `value`, `defaultValue` and `onValueChange` props,
+`useDataTableSelection`, and hand-written `DataTableRow`, `DataTableCell` and
+`DataTableHead` are deprecated in 0.2.0 and removed in 0.3.0. Until then
+they run on the same TanStack table as the new API, built from `rowIds` with
+selection only, so they behave as they did.
+
+A codemod lists every use with its file and line. It changes nothing:
+writing column definitions needs a person.
+
+```sh
+pnpm dlx jscodeshift --parser tsx --dry \
+  -t https://fibo.toribryan.com/codemods/data-table-legacy-api.js src
+```
+
+```tsx
+// Before
+const selection = useDataTableSelection()
+;<DataTable rowIds={members.map((m) => m.id)} {...selection}>
+  <DataTableContent>
+    <DataTableHeader>
+      <DataTableHead type="person" pinned="start">
+        Member
+      </DataTableHead>
+    </DataTableHeader>
+    <DataTableBody>
+      {members.map((m) => (
+        <DataTableRow key={m.id} id={m.id} lockedReason={m.lock}>
+          <DataTableCell type="person" pinned="start">
+            {m.name}
+          </DataTableCell>
+        </DataTableRow>
+      ))}
+    </DataTableBody>
+  </DataTableContent>
+</DataTable>
+
+// After
+const table = useDataTable({
+  data: members,
+  columns, // column.accessor("name", { header: "Member", meta: { type: "person" } })
+  lockedReason: (m) => m.lock,
+  initialState: { columnPinning: { start: ["name"], end: [] } },
+})
+;<DataTable table={table}>
+  <DataTableContent />
+</DataTable>
+```
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      <code>rowIds</code> becomes <code>data</code>, your rows themselves, each
+      with an <code>id</code>.
+    </>,
+    <>
+      Each <code>DataTableHead</code> and the cells under it become one column:
+      its <code>header</code>, a <code>cell</code> renderer for what the cell
+      held, and <code>meta.type</code>. <code>secondary</code>,{" "}
+      <code>icon</code> and <code>avatar</code> move to <code>meta</code>.
+    </>,
+    <>
+      <code>pinned</code> becomes the table's <code>columnPinning</code> state,
+      by column id.
+    </>,
+    <>
+      <code>lockedReason</code> moves from each row to one function on{" "}
+      <code>useDataTable</code>.
+    </>,
+    <>
+      <code>value</code> and <code>onValueChange</code> become{" "}
+      <code>state.rowSelection</code> and <code>onRowSelectionChange</code>, a
+      record of ids rather than a Set. <code>"all"</code> is gone: Select all
+      matching selects every matching id the table has loaded.
+    </>,
+    <>
+      <code>totalCount</code> becomes <code>rowCount</code> with{" "}
+      <code>manualPagination</code>, when the app pages on a server.
+    </>,
+    "Sorting, filtering and paging that the app did itself can go: the table does them from its state.",
+  ]}
+/>
 
 ## Anatomy
 
@@ -223,11 +398,26 @@ everything is selected keeps this page's rows and drops the rest.
             name: "DataTableFilters",
             slot: "data-table-filters",
             note: "Idle.",
+            children: [
+              {
+                name: "DataTableSearch",
+                slot: "data-table-search-field",
+                note: "In the search slot.",
+              },
+              {
+                name: "DataTableFacetFilter",
+                slot: "data-table-facet-filter",
+              },
+            ],
           },
           {
             name: "DataTableActions",
             slot: "data-table-actions",
             note: "Idle.",
+            children: [
+              { name: "DataTableColumns", slot: "data-table-columns" },
+              { name: "DataTableAction", slot: "data-table-action" },
+            ],
           },
           { name: "Clear", slot: "data-table-clear", note: "Selecting." },
           {
@@ -267,7 +457,18 @@ everything is selected keeps this page's rows and drops the rest.
             slot: "data-table-header",
             children: [
               { name: "Select all", slot: "data-table-select-all" },
-              { name: "DataTableHead", slot: "data-table-head" },
+              {
+                name: "Head",
+                slot: "data-table-head",
+                note: "One per visible column.",
+                children: [
+                  {
+                    name: "Sort button",
+                    slot: "data-table-sort",
+                    note: "A sortable column.",
+                  },
+                ],
+              },
             ],
           },
           {
@@ -275,12 +476,13 @@ everything is selected keeps this page's rows and drops the rest.
             slot: "data-table-body",
             children: [
               {
-                name: "DataTableRow",
+                name: "Row",
                 slot: "data-table-row",
+                note: "One per row on the page.",
                 children: [
                   { name: "Select", slot: "data-table-select" },
                   {
-                    name: "DataTableCell",
+                    name: "Cell",
                     slot: "data-table-cell",
                     children: [
                       {
@@ -315,6 +517,10 @@ everything is selected keeps this page's rows and drops the rest.
         slot: "data-table-footer",
         children: [
           {
+            name: "DataTablePagination",
+            slot: "data-table-pagination",
+          },
+          {
             name: "DataTableSelectionCount",
             slot: "data-table-selection-count",
           },
@@ -329,9 +535,13 @@ everything is selected keeps this page's rows and drops the rest.
 <UsageGuidelines
   guidelines={[
     "Selection is always the first column, and row actions are always the last, pinned to the end.",
+    "Let the table sort, filter and page: give useDataTable all the rows, or set the manual options and load the rows its state describes. Don't sort or filter the rows yourself as well.",
+    "Keep sorting, the search, filters and the page in the URL with useSearchParamsAtom when people share or bookmark the list.",
+    'Give a column that people filter by a few values filterFn: "arrHas" and a DataTableFacetFilter, so the menu shows how many rows hold each.',
     "Pin the row's name to the start and at most one must-see column, usually status, to the end.",
     "Rows are 40 pixels, or 52 with secondary text. Nothing goes taller.",
-    "Lock a row that can't be selected, and say why in lockedReason.",
+    "Lock a row that can't be selected, and say why in useDataTable's lockedReason.",
+    "Pin one column to each edge at most. Pinned columns stick at a fixed offset, so a second one would sit over the first.",
     "In a picker, put DataTableSelectionCount in the footer, so people see how many they've chosen.",
     "Put every action in the toolbar. Don't add hover actions or a floating bar; they split actions across places.",
     "Keep the bulk action order: your actions, then More, then Delete. Approve comes before Deny.",
@@ -372,11 +582,12 @@ everything is selected keeps this page's rows and drops the rest.
 
 ## API reference
 
-DataTable takes the selection props below. Head and Cell take `type` and
-`pinned`; Cell also takes `secondary`, `icon` and `avatar`; Row takes `id`,
-`lockedReason` and `label`, which names its checkbox when no primary or person
-cell does. Every part also takes the props of the element it
-renders.
+DataTable takes `table` from useDataTable, plus `noun`, `narrowLayout` and
+Show selected only. `useDataTable` takes TanStack Table's options for
+`dataTableFeatures`, `data` and `columns` among them, plus `lockedReason`;
+column `meta` is `DataTableColumnMeta` (see [Usage](#usage)). Every part also
+takes the props of the element it renders. The deprecated props are listed
+for the one release they remain.
 
 <ArgTypes
   of={Stories.Default}
@@ -436,6 +647,21 @@ renders.
       when: "Filters has a search.",
     },
     {
+      attribute: 'data-slot="data-table-search-field"',
+      element: "DataTableSearch",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="data-table-facet-filter"',
+      element: "Facet filter button",
+      when: "Always.",
+    },
+    {
+      attribute: "data-filtered",
+      element: "Facet filter button",
+      when: "One or more of its values are ticked.",
+    },
+    {
       attribute: 'data-slot="data-table-filters-trigger"',
       element: "Filters button",
       when: "Narrow, with sort or filter controls.",
@@ -453,6 +679,11 @@ renders.
     {
       attribute: 'data-slot="data-table-actions"',
       element: "Create actions",
+      when: "Nothing is selected.",
+    },
+    {
+      attribute: 'data-slot="data-table-columns"',
+      element: "Columns menu button",
       when: "Nothing is selected.",
     },
     {
@@ -511,6 +742,16 @@ renders.
       when: "Always.",
     },
     {
+      attribute: 'data-slot="data-table-sort"',
+      element: "Sort button in a head",
+      when: "The column can sort.",
+    },
+    {
+      attribute: 'aria-sort="ascending" | "descending"',
+      element: "Column header",
+      when: "The table is sorted by that column, on that head only.",
+    },
+    {
       attribute: 'data-slot="data-table-body"',
       element: "tbody",
       when: "Always.",
@@ -533,7 +774,7 @@ renders.
     {
       attribute: "data-locked",
       element: "Row",
-      when: "The row has a lockedReason.",
+      when: "lockedReason gives the row a reason.",
     },
     {
       attribute: 'data-slot="data-table-select"',
@@ -586,6 +827,11 @@ renders.
       when: "Always.",
     },
     {
+      attribute: 'data-slot="data-table-pagination"',
+      element: "DataTablePagination",
+      when: "Always.",
+    },
+    {
       attribute: 'data-slot="data-table-selection-count"',
       element: "Selection count",
       when: "Always.",
@@ -597,12 +843,14 @@ renders.
 
 <UsageGuidelines
   guidelines={[
-    "It's a native table, not a grid: checkboxes and buttons are ordinary Tab stops.",
+    "It's a native table, not a grid: checkboxes and buttons are ordinary Tab stops. TanStack Table only works out the rows; the markup is Data table's.",
+    'Every head carries scope="col". A sortable head holds a button named by the column. Only the sorted head carries aria-sort, ascending or descending, so the order is announced once, where it applies.',
+    "DataTableSearch is a search field; give it an aria-label when there's no visible label. Facet filter menus name each choice with its count, “Active 3”, and say how many are ticked on the button.",
     "Name it with aria-label or aria-labelledby on DataTable.",
     "Each row checkbox is named from its primary or person cell, “Select Maya Okafor”, or from the row's label when it has neither. Select all says its scope, “Select all members on this page”.",
     "A locked row's checkbox is disabled and described by the reason. The lock is focusable, so keyboard users can open its tooltip.",
     "Selection changes are announced through a status region once they take effect, so a change a controlled parent turns down isn't announced. Escape clears the selection.",
-    "Changing one row while every match is selected keeps only this page's rows, and says so: “3 members selected, on this page only”.",
+    "With the deprecated value prop, changing one row while every match is selected keeps only this page's rows, and says so: “3 members selected, on this page only”. With useDataTable, only that row changes.",
     "The toolbar is a group named “Filters and actions” or “Bulk actions”, not a toolbar role, so its controls stay ordinary Tab stops and arrow keys stay with the search field.",
     "When the focused control goes away, such as Clear or Select all matching, focus moves to Clear, or to select all when nothing is selected, instead of the page.",
     "A single-row action that's dimmed stays focusable and is described by why: “Works on one member at a time”.",
@@ -619,6 +867,8 @@ renders.
 ## References
 
 - [plans/003-data-table.md](https://github.com/toribryan/fibo/blob/main/plans/003-data-table.md)
+- [plans/005-data-table-on-tanstack.md](https://github.com/toribryan/fibo/blob/main/plans/005-data-table-on-tanstack.md)
+- [TanStack Table](https://tanstack.com/table)
 - [WAI-ARIA APG: Table pattern](https://www.w3.org/WAI/ARIA/apg/patterns/table/)
 - [Shopify Polaris: Index table](https://polaris-react.shopify.com/components/tables/index-table)
 - [React Aria: Table](https://react-aria.adobe.com/Table)

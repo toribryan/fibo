@@ -8,6 +8,17 @@ Notable changes, newest first.
 
 ## October 2026
 
+- **Data table** runs on TanStack Table. `useDataTable` takes your rows and
+  columns, and the table sorts, searches, filters and pages them itself.
+  Heads sort from a button, a search field and facet filters with counts sit
+  in the toolbar, Columns shows and hides columns, and the footer's
+  pagination follows the table. `useSearchParamsAtom` keeps sorting, filters,
+  the search and the page in the URL, so a link opens the same view. Ticking
+  a row re-renders that row and the toolbar, not the whole table. The
+  `rowIds` and `value` props and hand-written rows still work, on the same
+  table, until 0.3.0; a codemod lists every use, and the docs page has a
+  migration section.
+
 - **Command menu** scrolls only its list to the highlighted row. Before, a
   menu partly off screen pulled the page to itself as its highlight moved.
 - **Sticker avatar** casts its shadow with a new `--sticker-shadow` token,

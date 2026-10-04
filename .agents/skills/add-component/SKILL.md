@@ -13,7 +13,8 @@ in order; each links to a file that already does it well, so copy that shape.
 
 - **Base components** (`Base components/<Group>/<Name>`): standard parts most interfaces need.
   Depend on nothing beyond Base UI, `class-variance-authority` and
-  `lucide-react`. No animation libraries.
+  `lucide-react`. No animation libraries. Data table's TanStack Table
+  dependency is the one named exception (see `AGENTS.md`).
 - **Special components** (`Special components/<Name>`): playful parts built for one kind of moment, such
   as a diagram, a reading rail or a reaction. May use `motion`.
 

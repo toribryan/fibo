@@ -1,41 +1,49 @@
 import * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
-  ArrowUpDownIcon,
   CheckIcon,
   DownloadIcon,
   EllipsisIcon,
-  PlusIcon,
-  SearchIcon,
-  XIcon,
   FileTextIcon,
   PencilIcon,
+  PlusIcon,
   Trash2Icon,
+  XIcon,
 } from "lucide-react"
+import { useCreateAtom, useSelector } from "@tanstack/react-store"
 import { expect, fn, waitFor, within } from "storybook/test"
 
 import { Badge } from "./badge.js"
 import { Button } from "./button.js"
 import {
+  createDataTableColumnHelper,
   DataTable,
   DataTableAction,
   DataTableActions,
+  DataTableBody,
+  DataTableBulkAction,
+  DataTableBulkActions,
   DataTableCard,
   DataTableCardField,
   DataTableCards,
-  DataTableBulkAction,
-  DataTableBulkActions,
-  DataTableFilters,
-  DataTableToolbar,
-  DataTableBody,
   DataTableCell,
+  DataTableColumns,
   DataTableContent,
+  dataTableCodecs,
+  DataTableFacetFilter,
+  DataTableFilters,
   DataTableFooter,
   DataTableHead,
   DataTableHeader,
+  DataTablePagination,
   DataTableRow,
+  DataTableSearch,
   DataTableSelectionCount,
-  type DataTableSelection,
+  DataTableToolbar,
+  useDataTable,
+  useSearchParamsAtom,
+  type DataTableNarrowLayout,
+  type DataTableOptions,
 } from "./data-table.js"
 import {
   Menu,
@@ -44,15 +52,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "./menu.js"
-import { Input } from "./input.js"
-import { Pagination } from "./pagination.js"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./select.js"
 
 const STATUS = {
   Active: "success",
@@ -144,6 +143,8 @@ const MEMBERS: Member[] = [
   },
 ]
 
+const MEMBER_NOUN = { one: "member", other: "members" }
+
 function RowActions({ name }: { name: string }) {
   return (
     <Menu>
@@ -173,6 +174,119 @@ function RowActions({ name }: { name: string }) {
   )
 }
 
+const member = createDataTableColumnHelper<Member>()
+
+// Columns live outside the component, so the table's models aren't rebuilt
+// on every render.
+function memberColumns({ secondary }: { secondary: boolean }) {
+  return member.columns([
+    member.accessor("name", {
+      header: "Member",
+      meta: {
+        type: "person",
+        className: "w-56",
+        avatar: (row: Member) => ({ fallback: row.initials }),
+        secondary: secondary ? (row: Member) => row.email : undefined,
+      },
+    }),
+    member.accessor("team", {
+      header: "Team",
+      filterFn: "arrHas",
+      meta: { className: "w-44" },
+    }),
+    member.accessor("role", {
+      header: "Role",
+      filterFn: "arrHas",
+      meta: { className: "w-32" },
+    }),
+    member.accessor("status", {
+      header: "Status",
+      filterFn: "arrHas",
+      meta: { type: "status" },
+      cell: ({ getValue }) => (
+        <Badge variant={STATUS[getValue()]}>{getValue()}</Badge>
+      ),
+    }),
+    member.accessor("projects", {
+      header: "Projects",
+      meta: { type: "numeric" },
+    }),
+    member.accessor("lastActive", {
+      header: "Last active",
+      enableSorting: false,
+      meta: { className: "w-32" },
+    }),
+    member.display({
+      id: "actions",
+      header: () => <span className="sr-only">Actions</span>,
+      enableHiding: false,
+      meta: { type: "actions", label: "Actions" },
+      cell: ({ row }) => <RowActions name={row.original.name} />,
+    }),
+  ])
+}
+
+const COLUMNS = memberColumns({ secondary: false })
+const COLUMNS_WITH_EMAIL = memberColumns({ secondary: true })
+
+const PINNED = { start: ["name"], end: ["actions"] }
+const UNPINNED = { start: [], end: [] }
+
+function selection(ids: string[]) {
+  return Object.fromEntries(ids.map((id) => [id, true as const]))
+}
+
+type MembersTableProps = Omit<
+  React.ComponentProps<typeof DataTable>,
+  "table" | "children"
+> & {
+  members?: Member[]
+  columns?: typeof COLUMNS
+  pageSize?: number
+  pinned?: boolean
+  initialSelection?: string[]
+  hiddenColumns?: string[]
+  atoms?: DataTableOptions<Member>["atoms"]
+  toolbar?: React.ReactNode
+  footer?: React.ReactNode
+}
+
+function MembersTable({
+  members = MEMBERS,
+  columns = COLUMNS,
+  pageSize,
+  pinned = true,
+  initialSelection = [],
+  hiddenColumns = [],
+  atoms,
+  toolbar,
+  footer,
+  ...props
+}: MembersTableProps) {
+  const table = useDataTable({
+    data: members,
+    columns,
+    atoms,
+    lockedReason: (row) => row.lock,
+    initialState: {
+      columnPinning: pinned ? PINNED : UNPINNED,
+      columnVisibility: Object.fromEntries(
+        hiddenColumns.map((id) => [id, false])
+      ),
+      rowSelection: selection(initialSelection),
+      ...(pageSize ? { pagination: { pageIndex: 0, pageSize } } : {}),
+    },
+  })
+  return (
+    <DataTable table={table} aria-label="Members" noun={MEMBER_NOUN} {...props}>
+      {toolbar}
+      <DataTableContent />
+      <DataTableCards />
+      {footer}
+    </DataTable>
+  )
+}
+
 function MembersToolbar({
   children,
 }: {
@@ -183,39 +297,17 @@ function MembersToolbar({
     <DataTableToolbar>
       <DataTableFilters
         search={
-          <div className="relative w-full">
-            <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              size="sm"
-              className="pl-8"
-              placeholder="Search 248 members"
-              aria-label="Search members"
-            />
-          </div>
+          <DataTableSearch
+            placeholder="Search members"
+            aria-label="Search members"
+          />
         }
       >
-        <Select
-          defaultValue="name"
-          items={[
-            { value: "name", label: "Name" },
-            { value: "team", label: "Team" },
-          ]}
-        >
-          <SelectTrigger size="sm" aria-label="Sort by">
-            <ArrowUpDownIcon />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="name">Name</SelectItem>
-            <SelectItem value="team">Team</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button variant="ghost" size="sm">
-          <PlusIcon data-icon="inline-start" />
-          Add filter
-        </Button>
+        <DataTableFacetFilter column="status" />
+        <DataTableFacetFilter column="team" />
       </DataTableFilters>
       <DataTableActions>
+        <DataTableColumns />
         <DataTableAction icon={<PlusIcon data-icon="inline-start" />}>
           Add member
         </DataTableAction>
@@ -225,151 +317,64 @@ function MembersToolbar({
   )
 }
 
-function MembersTable({
-  members = MEMBERS,
-  secondary = false,
-  pinned = true,
-  footer,
-  toolbar,
-  ...props
-}: Partial<React.ComponentProps<typeof DataTable>> & {
-  members?: Member[]
-  secondary?: boolean
-  pinned?: boolean
-  footer?: React.ReactNode
-  toolbar?: React.ReactNode
-}) {
-  const start = pinned ? "start" : "none"
-  const end = pinned ? "end" : "none"
-  return (
-    <DataTable
-      aria-label="Members"
-      rowIds={members.map((member) => member.id)}
-      noun={{ one: "member", other: "members" }}
-      {...props}
-    >
-      {toolbar}
-      <DataTableContent>
-        <DataTableHeader>
-          <DataTableHead type="person" pinned={start} className="w-56">
-            Member
-          </DataTableHead>
-          <DataTableHead className="w-44">Team</DataTableHead>
-          <DataTableHead className="w-32">Role</DataTableHead>
-          <DataTableHead type="status">Status</DataTableHead>
-          <DataTableHead type="numeric">Projects</DataTableHead>
-          <DataTableHead className="w-32">Last active</DataTableHead>
-          <DataTableHead type="actions" pinned={end}>
-            <span className="sr-only">Actions</span>
-          </DataTableHead>
-        </DataTableHeader>
-        <DataTableBody>
-          {members.map((member) => (
-            <DataTableRow
-              key={member.id}
-              id={member.id}
-              lockedReason={member.lock}
-            >
-              <DataTableCell
-                type="person"
-                pinned={start}
-                avatar={{ fallback: member.initials }}
-                secondary={secondary ? member.email : undefined}
-              >
-                {member.name}
-              </DataTableCell>
-              <DataTableCell>{member.team}</DataTableCell>
-              <DataTableCell>{member.role}</DataTableCell>
-              <DataTableCell type="status">
-                <Badge variant={STATUS[member.status]}>{member.status}</Badge>
-              </DataTableCell>
-              <DataTableCell type="numeric">{member.projects}</DataTableCell>
-              <DataTableCell>{member.lastActive}</DataTableCell>
-              <DataTableCell type="actions" pinned={end}>
-                <RowActions name={member.name} />
-              </DataTableCell>
-            </DataTableRow>
-          ))}
-        </DataTableBody>
-      </DataTableContent>
-      <DataTableCards>
-        {members.map((member) => (
-          <DataTableCard
-            key={member.id}
-            id={member.id}
-            title={member.name}
-            avatar={{ fallback: member.initials }}
-            status={
-              <Badge variant={STATUS[member.status]}>{member.status}</Badge>
-            }
-            lockedReason={member.lock}
-          >
-            <DataTableCardField label="Team">{member.team}</DataTableCardField>
-            <DataTableCardField label="Last active">
-              {member.lastActive}
-            </DataTableCardField>
-            <DataTableCardField label="Role">{member.role}</DataTableCardField>
-            <DataTableCardField label="Projects">
-              {member.projects}
-            </DataTableCardField>
-          </DataTableCard>
-        ))}
-      </DataTableCards>
-      {footer}
-    </DataTable>
-  )
-}
+const pagination = (
+  <DataTableFooter className="justify-end">
+    <DataTablePagination />
+  </DataTableFooter>
+)
 
 const meta: Meta<typeof DataTable> = {
   title: "Base components/Display/Data table",
   component: DataTable,
   subcomponents: {
-    DataTableContent,
-    DataTableHeader,
-    DataTableHead,
-    DataTableBody,
-    DataTableRow,
-    DataTableCell,
-    DataTableFooter,
-    DataTableSelectionCount,
     DataTableToolbar,
     DataTableFilters,
+    DataTableSearch,
+    DataTableFacetFilter,
     DataTableActions,
+    DataTableAction,
+    DataTableColumns,
     DataTableBulkActions,
     DataTableBulkAction,
-    DataTableAction,
+    DataTableContent,
+    DataTableHeader,
+    DataTableBody,
     DataTableCards,
     DataTableCard,
     DataTableCardField,
+    DataTableFooter,
+    DataTablePagination,
+    DataTableSelectionCount,
   },
   argTypes: {
-    rowIds: { control: false },
-    value: { control: false },
-    defaultValue: { control: false },
-    onValueChange: { control: false },
+    table: { control: false },
     noun: { control: false },
     children: { control: false },
     showSelectedOnly: { control: false },
     onShowSelectedOnlyChange: { control: false },
-    narrowLayout: { control: false },
-    totalCount: { control: { type: "number", min: 0 } },
+    narrowLayout: { control: "inline-radio", options: ["scroll", "cards"] },
+    rowIds: { control: false },
+    totalCount: { control: false },
+    value: { control: false },
+    defaultValue: { control: false },
+    onValueChange: { control: false },
   },
   parameters: {
     controls: {
       exclude: [
-        "rowIds",
-        "value",
-        "defaultValue",
-        "onValueChange",
+        "table",
         "noun",
         "children",
         "showSelectedOnly",
         "onShowSelectedOnlyChange",
-        "narrowLayout",
+        "rowIds",
+        "totalCount",
+        "value",
+        "defaultValue",
+        "onValueChange",
       ],
     },
   },
-  args: { onValueChange: fn() },
   render: (args) => <MembersTable {...args} toolbar={<MembersToolbar />} />,
 }
 
@@ -436,7 +441,7 @@ function bulkActionsFor(preset: BulkActionsPreset) {
   }
 }
 
-function footerFor(preset: FooterPreset, totalCount?: number) {
+function footerFor(preset: FooterPreset) {
   if (preset === "selection count") {
     return (
       <DataTableFooter>
@@ -444,25 +449,16 @@ function footerFor(preset: FooterPreset, totalCount?: number) {
       </DataTableFooter>
     )
   }
-  if (preset === "pagination") {
-    const total = totalCount ?? MEMBERS.length
-    return (
-      <DataTableFooter className="justify-end">
-        <Pagination
-          pageCount={Math.max(1, Math.ceil(total / MEMBERS.length))}
-          pageSize={MEMBERS.length}
-          totalCount={total}
-          noun="members"
-        />
-      </DataTableFooter>
-    )
-  }
+  if (preset === "pagination") return pagination
   return null
 }
 
+const UNLOCKED = MEMBERS.map((row) => ({ ...row, lock: undefined }))
+
 /*
  * The playground. Its controls change what the story renders, such as the
- * width it sits in, so narrowLayout has something to act on.
+ * width it sits in, so narrowLayout has something to act on. Pages hold five
+ * rows, so Select all matching has a sixth to offer.
  */
 export const Default: StoryObj<PlaygroundArgs> = {
   args: {
@@ -470,7 +466,7 @@ export const Default: StoryObj<PlaygroundArgs> = {
     narrowLayout: "scroll",
     showToolbar: true,
     bulkActions: "delete only",
-    footerContent: "none",
+    footerContent: "pagination",
     secondaryText: false,
     lockedRow: true,
     pinnedColumns: true,
@@ -482,13 +478,10 @@ export const Default: StoryObj<PlaygroundArgs> = {
       control: "inline-radio",
       options: ["100%", "640px", "375px"],
     },
-    narrowLayout: {
-      control: "inline-radio",
-      options: ["scroll", "cards"],
-    },
     showToolbar: {
       name: "toolbar",
-      description: "Shows DataTableToolbar with filters and actions.",
+      description:
+        "Shows DataTableToolbar with search, filters, columns and actions.",
       control: "boolean",
     },
     bulkActions: {
@@ -519,20 +512,6 @@ export const Default: StoryObj<PlaygroundArgs> = {
       control: "boolean",
     },
   },
-  parameters: {
-    controls: {
-      exclude: [
-        "rowIds",
-        "value",
-        "defaultValue",
-        "onValueChange",
-        "noun",
-        "children",
-        "showSelectedOnly",
-        "onShowSelectedOnlyChange",
-      ],
-    },
-  },
   render: ({
     previewWidth,
     showToolbar,
@@ -545,60 +524,241 @@ export const Default: StoryObj<PlaygroundArgs> = {
   }) => (
     <div style={{ width: previewWidth, maxWidth: "100%" }}>
       <MembersTable
+        // Page size and pinning are where a table starts, so a new choice
+        // starts a new table.
+        key={`${footerContent}-${pinnedColumns}`}
         {...args}
-        members={
-          lockedRow
-            ? MEMBERS
-            : MEMBERS.map((member) => ({ ...member, lock: undefined }))
-        }
-        secondary={secondaryText}
+        members={lockedRow ? MEMBERS : UNLOCKED}
+        columns={secondaryText ? COLUMNS_WITH_EMAIL : COLUMNS}
         pinned={pinnedColumns}
+        pageSize={footerContent === "pagination" ? 5 : undefined}
         toolbar={
           showToolbar ? (
             <MembersToolbar>{bulkActionsFor(bulkActions)}</MembersToolbar>
           ) : undefined
         }
-        footer={footerFor(footerContent, args.totalCount)}
+        footer={footerFor(footerContent)}
       />
     </div>
   ),
-  play: async ({ args, canvas, userEvent }) => {
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const body = within(canvasElement.ownerDocument.body)
+
+    // Sort by pointer, then by keyboard; only the sorted head has aria-sort.
+    const memberHead = canvas.getByRole("columnheader", { name: /Member/ })
+    await userEvent.click(
+      within(memberHead).getByRole("button", { name: "Member" })
+    )
+    await expect(memberHead).toHaveAttribute("aria-sort", "ascending")
+    const projectsHead = canvas.getByRole("columnheader", { name: /Projects/ })
+    within(projectsHead).getByRole("button", { name: "Projects" }).focus()
+    await userEvent.keyboard("{Enter}")
+    await expect(projectsHead).toHaveAttribute("aria-sort")
+    await expect(memberHead).not.toHaveAttribute("aria-sort")
+
+    // The search filters every page.
+    const search = canvas.getByRole("searchbox", { name: "Search members" })
+    await userEvent.type(search, "priya")
+    await waitFor(() => expect(canvas.getAllByRole("row")).toHaveLength(2))
+    await userEvent.clear(search)
+
+    // Hide a column from the Columns menu.
+    await userEvent.click(canvas.getByRole("button", { name: "Columns" }))
+    await userEvent.click(
+      await body.findByRole("menuitemcheckbox", { name: "Team" })
+    )
+    await expect(
+      canvas.queryByRole("columnheader", { name: "Team" })
+    ).not.toBeInTheDocument()
+    await userEvent.keyboard("{Escape}")
+    await waitFor(() => expect(body.queryByRole("menu")).toBeNull())
+
+    // Select by pointer, then by keyboard.
     const all = canvas.getByRole("checkbox", {
       name: "Select all members on this page",
     })
-    const priya = canvas.getByRole("checkbox", { name: "Select Priya Raman" })
-
-    await userEvent.click(priya)
-    await expect(args.onValueChange).toHaveBeenLastCalledWith(
-      new Set(["priya"])
+    await userEvent.click(
+      canvas.getByRole("checkbox", { name: "Select Priya Raman" })
     )
     await expect(all).toHaveAttribute("aria-checked", "mixed")
     await expect(
       canvas.getByRole("group", { name: "Bulk actions" })
     ).toHaveTextContent("1 member selected")
-    await expect(
-      canvas.queryByRole("button", { name: "Add member" })
-    ).not.toBeInTheDocument()
     await expect(canvas.getByRole("status")).toHaveTextContent(
       "1 member selected"
     )
+    canvas.getByRole("checkbox", { name: "Select Maya Okafor" }).focus()
+    await userEvent.keyboard(" ")
+    await expect(canvas.getByRole("status")).toHaveTextContent(
+      "2 members selected"
+    )
 
-    // Select all skips Elena, whose row is locked.
+    // Select the page, which skips Elena's locked row, then every match.
     await userEvent.click(all)
     await expect(all).toHaveAttribute("aria-checked", "true")
     await expect(
       canvas.getByRole("checkbox", { name: "Select Elena Marsh" })
     ).not.toBeChecked()
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Select all 5 members" })
+    )
+    await expect(
+      canvas.getByRole("group", { name: "Bulk actions" })
+    ).toHaveTextContent("All 5 members selected")
 
-    // By keyboard: Space on a focused row checkbox, then Escape clears.
-    priya.focus()
-    await userEvent.keyboard(" ")
-    await expect(priya).not.toBeChecked()
+    // Focus moved to Clear when Select all went; Escape clears.
+    await expect(
+      canvas.getByRole("button", { name: "Clear selection" })
+    ).toHaveFocus()
     await userEvent.keyboard("{Escape}")
     await waitFor(() =>
       expect(canvas.getByRole("status")).toHaveTextContent("Selection cleared")
     )
     await expect(all).toHaveAttribute("aria-checked", "false")
+  },
+}
+
+const URL_KEYS = ["sort", "q", "filters", "page"]
+const PAGE_OF_FOUR = dataTableCodecs.pagination(4)
+
+function UrlState() {
+  const sorting = useSearchParamsAtom("sort", dataTableCodecs.sorting)
+  const globalFilter = useSearchParamsAtom("q", dataTableCodecs.text)
+  const columnFilters = useSearchParamsAtom(
+    "filters",
+    dataTableCodecs.columnFilters
+  )
+  const page = useSearchParamsAtom("page", PAGE_OF_FOUR)
+  // Re-render when any of them changes, so the panel shows the new URL.
+  useSelector(sorting)
+  useSelector(globalFilter)
+  useSelector(columnFilters)
+  useSelector(page)
+  const params = new URLSearchParams(window.location.search)
+  const shown = URL_KEYS.flatMap((key) => {
+    const value = params.get(key)
+    return value === null ? [] : [`${key}=${value}`]
+  })
+  return (
+    <div className="flex flex-col gap-3">
+      <MembersTable
+        atoms={{ sorting, globalFilter, columnFilters, pagination: page }}
+        toolbar={<MembersToolbar />}
+        footer={pagination}
+      />
+      <output
+        aria-label="Search params"
+        className="rounded-md border border-border px-3 py-2 font-mono text-xs break-all text-muted-foreground"
+      >
+        {shown.length ? `?${shown.join("&")}` : "No search params yet"}
+      </output>
+    </div>
+  )
+}
+
+function clearUrlKeys() {
+  const url = new URL(window.location.href)
+  for (const key of URL_KEYS) url.searchParams.delete(key)
+  window.history.replaceState(window.history.state, "", url)
+}
+
+export const UrlSynced: Story = {
+  name: "URL-synced state",
+  beforeEach: () => {
+    clearUrlKeys()
+    return clearUrlKeys
+  },
+  render: () => <UrlState />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const params = canvas.getByRole("status", { name: "Search params" })
+    await userEvent.click(
+      within(canvas.getByRole("columnheader", { name: /Member/ })).getByRole(
+        "button"
+      )
+    )
+    await waitFor(() => expect(params).toHaveTextContent("sort=name.asc"))
+    await userEvent.click(canvas.getByRole("button", { name: "Next page" }))
+    await waitFor(() => expect(params).toHaveTextContent("page=2"))
+    await userEvent.type(
+      canvas.getByRole("searchbox", { name: "Search members" }),
+      "a"
+    )
+    // A new search starts on the first page again.
+    await waitFor(() => expect(params).toHaveTextContent("q=a"))
+    await waitFor(() => expect(params).not.toHaveTextContent("page="))
+
+    await userEvent.click(
+      within(
+        canvas.getByRole("group", { name: "Filters and actions" })
+      ).getByRole("button", { name: "Status" })
+    )
+    const body = within(canvasElement.ownerDocument.body)
+    await userEvent.click(
+      await body.findByRole("menuitemcheckbox", { name: /Active/ })
+    )
+    await waitFor(() => expect(params).toHaveTextContent("filters="))
+    await userEvent.keyboard("{Escape}")
+    await waitFor(() => expect(body.queryByRole("menu")).toBeNull())
+  },
+}
+
+export const FacetedFilters: Story = {
+  name: "Faceted filters",
+  render: (args) => <MembersTable {...args} toolbar={<MembersToolbar />} />,
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const body = within(canvasElement.ownerDocument.body)
+    const toolbar = within(
+      canvas.getByRole("group", { name: "Filters and actions" })
+    )
+    await userEvent.click(toolbar.getByRole("button", { name: "Status" }))
+    const active = await body.findByRole("menuitemcheckbox", {
+      name: "Active 3",
+    })
+    await userEvent.click(active)
+    await waitFor(() => expect(canvas.getAllByRole("row")).toHaveLength(4))
+    await userEvent.keyboard("{Escape}")
+    await waitFor(() => expect(body.queryByRole("menu")).toBeNull())
+
+    // Team's counts follow the Status filter, not its own.
+    await userEvent.click(toolbar.getByRole("button", { name: "Team" }))
+    await expect(
+      await body.findByRole("menuitemcheckbox", { name: "Design 1" })
+    ).toBeInTheDocument()
+    await expect(
+      body.queryByRole("menuitemcheckbox", { name: /Support/ })
+    ).toBeNull()
+    await userEvent.keyboard("{Escape}")
+    await waitFor(() => expect(body.queryByRole("menu")).toBeNull())
+  },
+}
+
+export const ColumnVisibility: Story = {
+  name: "Column visibility and pinning",
+  render: (args) => (
+    <div className="max-w-2xl">
+      <MembersTable
+        {...args}
+        hiddenColumns={["lastActive"]}
+        toolbar={<MembersToolbar />}
+      />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    await expect(
+      canvas.queryByRole("columnheader", { name: "Last active" })
+    ).not.toBeInTheDocument()
+    const columns = canvas.getByRole("button", { name: "Columns" })
+    columns.focus()
+    await userEvent.keyboard("{Enter}")
+    const body = within(canvasElement.ownerDocument.body)
+    await body.findByRole("menuitemcheckbox", { name: "Last active" })
+    await userEvent.keyboard("{End}")
+    await userEvent.keyboard(" ")
+    await expect(
+      canvas.getByRole("columnheader", { name: "Last active" })
+    ).toBeInTheDocument()
+    await userEvent.keyboard("{Escape}")
+    await waitFor(() => expect(body.queryByRole("menu")).toBeNull())
   },
 }
 
@@ -610,78 +770,58 @@ export const Locked: Story = {
 export const SecondaryText: Story = {
   name: "Secondary text",
   render: (args) => (
-    <MembersTable {...args} secondary defaultValue={new Set(["priya"])} />
-  ),
-}
-
-export const Pinned: Story = {
-  name: "Pinned columns",
-  render: (args) => (
-    <div className="max-w-2xl">
-      <MembersTable {...args} />
-    </div>
+    <MembersTable
+      {...args}
+      columns={COLUMNS_WITH_EMAIL}
+      initialSelection={["priya"]}
+    />
   ),
 }
 
 export const WithPagination: Story = {
   name: "With pagination",
-  render: function Render(args) {
-    const [page, setPage] = React.useState(1)
-    return (
-      <MembersTable
-        {...args}
-        totalCount={248}
-        footer={
-          <DataTableFooter className="justify-end">
-            <Pagination
-              page={page}
-              onPageChange={setPage}
-              pageCount={42}
-              pageSize={6}
-              totalCount={248}
-              noun="members"
-            />
-          </DataTableFooter>
-        }
-      />
-    )
-  },
+  render: (args) => (
+    <MembersTable
+      {...args}
+      pageSize={4}
+      toolbar={<MembersToolbar />}
+      footer={pagination}
+    />
+  ),
 }
+
+type Document = { id: string; title: string; access: string }
+
+const DOCUMENTS: Document[] = [
+  { id: "onboarding", title: "Onboarding checklist", access: "Workspace" },
+  { id: "brand", title: "Brand guidelines", access: "Public" },
+  { id: "release", title: "Release notes", access: "Public" },
+]
+
+const doc = createDataTableColumnHelper<Document>()
+const DOCUMENT_COLUMNS = doc.columns([
+  doc.accessor("title", {
+    header: "Title",
+    meta: { type: "primary", icon: <FileTextIcon /> },
+  }),
+  doc.accessor("access", { header: "Access" }),
+])
 
 export const Picker: Story = {
   render: function Render(args) {
-    const [value, setValue] = React.useState<DataTableSelection>(
-      new Set(["onboarding", "release"])
-    )
+    const table = useDataTable({
+      data: DOCUMENTS,
+      columns: DOCUMENT_COLUMNS,
+      initialState: { rowSelection: selection(["onboarding", "release"]) },
+    })
     return (
       <DataTable
         {...args}
+        table={table}
         aria-label="Documents"
-        rowIds={["onboarding", "brand", "release"]}
         noun={{ one: "document", other: "documents" }}
-        value={value}
-        onValueChange={setValue}
       >
-        <DataTableContent>
-          <DataTableHeader>
-            <DataTableHead type="primary">Title</DataTableHead>
-            <DataTableHead>Access</DataTableHead>
-          </DataTableHeader>
-          <DataTableBody>
-            {[
-              ["onboarding", "Onboarding checklist", "Workspace"],
-              ["brand", "Brand guidelines", "Public"],
-              ["release", "Release notes", "Public"],
-            ].map(([id, title, access]) => (
-              <DataTableRow key={id} id={id!}>
-                <DataTableCell type="primary" icon={<FileTextIcon />}>
-                  {title}
-                </DataTableCell>
-                <DataTableCell>{access}</DataTableCell>
-              </DataTableRow>
-            ))}
-          </DataTableBody>
-        </DataTableContent>
+        <DataTableContent />
         <DataTableFooter>
           <DataTableSelectionCount />
         </DataTableFooter>
@@ -741,7 +881,7 @@ export const BulkActionPatterns: Story = {
           <MembersTable
             {...args}
             members={MEMBERS.slice(0, 2)}
-            defaultValue={new Set(["maya", "priya"])}
+            initialSelection={["maya", "priya"]}
             toolbar={<MembersToolbar>{bulk}</MembersToolbar>}
           />
         </section>
@@ -755,8 +895,8 @@ export const ReviewQueue: Story = {
   render: (args) => (
     <MembersTable
       {...args}
-      secondary
-      defaultValue={new Set(["priya", "sam"])}
+      columns={COLUMNS_WITH_EMAIL}
+      initialSelection={["priya", "sam"]}
       toolbar={
         <MembersToolbar>
           <DataTableBulkActions>
@@ -775,23 +915,30 @@ export const ReviewQueue: Story = {
   ),
 }
 
+/*
+ * The app owns Show selected only: it keeps the selection in an atom it
+ * reads, and passes the table only the selected rows.
+ */
 export const Directory: Story = {
   render: function Render(args) {
     const [showSelectedOnly, setShowSelectedOnly] = React.useState(false)
-    const [value, setValue] = React.useState<DataTableSelection>(new Set())
-    const members = showSelectedOnly
-      ? MEMBERS.filter((member) => value === "all" || value.has(member.id))
-      : MEMBERS
+    const rowSelection = useCreateAtom<Record<string, true>>({})
+    const selected = useSelector(rowSelection)
+    const members = React.useMemo(
+      () =>
+        showSelectedOnly ? MEMBERS.filter((row) => selected[row.id]) : MEMBERS,
+      [showSelectedOnly, selected]
+    )
     return (
       <MembersTable
         {...args}
         members={members}
-        totalCount={248}
-        value={value}
-        onValueChange={setValue}
+        pageSize={5}
+        atoms={{ rowSelection }}
         showSelectedOnly={showSelectedOnly}
         onShowSelectedOnlyChange={setShowSelectedOnly}
         toolbar={<MembersToolbar />}
+        footer={pagination}
       />
     )
   },
@@ -800,11 +947,11 @@ export const Directory: Story = {
       canvas.getByRole("checkbox", { name: "Select all members on this page" })
     )
     await userEvent.click(
-      canvas.getByRole("button", { name: "Select all 247 members" })
+      canvas.getByRole("button", { name: "Select all 5 members" })
     )
     await expect(
       canvas.getByRole("group", { name: "Bulk actions" })
-    ).toHaveTextContent("All 247 members selected")
+    ).toHaveTextContent("All 5 members selected")
 
     // By keyboard: focus landed on Clear when its neighbour went away, and
     // Enter clears and hands focus to select all.
@@ -837,7 +984,7 @@ export const NarrowCards: Story = {
       <MembersTable
         {...args}
         narrowLayout="cards"
-        defaultValue={new Set(["priya"])}
+        initialSelection={["priya"]}
         toolbar={
           <MembersToolbar>
             <DataTableBulkActions onDelete={() => {}}>
@@ -861,10 +1008,17 @@ export const NarrowCards: Story = {
       canvas.getByRole("button", { name: "Export" })
     ).not.toHaveTextContent("Export")
 
-    // Filters open in a sheet once the selection is cleared.
+    // Cards read the same rows as the table, so the search filters them.
     await userEvent.click(
       canvas.getByRole("button", { name: "Clear selection" })
     )
+    await userEvent.type(
+      canvas.getByRole("searchbox", { name: "Search members" }),
+      "rosa"
+    )
+    await waitFor(() => expect(canvas.getAllByRole("listitem")).toHaveLength(1))
+
+    // Filters open in a sheet.
     await userEvent.click(canvas.getByRole("button", { name: "Filters" }))
     const body = within(canvasElement.ownerDocument.body)
     await expect(
@@ -872,5 +1026,104 @@ export const NarrowCards: Story = {
     ).toBeVisible()
     await userEvent.keyboard("{Escape}")
     await waitFor(() => expect(body.queryByRole("dialog")).toBeNull())
+  },
+}
+
+/*
+ * The props and hand-written rows Data table had before useDataTable. They
+ * keep working until 0.3.0, on the same table underneath.
+ */
+function LegacyMembersTable(
+  props: Partial<React.ComponentProps<typeof DataTable>> & {
+    narrowLayout?: DataTableNarrowLayout
+  }
+) {
+  return (
+    <DataTable
+      aria-label="Members"
+      rowIds={MEMBERS.map((row) => row.id)}
+      noun={MEMBER_NOUN}
+      {...props}
+    >
+      <DataTableToolbar>
+        <DataTableFilters>
+          <Button variant="ghost" size="sm">
+            <PlusIcon data-icon="inline-start" />
+            Add filter
+          </Button>
+        </DataTableFilters>
+        <DataTableBulkActions onDelete={() => {}} />
+      </DataTableToolbar>
+      <DataTableContent>
+        <DataTableHeader>
+          <DataTableHead type="person" pinned="start" className="w-56">
+            Member
+          </DataTableHead>
+          <DataTableHead className="w-44">Team</DataTableHead>
+          <DataTableHead type="status">Status</DataTableHead>
+          <DataTableHead type="actions" pinned="end">
+            <span className="sr-only">Actions</span>
+          </DataTableHead>
+        </DataTableHeader>
+        <DataTableBody>
+          {MEMBERS.map((row) => (
+            <DataTableRow key={row.id} id={row.id} lockedReason={row.lock}>
+              <DataTableCell
+                type="person"
+                pinned="start"
+                avatar={{ fallback: row.initials }}
+              >
+                {row.name}
+              </DataTableCell>
+              <DataTableCell>{row.team}</DataTableCell>
+              <DataTableCell type="status">
+                <Badge variant={STATUS[row.status]}>{row.status}</Badge>
+              </DataTableCell>
+              <DataTableCell type="actions" pinned="end">
+                <RowActions name={row.name} />
+              </DataTableCell>
+            </DataTableRow>
+          ))}
+        </DataTableBody>
+      </DataTableContent>
+      <DataTableCards>
+        {MEMBERS.map((row) => (
+          <DataTableCard
+            key={row.id}
+            id={row.id}
+            title={row.name}
+            avatar={{ fallback: row.initials }}
+            lockedReason={row.lock}
+          >
+            <DataTableCardField label="Team">{row.team}</DataTableCardField>
+          </DataTableCard>
+        ))}
+      </DataTableCards>
+      <DataTableFooter>
+        <DataTableSelectionCount />
+      </DataTableFooter>
+    </DataTable>
+  )
+}
+
+export const LegacyApi: Story = {
+  name: "Legacy API",
+  args: { onValueChange: fn(), totalCount: 248 },
+  render: (args) => <LegacyMembersTable {...args} />,
+  play: async ({ args, canvas, userEvent }) => {
+    await userEvent.click(
+      canvas.getByRole("checkbox", { name: "Select Priya Raman" })
+    )
+    await expect(args.onValueChange).toHaveBeenLastCalledWith(
+      new Set(["priya"])
+    )
+    await userEvent.click(
+      canvas.getByRole("checkbox", { name: "Select all members on this page" })
+    )
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Select all 247 members" })
+    )
+    await expect(args.onValueChange).toHaveBeenLastCalledWith("all")
+    await expect(canvas.getByText("247 of 248 members selected")).toBeVisible()
   },
 }
