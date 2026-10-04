@@ -118,6 +118,8 @@ const meta: Meta<typeof ChapterScrubber> = {
     },
     chapters: { control: false },
     currentIndex: { control: false },
+    onCurrentIndexChange: { control: false },
+    onActiveChange: { control: false },
   },
   args: {
     chapters: talk,
