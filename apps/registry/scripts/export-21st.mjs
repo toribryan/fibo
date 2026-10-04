@@ -43,6 +43,11 @@ const roles = [
   ["popover-overlay", "popover/85"],
   ["ring-subtle", "ring/50"],
 ]
+// Tokens with no stock role to fall back on, written out as their value.
+// Each sits inside an arbitrary class, so spaces are underscores.
+const literals = [
+  ["var(--particle-shadow)", "color-mix(in_oklch,black_18%,transparent)"],
+]
 const utilities =
   "bg|text|border|ring|outline|fill|stroke|from|via|to|shadow|divide|decoration|caret|accent|placeholder"
 const fiboOnly = new RegExp(
@@ -61,13 +66,17 @@ const docsUrl = (name, info) =>
   `${homepage}/?path=/docs/${info.tier}-${info.tier === "base-components" ? `${info.group.toLowerCase()}-` : ""}${name}--docs`
 
 function mapRoles(code, file) {
+  const literal = literals.reduce(
+    (out, [token, value]) => out.replaceAll(token, value),
+    code
+  )
   const mapped = roles.reduce(
     (out, [role, replacement]) =>
       out.replace(
         new RegExp(`\\b(${utilities})-${role}(?![\\w-])`, "g"),
         (_, utility) => `${utility}-${replacement}`
       ),
-    code
+    literal
   )
   const leftover = mapped.match(fiboOnly)
   if (leftover) {
