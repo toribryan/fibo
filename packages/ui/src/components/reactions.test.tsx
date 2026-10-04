@@ -155,4 +155,23 @@ describe("Reactions", () => {
       .element(screen.getByRole("button", { name: /^Heart/ }))
       .toHaveAccessibleName("Heart")
   })
+
+  it("throws nothing more once unmounted, and clears its layer", async () => {
+    const particles = () =>
+      document.querySelector('[data-slot="reactions-particles"]')
+        ?.childElementCount ?? 0
+    const screen = await render(
+      <Reactions particles={20} defaultReactions={[heart]} />
+    )
+    await screen.getByRole("button", { name: /^Heart/ }).click()
+    await screen.unmount()
+    const thrown = particles()
+    await new Promise((resolve) => setTimeout(resolve, 1300))
+    expect(particles()).toBeLessThanOrEqual(thrown)
+    await expect
+      .poll(() => document.querySelector('[data-slot="reactions-particles"]'), {
+        timeout: 5000,
+      })
+      .toBeNull()
+  })
 })

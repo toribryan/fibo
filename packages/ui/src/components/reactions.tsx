@@ -106,7 +106,8 @@ function prefersReducedMotion() {
 /*
  * Particles are thrown into a body-level layer rather than the component tree:
  * they outlive the click that spawned them, never affect layout, and escape
- * any ancestor that clips overflow or creates a containing block.
+ * any ancestor that clips overflow or creates a containing block. The layer
+ * leaves the body with its last particle, and comes back with the next.
  */
 function getParticleLayer() {
   const existing = document.querySelector<HTMLElement>(
@@ -123,12 +124,8 @@ function getParticleLayer() {
   return layer
 }
 
-function launchParticle(
-  layer: HTMLElement,
-  emoji: string,
-  x: number,
-  y: number
-) {
+function launchParticle(emoji: string, x: number, y: number) {
+  const layer = getParticleLayer()
   const node = document.createElement("span")
   node.textContent = emoji
 
@@ -185,14 +182,25 @@ function launchParticle(
     }
   )
 
-  const cleanup = () => node.remove()
+  const cleanup = () => {
+    node.remove()
+    if (!layer.hasChildNodes()) layer.remove()
+  }
   animation.finished.then(cleanup, cleanup)
 }
 
-function burst(emoji: string, origin: HTMLElement | null, count: number) {
+/*
+ * Staggers the launches. Each pending one is kept in `pending` so an
+ * unmounted Reactions can cancel what it has not thrown yet.
+ */
+function burst(
+  emoji: string,
+  origin: HTMLElement | null,
+  count: number,
+  pending: Set<number>
+) {
   if (!origin || count < 1 || prefersReducedMotion()) return
 
-  const layer = getParticleLayer()
   const rect = origin.getBoundingClientRect()
   const x = rect.left + rect.width / 2
   const y = rect.top + rect.height / 2
@@ -200,10 +208,11 @@ function burst(emoji: string, origin: HTMLElement | null, count: number) {
   for (let index = 0; index < count; index += 1) {
     const jitterX = x + (Math.random() - 0.5) * 36
     const jitterY = y + (Math.random() - 0.5) * 12
-    window.setTimeout(
-      () => launchParticle(layer, emoji, jitterX, jitterY),
-      index * 55
-    )
+    const id = window.setTimeout(() => {
+      pending.delete(id)
+      launchParticle(emoji, jitterX, jitterY)
+    }, index * 55)
+    pending.add(id)
   }
 }
 
@@ -295,6 +304,7 @@ function Reactions({
   const triggerRef = React.useRef<HTMLButtonElement>(null)
   const badgeRef = React.useRef<HTMLSpanElement>(null)
   const pulseNonce = React.useRef(0)
+  const launches = React.useRef(new Set<number>())
 
   const [uncontrolled, setUncontrolled] = React.useState(defaultReactions)
   const [pulse, setPulse] = React.useState<{ emoji: string; nonce: number }>()
@@ -323,6 +333,14 @@ function Reactions({
       )
     )
   const total = items.reduce((sum, item) => sum + (item.count ?? 0), 0)
+
+  React.useEffect(() => {
+    const pending = launches.current
+    return () => {
+      pending.forEach((id) => window.clearTimeout(id))
+      pending.clear()
+    }
+  }, [])
 
   React.useEffect(() => {
     if (!pulse) return
@@ -376,7 +394,7 @@ function Reactions({
     )
     pulseNonce.current += 1
     setPulse({ emoji: reaction.emoji, nonce: pulseNonce.current })
-    if (nowActive) burst(reaction.emoji, origin, particles)
+    if (nowActive) burst(reaction.emoji, origin, particles, launches.current)
   }
 
   function rove(event: React.KeyboardEvent<HTMLDivElement>) {
