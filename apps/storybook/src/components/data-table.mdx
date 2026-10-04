@@ -134,8 +134,9 @@ A second line under each name, as in a review queue. Rows grow to 52 pixels.
 
 ### With pagination
 
-DataTablePagination in the footer, four rows to a page. The search and
-filters start it again from the first page.
+DataTablePagination in the footer, four rows to a page. Sorting, the search
+and filters start it again from the first page; new data keeps the page,
+so one restored from a link survives rows that load later.
 
 <Canvas of={Stories.WithPagination} />
 

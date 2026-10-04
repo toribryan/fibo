@@ -32,6 +32,7 @@ import {
   FlexRender,
   functionalUpdate,
   globalFilteringFeature,
+  makeStateUpdater,
   metaHelper,
   rowPaginationFeature,
   rowSelectionFeature,
@@ -52,6 +53,7 @@ import {
   type SortingState,
   type TableOptions,
   type TableState,
+  type Updater,
 } from "@tanstack/react-table"
 import {
   createAtom,
@@ -252,6 +254,36 @@ const hasReason = (reason: React.ReactNode) =>
  * Without a selector, the component that calls it doesn't re-render on state
  * changes; the parts subscribe to what each shows.
  */
+type PageResetKey = "sorting" | "columnFilters" | "globalFilter"
+
+/*
+ * Wraps a change handler so a change that lands also sends the page back to
+ * the first, the way TanStack's autoResetPageIndex does, but only for changes
+ * made through the table, not for an atom restored from the URL.
+ */
+function resetPageOnChange<T>(
+  key: PageResetKey,
+  tableRef: React.RefObject<DataTableAnyTable | null>,
+  onChange: ((updater: Updater<T>) => void) | undefined
+) {
+  return (updater: Updater<T>) => {
+    const table = tableRef.current
+    if (!table) return onChange?.(updater)
+    const before = table.atoms[key].get() as T
+    const changed = !Object.is(functionalUpdate(updater, before), before)
+    if (onChange) onChange(updater)
+    else makeStateUpdater(key, table)(updater as never)
+    if (changed && table.atoms.pagination.get().pageIndex !== 0) {
+      table.resetPageIndex(true)
+    }
+  }
+}
+
+/**
+ * Makes a Data table: its rows, columns and state, on Data table's features.
+ * Without a selector, the component that calls it doesn't re-render on state
+ * changes; the parts subscribe to what each shows.
+ */
 function useDataTable<TData extends RowData, TSelected = null>(
   {
     lockedReason,
@@ -259,22 +291,56 @@ function useDataTable<TData extends RowData, TSelected = null>(
     meta,
     enableRowSelection,
     autoResetPageIndex,
+    onSortingChange,
+    onColumnFiltersChange,
+    onGlobalFilterChange,
     ...options
   }: DataTableOptions<TData>,
   selector?: (state: TableState<DataTableFeatures>) => TSelected
 ) {
-  // URL atoms restore after mount, and a filter landing then mustn't send
-  // the page that came with it back to the first. Held off for one frame.
-  const [mounted, setMounted] = React.useState(false)
-  React.useEffect(() => {
-    const frame = requestAnimationFrame(() => setMounted(true))
-    return () => cancelAnimationFrame(frame)
-  }, [])
+  /*
+   * TanStack's autoResetPageIndex also fires when `data` changes, so rows
+   * arriving from a fetch would send a page restored from a link back to the
+   * first. Unless the table sets it, the page resets when someone sorts,
+   * filters or searches instead, and data that leaves it past the last page
+   * moves it to the last.
+   */
+  const ownReset =
+    autoResetPageIndex === undefined &&
+    options.autoResetAll === undefined &&
+    !options.manualPagination
+  const tableRef = React.useRef<DataTableAnyTable | null>(null)
 
-  return dataTableHook.useAppTable<TData, TSelected>(
+  const table = dataTableHook.useAppTable<TData, TSelected>(
     {
       ...options,
-      autoResetPageIndex: autoResetPageIndex ?? (mounted ? undefined : false),
+      autoResetPageIndex: ownReset ? false : autoResetPageIndex,
+      ...(ownReset
+        ? {
+            onSortingChange: resetPageOnChange(
+              "sorting",
+              tableRef,
+              onSortingChange
+            ),
+            onColumnFiltersChange: resetPageOnChange(
+              "columnFilters",
+              tableRef,
+              onColumnFiltersChange
+            ),
+            onGlobalFilterChange: resetPageOnChange(
+              "globalFilter",
+              tableRef,
+              onGlobalFilterChange
+            ),
+          }
+        : // Left out when unset, so TanStack's own handlers stay in place.
+          Object.fromEntries(
+            Object.entries({
+              onSortingChange,
+              onColumnFiltersChange,
+              onGlobalFilterChange,
+            }).filter(([, handler]) => handler)
+          )),
       initialState: { pagination: EVERY_ROW, ...initialState },
       meta: { ...meta, lockedReason },
       enableRowSelection:
@@ -286,6 +352,19 @@ function useDataTable<TData extends RowData, TSelected = null>(
         state: TableState<DataTableFeatures>
       ) => TSelected)
   )
+
+  React.useLayoutEffect(() => {
+    tableRef.current = table as unknown as DataTableAnyTable
+  })
+
+  const { data } = options
+  React.useEffect(() => {
+    if (!ownReset || !table.getPrePaginatedRowModel().rows.length) return
+    const last = table.getPageCount() - 1
+    if (table.atoms.pagination.get().pageIndex > last) table.setPageIndex(last)
+  }, [table, data, ownReset])
+
+  return table
 }
 
 /** How an atom's value is written to and read from a URL search param. */

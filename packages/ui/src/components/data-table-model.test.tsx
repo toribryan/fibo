@@ -352,9 +352,6 @@ describe("DataTable on useDataTable", () => {
       <Example columns={counted} onRender={() => ownerRenders++} />
     )
     expect(rowRenders()).toBe(5)
-    // useDataTable re-renders its owner once, a frame after mounting.
-    await new Promise((resolve) => requestAnimationFrame(resolve))
-    await new Promise((resolve) => setTimeout(resolve, 50))
     const before = { ...Object.fromEntries(renders) }
     const ownerBefore = ownerRenders
 
@@ -494,6 +491,45 @@ describe("useSearchParamsAtom", () => {
     // "e" leaves Maya, Priya, Jordan, Elena and Sam; page 2 holds two.
     await expect.poll(bodyNames).toEqual(["Jordan Alvarez", "Elena Marsh"])
     expect(new URLSearchParams(window.location.search).get("page")).toBe("2")
+  })
+
+  function LatePage({ members }: { members: Member[] }) {
+    const globalFilter = useSearchParamsAtom("q", dataTableCodecs.text)
+    const pagination = useSearchParamsAtom(
+      "page",
+      dataTableCodecs.pagination(2)
+    )
+    return <Example members={members} atoms={{ globalFilter, pagination }} />
+  }
+
+  const settle = async () => {
+    await new Promise((resolve) => requestAnimationFrame(resolve))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+  const pageParam = () =>
+    new URLSearchParams(window.location.search).get("page")
+
+  it("keeps a restored page when the rows arrive after mount", async () => {
+    setSearch({ page: "2" })
+    const screen = await render(<LatePage members={[]} />)
+    await settle()
+    await screen.rerender(<LatePage members={MEMBERS} />)
+    await expect.poll(bodyNames).toEqual(["Jordan Alvarez", "Elena Marsh"])
+    expect(pageParam()).toBe("2")
+
+    // A search is a new question, so its answer starts on the first page.
+    await screen.getByRole("searchbox", { name: "Search members" }).fill("a")
+    await expect.poll(pageParam).toBeNull()
+    expect(bodyNames()).toEqual(["Maya Okafor", "Priya Raman"])
+  })
+
+  it("moves a page past the last one back to the last once rows load", async () => {
+    setSearch({ page: "9" })
+    const screen = await render(<LatePage members={[]} />)
+    await settle()
+    await screen.rerender(<LatePage members={MEMBERS} />)
+    await expect.poll(bodyNames).toEqual(["Sam Whitfield"])
+    await expect.poll(pageParam).toBe("3")
   })
 
   it("writes changes back without adding history entries", async () => {
