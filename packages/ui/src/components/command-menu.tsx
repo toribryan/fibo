@@ -651,6 +651,27 @@ function CommandMenu({
   )
 }
 
+// The list moves its highlight into view with scrollIntoView, which also
+// scrolls the page to reach a menu that is partly off screen: a menu in a
+// card pulled the page to itself as its highlight moved. Each row scrolls
+// only the list instead.
+function scrollWithinList(node: HTMLElement | null) {
+  if (!node) return
+  node.scrollIntoView = () => {
+    const list = node.closest<HTMLElement>("[data-slot=command-menu-list]")
+    if (!list) return
+    const bounds = list.getBoundingClientRect()
+    const target = node.getBoundingClientRect()
+    // A menu drawn inside a scaled element measures scaled on screen.
+    const scale = bounds.height / list.offsetHeight || 1
+    if (target.top < bounds.top) {
+      list.scrollTop -= (bounds.top - target.top) / scale
+    } else if (target.bottom > bounds.bottom) {
+      list.scrollTop += (target.bottom - bounds.bottom) / scale
+    }
+  }
+}
+
 function CommandMenuRow({
   row,
   query,
@@ -663,6 +684,7 @@ function CommandMenuRow({
   const { item } = row.entry
   return (
     <AutocompletePrimitive.Item
+      ref={scrollWithinList}
       value={row}
       disabled={item.disabled}
       onClick={onRun}

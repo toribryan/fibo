@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { page } from "vitest/browser"
+import { page, userEvent } from "vitest/browser"
 import { render } from "vitest-browser-react"
 import { renderToString } from "react-dom/server"
 
@@ -43,5 +43,32 @@ describe("CommandMenu", () => {
     await expect
       .element(page.getByRole("option", { name: "Settings" }).first())
       .toBeVisible()
+  })
+
+  it("scrolls only its list to the highlighted row, never the page", async () => {
+    const many: CommandMenuGroup[] = [
+      {
+        label: "Pages",
+        items: Array.from({ length: 30 }, (_, i) => ({
+          value: `page-${i}`,
+          label: `Page ${i}`,
+        })),
+      },
+    ]
+    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView")
+    try {
+      await render(<CommandMenu groups={many} defaultOpen />)
+      await expect
+        .element(page.getByRole("option", { name: "Page 0" }))
+        .toBeVisible()
+      for (let i = 0; i < 20; i++) await userEvent.keyboard("{ArrowDown}")
+      const list = document.querySelector<HTMLElement>(
+        "[data-slot=command-menu-list]"
+      )
+      await expect.poll(() => list?.scrollTop ?? 0).toBeGreaterThan(0)
+      expect(scrollIntoView).not.toHaveBeenCalled()
+    } finally {
+      scrollIntoView.mockRestore()
+    }
   })
 })
