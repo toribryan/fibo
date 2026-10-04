@@ -267,6 +267,21 @@ function useCrawl(pace: Pace, paused: boolean) {
   return step
 }
 
+// The crawl and the loops tick forever, so they rest while off screen.
+function useInView(ref: React.RefObject<Element | null>) {
+  const [inView, setInView] = React.useState(false)
+  React.useEffect(() => {
+    const node = ref.current
+    if (!node) return
+    const observer = new IntersectionObserver(([entry]) =>
+      setInView(Boolean(entry?.isIntersecting))
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [ref])
+  return inView
+}
+
 function useLoop(script: [frame: Frame, ms: number][], paused: boolean) {
   const [beat, setBeat] = React.useState(0)
   const index = beat % script.length
@@ -300,12 +315,19 @@ function useAssemble(delay: number | undefined, skip: boolean): Assembly {
   React.useEffect(() => {
     if (!active) return
     const start = performance.now() + delay
-    const id = window.setInterval(() => {
-      const since = performance.now() - start
-      setElapsed(since)
-      if (since >= ASSEMBLE_MS) window.clearInterval(id)
-    }, ASSEMBLE_TICK_MS)
-    return () => window.clearInterval(id)
+    let id: number | undefined
+    // Nothing changes while the snail is hidden, so ticking waits for it.
+    const wait = window.setTimeout(() => {
+      id = window.setInterval(() => {
+        const since = performance.now() - start
+        setElapsed(since)
+        if (since >= ASSEMBLE_MS) window.clearInterval(id)
+      }, ASSEMBLE_TICK_MS)
+    }, delay)
+    return () => {
+      window.clearTimeout(wait)
+      window.clearInterval(id)
+    }
   }, [active, delay])
   if (!active || elapsed >= ASSEMBLE_MS) return "whole"
   if (elapsed < 0) return "hidden"
@@ -450,7 +472,9 @@ function PixelSnailSprite({
   ...props
 }: PixelSnailSpriteProps) {
   const reduceMotion = useReducedMotion()
-  const still = reduceMotion || look !== null
+  const sprite = React.useRef<SVGGElement>(null)
+  const inView = useInView(sprite)
+  const still = reduceMotion || look !== null || !inView
   const step = useCrawl(pace, still || mode !== "crawl")
   const idle = useLoop(IDLE, still || mode !== "rest")
   const dance = useLoop(DANCE, still || mode !== "dance")
@@ -473,6 +497,7 @@ function PixelSnailSprite({
   const origin = `scale(${pixel * flip} ${pixel}) translate(${-FOOT_MIDDLE} -11)`
   return (
     <g
+      ref={sprite}
       data-slot="pixel-snail-sprite"
       fill="currentColor"
       shapeRendering="crispEdges"
@@ -518,7 +543,9 @@ function PixelSnail({
   ...props
 }: PixelSnailProps) {
   const reduceMotion = useReducedMotion()
-  const step = useCrawl(pace, reduceMotion)
+  const root = React.useRef<HTMLDivElement>(null)
+  const inView = useInView(root)
+  const step = useCrawl(pace, reduceMotion || !inView)
   const [trackWidth, setTrackWidth] = React.useState(0)
   const trackRef = React.useRef<HTMLDivElement>(null)
 
@@ -561,6 +588,7 @@ function PixelSnail({
 
   return (
     <div
+      ref={root}
       data-slot="pixel-snail"
       data-travel={travel || undefined}
       role="status"

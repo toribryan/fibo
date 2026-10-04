@@ -80,6 +80,10 @@ const meta: Meta<typeof FilterMenu> = {
     value: { control: false },
     defaultValue: { control: false },
     onValueChange: { control: false },
+    onOpenChange: { control: false },
+    trigger: { control: false },
+    container: { control: false },
+    labels: { control: false },
   },
   args: {
     fields: FIELDS,

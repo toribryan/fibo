@@ -125,7 +125,12 @@ function ScrambleText({
       }
     }
     frame = window.requestAnimationFrame(loop)
-    return () => window.cancelAnimationFrame(frame)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      // Stopped part way, by a new value or by motion being turned off: the
+      // noise must not outlive the loop that would have cleared it.
+      setNoise(null)
+    }
   }, [text, live, duration, reduceMotion])
 
   return (
@@ -231,6 +236,7 @@ function Chip({
 }
 
 type TokenFlowProps = Omit<React.ComponentProps<"div">, "children"> & {
+  /** One color per row, traced from its raw value to the role that uses it. */
   rows: TokenRow[]
   /** Print each row's `use` under its semantic chip. */
   showUse?: boolean

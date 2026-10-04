@@ -98,7 +98,7 @@ export const Default: Story = {
     await step("Pointer", async () => {
       const explore = canvas.getByRole("button", { name: "Explore" })
       await userEvent.click(explore)
-      await expect(explore).toHaveAttribute("aria-current", "page")
+      await expect(explore).toHaveAttribute("aria-current", "true")
       await expect(args.onValueChange).toHaveBeenCalledWith(
         "explore",
         expect.anything()
@@ -114,7 +114,7 @@ export const Default: Story = {
       const saved = canvas.getByRole("button", { name: "Saved" })
       await expect(saved).toHaveFocus()
       await userEvent.keyboard("{Enter}")
-      await waitFor(() => expect(saved).toHaveAttribute("aria-current", "page"))
+      await waitFor(() => expect(saved).toHaveAttribute("aria-current", "true"))
     })
   },
 }

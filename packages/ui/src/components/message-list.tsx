@@ -471,6 +471,16 @@ function MessageList({
                   setEnteredId((id) => (id === message.id ? null : id))
                 }
               }}
+              // A touch has no hover, and not every browser focuses what is
+              // tapped, so a tap focuses the message to show its time.
+              onPointerDown={(event) => {
+                if (
+                  event.pointerType !== "mouse" &&
+                  !event.currentTarget.contains(document.activeElement)
+                ) {
+                  event.currentTarget.focus({ preventScroll: true })
+                }
+              }}
               className={cn(
                 "group/message grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-3 rounded-md px-2 py-0.5 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
                 starts

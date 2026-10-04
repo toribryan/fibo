@@ -24,17 +24,6 @@ to watch the pointer.
 
 <SnailCover />
 
-## The loading snail
-
-The snail used to be fibo's mascot. That job has gone to a pixel rabbit,
-the one on the <DocLink to="welcome--docs" className="text-foreground underline underline-offset-4">Welcome page</DocLink>,
-since the Fibonacci sequence started as a puzzle about rabbits. The snail
-stays on as the system's loader: slow, steady and happy to wait with you.
-
-He has one colour, a googly eye on each stalk and a slow sense of humour.
-Everything on this page is about how he moves and how he responds, because
-that's where his character comes from.
-
 ## Features
 
 - A four-frame crawl in which head, shell and tail move on different beats,
@@ -55,6 +44,70 @@ that's where his character comes from.
 
 No animation library: every frame is state and a timer, drawn as SVG
 rectangles.
+
+## Examples
+
+### Loading
+
+The default: he crawls in place over a dotted ground, as a status region
+announcing "Loading".
+
+<Canvas of={Stories.Default} />
+
+### Sizes
+
+`size` sets one art pixel to 2, 3 or 4 screen pixels.
+
+<Canvas of={Stories.Sizes} />
+
+### Loading panel
+
+In an empty panel with a line saying what's happening and a way out.
+
+<Canvas of={Stories.LoadingPanel} />
+
+## Usage
+
+```tsx
+import { PixelSnail } from "@/components/ui/pixel-snail"
+
+export function ProjectsLoading() {
+  return <PixelSnail label="Loading your projects" />
+}
+```
+
+`PixelSnail` is the loading indicator. `PixelSnailSprite` is the snail without
+a frame: a bare `<g>` for placing inside your own SVG. Its origin is under the
+middle of his foot, so a `transform` that moves him to a point stands him
+on it.
+
+```tsx
+import { PixelSnailSprite } from "@/components/ui/pixel-snail"
+
+export function SnailOnALine() {
+  return (
+    <svg viewBox="0 0 200 40" className="text-foreground">
+      <line x1={0} y1={30} x2={200} y2={30} stroke="currentColor" />
+      <PixelSnailSprite
+        transform="translate(100 30)"
+        pixel={1.5}
+        mode="dance"
+      />
+    </svg>
+  )
+}
+```
+
+## The loading snail
+
+The snail used to be fibo's mascot. That job has gone to a pixel rabbit,
+the one on the <DocLink to="welcome--docs" className="text-foreground underline underline-offset-4">Welcome page</DocLink>,
+since the Fibonacci sequence started as a puzzle about rabbits. The snail
+stays on as the system's loader: slow, steady and happy to wait with you.
+
+He has one colour, a googly eye on each stalk and a slow sense of humour.
+Everything on this page is about how he moves and how he responds, because
+that's where his character comes from.
 
 ## How he moves
 
@@ -168,59 +221,6 @@ const look = {
   facing,
   x: glance((dx - facing * EYES.x) * facing),
   y: glance(dy - EYES.y),
-}
-```
-
-## Examples
-
-### Loading
-
-The default: he crawls in place over a dotted ground, as a status region
-announcing "Loading".
-
-<Canvas of={Stories.Default} />
-
-### Sizes
-
-`size` sets one art pixel to 2, 3 or 4 screen pixels.
-
-<Canvas of={Stories.Sizes} />
-
-### Loading panel
-
-In an empty panel with a line saying what's happening and a way out.
-
-<Canvas of={Stories.LoadingPanel} />
-
-## Usage
-
-```tsx
-import { PixelSnail } from "@/components/ui/pixel-snail"
-
-export function ProjectsLoading() {
-  return <PixelSnail label="Loading your projects" />
-}
-```
-
-`PixelSnail` is the loading indicator. `PixelSnailSprite` is the snail without
-a frame: a bare `<g>` for placing inside your own SVG. Its origin is under the
-middle of his foot, so a `transform` that moves him to a point stands him
-on it.
-
-```tsx
-import { PixelSnailSprite } from "@/components/ui/pixel-snail"
-
-export function SnailOnALine() {
-  return (
-    <svg viewBox="0 0 200 40" className="text-foreground">
-      <line x1={0} y1={30} x2={200} y2={30} stroke="currentColor" />
-      <PixelSnailSprite
-        transform="translate(100 30)"
-        pixel={1.5}
-        mode="dance"
-      />
-    </svg>
-  )
 }
 ```
 

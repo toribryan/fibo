@@ -189,6 +189,22 @@ function Pulse({
   )
 }
 
+// Pulses and the halo repeat forever, so they only run while the plate can
+// be seen.
+function useInView(ref: React.RefObject<Element | null>) {
+  const [inView, setInView] = React.useState(false)
+  React.useEffect(() => {
+    const node = ref.current
+    if (!node) return
+    const observer = new IntersectionObserver(([entry]) =>
+      setInView(Boolean(entry?.isIntersecting))
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [ref])
+  return inView
+}
+
 function isMedia(
   preview: React.ReactNode | IntegrationPreviewMedia
 ): preview is IntegrationPreviewMedia {
@@ -206,10 +222,22 @@ function PreviewMedia({
   aspectRatio = "16 / 9",
   still,
 }: IntegrationPreviewMedia & { still: boolean }) {
+  const video = React.useRef<HTMLVideoElement>(null)
   const className = "block w-full rounded-lg bg-muted object-cover"
   const style = { aspectRatio }
+
+  // `autoPlay` is only read when the clip mounts, so a later change to
+  // reduced motion has to start or stop it by hand.
+  React.useEffect(() => {
+    const node = video.current
+    if (!node) return
+    if (still) node.pause()
+    else node.play().catch(() => {})
+  }, [still])
+
   return /\.(mp4|webm)(\?|#|$)/i.test(src) ? (
     <video
+      ref={video}
       className={className}
       style={style}
       src={src}
@@ -287,6 +315,8 @@ function IntegrationVisual({
 }: IntegrationVisualProps) {
   const reduceMotion = useReducedMotion()
   const plateId = React.useId()
+  const plate = React.useRef<HTMLDivElement>(null)
+  const animate = useInView(plate) && !reduceMotion
 
   const shown = items.slice(0, MAX_ITEMS[layout])
   const slots =
@@ -295,7 +325,7 @@ function IntegrationVisual({
       : layout === "sides"
         ? sideSlots(shown)
         : cornerSlots(shown.length)
-  const effectivePulse = reduceMotion ? "none" : pulse
+  const effectivePulse = animate ? pulse : "none"
   const textCenter = typeof center === "string" || typeof center === "number"
   const hubLabel = centerLabel ?? (textCenter ? String(center) : label)
 
@@ -309,7 +339,7 @@ function IntegrationVisual({
       >
         {center}
       </div>
-      {halo && !reduceMotion ? (
+      {halo && animate ? (
         <motion.div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 rounded-xl border-2 border-border"
@@ -322,6 +352,7 @@ function IntegrationVisual({
 
   return (
     <div
+      ref={plate}
       data-slot="integration-visual"
       data-layout={layout}
       role="group"
@@ -390,7 +421,7 @@ function IntegrationVisual({
             and a later track would otherwise paint over an earlier pulse. */}
         {shown.map((item, i) => (
           <Track
-            key={item.title}
+            key={`${i}-${item.title}`}
             d={slots[i]!.path}
             dashed={routes === "dashed"}
             idle={item.status === "idle"}
@@ -400,7 +431,7 @@ function IntegrationVisual({
           ? shown.map((item, i) =>
               item.status === "idle" ? null : (
                 <Pulse
-                  key={item.title}
+                  key={`${i}-${item.title}`}
                   d={slots[i]!.path}
                   direction={
                     effectivePulse === "through"
@@ -419,7 +450,7 @@ function IntegrationVisual({
       <ul className="m-0 list-none p-0">
         {shown.map((item, i) => (
           <motion.li
-            key={item.title}
+            key={`${i}-${item.title}`}
             title={item.title}
             data-slot="integration-visual-item"
             data-status={item.status ?? "active"}
