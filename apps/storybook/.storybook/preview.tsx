@@ -59,7 +59,7 @@ const preview: Preview = {
           "Changelog",
           "Design skills",
           "Foundations",
-          ["Colors", "Typography"],
+          ["Colors", "Typography", "Spacing", "Elevation", "Motion"],
           // Base groups in the order the Catalog page shows them. Parts keep
           // the stories' import order, which is alphabetical by file, and
           // special parts sit straight under their shelf.
