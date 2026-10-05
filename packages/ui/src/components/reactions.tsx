@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { cva, type VariantProps } from "class-variance-authority"
-import { SmilePlusIcon } from "lucide-react"
+import { motion, useReducedMotion, type Variants } from "motion/react"
 
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -217,6 +217,51 @@ function burst(
     }, index * 55)
     pending.add(id)
   }
+}
+
+const FACE: Variants = {
+  closed: { scale: 1 },
+  open: {
+    scale: 1.1,
+    transition: { type: "spring", stiffness: 200, damping: 20 },
+  },
+}
+
+// The plus turns a quarter and grows a beat after the face swells.
+const PLUS: Variants = {
+  closed: { rotate: 0, scale: 1 },
+  open: {
+    rotate: 90,
+    scale: 1.2,
+    transition: { type: "spring", stiffness: 200, damping: 20, delay: 0.1 },
+  },
+}
+
+// lucide's smile-plus, drawn here so the face and the plus move separately.
+function SmilePlus({ open }: { open: boolean }) {
+  const reduceMotion = useReducedMotion()
+  const state = open && !reduceMotion ? "open" : "closed"
+  return (
+    <motion.svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      initial={false}
+      animate={state}
+      variants={FACE}
+    >
+      <path d="M22 11v1a10 10 0 1 1-9-10" />
+      <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+      <line x1="9" x2="9.01" y1="9" y2="9" />
+      <line x1="15" x2="15.01" y1="9" y2="9" />
+      <motion.path d="M16 5h6" variants={PLUS} />
+      <motion.path d="M19 2v6" variants={PLUS} />
+    </motion.svg>
+  )
 }
 
 function animatePill(pill: HTMLElement) {
@@ -458,10 +503,7 @@ function Reactions({
           : "size-8 touch-manipulation text-foreground hover:bg-muted data-[state=open]:bg-muted motion-safe:active:scale-95 [&_svg]:size-4"
       )}
     >
-      <SmilePlusIcon
-        aria-hidden="true"
-        className="transition-transform duration-300 ease-out motion-safe:group-data-[state=open]/trigger:rotate-90"
-      />
+      <SmilePlus open={open} />
     </PopoverPrimitive.Trigger>
   )
 
