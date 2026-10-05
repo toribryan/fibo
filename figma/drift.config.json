@@ -41,7 +41,9 @@
     "Filter menu.view": "Which view shows is internal state in code.",
     "Filter menu row.kind": "Code renders a field or an option row from its data; designers pick it by hand.",
     "Filter menu row.checked": "Code checks options and counts a field from the value; designers pick it by hand.",
-    "Pixel snail.size": "size is keyof typeof SCALE in code, which the check cannot read; its options are sm, default and lg, as here."
+    "Pixel snail.size": "size is keyof typeof SCALE in code, which the check cannot read; its options are sm, default and lg, as here.",
+    "Calendar.mode": "A real prop, but declared once per branch of Calendar's discriminated union (single or range), which the drift parser doesn't read.",
+    "Date picker trigger.size": "A real prop, typed FieldSize from lib/field-size.ts (sm, default), which the drift parser can't resolve across files."
   },
   "codeOnlyProps": {
     "input-group.align": "InputGroupAddon's align, inline-start or inline-end; Figma turns each side on with startAddon and endAddon instead.",
@@ -73,7 +75,14 @@
     "Menu sub trigger": "menu",
     "Menu label": "menu",
     "Menu separator": "menu",
-    "Filter menu row": "filter-menu"
+    "Filter menu row": "filter-menu",
+    "Calendar day": "calendar",
+    "Calendar event": "calendar",
+    "Date picker trigger": "date-picker",
+    "Date range panel": "date-picker",
+    "Date picker drawer": "date-picker",
+    "Date range drawer": "date-picker",
+    "Rich text editor link row": "rich-text-editor"
   },
   "codeOnlyComponents": {
     "spinner": "Deprecated, and removed at the next minor release, so it gets no Figma component.",

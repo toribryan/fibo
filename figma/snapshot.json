@@ -4,7 +4,7 @@
     "key": "LJZ5Tt4Ba7NPPi8Xnq8i0e",
     "name": "Fibo-DS"
   },
-  "readAt": "2026-10-04",
+  "readAt": "2026-10-05",
   "variables": {
     "Color": {
       "background": {
@@ -612,6 +612,44 @@
       "error": "TEXT",
       "orientation": ["vertical", "horizontal"],
       "state": ["default", "invalid", "disabled"]
-    }
+    },
+    "Calendar day": {
+      "day": "TEXT",
+      "size": ["default", "lg"],
+      "state": [
+        "default",
+        "today",
+        "selected",
+        "in range",
+        "range start",
+        "range end",
+        "outside",
+        "disabled"
+      ]
+    },
+    "Calendar event": {
+      "title": "TEXT",
+      "time": "TEXT",
+      "showTime": "BOOLEAN"
+    },
+    "Calendar": {
+      "type": ["paged", "scroll", "month"],
+      "mode": ["single", "range"],
+      "size": ["default", "lg"]
+    },
+    "Date picker trigger": {
+      "value": "TEXT",
+      "size": ["sm", "default"],
+      "state": ["default", "focused", "invalid", "disabled"]
+    },
+    "Date range panel": {},
+    "Date picker drawer": {},
+    "Date range drawer": {},
+    "Rich text editor": {
+      "toolbar": "BOOLEAN",
+      "count": "BOOLEAN",
+      "state": ["default", "focused", "invalid", "disabled", "read only"]
+    },
+    "Rich text editor link row": {}
   }
 }

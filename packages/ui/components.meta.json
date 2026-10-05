@@ -26,7 +26,8 @@
     "description": "A month grid for picking a day or a range, with full keyboard use; pages side by side, scrolls on phones, or fills a page with a month of events.",
     "tier": "base-components",
     "group": "Forms",
-    "status": "new"
+    "status": "new",
+    "figma": "756-11821"
   },
   "chapter-scrubber": {
     "title": "Chapter scrubber",
@@ -74,7 +75,8 @@
     "description": "A field that opens a calendar to pick a day, or a range with presets and Apply; a popover on desktop, a drawer on phones.",
     "tier": "base-components",
     "group": "Forms",
-    "status": "new"
+    "status": "new",
+    "figma": "759-2"
   },
   "empty-state": {
     "title": "Empty state",
@@ -207,7 +209,8 @@
     "description": "Formatted writing on Tiptap: headings, marks, lists, quotes and links from a toolbar or Markdown shortcuts, with an optional character limit.",
     "tier": "base-components",
     "group": "Forms",
-    "status": "new"
+    "status": "new",
+    "figma": "761-2"
   },
   "select": {
     "title": "Select",
