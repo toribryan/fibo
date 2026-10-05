@@ -116,9 +116,9 @@ const SPRING = {
 // Looser, so the glass lens overshoots a little as it lands, like a drop.
 const GLASS_SPRING = {
   type: "spring",
-  stiffness: 380,
-  damping: 26,
-  mass: 0.9,
+  stiffness: 560,
+  damping: 34,
+  mass: 0.7,
 } as const
 
 // How far the glass bends the page at its edges, in CSS pixels, and how wide
@@ -228,12 +228,14 @@ function GlassSurface() {
 
 // How far the lens grows as it lifts off the bar, and how far it magnifies
 // what's under it: the shift at its rim, as a share of its width.
-const LIFT = { scaleX: 1.16, scaleY: 1.42 }
+const LIFT = { scaleX: 1.06, scaleY: 1.22 }
+// Lifting and settling are quicker than the trip between items.
+const LIFT_SPRING = { type: "spring", stiffness: 900, damping: 40 } as const
 const MAGNIFY = 0.2
 // Red bends most and blue least, which splits colour into fringes at the rim.
 const DISPERSION = { R: 1, G: 0.95, B: 0.9 }
 // How long the lens stays lifted after a press, so it can travel lifted.
-const SETTLE_AFTER = 420
+const SETTLE_AFTER = 200
 
 /*
  * A magnifying map for one axis: a ramp right across the lens, steeper at
@@ -332,7 +334,7 @@ function GlassLens({
       data-lifted={lifted ? "" : undefined}
       initial={false}
       animate={lifted ? LIFT : { scaleX: 1, scaleY: 1 }}
-      transition={transition}
+      transition={{ ...transition, scaleX: LIFT_SPRING, scaleY: LIFT_SPRING }}
       className={cn(
         "absolute inset-0 rounded-full transition-[background-color,box-shadow] duration-200",
         lifted
