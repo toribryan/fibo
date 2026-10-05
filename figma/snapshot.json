@@ -446,8 +446,10 @@
       "initials": "TEXT",
       "shape": ["cutout", "round", "initials"]
     },
-    "Sticker avatar status": {
-      "status": ["present", "away", "offline"]
+    "Status dot": {
+      "status": ["present", "away", "offline"],
+      "variant": ["color", "mono"],
+      "size": ["xs", "sm", "default", "lg"]
     },
     "Sticker avatar count": {
       "count": "TEXT"

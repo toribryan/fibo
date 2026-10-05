@@ -33,7 +33,6 @@
     "description": "A message box built from parts around one draft, so each chat surface composes its own.",
     "tier": "base-components",
     "group": "Forms",
-    "status": "new",
     "figma": "509-2"
   },
   "checkbox": {
@@ -204,6 +203,14 @@
       "reason": "A spinner says nothing about how long a wait will be or what is happening. An indeterminate Progress takes a label, and turns determinate once the total is known.",
       "codemod": "spinner-to-progress"
     }
+  },
+  "status-dot": {
+    "title": "Status dot",
+    "description": "A small mark for whether someone is present, away or offline, told apart by shape.",
+    "tier": "base-components",
+    "group": "Display",
+    "status": "new",
+    "figma": "691-2"
   },
   "sticker-avatar": {
     "title": "Sticker avatar",

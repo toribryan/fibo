@@ -15,7 +15,8 @@ import { Install } from "../blocks/install"
 
 An avatar cut out like a die-cut sticker. A white paper edge follows the
 shape of a transparent image, each sticker sits at its own slight angle, and
-status is a small sticker of its own on the corner.
+a [Status dot](?path=/docs/base-components-display-status-dot--docs) put in
+it sits on the corner like a small sticker of its own.
 
 <Canvas of={Stories.Default} />
 
@@ -27,36 +28,32 @@ status is a small sticker of its own on the corner.
   image, so a list of fifty stickers costs no more than fifty avatars.
 - Tilts by a stable angle from the name and lifts on hover, or when a row with
   `group/sticker` is hovered.
-- Tells status apart by shape, a dot for present, a crescent for away and a
-  ring for offline, and colours it with fibo's status tokens.
+- Takes a StatusDot as a child, sets it on the corner turned against the
+  tilt, and adds its label to the sticker's name.
 
 ## Installation
 
 <Install
   name="sticker-avatar"
-  exports={[
-    "StickerAvatar",
-    "StickerAvatarGroup",
-    "StickerAvatarCount",
-    "type StickerAvatarStatus",
-  ]}
+  exports={["StickerAvatar", "StickerAvatarGroup", "StickerAvatarCount"]}
 />
 
-It adds `--sticker-edge` and `--sticker-ink` to your theme.
+It installs the Status dot component, and adds `--sticker-edge`,
+`--sticker-ink` and `--sticker-shadow` to your theme.
 
 ## Examples
 
 ### Sizes
 
-The edge grows with the sticker: 2px up to 40, 4px at 64, 6px at 96.
+The edge grows with the sticker: 2px up to 32, 3px at 40, 4px at 64, 6px at 96.
 
 <Canvas of={Stories.Sizes} />
 
-### Status by shape
+### With a status
 
-Present, away and offline, each labelled and coloured with the success,
-warning and muted tokens. Each shape still reads without colour: a solid dot,
-a crescent and a ring.
+Put a `<StatusDot>` in the sticker. Present, away and offline are a dot, a
+crescent and a ring, coloured with the success, warning and muted tokens, so
+each still reads without colour.
 
 <Canvas of={Stories.Statuses} />
 
@@ -88,16 +85,14 @@ StickerAvatarCount counts the rest.
 ## Usage
 
 ```tsx
+import { StatusDot } from "@/components/ui/status-dot"
 import { StickerAvatar } from "@/components/ui/sticker-avatar"
 
 export function Member({ user }: { user: User }) {
   return (
-    <StickerAvatar
-      name={user.name}
-      src={user.cutoutUrl}
-      status={user.status}
-      size={40}
-    />
+    <StickerAvatar name={user.name} src={user.cutoutUrl} size={40}>
+      <StatusDot status={user.status} />
+    </StickerAvatar>
   )
 }
 ```
@@ -113,7 +108,7 @@ the edge to be cut; without them the sticker falls back to round.
   root={{
     name: "StickerAvatar",
     slot: "sticker-avatar",
-    note: "The layout box, at exactly size by size. Named with role img. Carries data-shape and data-status.",
+    note: "The layout box, at exactly size by size. Named with role img, from name and any StatusDot's label. Carries data-shape.",
     children: [
       {
         name: "image",
@@ -126,9 +121,9 @@ the edge to be cut; without them the sticker falls back to round.
         note: "Die-cut initials, when there is no image or it fails to load.",
       },
       {
-        name: "status",
-        slot: "sticker-avatar-status",
-        note: "A small sticker on the corner. Only with status.",
+        name: "StatusDot",
+        slot: "status-dot",
+        note: "Optional child. Set on the corner, turned against the tilt.",
       },
     ],
   }}
@@ -197,16 +192,6 @@ the edge to be cut; without them the sticker falls back to round.
       ),
     },
     {
-      attribute: "data-status",
-      element: "The root and the status sticker",
-      when: (
-        <>
-          With <code>status</code>. <code>present</code>, <code>away</code> or{" "}
-          <code>offline</code>.
-        </>
-      ),
-    },
-    {
       attribute: 'data-slot="sticker-avatar-image"',
       element: "The photo",
       when: "Once the cutout's edge is drawn, or on a round sticker.",
@@ -215,15 +200,6 @@ the edge to be cut; without them the sticker falls back to round.
       attribute: 'data-slot="sticker-avatar-fallback"',
       element: "The initials",
       when: "On an initials sticker.",
-    },
-    {
-      attribute: 'data-slot="sticker-avatar-status"',
-      element: "The status sticker",
-      when: (
-        <>
-          With <code>status</code>.
-        </>
-      ),
     },
     {
       attribute: 'data-slot="sticker-avatar-group"',
@@ -251,21 +227,24 @@ the room gets dark. A hairline and a shadow keep the white edge visible on a
 light page; the shadow is `--sticker-shadow`, the same in both themes for the
 same reason.
 
-The status sticker is the exception. Its disc is the page colour, not paper,
+A StatusDot is the exception. Its disc is the page colour, not paper,
 because it is coloured with fibo's semantic tokens: `success` for present,
 `warning` for away and `muted-foreground` for offline. Those tokens are tuned
 for the page in each theme, so on the page colour they clear the 3:1 that
-non-text marks need. On white paper the dark-theme ones would not. Set
-`statusColor={false}` to draw the marks in the foreground colour instead.
+non-text marks need. On white paper the dark-theme ones would not. Give the
+dot `variant="mono"` to draw the marks in the foreground colour instead.
+
+`status`, `statusLabel` and `statusColor` on the sticker still work and draw
+the same StatusDot, but are deprecated: put the dot in as a child.
 
 ## Accessibility
 
 <UsageGuidelines
   guidelines={[
     <>
-      The root is <code>role="img"</code>, named by <code>name</code> and the
-      status: “Ana Ruiz, Away”. Pass <code>statusLabel</code> to translate the
-      status.
+      The root is <code>role="img"</code>, named by <code>name</code> and a
+      StatusDot's label through <code>aria-labelledby</code>: “Ana Ruiz, Away”.
+      Pass the dot a <code>label</code> to translate the status.
     </>,
     <>
       Inside a row or button that already says the name, set{" "}
@@ -279,7 +258,7 @@ non-text marks need. On white paper the dark-theme ones would not. Set
 
 ## Related components
 
-<RelatedComponents names={["Avatar", "Badge"]} />
+<RelatedComponents names={["Status dot", "Avatar", "Badge"]} />
 
 ## References
 

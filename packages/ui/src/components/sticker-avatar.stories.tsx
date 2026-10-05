@@ -3,11 +3,11 @@ import type { ComponentProps } from "react"
 import { expect, waitFor } from "storybook/test"
 
 import { Badge } from "./badge.js"
+import { StatusDot, type StatusDotStatus } from "./status-dot.js"
 import {
   StickerAvatar,
   StickerAvatarCount,
   StickerAvatarGroup,
-  type StickerAvatarStatus,
 } from "./sticker-avatar.js"
 import { rabbitSrc } from "./sticker-avatar.fixtures.js"
 // A local image, so the stories load nothing from the network and Chromatic
@@ -21,8 +21,13 @@ const SRC: Record<(typeof SUBJECTS)[number], string | undefined> = {
   initials: undefined,
 }
 
-type Args = ComponentProps<typeof StickerAvatar> & {
+type Args = Omit<
+  ComponentProps<typeof StickerAvatar>,
+  "status" | "statusLabel" | "statusColor"
+> & {
   subject: (typeof SUBJECTS)[number]
+  status?: StatusDotStatus
+  statusVariant: "color" | "mono"
 }
 
 const meta: Meta<Args> = {
@@ -30,7 +35,7 @@ const meta: Meta<Args> = {
   component: StickerAvatar,
   parameters: {
     layout: "centered",
-    controls: { exclude: ["src"] },
+    controls: { exclude: ["src", "statusLabel", "statusColor", "children"] },
   },
   argTypes: {
     subject: {
@@ -44,9 +49,16 @@ const meta: Meta<Args> = {
     status: {
       control: "inline-radio",
       options: [undefined, "present", "away", "offline"],
+      description: "Story only: the StatusDot's `status`.",
+      table: { category: "Story" },
+    },
+    statusVariant: {
+      control: "inline-radio",
+      options: ["color", "mono"],
+      description: "Story only: the StatusDot's `variant`.",
+      table: { category: "Story" },
     },
     cutout: { control: "inline-radio", options: ["auto", "shape", "round"] },
-    statusColor: { control: "boolean" },
     tilt: { control: "boolean" },
     lift: { control: "boolean" },
     pixelated: { control: "boolean" },
@@ -58,18 +70,20 @@ const meta: Meta<Args> = {
     name: "fibo",
     size: 96,
     status: "present",
-    statusColor: true,
+    statusVariant: "color",
     cutout: "auto",
     tilt: true,
     lift: true,
     pixelated: true,
   },
-  render: ({ subject, ...args }) => (
+  render: ({ subject, status, statusVariant, ...args }) => (
     <StickerAvatar
       {...args}
       // The rabbit is drawn on a canvas, so it's made on first render.
       src={subject === "rabbit" ? rabbitSrc() : SRC[subject]}
-    />
+    >
+      {status ? <StatusDot status={status} variant={statusVariant} /> : null}
+    </StickerAvatar>
   ),
 }
 
@@ -81,7 +95,7 @@ export const Default: Story = {
     const sticker = canvas.getByRole("img", { name: "fibo, Present" })
     await waitFor(() => expect(sticker).toHaveAttribute("data-shape", "cutout"))
     await expect(
-      sticker.querySelector('[data-slot="sticker-avatar-status"]')
+      sticker.querySelector('[data-slot="status-dot"]')
     ).toHaveAttribute("data-status", "present")
   },
 }
@@ -106,9 +120,9 @@ export const Sizes: Story = {
   ),
 }
 
-const STATUSES: StickerAvatarStatus[] = ["present", "away", "offline"]
+const STATUSES: StatusDotStatus[] = ["present", "away", "offline"]
 
-const STATUS_NAMES: Record<StickerAvatarStatus, string> = {
+const STATUS_NAMES: Record<StatusDotStatus, string> = {
   present: "Present",
   away: "Away",
   offline: "Offline",
@@ -120,7 +134,9 @@ export const Statuses: Story = {
     <div className="flex flex-wrap justify-center gap-8">
       {STATUSES.map((status) => (
         <div key={status} className="flex flex-col items-center gap-4">
-          <StickerAvatar name="Bonzo" src={bonzo} size={64} status={status} />
+          <StickerAvatar name="Bonzo" src={bonzo} size={64}>
+            <StatusDot status={status} />
+          </StickerAvatar>
           {/* The sticker already says its status to screen readers. */}
           <Badge variant="outline" aria-hidden="true">
             {STATUS_NAMES[status]}
@@ -169,8 +185,9 @@ export const DirectMessages: Story = {
             src={"src" in person ? person.src() : undefined}
             pixelated={"pixelated" in person}
             size={32}
-            status={person.status}
-          />
+          >
+            <StatusDot status={person.status} />
+          </StickerAvatar>
           <span className="flex min-w-0 flex-col leading-tight">
             <span className="truncate font-medium">{person.name}</span>
             <span className="text-xs">{STATUS_NAMES[person.status]}</span>
