@@ -142,13 +142,22 @@ export function toDateKey(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
+/*
+ * ICU builds differ in the spaces they put in dates: Node writes thin spaces
+ * around a range's dash where a browser may write plain ones, so markup
+ * rendered on the server wouldn't match the client's. Plain spaces read the
+ * same and hydrate.
+ */
+const plainSpaces = (text: string) => text.replace(/[\u2009\u202f]/g, " ")
+
 /** One day for a trigger or summary, such as "Oct 5, 2026". */
 export function formatDate(date: Date, locale = "en-US"): string {
-  return new Intl.DateTimeFormat(locale, {
+  const text = new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
   }).format(date)
+  return plainSpaces(text)
 }
 
 /**
@@ -156,9 +165,10 @@ export function formatDate(date: Date, locale = "en-US"): string {
  * common: "Oct 1 – 7, 2026", or "Oct 5, 2026" when it's a single day.
  */
 export function formatDateRange(range: DateRange, locale = "en-US"): string {
-  return new Intl.DateTimeFormat(locale, {
+  const text = new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
   }).formatRange(range.from, range.to)
+  return plainSpaces(text)
 }
