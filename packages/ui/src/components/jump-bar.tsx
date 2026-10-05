@@ -87,22 +87,35 @@ function JumpBar({
         data-slot="jump-bar"
         data-type={type}
         className={cn(
-          "absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2 rounded-lg bg-primary p-1 text-xs text-primary-foreground shadow-md",
+          "@container/jump-bar absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2 rounded-lg bg-primary p-1 text-xs text-primary-foreground shadow-md",
           className
         )}
         {...props}
       >
         {/* Default buttons on the bar's own primary fill: they show only on
             hover, in primary-hover. */}
-        <Button size="xs" className="min-w-0" onClick={onJump}>
+        {/* Button doesn't shrink by default; this one gives way so Mark as
+            read always fits, and on a narrow bar its label drops the time. */}
+        <Button size="xs" className="min-w-0 shrink" onClick={onJump}>
           <ArrowUpIcon aria-hidden data-icon="inline-start" />
-          <span className="truncate">
+          <span
+            className={cn("truncate", time && "@max-[22rem]/jump-bar:hidden")}
+          >
             {strings.unreadAbove(count, shown, time)}
           </span>
+          {time ? (
+            <span className="hidden truncate @max-[22rem]/jump-bar:inline">
+              {strings.unreadAbove(count, shown, "")}
+            </span>
+          ) : null}
           {exact}
         </Button>
         {onMarkRead ? (
-          <Button size="xs" className="font-normal" onClick={onMarkRead}>
+          <Button
+            size="xs"
+            className="shrink-0 font-normal"
+            onClick={onMarkRead}
+          >
             {strings.markRead}
           </Button>
         ) : null}
@@ -144,7 +157,8 @@ function JumpBar({
       )}
       {...props}
     >
-      <span className="min-w-0 truncate text-muted-foreground">
+      {/* Wraps to a second line rather than cutting the sentence short. */}
+      <span className="min-w-0 py-1 leading-4 text-balance text-muted-foreground">
         {strings.history}
       </span>
       <Button variant="ghost" size="xs" className="shrink-0" onClick={onJump}>
