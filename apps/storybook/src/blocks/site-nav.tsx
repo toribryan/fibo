@@ -46,10 +46,20 @@ function idFromAddress() {
   }
 }
 
-function subscribeToQuery(onChange: () => void) {
-  const query = window.matchMedia(MOBILE_QUERY)
-  query.addEventListener("change", onChange)
-  return () => query.removeEventListener("change", onChange)
+// Below this the five items at the default size outgrow the bar, and a
+// glass bar doesn't scroll, so it steps down to the small size.
+const NARROW_QUERY = "(max-width: 374px)"
+
+function useMediaQuery(query: string) {
+  return useSyncExternalStore(
+    (onChange) => {
+      const list = window.matchMedia(query)
+      list.addEventListener("change", onChange)
+      return () => list.removeEventListener("change", onChange)
+    },
+    () => window.matchMedia(query).matches,
+    () => false
+  )
 }
 
 // Storybook rebuilds the docs page, and this nav with it, on every
@@ -59,11 +69,8 @@ function subscribeToQuery(onChange: () => void) {
 let lastShown: string | undefined
 
 function SiteNav() {
-  const mobile = useSyncExternalStore(
-    subscribeToQuery,
-    () => window.matchMedia(MOBILE_QUERY).matches,
-    () => false
-  )
+  const mobile = useMediaQuery(MOBILE_QUERY)
+  const narrow = useMediaQuery(NARROW_QUERY)
   const [current, setCurrent] = useState(idFromAddress)
 
   useEffect(() => {
@@ -90,7 +97,8 @@ function SiteNav() {
       aria-label="Site"
       items={ITEMS}
       value={shown}
-      size="sm"
+      variant="glass"
+      size={narrow ? "sm" : "default"}
       hideOnScroll
       onValueChange={(value, event) => {
         if (event.metaKey || event.ctrlKey) return
