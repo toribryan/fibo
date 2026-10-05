@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
+import { CheckIcon } from "lucide-react"
 
 import {
   Avatar,
@@ -8,6 +9,7 @@ import {
   AvatarGroupCount,
   AvatarImage,
 } from "./avatar.js"
+import { StatusDot } from "./status-dot.js"
 // A local image, so the stories load nothing from the network and Chromatic
 // snapshots stay stable.
 import bonzo from "../assets/bonzo.webp"
@@ -61,13 +63,26 @@ export const Sizes: Story = {
   ),
 }
 
+export const WithStatus: Story = {
+  name: "With status",
+  render: (args) => (
+    <Avatar {...args} size="lg">
+      <AvatarImage src={bonzo} alt="Bonzo" />
+      <AvatarFallback>BO</AvatarFallback>
+      <StatusDot status="present" />
+    </Avatar>
+  ),
+}
+
 export const WithBadge: Story = {
   name: "With badge",
   render: (args) => (
     <Avatar {...args} size="lg">
-      <AvatarImage src={bonzo} alt="Bonzo, online" />
+      <AvatarImage src={bonzo} alt="Bonzo, verified" />
       <AvatarFallback>BO</AvatarFallback>
-      <AvatarBadge className="bg-success" />
+      <AvatarBadge>
+        <CheckIcon />
+      </AvatarBadge>
     </Avatar>
   ),
 }

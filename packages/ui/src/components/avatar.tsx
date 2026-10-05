@@ -21,6 +21,8 @@ function Avatar({
         // The hairline is blended rather than solid, so it darkens a light
         // photo's edge without drawing a grey ring round a dark one.
         "group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
+        // A StatusDot child pins to the corner and grows with the avatar.
+        "*:data-[slot=status-dot]:absolute *:data-[slot=status-dot]:right-0 *:data-[slot=status-dot]:bottom-0 *:data-[slot=status-dot]:z-10 data-[size=lg]:*:data-[slot=status-dot]:size-3.5 data-[size=sm]:*:data-[slot=status-dot]:size-2.5",
         className
       )}
       {...props}
