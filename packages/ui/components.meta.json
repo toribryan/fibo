@@ -209,7 +209,6 @@
     "description": "Formatted writing on Tiptap: headings, marks, lists, quotes and links from a toolbar or Markdown shortcuts, with an optional character limit.",
     "tier": "base-components",
     "group": "Forms",
-    "status": "new",
     "figma": "761-2"
   },
   "select": {
@@ -288,6 +287,13 @@
     "tier": "base-components",
     "group": "Display",
     "figma": "631-5"
+  },
+  "tabs": {
+    "title": "Tabs",
+    "description": "Switches between views of one subject in place, as a segmented control or a row of tabs with an underline; scrolls sideways when it runs out of room.",
+    "tier": "base-components",
+    "group": "Navigation",
+    "status": "new"
   },
   "textarea": {
     "title": "Textarea",

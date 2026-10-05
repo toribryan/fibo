@@ -320,6 +320,35 @@ const PREVIEWS: Record<string, ReactNode> = {
       </span>
     </div>
   ),
+  tabs: (
+    <div className="flex flex-col items-center gap-4">
+      <span className="flex h-8 items-center rounded-4xl bg-muted p-0.5 text-xs font-medium">
+        <span className="flex h-7 items-center rounded-4xl bg-background px-3 shadow-sm ring-1 ring-border dark:bg-input">
+          Overview
+        </span>
+        <span className="flex h-7 items-center px-3 text-muted-foreground">
+          Activity
+        </span>
+        <span className="flex h-7 items-center px-3 text-muted-foreground">
+          Settings
+        </span>
+      </span>
+      <span className="flex items-end gap-1 text-xs font-medium">
+        <span className="flex flex-col gap-1">
+          <span className="flex h-7 items-center px-2.5">Profile</span>
+          <span className="h-0.5 rounded-full bg-primary" />
+        </span>
+        <span className="flex flex-col gap-1 text-muted-foreground">
+          <span className="flex h-7 items-center px-2.5">Security</span>
+          <span className="h-0.5" />
+        </span>
+        <span className="flex flex-col gap-1 text-muted-foreground">
+          <span className="flex h-7 items-center px-2.5">Billing</span>
+          <span className="h-0.5" />
+        </span>
+      </span>
+    </div>
+  ),
   "data-table": (
     <div className="w-52 overflow-hidden rounded-md border border-border text-xs">
       <div className="flex h-6 items-center gap-2 bg-muted px-2 font-medium">

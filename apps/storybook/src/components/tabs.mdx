@@ -1,0 +1,394 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/tabs.stories"
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "../../../../packages/ui/src/components/tabs"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Tabs
+
+Tabs switch between views of one subject in place, such as the sections of
+a settings page. One tab is active, and only its panel shows.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Two looks on the list: a segmented control, with the active tab raised on
+  a pill that slides between tabs, or `variant="line"`, a bare row with an
+  underline.
+- `sm` and `default` sizes, 32px and 36px tall like Button and Input, and
+  vertical lists for a sidebar of sections.
+- A row that runs out of room scrolls sideways instead of wrapping, and
+  keeps the active tab in view.
+- Built on Base UI's Tabs: controlled or not, with the arrow keys, Home and
+  End, and panels linked to their tabs for screen readers.
+
+## Installation
+
+<Install
+  name="tabs"
+  exports={[
+    "Tabs",
+    "TabsList",
+    "TabsTrigger",
+    "TabsContent",
+    "tabsListVariants",
+  ]}
+/>
+
+## Examples
+
+### Line
+
+No track: the active tab is in the text colour with a bar under it. Use it
+at the top of a page or card, where a segmented control would be too heavy.
+
+<Canvas of={Stories.Line} />
+
+### Small
+
+`size="sm"` sets a 32px row, to sit beside small buttons in a toolbar.
+
+<Canvas of={Stories.Small} />
+
+### Vertical
+
+`orientation="vertical"` on `Tabs` stacks the list beside the panels. The
+line variant moves its bar to the start edge, and the up and down arrows
+move between tabs.
+
+<Canvas of={Stories.Vertical} />
+
+### With icons and counts
+
+Put an icon or a Count in a trigger as children, no props needed. An icon
+is decoration, so hide it with `aria-hidden`; give the Count a `label` so
+it is read as more than a bare number.
+
+<Canvas of={Stories.WithIconsAndCounts} />
+
+### Disabled tab
+
+`disabled` on a trigger dims it. The arrow keys still reach it, so a
+screen reader can say it's there, but it can't be chosen. It stays in the
+row so the set doesn't shift when it comes back.
+
+<Canvas of={Stories.DisabledTab} />
+
+### Controlled
+
+Pass `value` and `onValueChange` to drive the tabs from outside, here from
+a button under the panel.
+
+<Canvas of={Stories.Controlled} />
+
+### Overflowing
+
+Ten tabs in a narrow box. The row scrolls sideways with its scrollbar
+hidden, and starts scrolled to the active tab.
+
+<Canvas of={Stories.Overflowing} />
+
+### Account settings
+
+A card of settings sections with line tabs, each panel a set of fields.
+
+<Canvas of={Stories.AccountSettings} />
+
+## Usage
+
+```tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+export function Project() {
+  return (
+    <Tabs defaultValue="overview">
+      <TabsList aria-label="Project">
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="activity">Activity</TabsTrigger>
+      </TabsList>
+      <TabsContent value="overview">Three releases this month.</TabsContent>
+      <TabsContent value="activity">Ana merged the token change.</TabsContent>
+    </Tabs>
+  )
+}
+```
+
+Each `TabsTrigger` needs a `TabsContent` with the same `value`. `variant` and
+`size` go on `TabsList`, which hands them to every trigger in it.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Tabs",
+    slot: "tabs",
+    note: "Holds the value and the orientation, and lays out the list and panels.",
+    children: [
+      {
+        name: "TabsList",
+        slot: "tabs-list",
+        note: "The row of tabs, with the role tablist. Draws the track and scrolls sideways.",
+        children: [
+          {
+            name: "TabsTrigger",
+            slot: "tabs-trigger",
+            note: "One tab: a button with the role tab.",
+          },
+          {
+            name: "Indicator",
+            slot: "tabs-indicator",
+            note: "The pill or bar under the active tab, rendered by the list.",
+          },
+        ],
+      },
+      {
+        name: "TabsContent",
+        slot: "tabs-content",
+        note: "The active tab's panel, with the role tabpanel.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use tabs for views of the same subject that people move between freely. Steps in a sequence need a stepper; pages of a site need links.",
+    "Keep labels to one or two words, in sentence case. They are nouns, not actions.",
+    "Use the segmented control for two to five short options close to the content, and the line variant for sections of a page or card.",
+    "Keep the set the same as people use it. Disable a tab that can't be used yet rather than removing it.",
+    "Give every tab an icon or none; a row where only some have one looks unfinished.",
+  ]}
+/>
+
+<Tip>
+  Panels unmount when hidden. Set <code>keepMounted</code> on{" "}
+  <code>TabsContent</code> to keep a panel's state, such as a half-filled form,
+  while people look at another tab.
+</Tip>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Tabs defaultValue="month">
+            <TabsList size="sm" aria-label="Range">
+              <TabsTrigger value="week">Week</TabsTrigger>
+              <TabsTrigger value="month">Month</TabsTrigger>
+              <TabsTrigger value="year">Year</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        ),
+        description: "Use short nouns for views of the same data.",
+      },
+      negative: {
+        component: (
+          <Tabs defaultValue="details">
+            <TabsList size="sm" aria-label="Checkout">
+              <TabsTrigger value="details">1. Details</TabsTrigger>
+              <TabsTrigger value="pay">2. Pay</TabsTrigger>
+              <TabsTrigger value="done">3. Done</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        ),
+        description:
+          "Don't use tabs for steps that must happen in order. Nothing stops people skipping ahead.",
+      },
+    },
+    {
+      positive: {
+        component: (
+          <Tabs defaultValue="profile">
+            <TabsList variant="line" size="sm" aria-label="Account">
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="security">Security</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        ),
+        description: "Use the line variant for a page's sections.",
+      },
+      negative: {
+        component: (
+          <Tabs defaultValue="profile">
+            <TabsList variant="line" size="sm" aria-label="Account, nested">
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="security">Security</TabsTrigger>
+            </TabsList>
+            <Tabs defaultValue="a">
+              <TabsList variant="line" size="sm" aria-label="Profile">
+                <TabsTrigger value="a">Name</TabsTrigger>
+                <TabsTrigger value="b">Photo</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </Tabs>
+        ),
+        description:
+          "Don't stack one row of line tabs under another. Nest a segmented control if you must.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+`Tabs`, `TabsTrigger` and `TabsContent` take every prop of Base UI's
+`Tabs.Root`, `Tabs.Tab` and `Tabs.Panel`. `TabsList` takes those of
+`Tabs.List`, including `activateOnFocus` and `loopFocus`, plus `variant`
+and `size`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="tabs"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-orientation",
+      element: "The root, list, triggers, indicator and panels",
+      when: (
+        <>
+          Always. <code>horizontal</code> or <code>vertical</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-activation-direction",
+      element: "The root, list, triggers, indicator and panels",
+      when: (
+        <>
+          Always. Where the last change came from: <code>left</code>,{" "}
+          <code>right</code>, <code>up</code>, <code>down</code> or{" "}
+          <code>none</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="tabs-list"',
+      element: "The list",
+      when: "Always.",
+    },
+    {
+      attribute: "data-variant",
+      element: "The list",
+      when: (
+        <>
+          Always. <code>default</code> or <code>line</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-size",
+      element: "The list",
+      when: (
+        <>
+          Always. <code>sm</code> or <code>default</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="tabs-trigger"',
+      element: "A tab",
+      when: "Always.",
+    },
+    {
+      attribute: "data-active",
+      element: "A tab",
+      when: "The tab is the active one.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "A tab",
+      when: "The tab is disabled.",
+    },
+    {
+      attribute: 'data-slot="tabs-indicator"',
+      element: "The indicator",
+      when: "A tab is active.",
+    },
+    {
+      attribute: 'data-slot="tabs-content"',
+      element: "A panel",
+      when: "Always.",
+    },
+    {
+      attribute: "data-index",
+      element: "A panel",
+      when: "Always. The panel's position among the panels.",
+    },
+    {
+      attribute: "data-hidden",
+      element: "A panel",
+      when: (
+        <>
+          The panel is hidden and kept in the DOM with <code>keepMounted</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-starting-style",
+      element: "A panel",
+      when: "The panel is animating in.",
+    },
+    {
+      attribute: "data-ending-style",
+      element: "A panel",
+      when: "The panel is animating out.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Name the list with <code>aria-label</code>, or{" "}
+      <code>aria-labelledby</code> pointing at a heading, so screen readers say
+      what the tabs choose between.
+    </>,
+    <>
+      Tab moves focus into the list, onto the active tab, and Tab again moves on
+      to the panel. Inside the list, the arrow keys move between tabs (left and
+      right, or up and down when vertical), wrapping at the ends, and Home and
+      End go to the first and last.
+    </>,
+    <>
+      Arrows only move focus: Enter or Space activates the focused tab. This is
+      Base UI's default, <code>activateOnFocus={"{false}"}</code>, which suits
+      panels that are slow to render. Set it on <code>TabsList</code> to switch
+      as focus moves.
+    </>,
+    "Each tab is linked to its panel, so the panel is named after its tab and the tab says which panel it controls.",
+    "The active tab is told apart by more than colour: a raised pill or a bar, as well as the text colour. Hover only changes the text colour or adds a muted fill, never the pill or bar.",
+    "The pill slides between tabs in 200ms, and jumps straight there under reduced motion.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Floating nav", "Pagination", "Radio group"]} />
+
+## References
+
+- [Base UI Tabs](https://base-ui.com/react/components/tabs)
+- [WAI-ARIA tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/)
