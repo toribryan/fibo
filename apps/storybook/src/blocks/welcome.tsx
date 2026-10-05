@@ -13,7 +13,7 @@ const RESOURCES = [
     icon: PaletteIcon,
     title: "Foundations",
     description:
-      "Colour and type tokens, named the same as the Figma variables.",
+      "Colour, type, spacing, elevation and motion, named the same as in Figma.",
   },
   {
     to: "catalog--docs",

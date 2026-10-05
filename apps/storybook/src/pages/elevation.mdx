@@ -1,0 +1,40 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+import { ElevationLevels } from "../blocks/foundations"
+
+<Meta title="Foundations/Elevation" />
+
+# Elevation
+
+Most of fibo sits flat on the page, set off by a hairline `border-border`
+rather than a shadow. A shadow means something is lifted: you can grab it, or
+it floats over what's beneath. Shadows are Tailwind's own, `shadow-xs` to
+`shadow-lg`.
+
+## Levels
+
+Each level with what it means and the parts that use it.
+
+<ElevationLevels />
+
+## Layers
+
+Two layers cover every part:
+
+- **`z-10`** lifts something above its neighbours inside a part, such as a
+  pinned table column or Floating nav's lifted lens.
+- **`z-50`** is for layers over the page: popovers, menus, dialogs, sheets,
+  toasts and a fixed nav. Base UI portals them to the end of the body, so
+  their order on screen is the order they opened in.
+
+A modal dims the page behind it with the `backdrop` token, and Floating nav's
+glass variant uses `glass`, `glass-edge` and `glass-lens` rather than a
+shadow.
+
+## Rules
+
+- Raise only what floats or can be grabbed. A card in a list stays flat.
+- Every raised surface keeps its border. In dark mode a shadow barely shows,
+  and the border is what separates the surface from the page.
+- Don't stack levels: a menu over a dialog keeps `shadow-md`, its own level,
+  not one higher.

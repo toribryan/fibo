@@ -11,6 +11,9 @@ import {
   LayoutGridIcon,
   MousePointerClickIcon,
   RabbitIcon,
+  RulerIcon,
+  SplineIcon,
+  SquareStackIcon,
   TextCursorInputIcon,
   TypeIcon,
   WorkflowIcon,
@@ -26,6 +29,9 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   "about-fibo--docs": RabbitIcon,
   "foundations-colors--docs": ContrastIcon,
   "foundations-typography--docs": TypeIcon,
+  "foundations-spacing--docs": RulerIcon,
+  "foundations-elevation--docs": SquareStackIcon,
+  "foundations-motion--docs": SplineIcon,
 }
 
 // Each group inside a shelf has an icon for what its parts do.

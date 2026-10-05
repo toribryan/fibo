@@ -1,0 +1,43 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+import { ControlHeights, SpacingScale } from "../blocks/foundations"
+import { Tip } from "../blocks/guidelines"
+
+<Meta title="Foundations/Spacing" />
+
+# Spacing
+
+Spacing is Tailwind's own scale: one step is 4px, so `gap-2` is 8px and `p-4`
+is 16px. fibo adds no spacing tokens. Figma's Spacing collection has the same
+steps, named `spacing/2` for `2` and `spacing/1-5` for `1.5`.
+
+## Scale
+
+The steps fibo's parts use, with where each one turns up.
+
+<SpacingScale />
+
+Most layouts need four of them: `2` between things in a row, `3` inside a
+cell or card, `4` inside a panel, `6` between groups. Reach past that only
+for page-level breaks.
+
+## Control heights
+
+Buttons, inputs, selects and toggles share one height per size, so a row of
+mixed controls lines up. `sm` is the size for dense toolbars and forms,
+`default` for everything else.
+
+<ControlHeights />
+
+## Rules
+
+- Space by step, not by eye: an off-scale value such as `gap-[7px]` won't
+  match Figma or the next part over.
+- Let the container space its children with `gap`, rather than margins on
+  each child, so a part can be moved or removed without leaving a hole.
+- A part sets its own padding; the page sets the space between parts.
+
+<Tip>
+  Inside a FieldGroup, `size="sm"` tightens the gaps between fields from 24px to
+  16px along with the controls, so a dense form says so once.
+</Tip>
