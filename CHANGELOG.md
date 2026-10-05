@@ -118,6 +118,12 @@ https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
 
 ### Changed
 
+- Jump bar, Command menu, Filter menu and Reactions use Button, Badge and
+  Checkbox's look for their own controls, so focus rings, hover and sizes
+  match the rest of fibo. Reactions' inline trigger is 32px, on the size
+  scale, rather than 28. Jump bar draws Mark as read only when `onMarkRead`
+  is given. Checkbox exports `CheckboxMark`, its look without its behaviour,
+  for rows that are already the control.
 - Data table keeps selected rows that a search or filter hides, and the
   toolbar, announcement and `DataTableSelectionCount` add “, 2 hidden by
   filters”. Bulk actions and `table.getSelectedRowIds()` cover every

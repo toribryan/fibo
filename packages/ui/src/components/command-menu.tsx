@@ -7,6 +7,7 @@ import { cva } from "class-variance-authority"
 import { motion, useReducedMotion, type Transition } from "motion/react"
 import { ChevronLeftIcon, ChevronRightIcon, SearchIcon } from "lucide-react"
 
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Kbd, KbdGroup } from "@workspace/ui/components/kbd"
 import { cn } from "@workspace/ui/lib/utils"
@@ -536,24 +537,26 @@ function CommandMenu({
             >
               {page ? (
                 <>
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
                     data-slot="command-menu-back"
                     aria-label={text.back(parent ? parent.label : text.home)}
                     onClick={() => {
                       back()
                       inputRef.current?.focus()
                     }}
-                    className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+                    className="text-muted-foreground"
                   >
                     <ChevronLeftIcon aria-hidden="true" className="size-4" />
-                  </button>
-                  <span
+                  </Button>
+                  <Badge
+                    variant="secondary"
                     data-slot="command-menu-breadcrumb"
-                    className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium"
+                    className="shrink-0 font-medium"
                   >
                     {page.label}
-                  </span>
+                  </Badge>
                 </>
               ) : (
                 <SearchIcon

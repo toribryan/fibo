@@ -13,7 +13,6 @@ import {
   type Transition,
 } from "motion/react"
 import {
-  CheckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ListFilterIcon,
@@ -21,6 +20,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import { CheckboxMark } from "@workspace/ui/components/checkbox"
 import { Count } from "@workspace/ui/components/count"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -470,17 +470,18 @@ function FilterMenu({
   }
 
   const backButton = (onBack: () => void, name: string) => (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="icon-xs"
       aria-label={name}
       onClick={() => {
         onBack()
         home.current?.focus({ preventScroll: true })
       }}
-      className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+      className="text-muted-foreground"
     >
       <ChevronLeftIcon className="size-4" />
-    </button>
+    </Button>
   )
 
   const searchInput = (
@@ -634,20 +635,18 @@ function FilterMenu({
                         className="flex w-full items-center gap-2 px-2"
                       >
                         {view === "fields" ? (
-                          <button
-                            type="button"
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             data-slot="filter-menu-search-button"
                             onClick={() => enterSearch()}
-                            className="-mx-1 flex h-8 flex-1 items-center gap-2 rounded-md px-1 text-sm text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+                            className="-mx-1 flex-1 justify-start gap-2 px-1 font-normal text-muted-foreground"
                           >
                             <span className="flex size-6 shrink-0 items-center justify-center">
-                              <SearchIcon
-                                aria-hidden="true"
-                                className="size-4"
-                              />
+                              <SearchIcon aria-hidden="true" />
                             </span>
                             {searchLabel}
-                          </button>
+                          </Button>
                         ) : view === "values" ? (
                           <>
                             {backButton(back, text.backToFields)}
@@ -788,15 +787,7 @@ function FilterMenuRow({
       onClick={onActivate}
       className="flex h-8 cursor-default items-center gap-2 rounded-md px-2 text-sm select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
     >
-      {row.kind === "option" ? (
-        <span
-          aria-hidden="true"
-          data-checked={checked || undefined}
-          className="flex size-4 items-center justify-center rounded-sm border border-input bg-input-subtle text-primary-foreground data-checked:border-primary data-checked:bg-primary"
-        >
-          {checked ? <CheckIcon className="size-3" /> : null}
-        </span>
-      ) : null}
+      {row.kind === "option" ? <CheckboxMark checked={checked} /> : null}
       {icon ? (
         <span aria-hidden="true" className="text-muted-foreground">
           {icon}
