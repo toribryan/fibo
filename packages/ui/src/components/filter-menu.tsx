@@ -22,6 +22,11 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { CheckboxMark } from "@workspace/ui/components/checkbox"
 import { Count } from "@workspace/ui/components/count"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@workspace/ui/components/input-group"
 import { cn } from "@workspace/ui/lib/utils"
 
 type FilterOption = {
@@ -485,7 +490,7 @@ function FilterMenu({
   )
 
   const searchInput = (
-    <input
+    <InputGroupInput
       ref={inputRef}
       role="combobox"
       aria-label={searchLabel}
@@ -511,7 +516,7 @@ function FilterMenu({
         setHighlight(0)
       }}
       onKeyDown={onKeyDown}
-      className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-hidden placeholder:text-muted-foreground"
+      className="pr-0 text-sm"
     />
   )
 
@@ -589,38 +594,40 @@ function FilterMenu({
                   className="relative flex h-10 items-center overflow-hidden border-b border-border"
                 >
                   {search === "inline" ? (
-                    <div className="flex w-full items-center gap-2 px-2">
-                      <AnimatePresence initial={false} mode="popLayout">
-                        {view === "values" ? (
-                          <motion.span
-                            key="back"
-                            initial={{ opacity: 0, x: slide }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: slide }}
-                            transition={transition}
-                          >
-                            {backButton(back, text.backToFields)}
-                          </motion.span>
-                        ) : (
-                          <motion.span
-                            key={view === "search" ? "search" : "filter"}
-                            aria-hidden="true"
-                            initial={{ opacity: 0, scale: 0.6 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.6 }}
-                            transition={transition}
-                            className="flex size-6 shrink-0 items-center justify-center text-muted-foreground"
-                          >
-                            {view === "search" ? (
-                              <SearchIcon className="size-4" />
-                            ) : (
-                              <ListFilterIcon className="size-4" />
-                            )}
-                          </motion.span>
-                        )}
-                      </AnimatePresence>
+                    <InputGroup variant="ghost" className="h-full px-2">
+                      <InputGroupAddon className="pl-0">
+                        <AnimatePresence initial={false} mode="popLayout">
+                          {view === "values" ? (
+                            <motion.span
+                              key="back"
+                              initial={{ opacity: 0, x: slide }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: slide }}
+                              transition={transition}
+                            >
+                              {backButton(back, text.backToFields)}
+                            </motion.span>
+                          ) : (
+                            <motion.span
+                              key={view === "search" ? "search" : "filter"}
+                              aria-hidden="true"
+                              initial={{ opacity: 0, scale: 0.6 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.6 }}
+                              transition={transition}
+                              className="flex size-6 shrink-0 items-center justify-center text-muted-foreground"
+                            >
+                              {view === "search" ? (
+                                <SearchIcon className="size-4" />
+                              ) : (
+                                <ListFilterIcon className="size-4" />
+                              )}
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </InputGroupAddon>
                       {searchInput}
-                    </div>
+                    </InputGroup>
                   ) : (
                     // The header slides with the body: the Search filters
                     // button, a field's name, or the search box.
@@ -655,15 +662,17 @@ function FilterMenu({
                             </span>
                           </>
                         ) : (
-                          <>
-                            {backButton(
-                              exitSearch,
-                              field
-                                ? text.backToField(field.label)
-                                : text.backToFilters
-                            )}
+                          <InputGroup variant="ghost" className="h-full">
+                            <InputGroupAddon className="pl-0">
+                              {backButton(
+                                exitSearch,
+                                field
+                                  ? text.backToField(field.label)
+                                  : text.backToFilters
+                              )}
+                            </InputGroupAddon>
                             {searchInput}
-                          </>
+                          </InputGroup>
                         )}
                       </View>
                     </AnimatePresence>
