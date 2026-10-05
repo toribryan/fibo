@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { useState } from "react"
 import { expect, fn } from "storybook/test"
 
-import { Slider } from "./slider.js"
+import { Slider, SliderLabel, SliderValue } from "./slider.js"
 
 const meta: Meta<typeof Slider> = {
   title: "Base components/Forms/Slider",
@@ -85,23 +85,26 @@ export const Vertical: Story = {
 function WithValue() {
   const [value, setValue] = useState(60)
   return (
-    <div className="flex w-72 flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">Brightness</span>
-        <span className="font-mono text-sm text-muted-foreground tabular-nums">
-          {value}%
-        </span>
-      </div>
-      <Slider
-        value={value}
-        onValueChange={(next) => setValue(next as number)}
-        aria-label="Brightness"
-      />
-    </div>
+    <Slider
+      value={value}
+      onValueChange={(next) => setValue(next as number)}
+      format={{ style: "unit", unit: "percent" }}
+      className="w-72"
+    >
+      <SliderLabel>Brightness</SliderLabel>
+      <SliderValue />
+    </Slider>
   )
 }
 
 export const WithLabelAndValue: Story = {
   name: "With label and value",
   render: () => <WithValue />,
+  play: async ({ canvas, userEvent }) => {
+    const thumb = canvas.getByRole("slider", { name: "Brightness" })
+    await expect(canvas.getByText("60%")).toBeInTheDocument()
+    await userEvent.click(thumb)
+    await userEvent.keyboard("{ArrowRight}")
+    await expect(canvas.getByText("61%")).toBeInTheDocument()
+  },
 }
