@@ -211,6 +211,46 @@
     box-shadow: none !important;
   }
 
+  /* The theme switch is a two-segment pill in the toolbar; the current
+     theme's segment is filled, the way the selected sidebar row darkens. */
+  .fibo-theme {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0 4px;
+    padding: 2px;
+    border: 1px solid var(--fibo-border);
+    border-radius: 999px;
+  }
+  .fibo-theme-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--fibo-muted);
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+  .fibo-theme-option:hover {
+    color: var(--fibo-fg);
+  }
+  .fibo-theme-option[aria-pressed="true"] {
+    background: var(--fibo-hover);
+    color: var(--fibo-fg);
+    cursor: default;
+  }
+  .fibo-theme-option:focus-visible {
+    outline: 2px solid var(--fibo-muted);
+    outline-offset: 1px;
+  }
+
   /* Storybook's own type icons give way to the Lucide ones in the label. */
   #storybook-explorer-menu svg[type] {
     display: none;
