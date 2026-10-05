@@ -33,10 +33,27 @@ With no value, it shows that the task is under way.
 
 <Install
   name="progress"
-  exports={["Progress", "ProgressLabel", "ProgressValue"]}
+  exports={["Progress", "ProgressLabel", "ProgressValue", "progressVariants"]}
 />
 
 ## Examples
+
+### Circle
+
+`type="circle"` draws a ring in the current text colour, sized `xs` to `lg`:
+12, 16, 20 and 24 pixels. With a `value` the arc shows how far along it is;
+with `value={null}` a quarter arc turns, and holds still under reduced
+motion. Name it with `aria-label`; a circle has no room for a label.
+
+<Canvas of={Stories.Circle} />
+
+### In a button
+
+A small circle stands in for a button's icon while its action runs. The
+button's text or `aria-label` says what is happening, so the circle is
+hidden from screen readers. Toast and Chat composer use it this way.
+
+<Canvas of={Stories.InAButton} />
 
 ### Indeterminate
 
