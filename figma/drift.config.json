@@ -31,6 +31,7 @@
     "Floating nav item.type": "Code makes an item text-only when it has no icon; designers pick it by hand.",
     "Sticker avatar.shape": "Code picks the shape from the image: a cut-out when its border is clear, round for a photo, initials with no image. Designers pick it by hand.",
     "Radio group item.checked": "Base UI checks the item whose value matches the group's value; designers pick it by hand.",
+    "Separator.orientation": "Base UI's orientation prop, horizontal or vertical as here, not a fibo union.",
     "Switch.checked": "Base UI's checked and defaultChecked props, not a fibo prop.",
     "Slider.thumbs": "Code draws one thumb per value passed; Figma picks one or two by hand.",
     "Pagination.position": "Code disables Previous and Next from page and pageCount; designers pick first, middle or last by hand.",
