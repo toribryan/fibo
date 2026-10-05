@@ -161,7 +161,11 @@ function AnatomyDiagram({
   )
 }
 
-/** A plain table for specs: a header row, then one row per item. */
+/**
+ * A plain table for specs: a header row, then one row per item. On a phone
+ * each row stacks into a card of label and value pairs instead, since a
+ * table of three or four prose columns only fits by scrolling sideways.
+ */
 function SpecTable({
   columns,
   rows,
@@ -170,41 +174,58 @@ function SpecTable({
   rows: ReactNode[][]
 }) {
   return (
-    <div className="my-6 overflow-x-auto">
-      <table className="w-full min-w-lg border-collapse text-left text-sm">
-        <thead>
-          <tr className="border-b border-border text-foreground">
-            {columns.map((column) => (
-              <th key={column} className="py-2.5 pr-4 font-medium last:pr-0">
-                {column}
-              </th>
+    <>
+      <dl className="my-6 divide-y divide-border text-sm sm:hidden">
+        {rows.map((row, index) => (
+          <div key={index} className="flex flex-col gap-2 py-3 first:pt-0">
+            <dt className="font-medium text-foreground">{row[0]}</dt>
+            {row.slice(1).map((cell, cellIndex) => (
+              <dd key={cellIndex} className="flex flex-col gap-0.5">
+                <span className="text-xs text-muted-foreground">
+                  {columns[cellIndex + 1]}
+                </span>
+                <span className="leading-6 text-foreground">{cell}</span>
+              </dd>
             ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            <tr
-              key={index}
-              className="border-b border-border align-top last:border-b-0"
-            >
-              {row.map((cell, cellIndex) => (
-                <td
-                  key={cellIndex}
-                  className={cn(
-                    "py-3 pr-4 leading-6 last:pr-0",
-                    cellIndex === 0
-                      ? "font-medium text-foreground"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {cell}
-                </td>
+          </div>
+        ))}
+      </dl>
+      <div className="my-6 overflow-x-auto max-sm:hidden">
+        <table className="w-full min-w-lg border-collapse text-left text-sm">
+          <thead>
+            <tr className="border-b border-border text-foreground">
+              {columns.map((column) => (
+                <th key={column} className="py-2.5 pr-4 font-medium last:pr-0">
+                  {column}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr
+                key={index}
+                className="border-b border-border align-top last:border-b-0"
+              >
+                {row.map((cell, cellIndex) => (
+                  <td
+                    key={cellIndex}
+                    className={cn(
+                      "py-3 pr-4 leading-6 last:pr-0",
+                      cellIndex === 0
+                        ? "font-medium text-foreground"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   )
 }
 
