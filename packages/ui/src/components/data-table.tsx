@@ -72,7 +72,11 @@ import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Count } from "@workspace/ui/components/count"
 import { Separator } from "@workspace/ui/components/separator"
-import { Input } from "@workspace/ui/components/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@workspace/ui/components/input-group"
 import {
   Menu,
   MenuCheckboxItem,
@@ -1454,25 +1458,26 @@ function DataTableSearch({
   className,
   ...props
 }: Omit<
-  React.ComponentProps<typeof Input>,
-  "value" | "defaultValue" | "onChange" | "type"
+  React.ComponentProps<typeof InputGroupInput>,
+  "value" | "defaultValue" | "onChange" | "type" | "render"
 >) {
   const { table } = useDataTableRoot()
   const value = useSelector(table.atoms.globalFilter, (filter) =>
     typeof filter === "string" ? filter : ""
   )
   return (
-    <div data-slot="data-table-search-field" className="relative w-full">
-      <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-      <Input
+    <InputGroup data-slot="data-table-search-field" size="sm">
+      <InputGroupAddon>
+        <SearchIcon aria-hidden="true" />
+      </InputGroupAddon>
+      <InputGroupInput
         type="search"
-        size="sm"
-        className={cn("pl-8", className)}
+        className={className}
         value={value}
         onChange={(event) => table.setGlobalFilter(event.target.value)}
         {...props}
       />
-    </div>
+    </InputGroup>
   )
 }
 
