@@ -10,6 +10,11 @@ has the same history with links into the docs.
 
 ### Added
 
+- Count: a number capped at 99+, shortened to 1.2K or signed as +4, with
+  the exact number or your label for screen readers, and a `formatCount`
+  helper for counts inside a sentence. Reactions, Jump bar, Filter menu,
+  Data table's filters and Sticker avatar's count use it; Sticker avatar's
+  count now reads “4 more” rather than “plus 4”.
 - Status dot: a presence mark told apart by shape, a dot, a crescent and a
   ring, with a spoken label. Avatar pins it to its corner, Sticker avatar sets
   it on the paper and adds its label to the sticker's name, and Badge leads

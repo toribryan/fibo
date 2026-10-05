@@ -3,6 +3,7 @@
 import * as React from "react"
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react"
 
+import { formatCount } from "@workspace/ui/lib/format-count"
 import { cn } from "@workspace/ui/lib/utils"
 
 type JumpBarType = "unread-above" | "new-below" | "history"
@@ -67,14 +68,13 @@ function JumpBar({
   ...props
 }: JumpBarProps) {
   const strings = { ...defaultStrings, ...overrides }
-  const number = new Intl.NumberFormat(locale)
-  const shown =
-    count > MAX_SHOWN ? `${number.format(MAX_SHOWN)}+` : number.format(count)
+  const capped = formatCount(count, { max: MAX_SHOWN, locale })
+  const shown = capped.shown
   // A capped count keeps the visible words in the name, so speech input can
   // say what's on screen, and adds the full number after them (WCAG 2.5.3).
   const exact =
     count > MAX_SHOWN ? (
-      <span className="sr-only"> ({number.format(count)})</span>
+      <span className="sr-only"> ({capped.exact})</span>
     ) : null
   const time = since
     ? new Intl.DateTimeFormat(locale, {

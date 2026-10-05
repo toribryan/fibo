@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import { Count } from "@workspace/ui/components/count"
 import { cn } from "@workspace/ui/lib/utils"
 
 type FilterOption = {
@@ -811,10 +812,11 @@ function FilterMenuRow({
       {row.kind === "field" ? (
         <>
           {chosen.length ? (
-            <span className="font-mono text-xs text-muted-foreground tabular-nums">
-              {chosen.length}
-              <span className="sr-only"> selected</span>
-            </span>
+            <Count
+              value={chosen.length}
+              label={(n) => `${n} selected`}
+              className="font-mono text-xs text-muted-foreground"
+            />
           ) : null}
           <span className="sr-only">, opens values</span>
           <ChevronRightIcon

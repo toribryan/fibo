@@ -9,6 +9,7 @@ import {
   AvatarGroupCount,
   AvatarImage,
 } from "./avatar.js"
+import { Count } from "./count.js"
 import { StatusDot } from "./status-dot.js"
 // A local image, so the stories load nothing from the network and Chromatic
 // snapshots stay stable.
@@ -99,7 +100,9 @@ export const Group: Story = {
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       ))}
-      <AvatarGroupCount>+4</AvatarGroupCount>
+      <AvatarGroupCount>
+        <Count value={4} plus label={(n) => `${n} more`} />
+      </AvatarGroupCount>
     </AvatarGroup>
   ),
 }

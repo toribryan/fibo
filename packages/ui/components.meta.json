@@ -49,6 +49,13 @@
     "group": "Navigation",
     "figma": "526-6"
   },
+  "count": {
+    "title": "Count",
+    "description": "A number at a glance: capped at 99+, shortened to 1.2K or signed as +4, read out in full.",
+    "tier": "base-components",
+    "group": "Display",
+    "status": "new"
+  },
   "data-table": {
     "title": "Data table",
     "description": "A table for lists people work through, on TanStack Table: sorting, search, filters with counts, pages, selection, cell types, locked rows and pinned columns.",
@@ -110,7 +117,6 @@
     "description": "A pin for a point on a map, with a preview that opens on click or tap.",
     "tier": "special-components",
     "group": "Display",
-    "status": "new",
     "figma": "601-75"
   },
   "menu": {

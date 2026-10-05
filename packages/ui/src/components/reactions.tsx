@@ -5,6 +5,7 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { cva, type VariantProps } from "class-variance-authority"
 import { motion, useReducedMotion, type Variants } from "motion/react"
 
+import { Count } from "@workspace/ui/components/count"
 import { cn } from "@workspace/ui/lib/utils"
 
 type Reaction = {
@@ -28,10 +29,6 @@ const DEFAULT_CHOICES: Reaction[] = [
   { emoji: "\u{1F62E}", label: "Surprised" },
   { emoji: "\u{1F525}", label: "Fire" },
 ]
-
-function formatCount(count: number, compact: Intl.NumberFormat) {
-  return count < 1000 ? String(count) : compact.format(count)
-}
 
 function describeCount(count: number) {
   return `${count} ${count === 1 ? "reaction" : "reactions"}`
@@ -358,16 +355,6 @@ function Reactions({
   const [pulse, setPulse] = React.useState<{ emoji: string; nonce: number }>()
   const [open, setOpen] = React.useState(false)
   const [announcement, setAnnouncement] = React.useState("")
-  // A fixed locale rather than the runtime's, so the server and the browser
-  // write the same count and hydration matches.
-  const compact = React.useMemo(
-    () =>
-      new Intl.NumberFormat(locale, {
-        notation: "compact",
-        maximumFractionDigits: 1,
-      }),
-    [locale]
-  )
 
   const isControlled = reactionsProp !== undefined
   const items = isControlled ? reactionsProp : uncontrolled
@@ -483,10 +470,14 @@ function Reactions({
     <span
       ref={badgeRef}
       data-slot="reactions-badge"
-      className="inline-flex h-8 min-w-6 shrink-0 items-center justify-center px-1.5 text-xs font-medium text-muted-foreground tabular-nums"
+      className="inline-flex h-8 min-w-6 shrink-0 items-center justify-center px-1.5 text-xs font-medium text-muted-foreground"
     >
-      <span aria-hidden="true">{formatCount(total, compact)}</span>
-      <span className="sr-only">{describeCount(total)}</span>
+      <Count
+        value={total}
+        notation="compact"
+        locale={locale}
+        label={describeCount}
+      />
     </span>
   )
 
@@ -545,13 +536,15 @@ function Reactions({
               {item.emoji}
             </span>
             {showCounts && (
-              <span
+              // The pill's own name already says the count.
+              <Count
                 data-slot="reactions-pill-count"
-                aria-hidden="true"
-                className="font-medium text-muted-foreground tabular-nums group-data-active/pill:text-primary"
-              >
-                {formatCount(item.count ?? 0, compact)}
-              </span>
+                value={item.count ?? 0}
+                notation="compact"
+                locale={locale}
+                label={null}
+                className="font-medium text-muted-foreground group-data-active/pill:text-primary"
+              />
             )}
           </button>
         ))}

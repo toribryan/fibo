@@ -1,0 +1,132 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/count.stories"
+import { Count } from "../../../../packages/ui/src/components/count"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Count
+
+A number as people take it in at a glance: capped at 99+, shortened to 1.2K,
+or signed as +4. Screen readers hear the exact number, or your words.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Caps with `max`, shortens with `notation="compact"`, and signs a count of
+  things not shown with `plus`.
+- Figures don't shift as the number changes.
+- Says the exact number when the one shown is capped or shortened, or a
+  label you write, such as “128 unread”.
+- Text only: the part it sits in sets its size, weight and colour.
+
+## Installation
+
+<Install name="count" exports={["Count", "formatCount", "type CountProps"]} />
+
+It installs the `formatCount` helper into `lib/`, for counts that sit inside
+a sentence.
+
+## Examples
+
+### Formats
+
+<Canvas of={Stories.Formats} />
+
+### In other parts
+
+In a Badge for unread messages, and in AvatarGroupCount for the people not
+shown.
+
+<Canvas of={Stories.InContext} />
+
+## Usage
+
+```tsx
+import { Badge } from "@/components/ui/badge"
+import { Count } from "@/components/ui/count"
+
+export function Unread({ count }: { count: number }) {
+  return (
+    <Badge variant="secondary">
+      <Count value={count} max={99} label={(n) => `${n} unread`} />
+    </Badge>
+  )
+}
+```
+
+When the count is part of a sentence, such as “12 new messages”, use
+`formatCount` and write the sentence yourself, so it can be translated whole:
+
+```tsx
+import { formatCount } from "@/lib/format-count"
+
+const { shown } = formatCount(count, { max: 99, locale })
+```
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Cap a count at 99+ where only “a lot” matters, such as unread badges. Shorten it to 1.2K where the size matters, such as reactions.",
+    "Give it a label that names what is counted, such as 12 unread or 4 more, unless the text beside it already does.",
+    "Use plus only for things that aren't shown, such as the people after an avatar group.",
+    "Let the part it sits in style it: Count sets only the figures.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <span className="text-sm">
+            Inbox <Count value={128} max={99} label={(n) => `${n} unread`} />
+          </span>
+        ),
+        description: "Cap long counts, and say what is counted.",
+      },
+      negative: {
+        component: <span className="text-sm">Inbox 128</span>,
+        description:
+          "Don't leave a bare number for screen readers to guess at.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="count"',
+      element: "The count",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The number shown is hidden from screen readers when it differs from what they hear, so 99+ is read as 128, or as your label.",
+    "label={null} hides the count entirely, for a part whose own name already says it, such as a reaction pill.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Badge", "Avatar", "Jump bar"]} />

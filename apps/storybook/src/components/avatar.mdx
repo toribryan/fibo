@@ -7,6 +7,7 @@ import {
   AvatarGroup,
   AvatarGroupCount,
 } from "../../../../packages/ui/src/components/avatar"
+import { Count } from "../../../../packages/ui/src/components/count"
 import { Anatomy } from "../blocks/anatomy"
 import { RelatedComponents } from "../blocks/catalog"
 import { DataAttributes } from "../blocks/data-attributes"
@@ -67,7 +68,9 @@ presence, such as an icon. Name it in the photo's `alt`.
 
 ### Group
 
-AvatarGroup overlaps the avatars; AvatarGroupCount says how many more.
+AvatarGroup overlaps the avatars; AvatarGroupCount says how many more. Put a
+[Count](?path=/docs/base-components-display-count--docs) with `plus` in it,
+so it shows +4 and reads “4 more”.
 
 <Canvas of={Stories.Group} />
 
@@ -143,7 +146,9 @@ In a stack, `AvatarGroup` (`avatar-group`) wraps the avatars and
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
             ))}
-            <AvatarGroupCount>+9</AvatarGroupCount>
+            <AvatarGroupCount>
+              <Count value={9} plus label={(n) => `${n} more`} />
+            </AvatarGroupCount>
           </AvatarGroup>
         ),
         description: "Show a few faces and count the rest.",
