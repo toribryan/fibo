@@ -37,12 +37,36 @@ type FloatingNavProps = Omit<React.ComponentProps<"nav">, "onChange"> & {
   position?: "fixed" | "static"
   /** Slides the bar away while the page scrolls down and back when it scrolls up. */
   hideOnScroll?: boolean
+  /** `glass` is Apple's liquid glass: a clear bar that bends the page behind its edges, with a glass lens on the current item. */
+  variant?: "default" | "glass"
 }
+
+const floatingNavVariants = cva(
+  "pointer-events-auto relative flex max-w-full [scrollbar-width:none] items-center overflow-x-auto rounded-full shadow-lg",
+  {
+    variants: {
+      variant: {
+        default: "border border-border bg-popover-overlay backdrop-blur-md",
+        // The surface is drawn by the layers in GlassSurface, under the items.
+        glass: "isolate",
+      },
+      size: { sm: "gap-0.5 p-1", default: "gap-1 p-1.5" },
+    },
+    defaultVariants: { variant: "default", size: "default" },
+  }
+)
 
 const floatingNavItemVariants = cva(
   "relative flex shrink-0 items-center justify-center rounded-full font-medium text-muted-foreground transition-colors outline-none select-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle data-[current]:text-primary-foreground data-[current]:hover:text-primary-foreground",
   {
     variants: {
+      variant: {
+        default: "",
+        // Glass has no fill to read against, so every label is in the text
+        // colour and the lens marks the current one.
+        glass:
+          "text-foreground data-[current]:text-foreground data-[current]:hover:text-foreground",
+      },
       labels: {
         active: "",
         always: "flex-col gap-0.5 leading-4",
@@ -71,7 +95,7 @@ const floatingNavItemVariants = cva(
         className: "h-12 min-w-14 px-2 text-[10px]",
       },
     ],
-    defaultVariants: { labels: "active", size: "default" },
+    defaultVariants: { variant: "default", labels: "active", size: "default" },
   }
 )
 
@@ -87,6 +111,119 @@ const SPRING = {
   damping: 40,
   mass: 0.8,
 } as const
+
+// Looser, so the glass lens overshoots a little as it lands, like a drop.
+const GLASS_SPRING = {
+  type: "spring",
+  stiffness: 380,
+  damping: 26,
+  mass: 0.9,
+} as const
+
+// How far the glass bends the page at its edges, in CSS pixels, and how wide
+// the bending band along each edge is.
+const REFRACTION = 14
+const REFRACTION_EDGE = 12
+
+/*
+ * A displacement map for one axis: neutral grey through the middle, and
+ * along each edge a ramp that pulls the page in from further inside, so
+ * content bends toward the rim the way it does through a lens.
+ */
+function edgeMap(axis: "x" | "y", width: number, height: number) {
+  const length = axis === "x" ? width : height
+  const band = Math.min(REFRACTION_EDGE, length / 2) / length
+  const channel = (value: number) =>
+    axis === "x" ? `rgb(${value},128,128)` : `rgb(128,${value},128)`
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><defs><linearGradient id="g" x1="0" y1="0" x2="${axis === "x" ? 1 : 0}" y2="${axis === "y" ? 1 : 0}"><stop offset="0" stop-color="${channel(255)}"/><stop offset="${band}" stop-color="${channel(128)}"/><stop offset="${1 - band}" stop-color="${channel(128)}"/><stop offset="1" stop-color="${channel(0)}"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
+/*
+ * The liquid glass surface, under the items. A tinted, lightly blurred layer
+ * works everywhere. Over it, a layer whose backdrop runs through an SVG
+ * displacement filter bends what's behind the edges; only Chromium applies
+ * url() in backdrop-filter, and elsewhere that layer is clear, so the bar
+ * falls back to the blur and rim.
+ */
+function GlassSurface() {
+  const filterId = `floating-nav-glass-${React.useId().replace(/:/g, "")}`
+  const surfaceRef = React.useRef<HTMLLIElement>(null)
+  const [box, setBox] = React.useState<{ width: number; height: number }>()
+
+  // The surface fills the list, so its own size is the bar's.
+  React.useLayoutEffect(() => {
+    const element = surfaceRef.current
+    if (!element) return
+    const observer = new ResizeObserver(() =>
+      setBox({
+        width: Math.round(element.offsetWidth),
+        height: Math.round(element.offsetHeight),
+      })
+    )
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <li
+      ref={surfaceRef}
+      aria-hidden="true"
+      data-slot="floating-nav-glass"
+      className="pointer-events-none absolute inset-0 -z-10 rounded-full"
+    >
+      {box ? (
+        <svg width="0" height="0" className="absolute">
+          <filter
+            id={filterId}
+            x="0"
+            y="0"
+            width={box.width}
+            height={box.height}
+            filterUnits="userSpaceOnUse"
+            colorInterpolationFilters="sRGB"
+          >
+            <feImage
+              href={edgeMap("x", box.width, box.height)}
+              width={box.width}
+              height={box.height}
+              preserveAspectRatio="none"
+              result="x"
+            />
+            <feImage
+              href={edgeMap("y", box.width, box.height)}
+              width={box.width}
+              height={box.height}
+              preserveAspectRatio="none"
+              result="y"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="x"
+              scale={REFRACTION}
+              xChannelSelector="R"
+              yChannelSelector="G"
+              result="bentX"
+            />
+            <feDisplacementMap
+              in="bentX"
+              in2="y"
+              scale={REFRACTION}
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+        </svg>
+      ) : null}
+      <span className="absolute inset-0 rounded-full bg-glass backdrop-blur-[1px] backdrop-saturate-150" />
+      <span
+        className="absolute inset-0 rounded-full"
+        style={box ? { backdropFilter: `url(#${filterId})` } : undefined}
+      />
+      <span className="absolute inset-0 rounded-full ring-1 inset-shadow-[0_1px_1px] ring-glass-edge inset-shadow-glass-edge" />
+    </li>
+  )
+}
 
 function useHiddenOnScroll(enabled: boolean) {
   const [hidden, setHidden] = React.useState(false)
@@ -149,6 +286,7 @@ function FloatingNav({
   size = "default",
   position = "fixed",
   hideOnScroll = false,
+  variant = "default",
   className,
   onFocus,
   "aria-label": ariaLabel = "Main",
@@ -159,7 +297,12 @@ function FloatingNav({
   const [hidden, setHidden] = useHiddenOnScroll(hideOnScroll)
   const reduceMotion = useReducedMotion()
   const indicatorId = React.useId()
-  const transition = reduceMotion ? { duration: 0 } : SPRING
+  const glass = variant === "glass"
+  const transition = reduceMotion
+    ? { duration: 0 }
+    : glass
+      ? GLASS_SPRING
+      : SPRING
   const [labelRefs, labelWidths] = useLabelWidths(
     [size, ...items.map((item) => item.label)].join("\n"),
     labels !== "always"
@@ -171,6 +314,7 @@ function FloatingNav({
       data-position={position}
       data-labels={labels}
       data-size={size}
+      data-variant={variant}
       data-hidden={hidden ? "" : undefined}
       aria-label={ariaLabel}
       // A keyboard user tabbing into a hidden bar brings it back.
@@ -192,15 +336,17 @@ function FloatingNav({
         animate={
           hidden ? { y: "calc(100% + 2rem)", opacity: 0 } : { y: 0, opacity: 1 }
         }
+        // Glass swells a touch under a finger, as Apple's bars do.
+        whileTap={glass && !reduceMotion ? { scale: 1.03 } : undefined}
         transition={transition}
         className={cn(
-          "pointer-events-auto flex max-w-full [scrollbar-width:none] items-center overflow-x-auto rounded-full border border-border bg-popover-overlay shadow-lg backdrop-blur-md",
-          size === "sm" ? "gap-0.5 p-1" : "gap-1 p-1.5",
+          floatingNavVariants({ variant, size }),
           // Out of sight, it mustn't catch taps meant for the page beneath.
           // Its items stay focusable, so tabbing in still brings it back.
           hidden && "pointer-events-none"
         )}
       >
+        {glass ? <GlassSurface /> : null}
         {items.map((item, index) => {
           const current = item.value === value
           const handleClick = (
@@ -216,7 +362,12 @@ function FloatingNav({
                   layoutId={indicatorId}
                   aria-hidden="true"
                   transition={transition}
-                  className="absolute inset-0 rounded-full bg-primary"
+                  className={cn(
+                    "absolute inset-0 rounded-full",
+                    glass
+                      ? "bg-glass-lens inset-shadow-[0_1px_1px] inset-shadow-glass-edge"
+                      : "bg-primary"
+                  )}
                 />
               ) : null}
               {item.icon != null ? (
@@ -273,7 +424,7 @@ function FloatingNav({
               : undefined,
             onClick: handleClick,
             className: cn(
-              floatingNavItemVariants({ labels, size }),
+              floatingNavItemVariants({ variant, labels, size }),
               item.icon == null && (size === "sm" ? "px-3.5" : "px-4")
             ),
           }
@@ -299,6 +450,7 @@ function FloatingNav({
 export {
   FloatingNav,
   floatingNavItemVariants,
+  floatingNavVariants,
   type FloatingNavItem,
   type FloatingNavProps,
 }
