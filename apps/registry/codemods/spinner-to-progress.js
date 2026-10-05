@@ -1,4 +1,4 @@
-// Rewrites fibo's deprecated Spinner to an indeterminate Progress.
+// Rewrites fibo's deprecated Spinner to an indeterminate circular Progress.
 //
 //   pnpm dlx jscodeshift --parser tsx \
 //     -t https://fibo.toribryan.com/codemods/spinner-to-progress.js src
@@ -7,6 +7,9 @@
 // temp file, so it cannot import anything beside it.
 
 const DEFAULT_LABEL = "Loading"
+
+// Spinner's 12, 16 and 24px rings, on the circle's size scale.
+const SIZES = { sm: "xs", default: "sm", lg: "lg" }
 
 export default function transformer(file, api) {
   const j = api.jscodeshift
@@ -134,6 +137,7 @@ function rewriteElement(j, element, progressLocal, report) {
   const attributes = []
   let named = false
   let hasValue = false
+  let size = "sm"
 
   for (const attribute of opening.attributes) {
     if (attribute.type !== "JSXAttribute") {
@@ -141,7 +145,15 @@ function rewriteElement(j, element, progressLocal, report) {
       continue
     }
     const name = attribute.name.name
-    if (name === "size") continue
+    if (name === "size") {
+      const value = attribute.value
+      if (value?.type === "StringLiteral" || value?.type === "Literal") {
+        size = SIZES[value.value] ?? "sm"
+      } else {
+        report(opening, "size is an expression; set the circle's size by hand")
+      }
+      continue
+    }
     if (name === "label") {
       attribute.name = j.jsxIdentifier("aria-label")
       named = true
@@ -153,8 +165,14 @@ function rewriteElement(j, element, progressLocal, report) {
     attributes.push(attribute)
   }
 
+  attributes.unshift(
+    j.jsxAttribute(j.jsxIdentifier("type"), j.literal("circle")),
+    j.jsxAttribute(j.jsxIdentifier("size"), j.literal(size))
+  )
   if (!hasValue) {
-    attributes.unshift(
+    attributes.splice(
+      2,
+      0,
       j.jsxAttribute(
         j.jsxIdentifier("value"),
         j.jsxExpressionContainer(j.literal(null))

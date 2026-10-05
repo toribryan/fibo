@@ -31,7 +31,13 @@ import { Spinner } from "@/components/ui/spinner"
 
 // After
 import { Progress } from "@/components/ui/progress"
-;<Progress value={null} aria-label="Loading comments" className="mx-auto" />
+;<Progress
+  type="circle"
+  size="xs"
+  value={null}
+  aria-label="Loading comments"
+  className="mx-auto"
+/>
 ```
 
 <Canvas of={Stories.Replacement} />
@@ -47,8 +53,10 @@ import { Progress } from "@/components/ui/progress"
       codemod writes <code>aria-label="Loading"</code>, the Spinner's default.
     </>,
     <>
-      <code>size</code> is dropped. A progress bar fills its container, so set
-      its width with <code>className</code> where it sits in a row.
+      Each Spinner becomes a circular Progress, the same ring at the same size:{" "}
+      <code>sm</code>, <code>default</code> and <code>lg</code> become{" "}
+      <code>xs</code>, <code>sm</code> and <code>lg</code>. Use a bar instead
+      where the wait fills a section, such as a file upload.
     </>,
     "A Spinner passed around as a value, such as icon={Spinner}, is left alone and listed in the codemod's output to change by hand.",
     "Install Progress first if the project doesn't have it yet.",

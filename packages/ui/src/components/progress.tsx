@@ -1,29 +1,125 @@
 "use client"
 
 import { Progress as ProgressPrimitive } from "@base-ui/react/progress"
+import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@workspace/ui/lib/utils"
 
+const progressVariants = cva("", {
+  variants: {
+    type: {
+      bar: "flex w-full flex-wrap gap-3",
+      // A ring in the current text colour, so it takes the colour of the
+      // button or row it sits in.
+      circle: "inline-flex shrink-0 align-middle",
+    },
+    size: {
+      xs: "",
+      sm: "",
+      default: "",
+      lg: "",
+    },
+  },
+  compoundVariants: [
+    { type: "circle", size: "xs", className: "size-3" },
+    { type: "circle", size: "sm", className: "size-4" },
+    { type: "circle", size: "default", className: "size-5" },
+    { type: "circle", size: "lg", className: "size-6" },
+  ],
+  defaultVariants: {
+    type: "bar",
+    size: "default",
+  },
+})
+
+// Radius 9 in a 24-unit box leaves room for the stroke at every size.
+const RING = 2 * Math.PI * 9
+
 /*
- * Children sit above the track, so a ProgressLabel and a ProgressValue
- * placed inside line up on one row over the bar.
+ * A bar's children sit above the track, so a ProgressLabel and a
+ * ProgressValue placed inside line up on one row over it. A circle has no
+ * room for them: name it with aria-label.
  */
 function Progress({
   className,
   children,
+  type = "bar",
+  size = "default",
+  value,
+  min = 0,
+  max = 100,
   ...props
-}: ProgressPrimitive.Root.Props) {
+}: ProgressPrimitive.Root.Props &
+  VariantProps<typeof progressVariants> & {
+    /** `bar` across its container, or `circle`, a ring that fits in a button or beside text. */
+    type?: "bar" | "circle"
+    /** The circle's size: 12, 16, 20 or 24 pixels. A bar ignores it. */
+    size?: "xs" | "sm" | "default" | "lg"
+  }) {
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
-      className={cn("flex w-full flex-wrap gap-3", className)}
+      data-type={type}
+      value={value}
+      min={min}
+      max={max}
+      className={cn(progressVariants({ type, size }), className)}
       {...props}
     >
-      {children}
-      <ProgressTrack>
-        <ProgressIndicator />
-      </ProgressTrack>
+      {type === "circle" ? (
+        <ProgressCircle
+          share={
+            value === null || value === undefined
+              ? null
+              : (value - min) / (max - min || 1)
+          }
+        />
+      ) : (
+        <>
+          {children}
+          <ProgressTrack>
+            <ProgressIndicator />
+          </ProgressTrack>
+        </>
+      )}
     </ProgressPrimitive.Root>
+  )
+}
+
+function ProgressCircle({ share }: { share: number | null }) {
+  const length = share === null ? 0.25 : Math.min(1, Math.max(0, share))
+  return (
+    <svg
+      data-slot="progress-circle"
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      className={cn(
+        "size-full",
+        // With no value, a quarter arc turns. Under reduced motion it holds
+        // still, and the ring still says something is under way.
+        share === null && "animate-spin motion-reduce:animate-none"
+      )}
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="9"
+        strokeWidth="3"
+        className="stroke-current opacity-20"
+      />
+      <circle
+        data-slot="progress-circle-indicator"
+        cx="12"
+        cy="12"
+        r="9"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeDasharray={`${length * RING} ${RING}`}
+        transform="rotate(-90 12 12)"
+        className="stroke-current transition-[stroke-dasharray] duration-300 motion-reduce:transition-none"
+      />
+    </svg>
   )
 }
 
@@ -84,6 +180,7 @@ function ProgressValue({ className, ...props }: ProgressPrimitive.Value.Props) {
 
 export {
   Progress,
+  progressVariants,
   ProgressTrack,
   ProgressIndicator,
   ProgressLabel,

@@ -21,15 +21,15 @@ export const Loading = () => <Spinner />
 `)
     expect(output).toBe(`import { Progress } from "@/components/ui/progress"
 
-export const Loading = () => <Progress value={null} aria-label="Loading" />`)
+export const Loading = () => <Progress type="circle" size="sm" value={null} aria-label="Loading" />`)
   })
 
-  it("turns label into aria-label and drops size", () => {
+  it("turns label into aria-label and size onto the circle's scale", () => {
     const output = run(`import { Spinner } from "~/ui/spinner"
 const a = <Spinner size="lg" label="Saving" className="mx-auto" />
 `)
-    expect(output).toContain(
-      `<Progress value={null} label="Saving" className="mx-auto" />`.replace(
+    expect(output.replace(/\s+/g, " ")).toContain(
+      `<Progress type="circle" size="lg" value={null} label="Saving" className="mx-auto" />`.replace(
         "label",
         "aria-label"
       )
@@ -52,7 +52,9 @@ const b = <Progress value={1}><ProgressLabel>x</ProgressLabel></Progress>
       run(`import { Spinner as Loader } from "@/components/ui/spinner"
 const a = <Loader label={busyLabel} />
 `)
-    expect(output).toContain(`<Progress value={null} aria-label={busyLabel} />`)
+    expect(output).toContain(
+      `<Progress type="circle" size="sm" value={null} aria-label={busyLabel} />`
+    )
   })
 
   it("leaves a value use alone and reports it", () => {
@@ -92,7 +94,9 @@ const a = <Spinner {...props} />
 `,
       report
     )
-    expect(output).toContain(`<Progress value={null} {...props} />`)
+    expect(output).toContain(
+      `<Progress type="circle" size="sm" value={null} {...props} />`
+    )
     expect(report).toHaveBeenCalledWith(expect.stringContaining("spread"))
   })
 
