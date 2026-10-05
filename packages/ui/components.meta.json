@@ -61,7 +61,8 @@
     "title": "Filter menu",
     "description": "A filter menu of fields and values that turns into a search as you type.",
     "tier": "special-components",
-    "group": "Navigation"
+    "group": "Navigation",
+    "figma": "631-15"
   },
   "floating-nav": {
     "title": "Floating nav",
@@ -117,7 +118,8 @@
     "title": "Menu",
     "description": "A short list of actions that opens from a button.",
     "tier": "base-components",
-    "group": "Overlays"
+    "group": "Overlays",
+    "figma": "631-9"
   },
   "message-list": {
     "title": "Message list",
@@ -130,25 +132,29 @@
     "title": "Pagination",
     "description": "Moves through a long list one page at a time.",
     "tier": "base-components",
-    "group": "Navigation"
+    "group": "Navigation",
+    "figma": "631-7"
   },
   "pixel-snail": {
     "title": "Pixel snail",
     "description": "A one-colour pixel snail that crawls on a loop while something loads.",
     "tier": "special-components",
-    "group": "Feedback"
+    "group": "Feedback",
+    "figma": "631-16"
   },
   "progress": {
     "title": "Progress",
     "description": "Shows how far a task has got, or that it's under way.",
     "tier": "base-components",
-    "group": "Feedback"
+    "group": "Feedback",
+    "figma": "631-12"
   },
   "radio-group": {
     "title": "Radio group",
     "description": "Picks exactly one option from a short list.",
     "tier": "base-components",
-    "group": "Forms"
+    "group": "Forms",
+    "figma": "631-2"
   },
   "reactions": {
     "title": "Reactions",
@@ -168,19 +174,22 @@
     "title": "Sheet",
     "description": "A panel that slides in from an edge for a focused task.",
     "tier": "base-components",
-    "group": "Overlays"
+    "group": "Overlays",
+    "figma": "631-10"
   },
   "skeleton": {
     "title": "Skeleton",
     "description": "A placeholder in the shape of content that's still loading.",
     "tier": "base-components",
-    "group": "Feedback"
+    "group": "Feedback",
+    "figma": "631-13"
   },
   "slider": {
     "title": "Slider",
     "description": "Picks a number, or a range, by dragging along a track.",
     "tier": "base-components",
-    "group": "Forms"
+    "group": "Forms",
+    "figma": "631-3"
   },
   "spinner": {
     "title": "Spinner",
@@ -200,19 +209,22 @@
     "title": "Sticker avatar",
     "description": "An avatar cut out like a die-cut sticker, with a paper edge that follows its shape and a status told by shape.",
     "tier": "special-components",
-    "group": "Display"
+    "group": "Display",
+    "figma": "621-6"
   },
   "switch": {
     "title": "Switch",
     "description": "Turns a setting on or off, taking effect at once.",
     "tier": "base-components",
-    "group": "Forms"
+    "group": "Forms",
+    "figma": "631-4"
   },
   "table": {
     "title": "Table",
     "description": "Rows and columns of data, at one compact density.",
     "tier": "base-components",
-    "group": "Display"
+    "group": "Display",
+    "figma": "631-5"
   },
   "textarea": {
     "title": "Textarea",
@@ -225,7 +237,8 @@
     "title": "Toast",
     "description": "A brief message in the corner about something that just happened.",
     "tier": "base-components",
-    "group": "Feedback"
+    "group": "Feedback",
+    "figma": "631-14"
   },
   "token-flow": {
     "title": "Token flow",
@@ -238,7 +251,8 @@
     "title": "Tooltip",
     "description": "A short label that appears when a control is hovered or focused.",
     "tier": "base-components",
-    "group": "Overlays"
+    "group": "Overlays",
+    "figma": "631-11"
   },
   "typing-indicator": {
     "title": "Typing indicator",
@@ -252,6 +266,7 @@
     "description": "An aluminium recorder that writes down what you say, with the transcript filling in beside it as you talk.",
     "tier": "special-components",
     "group": "Forms",
-    "status": "new"
+    "status": "new",
+    "figma": "621-7"
   }
 }
