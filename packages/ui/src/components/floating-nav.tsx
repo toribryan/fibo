@@ -48,7 +48,8 @@ const floatingNavVariants = cva(
       variant: {
         default: "border border-border bg-popover-overlay backdrop-blur-md",
         // The surface is drawn by the layers in GlassSurface, under the items.
-        glass: "isolate",
+        // Visible overflow, so the lens can lift past the bar's edges.
+        glass: "isolate overflow-visible",
       },
       size: { sm: "gap-0.5 p-1", default: "gap-1 p-1.5" },
     },
@@ -115,9 +116,9 @@ const SPRING = {
 // Looser, so the glass lens overshoots a little as it lands, like a drop.
 const GLASS_SPRING = {
   type: "spring",
-  stiffness: 380,
-  damping: 26,
-  mass: 0.9,
+  stiffness: 560,
+  damping: 34,
+  mass: 0.7,
 } as const
 
 // How far the glass bends the page at its edges, in CSS pixels, and how wide
@@ -140,7 +141,7 @@ function edgeMap(axis: "x" | "y", width: number, height: number) {
 }
 
 /*
- * The liquid glass surface, under the items. A tinted, lightly blurred layer
+ * The liquid glass surface, under the items. A tinted, lightly frosted layer
  * works everywhere. Over it, a layer whose backdrop runs through an SVG
  * displacement filter bends what's behind the edges; only Chromium applies
  * url() in backdrop-filter, and elsewhere that layer is clear, so the bar
@@ -215,7 +216,7 @@ function GlassSurface() {
           </filter>
         </svg>
       ) : null}
-      <span className="absolute inset-0 rounded-full bg-glass backdrop-blur-[1px] backdrop-saturate-150" />
+      <span className="absolute inset-0 rounded-full bg-glass backdrop-blur-xs backdrop-saturate-150" />
       <span
         className="absolute inset-0 rounded-full"
         style={box ? { backdropFilter: `url(#${filterId})` } : undefined}
@@ -223,6 +224,185 @@ function GlassSurface() {
       <span className="absolute inset-0 rounded-full ring-1 inset-shadow-[0_1px_1px] ring-glass-edge inset-shadow-glass-edge" />
     </li>
   )
+}
+
+// How far the lens grows as it lifts off the bar, and how far it magnifies
+// what's under it: the shift at its rim, as a share of its width.
+const LIFT = { scaleX: 1.06, scaleY: 1.22 }
+// Lifting and settling are quicker than the trip between items.
+const LIFT_SPRING = { type: "spring", stiffness: 900, damping: 40 } as const
+const MAGNIFY = 0.2
+// Red bends most and blue least, which splits colour into fringes at the rim.
+const DISPERSION = { R: 1, G: 0.95, B: 0.9 }
+// How long the lens stays lifted after a press, so it can travel lifted.
+const SETTLE_AFTER = 200
+
+/*
+ * A magnifying map for one axis: a ramp right across the lens, steeper at
+ * the rim, so content near the middle swells and content at the rim bends.
+ */
+function lensMap(axis: "x" | "y", width: number, height: number) {
+  const channel = (value: number) =>
+    axis === "x" ? `rgb(${value},128,128)` : `rgb(128,${value},128)`
+  const stops = [
+    [0, 255],
+    [0.12, 160],
+    [0.5, 128],
+    [0.88, 96],
+    [1, 0],
+  ]
+    .map(
+      ([at, value]) => `<stop offset="${at}" stop-color="${channel(value!)}"/>`
+    )
+    .join("")
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><defs><linearGradient id="g" x1="0" y1="0" x2="${axis === "x" ? 1 : 0}" y2="${axis === "y" ? 1 : 0}">${stops}</linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
+/*
+ * The glass lens on the current item. At rest it's a tinted pill under the
+ * icon and label. Lifted, while pressed and while it travels to a new item,
+ * it grows past the bar, clears, and moves over the item, magnifying it with
+ * a fringe of colour at the rim, the way iOS lifts its tab bar's selection.
+ * The magnifying runs on url() in backdrop-filter, so only in Chromium;
+ * elsewhere the lens still lifts and clears.
+ */
+function GlassLens({
+  layoutId,
+  lifted,
+  transition,
+}: {
+  layoutId: string
+  lifted: boolean
+  transition: object
+}) {
+  const filterId = `floating-nav-lens-${React.useId().replace(/:/g, "")}`
+  const lensRef = React.useRef<HTMLSpanElement>(null)
+  const [box, setBox] = React.useState<{ width: number; height: number }>()
+
+  React.useLayoutEffect(() => {
+    const element = lensRef.current
+    if (!element) return
+    const observer = new ResizeObserver(() =>
+      setBox({
+        width: Math.round(element.offsetWidth),
+        height: Math.round(element.offsetHeight),
+      })
+    )
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
+
+  const bend = box ? Math.round(box.width * MAGNIFY) : 0
+  const channel = (key: keyof typeof DISPERSION, row: string) => {
+    if (!box) return null
+    const scale = bend * DISPERSION[key]
+    return (
+      <>
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="x"
+          scale={scale}
+          xChannelSelector="R"
+          yChannelSelector="G"
+          result={`${key}x`}
+        />
+        <feDisplacementMap
+          in={`${key}x`}
+          in2="y"
+          scale={scale}
+          xChannelSelector="R"
+          yChannelSelector="G"
+          result={`${key}xy`}
+        />
+        <feColorMatrix
+          in={`${key}xy`}
+          type="matrix"
+          values={`${row} 0 0 0 1 0`}
+          result={key}
+        />
+      </>
+    )
+  }
+
+  return (
+    <motion.span
+      ref={lensRef}
+      layoutId={layoutId}
+      aria-hidden="true"
+      data-slot="floating-nav-lens"
+      data-lifted={lifted ? "" : undefined}
+      initial={false}
+      animate={lifted ? LIFT : { scaleX: 1, scaleY: 1 }}
+      transition={{ ...transition, scaleX: LIFT_SPRING, scaleY: LIFT_SPRING }}
+      className={cn(
+        "absolute inset-0 rounded-full transition-[background-color,box-shadow] duration-200",
+        lifted
+          ? "z-10 bg-transparent shadow-lg ring-1 inset-shadow-[0_1px_2px] ring-glass-edge inset-shadow-glass-edge"
+          : "bg-glass-lens inset-shadow-[0_1px_1px] inset-shadow-glass-edge"
+      )}
+      style={
+        lifted && box ? { backdropFilter: `url(#${filterId})` } : undefined
+      }
+    >
+      {box ? (
+        <svg width="0" height="0" className="absolute">
+          <filter
+            id={filterId}
+            x="0"
+            y="0"
+            width={box.width}
+            height={box.height}
+            filterUnits="userSpaceOnUse"
+            colorInterpolationFilters="sRGB"
+          >
+            <feImage
+              href={lensMap("x", box.width, box.height)}
+              width={box.width}
+              height={box.height}
+              preserveAspectRatio="none"
+              result="x"
+            />
+            <feImage
+              href={lensMap("y", box.width, box.height)}
+              width={box.width}
+              height={box.height}
+              preserveAspectRatio="none"
+              result="y"
+            />
+            {channel("R", "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0")}
+            {channel("G", "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0")}
+            {channel("B", "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0")}
+            <feBlend in="R" in2="G" mode="screen" result="RG" />
+            <feBlend in="RG" in2="B" mode="screen" />
+          </filter>
+        </svg>
+      ) : null}
+    </motion.span>
+  )
+}
+
+/*
+ * Whether the glass lens is lifted: from a press until a beat after it ends,
+ * so a tap lifts it for the whole trip to the new item.
+ */
+function useLift(enabled: boolean) {
+  const [lifted, setLifted] = React.useState(false)
+  const timer = React.useRef<number | undefined>(undefined)
+
+  React.useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  const lift = React.useCallback(() => {
+    if (!enabled) return
+    window.clearTimeout(timer.current)
+    setLifted(true)
+  }, [enabled])
+  const settle = React.useCallback(() => {
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => setLifted(false), SETTLE_AFTER)
+  }, [])
+
+  return { lifted: enabled && lifted, lift, settle }
 }
 
 function useHiddenOnScroll(enabled: boolean) {
@@ -303,6 +483,7 @@ function FloatingNav({
     : glass
       ? GLASS_SPRING
       : SPRING
+  const { lifted, lift, settle } = useLift(glass && !reduceMotion)
   const [labelRefs, labelWidths] = useLabelWidths(
     [size, ...items.map((item) => item.label)].join("\n"),
     labels !== "always"
@@ -338,6 +519,9 @@ function FloatingNav({
         }
         // Glass swells a touch under a finger, as Apple's bars do.
         whileTap={glass && !reduceMotion ? { scale: 1.03 } : undefined}
+        onPointerDown={lift}
+        onPointerUp={settle}
+        onPointerCancel={settle}
         transition={transition}
         className={cn(
           floatingNavVariants({ variant, size }),
@@ -354,20 +538,26 @@ function FloatingNav({
           ) => {
             if (valueProp === undefined) setUncontrolled(item.value)
             onValueChange?.(item.value, event)
+            // Enter and Space lift it too, for the trip to the new item.
+            if (item.value !== value) {
+              lift()
+              settle()
+            }
           }
           const content = (
             <>
-              {current ? (
+              {current && glass ? (
+                <GlassLens
+                  layoutId={indicatorId}
+                  lifted={lifted}
+                  transition={transition}
+                />
+              ) : current ? (
                 <motion.span
                   layoutId={indicatorId}
                   aria-hidden="true"
                   transition={transition}
-                  className={cn(
-                    "absolute inset-0 rounded-full",
-                    glass
-                      ? "bg-glass-lens inset-shadow-[0_1px_1px] inset-shadow-glass-edge"
-                      : "bg-primary"
-                  )}
+                  className="absolute inset-0 rounded-full bg-primary"
                 />
               ) : null}
               {item.icon != null ? (
