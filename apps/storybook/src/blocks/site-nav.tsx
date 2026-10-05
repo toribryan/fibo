@@ -90,7 +90,6 @@ function SiteNav() {
       aria-label="Site"
       items={ITEMS}
       value={shown}
-      size="sm"
       variant="glass"
       hideOnScroll
       onValueChange={(value, event) => {
