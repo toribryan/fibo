@@ -293,7 +293,8 @@
     "description": "Switches between views of one subject in place, as a segmented control or a row of tabs with an underline; scrolls sideways when it runs out of room.",
     "tier": "base-components",
     "group": "Navigation",
-    "status": "new"
+    "status": "new",
+    "figma": "767-2"
   },
   "textarea": {
     "title": "Textarea",
