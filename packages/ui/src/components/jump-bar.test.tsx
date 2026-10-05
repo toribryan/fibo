@@ -35,6 +35,39 @@ describe("JumpBar", () => {
       .toBeInTheDocument()
   })
 
+  it("keeps Mark as read inside a narrow bar and drops the time", async () => {
+    const screen = await render(
+      <div style={{ position: "relative", width: 300, height: 120 }}>
+        <JumpBar
+          type="unread-above"
+          count={12}
+          since={new Date(2026, 9, 1, 15, 42)}
+          onMarkRead={() => {}}
+        />
+      </div>
+    )
+    const bar = screen.container.querySelector('[data-slot="jump-bar"]')!
+    const markRead = screen.getByRole("button", { name: "Mark as read" })
+    await expect.element(markRead).toBeVisible()
+    expect(
+      markRead.element().getBoundingClientRect().right
+    ).toBeLessThanOrEqual(bar.getBoundingClientRect().right)
+    await expect
+      .element(screen.getByRole("button", { name: "12 new messages" }))
+      .toBeInTheDocument()
+  })
+
+  it("wraps the history message rather than cutting it off", async () => {
+    const screen = await render(
+      <div style={{ position: "relative", width: 260, height: 120 }}>
+        <JumpBar type="history" />
+      </div>
+    )
+    const message = screen.getByText("You're viewing older messages")
+    const text = message.element() as HTMLElement
+    expect(text.scrollWidth).toBeLessThanOrEqual(text.clientWidth)
+  })
+
   it("leaves out the time when there isn't one", async () => {
     const screen = await render(<JumpBar type="unread-above" count={4} />)
     await expect
