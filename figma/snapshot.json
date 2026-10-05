@@ -294,6 +294,15 @@
       "size": ["sm", "default"],
       "state": ["default", "filled", "focused", "invalid", "disabled"]
     },
+    "Input group": {
+      "value": "TEXT",
+      "startAddon": "BOOLEAN",
+      "startAddonSwap": "INSTANCE_SWAP",
+      "endAddon": "BOOLEAN",
+      "variant": ["default", "ghost"],
+      "size": ["sm", "default"],
+      "state": ["default", "focused", "invalid", "disabled"]
+    },
     "Kbd": {
       "label": "TEXT"
     },
