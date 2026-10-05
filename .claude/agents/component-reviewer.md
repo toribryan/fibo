@@ -19,7 +19,10 @@ Check each item and report only the ones that fail, with file and line:
 1. **Shelf.** Title is `Base components/` or `Special components/` to match
    `tier` in the metadata. A base component imports nothing beyond Base UI,
    `class-variance-authority`, `lucide-react` and other fibo components; only
-   special components may import `motion`.
+   special components may import `motion`. Two named exceptions: Data table
+   may import `@tanstack/react-table` and `@tanstack/react-store`, and Rich
+   text editor `@tiptap/react`, `@tiptap/starter-kit` and
+   `@tiptap/extensions`.
 2. **Tokens.** Only semantic colour classes. No primitive ramps
    (`neutral-*`, `red-*`), no opacity modifiers on colours (`/10`), no hex or
    rgb values in class names.

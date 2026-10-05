@@ -420,7 +420,7 @@ Add the registry once to \`components.json\`:
 { "registries": { "@fibo": "${homepage}/r/{name}.json" } }
 \`\`\`
 
-Then install by name with \`pnpm dlx shadcn@latest add @fibo/<name>\`. The lists below are complete: anything not listed is not part of fibo. Base components depend on nothing beyond Base UI, class-variance-authority and lucide-react, except Data table, which also needs \`@tanstack/react-table\`; special components may also need \`motion\`. The CLI installs these for you.
+Then install by name with \`pnpm dlx shadcn@latest add @fibo/<name>\`. The lists below are complete: anything not listed is not part of fibo. Base components depend on nothing beyond Base UI, class-variance-authority and lucide-react, except Data table, which also needs \`@tanstack/react-table\`, and Rich text editor, which also needs \`@tiptap/react\`, \`@tiptap/starter-kit\` and \`@tiptap/extensions\`; special components may also need \`motion\`. The CLI installs these for you.
 
 Each component brings the tokens it uses that a stock shadcn theme lacks, such as \`--primary-hover\` and \`--ring-subtle\`, and leaves your existing tokens alone. To make everything look the way it does in the docs, also add the full theme with \`pnpm dlx shadcn@latest add @fibo/theme\`.
 
