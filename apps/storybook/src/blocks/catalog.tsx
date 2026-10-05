@@ -560,7 +560,7 @@ type Meta = {
   status?: Status
 }
 
-const META = Object.entries(componentsMeta).filter(
+const META = Object.entries(componentsMeta as Record<string, unknown>).filter(
   (entry): entry is [string, Meta] => entry[0] !== "$comment"
 )
 
