@@ -10,6 +10,9 @@ has the same history with links into the docs.
 
 ### Added
 
+- Floating nav's glass lens lifts off the bar while pressed and as it moves
+  to a new item, magnifying what's under it with a colour fringe at the rim.
+  The site's phone nav uses `variant="glass"`.
 - Floating nav `variant="glass"`: Apple's liquid glass, a clear bar that bends
   the page behind its edges in Chromium, with a glass lens on the current
   item. New `glass`, `glass-edge` and `glass-lens` tokens.

@@ -168,6 +168,13 @@ export const Glass: Story = {
       canvasElement.querySelector('[data-slot="floating-nav-glass"]')
     ).toHaveAttribute("aria-hidden", "true")
     await expect(canvas.getAllByRole("listitem")).toHaveLength(4)
+
+    // A tap lifts the lens for the trip to the new item, then it settles.
+    await userEvent.click(canvas.getByRole("button", { name: "Saved" }))
+    const lens = () =>
+      canvasElement.querySelector('[data-slot="floating-nav-lens"]')
+    await expect(lens()).toHaveAttribute("data-lifted")
+    await waitFor(() => expect(lens()).not.toHaveAttribute("data-lifted"))
   },
 }
 
