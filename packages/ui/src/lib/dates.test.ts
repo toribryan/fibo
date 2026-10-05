@@ -116,6 +116,12 @@ describe("formatting", () => {
     ).toBe("1.–7. Okt. 2026")
   })
 
+  it("writes only plain spaces, so server and browser markup match", () => {
+    const text = formatDateRange({ from: day(10, 1), to: day(10, 7) }, "en-US")
+    expect(text).toBe("Oct 1 – 7, 2026")
+    expect(text).not.toMatch(/[\u2009\u202f]/)
+  })
+
   it("writes one day short", () => {
     expect(formatDate(day(10, 5))).toBe("Oct 5, 2026")
     expect(formatDate(day(10, 5), "fr-FR")).toBe("5 oct. 2026")
