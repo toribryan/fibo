@@ -10,6 +10,10 @@ import { ChevronLeftIcon, ChevronRightIcon, SearchIcon } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
+  EmptyState,
+  EmptyStateTitle,
+} from "@workspace/ui/components/empty-state"
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
@@ -605,9 +609,11 @@ function CommandMenu({
               >
                 <AutocompletePrimitive.Empty
                   data-slot="command-menu-empty"
-                  className="px-2 py-10 text-center text-sm text-muted-foreground empty:hidden empty:p-0"
+                  className="empty:hidden"
                 >
-                  {emptyText}
+                  <EmptyState size="sm" className="py-10">
+                    <EmptyStateTitle>{emptyText}</EmptyStateTitle>
+                  </EmptyState>
                 </AutocompletePrimitive.Empty>
                 <AutocompletePrimitive.List
                   data-slot="command-menu-list"
