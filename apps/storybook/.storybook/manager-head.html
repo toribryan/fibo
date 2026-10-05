@@ -160,6 +160,11 @@
     line-height: 16px;
     font-weight: 500;
   }
+  /* The pages at the top read as the site's own links, in the text colour;
+     the parts below stay muted until opened. */
+  #storybook-explorer-menu .sidebar-item:not([data-parent-id]) a {
+    color: var(--fibo-fg);
+  }
   #storybook-explorer-menu [data-item-id] {
     border-radius: 8px;
   }
