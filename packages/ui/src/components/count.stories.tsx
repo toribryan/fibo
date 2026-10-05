@@ -13,7 +13,6 @@ import { Count } from "./count.js"
 const meta: Meta<typeof Count> = {
   title: "Base components/Display/Count",
   component: Count,
-  tags: ["new"],
   argTypes: {
     value: { control: { type: "number", min: 0, step: 1 } },
     max: { control: { type: "number", min: 1, step: 1 } },
