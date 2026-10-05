@@ -39,6 +39,9 @@ const config: StorybookConfig = {
   core: {
     disableWhatsNewNotifications: true,
   },
+  features: {
+    outline: false,
+  },
 }
 
 export default config
