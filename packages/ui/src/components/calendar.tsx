@@ -11,10 +11,14 @@ import {
   countDays,
   differenceInMonths,
   endOfWeek,
+  endOfMonth,
   formatDate,
   formatDateRange,
+  formatTime,
+  formatTimeRange,
   getMonthWeeks,
   isSameDay,
+  isSameMonth,
   orderRange,
   startOfDay,
   startOfMonth,
@@ -65,19 +69,64 @@ function useToday(): Date | null {
 // position that runs for metres.
 const SCROLL_SPAN = 12
 
-type CalendarType = "paged" | "scroll"
+type CalendarType = "paged" | "scroll" | "month"
 type CalendarSize = "default" | "lg"
 
 // Seven day cells: 36px each, or 44px at the large size.
 const MONTH_WIDTH: Record<CalendarSize, number> = { default: 252, lg: 308 }
 
+// A month cell keeps to three lines of events: two cards, then "+N more".
+const MONTH_CARDS = 2
+const MONTH_DOTS = 3
+
+/** One event on one day, for the month type. */
+type CalendarEvent = {
+  /** Unique among the events given. */
+  id: string
+  /** What the event is called. */
+  title: string
+  /** When it starts. The event shows on this day. */
+  start: Date
+  /** When it ends, on the same day. */
+  end?: Date
+  /** Shows "All day" in place of a time. */
+  allDay?: boolean
+}
+
+type CalendarLabels = {
+  /** Names the previous month button. */
+  previous: string
+  /** Names the next month button. */
+  next: string
+  /** The button that returns to today's month. */
+  today: string
+  /** Ends a month cell's cards when it has more events than fit. */
+  more: (count: number) => string
+  /** Fills the selected day's list when it has no events. */
+  noEvents: string
+  /** Stands in for the time of an all-day event. */
+  allDay: string
+  /** Opens a day's spoken summary of its events. */
+  events: (count: number) => string
+}
+
+const DEFAULT_LABELS: CalendarLabels = {
+  previous: "Previous month",
+  next: "Next month",
+  today: "Today",
+  more: (count) => `+${count} more`,
+  noEvents: "No events",
+  allDay: "All day",
+  events: (count) => `${count} ${count === 1 ? "event" : "events"}`,
+}
+
+let warnedRangeMonth = false
+
 type CalendarSharedProps = Omit<
   React.ComponentProps<"div">,
   "onChange" | "defaultValue" | "children"
 > & {
-  /** "paged" shows whole months with previous and next buttons; "scroll" stacks a year either side in one vertical scroll, for phones. */
-  type?: CalendarType
-  /** Day cells at 36 pixels, or 44 for touch. */
+  /** Day cells at 36 pixels, or 44 for touch. Paged and scroll types. */
   size?: CalendarSize
   /** Months shown side by side in the paged type. */
   months?: 1 | 2
@@ -95,11 +144,21 @@ type CalendarSharedProps = Omit<
   isDateDisabled?: (date: Date) => boolean
   /** The first column: 0 for Sunday, 1 for Monday. */
   weekStartsOn?: WeekStart
-  /** A BCP 47 locale for month and weekday names and day numbers. */
+  /** A BCP 47 locale for month and weekday names, day numbers and times. */
   locale?: string
+  /** Month type: the events to show, each on the day it starts. */
+  events?: CalendarEvent[]
+  /** Month type: makes the selected day's events buttons, called with the one pressed. */
+  onEventClick?: (event: CalendarEvent) => void
+  /** Month type: actions at the end of the header, such as a New event button. Other types ignore them. */
+  children?: React.ReactNode
+  /** Wording the calendar writes for itself, for translation. */
+  labels?: Partial<CalendarLabels>
 }
 
 type CalendarSingleProps = CalendarSharedProps & {
+  /** "paged" shows whole months with previous and next buttons; "scroll" stacks a year either side in one vertical scroll, for phones; "month" fills its parent with one month of events. */
+  type?: CalendarType
   /** "single" picks one day; "range" picks a start and an end. */
   mode?: "single"
   /** The selected day, when you control it. */
@@ -111,6 +170,8 @@ type CalendarSingleProps = CalendarSharedProps & {
 }
 
 type CalendarRangeProps = CalendarSharedProps & {
+  /** "paged" or "scroll". The month type picks one day only; given it anyway, a range calendar draws the paged type and warns in the console. */
+  type?: Exclude<CalendarType, "month">
   /** "single" picks one day; "range" picks a start and an end. */
   mode: "range"
   /** The range, when you control it. `to` is missing between the two picks. */
@@ -129,9 +190,9 @@ function Calendar(props: CalendarProps) {
     value,
     defaultValue,
     onChange,
-    type = "paged",
+    type: typeProp = "paged",
     size = "default",
-    months: monthCount = 1,
+    months: monthsProp = 1,
     month: monthProp,
     defaultMonth,
     onMonthChange,
@@ -140,11 +201,28 @@ function Calendar(props: CalendarProps) {
     isDateDisabled,
     weekStartsOn = 0,
     locale = "en-US",
+    events,
+    onEventClick,
+    children,
+    labels,
     className,
     style,
     ...rest
   } = props
   const range = mode === "range"
+  // A month of events picks one day, and a range caller's onChange expects
+  // a range, so a range keeps the paged grid rather than losing its contract.
+  const rangeMonth = range && typeProp === "month"
+  const type: CalendarType = rangeMonth ? "paged" : typeProp
+  const monthCount = type === "month" ? 1 : monthsProp
+  const text = { ...DEFAULT_LABELS, ...labels }
+  React.useEffect(() => {
+    if (!rangeMonth || warnedRangeMonth) return
+    warnedRangeMonth = true
+    console.warn(
+      'Calendar: type="month" picks one day, so mode="range" draws the paged type instead.'
+    )
+  }, [rangeMonth])
   const today = useToday()
   const rootRef = React.useRef<HTMLDivElement>(null)
   const scrollRef = React.useRef<HTMLDivElement>(null)
@@ -201,10 +279,10 @@ function Calendar(props: CalendarProps) {
     differenceInMonths(day, firstShown) >= 0 &&
     differenceInMonths(day, lastShown) <= 0
 
-  const isDisabled = (day: Date) =>
+  const outOfBounds = (day: Date) =>
     (!!minDate && day < startOfDay(minDate)) ||
-    (!!maxDate && day > startOfDay(maxDate)) ||
-    !!isDateDisabled?.(day)
+    (!!maxDate && day > startOfDay(maxDate))
+  const isDisabled = (day: Date) => outOfBounds(day) || !!isDateDisabled?.(day)
 
   // One day in the grid holds the tab stop. It falls back through the
   // selection and today to the first day on screen that can be picked, then
@@ -246,6 +324,11 @@ function Calendar(props: CalendarProps) {
   function pick(day: Date) {
     if (isDisabled(day)) return
     setOwnFocus(day)
+    // A month view shows the ends of the months either side; picking one of
+    // those days turns the page to it, as moving there by keyboard does.
+    if (type === "month" && month && !isSameMonth(day, month)) {
+      changeMonth(startOfMonth(day), day < month ? "previous" : "next")
+    }
     if (!range) commit(day)
     else if (!anchor) commit({ from: day })
     else {
@@ -262,7 +345,7 @@ function Calendar(props: CalendarProps) {
     }
     focusPending.current = true
     setOwnFocus(next)
-    if (type === "paged" && month) {
+    if (type !== "scroll" && month) {
       const offset = differenceInMonths(next, month)
       if (offset < 0) changeMonth(startOfMonth(next), "previous")
       else if (offset > monthCount - 1)
@@ -297,7 +380,7 @@ function Calendar(props: CalendarProps) {
     focusPending.current = false
     rootRef.current
       ?.querySelector<HTMLElement>(
-        `[data-slot="calendar-day"][data-date="${focusedKey}"]`
+        `[data-slot="calendar-day"][data-date="${focusedKey}"]:not([data-outside])`
       )
       ?.focus()
   }, [focusedKey, monthKey])
@@ -362,6 +445,53 @@ function Calendar(props: CalendarProps) {
     status = `${formatDateRange(picked, locale)}, ${days} ${days === 1 ? "day" : "days"}`
   }
 
+  const atMin = !!minMonth && !!month && month <= minMonth
+  const atMax = !!maxMonth && !!lastShown && lastShown >= maxMonth
+
+  if (type === "month") {
+    return (
+      <CalendarMonthView
+        ref={rootRef}
+        month={month}
+        slide={slide}
+        weekStartsOn={weekStartsOn}
+        weekdays={weekdays}
+        formats={formats}
+        locale={locale}
+        text={text}
+        today={today}
+        focused={focused}
+        selected={selection?.from ?? null}
+        events={events}
+        onEventClick={onEventClick}
+        isDisabled={isDisabled}
+        atMin={atMin}
+        atMax={atMax}
+        todayDisabled={!today || outOfBounds(today)}
+        onPrevious={() =>
+          month && changeMonth(addMonths(month, -1), "previous")
+        }
+        onNext={() => month && changeMonth(addMonths(month, 1), "next")}
+        onToday={() => {
+          if (!today || !month) return
+          setOwnFocus(today)
+          if (!isSameMonth(today, month)) {
+            changeMonth(
+              startOfMonth(today),
+              today < month ? "previous" : "next"
+            )
+          }
+        }}
+        onPick={pick}
+        onKeyDown={onGridKeyDown}
+        actions={children}
+        className={className}
+        style={style}
+        {...rest}
+      />
+    )
+  }
+
   const grids = shownMonths.map((m) => (
     <CalendarMonth
       key={toDateKey(m)}
@@ -419,9 +549,6 @@ function Calendar(props: CalendarProps) {
     )
   }
 
-  const atMin = !!minMonth && !!month && month <= minMonth
-  const atMax = !!maxMonth && !!lastShown && lastShown >= maxMonth
-
   // The months sit in a size container, so two of them stack when there
   // isn't room side by side rather than squeezing their days. A size
   // container can't take its width from its content, so it's told the width
@@ -453,7 +580,7 @@ function Calendar(props: CalendarProps) {
             variant="ghost"
             size="icon-sm"
             data-slot="calendar-previous"
-            aria-label="Previous month"
+            aria-label={text.previous}
             disabled={!month || atMin}
             onClick={() =>
               month && changeMonth(addMonths(month, -1), "previous")
@@ -467,7 +594,7 @@ function Calendar(props: CalendarProps) {
             variant="ghost"
             size="icon-sm"
             data-slot="calendar-next"
-            aria-label="Next month"
+            aria-label={text.next}
             disabled={!month || atMax}
             onClick={() => month && changeMonth(addMonths(month, 1), "next")}
             className="absolute top-0 right-0"
@@ -706,8 +833,413 @@ function CalendarMonth({
   )
 }
 
+/*
+ * The month type. The grid keeps the date grid's keyboard model: each cell
+ * holds one day button, the grid is one tab stop, and arrows move between
+ * days. A cell's event cards and dots sit inside that button, hidden from
+ * assistive technology, and the button is described by a spoken list of the
+ * day's events instead, so nothing inside a cell takes focus or breaks the
+ * grid. Events become buttons in the selected day's list, outside the grid,
+ * which sits below the grid in a narrow calendar and beside it in a wide one.
+ * Which layout shows is decided by the calendar's own width, not the
+ * viewport's, so a month in a side panel gets the compact cells.
+ */
+function CalendarMonthView({
+  ref,
+  month,
+  slide,
+  weekStartsOn,
+  weekdays,
+  formats,
+  locale,
+  text,
+  today,
+  focused,
+  selected,
+  events,
+  onEventClick,
+  isDisabled,
+  atMin,
+  atMax,
+  todayDisabled,
+  onPrevious,
+  onNext,
+  onToday,
+  onPick,
+  onKeyDown,
+  actions,
+  className,
+  ...rest
+}: Omit<React.ComponentProps<"div">, "onKeyDown"> & {
+  month: Date | null
+  slide: "next" | "previous" | null
+  weekStartsOn: WeekStart
+  weekdays: { short: string; long: string }[]
+  formats: CalendarFormats
+  locale: string
+  text: CalendarLabels
+  today: Date | null
+  focused: Date | null
+  selected: Date | null
+  events: CalendarEvent[] | undefined
+  onEventClick: ((event: CalendarEvent) => void) | undefined
+  isDisabled: (day: Date) => boolean
+  atMin: boolean
+  atMax: boolean
+  todayDisabled: boolean
+  onPrevious: () => void
+  onNext: () => void
+  onToday: () => void
+  onPick: (day: Date) => void
+  onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void
+  actions: React.ReactNode
+}) {
+  const id = React.useId()
+  const titleId = `${id}-title`
+  const agendaId = `${id}-agenda`
+
+  const byDay = React.useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>()
+    for (const event of events ?? []) {
+      const key = toDateKey(event.start)
+      const list = map.get(key)
+      if (list) list.push(event)
+      else map.set(key, [event])
+    }
+    // All-day events first, then by start time.
+    for (const list of map.values()) {
+      list.sort(
+        (a, b) =>
+          Number(!!b.allDay) - Number(!!a.allDay) ||
+          a.start.getTime() - b.start.getTime()
+      )
+    }
+    return map
+  }, [events])
+
+  const agendaFormat = React.useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }),
+    [locale]
+  )
+
+  const timeOf = (event: CalendarEvent) =>
+    event.allDay
+      ? text.allDay
+      : event.end
+        ? formatTimeRange(event.start, event.end, locale)
+        : formatTime(event.start, locale)
+
+  // Every day the weeks touch, the ends of the months either side included.
+  const weeks: Date[][] = []
+  if (month) {
+    const first = startOfWeek(month, weekStartsOn)
+    const rows = getMonthWeeks(month, weekStartsOn).length
+    for (let row = 0; row < rows; row++) {
+      weeks.push(
+        Array.from({ length: 7 }, (_, col) => addDays(first, row * 7 + col))
+      )
+    }
+  }
+
+  const agendaDay =
+    selected && month && isSameMonth(selected, month) ? selected : focused
+  const agendaEvents = agendaDay ? (byDay.get(toDateKey(agendaDay)) ?? []) : []
+
+  return (
+    <div
+      ref={ref}
+      data-slot="calendar"
+      data-type="month"
+      className={cn(
+        "@container/calendar flex h-full min-h-0 w-full min-w-0 flex-1 flex-col gap-4",
+        className
+      )}
+      {...rest}
+    >
+      <div
+        data-slot="calendar-header"
+        className="flex flex-wrap items-center gap-x-4 gap-y-3"
+      >
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div
+            id={titleId}
+            data-slot="calendar-month-title"
+            className="truncate text-lg font-semibold @3xl/calendar:text-xl"
+          >
+            {month ? formats.month.format(month) : null}
+          </div>
+          <div
+            data-slot="calendar-month-span"
+            className="text-sm text-muted-foreground"
+          >
+            {month
+              ? formatDateRange({ from: month, to: endOfMonth(month) }, locale)
+              : null}
+          </div>
+        </div>
+        <div data-slot="calendar-nav" className="flex">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            data-slot="calendar-previous"
+            aria-label={text.previous}
+            disabled={!month || atMin}
+            onClick={onPrevious}
+            className="rounded-r-none focus-visible:z-10"
+          >
+            <ChevronLeftIcon aria-hidden="true" />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            data-slot="calendar-today"
+            disabled={todayDisabled}
+            onClick={onToday}
+            className="-mx-px rounded-none focus-visible:z-10"
+          >
+            {text.today}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            data-slot="calendar-next"
+            aria-label={text.next}
+            disabled={!month || atMax}
+            onClick={onNext}
+            className="rounded-l-none focus-visible:z-10"
+          >
+            <ChevronRightIcon aria-hidden="true" />
+          </Button>
+        </div>
+        {actions ? (
+          <div data-slot="calendar-actions" className="flex items-center gap-2">
+            {actions}
+          </div>
+        ) : null}
+      </div>
+      <div
+        data-slot="calendar-body"
+        className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto @5xl/calendar:flex-row @5xl/calendar:overflow-visible"
+      >
+        <div
+          key={month ? toDateKey(month) : ""}
+          role="grid"
+          aria-labelledby={titleId}
+          data-slot="calendar-grid"
+          data-slide={slide ?? undefined}
+          onKeyDown={onKeyDown}
+          className={cn(
+            "flex shrink-0 flex-col gap-px overflow-clip rounded-xl border border-border bg-border @3xl/calendar:flex-1 @5xl/calendar:min-h-0 @5xl/calendar:overflow-y-auto",
+            slide &&
+              "animate-in duration-200 ease-out fade-in-0 motion-reduce:animate-none"
+          )}
+        >
+          <div role="row" className="grid shrink-0 grid-cols-7 gap-px">
+            {weekdays.map((w) => (
+              <div
+                key={w.long}
+                role="columnheader"
+                aria-label={w.long}
+                className="flex h-8 items-center justify-center bg-background text-xs text-muted-foreground @3xl/calendar:justify-start @3xl/calendar:px-2"
+              >
+                {w.short}
+              </div>
+            ))}
+          </div>
+          {weeks.map((week, row) => (
+            <div
+              key={row}
+              role="row"
+              className="grid grid-cols-7 gap-px @3xl/calendar:flex-1"
+            >
+              {week.map((day) => {
+                const key = toDateKey(day)
+                const dayEvents = byDay.get(key) ?? []
+                const outside = !!month && !isSameMonth(day, month)
+                const isSelected = !!selected && isSameDay(day, selected)
+                const isToday = !!today && isSameDay(day, today)
+                const disabled = isDisabled(day)
+                const extra =
+                  dayEvents.length > MONTH_CARDS
+                    ? dayEvents.length - MONTH_CARDS
+                    : 0
+                const summaryId = `${id}-${key}`
+                return (
+                  <div
+                    key={key}
+                    role="gridcell"
+                    aria-selected={isSelected}
+                    className="relative flex min-w-0 bg-background"
+                  >
+                    <button
+                      type="button"
+                      data-slot="calendar-day"
+                      data-date={key}
+                      data-today={isToday || undefined}
+                      data-selected={isSelected || undefined}
+                      data-outside={outside || undefined}
+                      data-disabled={disabled || undefined}
+                      data-events={dayEvents.length || undefined}
+                      tabIndex={
+                        !outside && focused && isSameDay(day, focused) ? 0 : -1
+                      }
+                      aria-label={formats.full.format(day)}
+                      aria-current={isToday ? "date" : undefined}
+                      aria-disabled={disabled || undefined}
+                      aria-describedby={
+                        dayEvents.length ? summaryId : undefined
+                      }
+                      onClick={() => onPick(day)}
+                      className="group/day flex min-h-12 min-w-0 flex-1 flex-col items-center gap-1 p-1 text-left outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle focus-visible:ring-inset aria-disabled:cursor-not-allowed aria-disabled:hover:bg-transparent @3xl/calendar:min-h-28 @3xl/calendar:items-stretch @3xl/calendar:p-1.5"
+                    >
+                      <span
+                        data-slot="calendar-day-number"
+                        className="flex size-7 shrink-0 items-center justify-center rounded-full border border-transparent text-sm tabular-nums group-data-outside/day:text-muted-foreground group-data-today/day:border-primary group-data-today/day:font-semibold group-data-selected/day:bg-primary group-data-selected/day:text-primary-foreground group-data-disabled/day:text-muted-foreground group-data-disabled/day:line-through @3xl/calendar:self-start"
+                      >
+                        {formats.day.format(day)}
+                      </span>
+                      {dayEvents.length ? (
+                        <>
+                          <span
+                            aria-hidden="true"
+                            data-slot="calendar-day-events"
+                            className="hidden min-w-0 flex-col gap-0.5 @3xl/calendar:flex"
+                          >
+                            {dayEvents.slice(0, MONTH_CARDS).map((event) => (
+                              <span
+                                key={event.id}
+                                data-slot="calendar-event-card"
+                                className="flex min-w-0 flex-col rounded-sm bg-secondary px-1.5 py-0.5 text-xs text-secondary-foreground group-data-outside/day:text-muted-foreground"
+                              >
+                                <span className="truncate font-medium">
+                                  {event.title}
+                                </span>
+                                {event.allDay ? null : (
+                                  <span className="truncate text-muted-foreground tabular-nums">
+                                    {formatTime(event.start, locale)}
+                                  </span>
+                                )}
+                              </span>
+                            ))}
+                            {extra ? (
+                              <span
+                                data-slot="calendar-event-more"
+                                className="px-1.5 text-xs text-muted-foreground"
+                              >
+                                {text.more(extra)}
+                              </span>
+                            ) : null}
+                          </span>
+                          <span
+                            aria-hidden="true"
+                            data-slot="calendar-day-dots"
+                            className="flex gap-0.5 @3xl/calendar:hidden"
+                          >
+                            {dayEvents.slice(0, MONTH_DOTS).map((event) => (
+                              <span
+                                key={event.id}
+                                className="size-1 rounded-full bg-foreground group-data-outside/day:bg-muted-foreground"
+                              />
+                            ))}
+                          </span>
+                        </>
+                      ) : null}
+                    </button>
+                    {dayEvents.length ? (
+                      <span id={summaryId} className="sr-only">
+                        {`${text.events(dayEvents.length)}: ${dayEvents
+                          .map((event) => `${event.title}, ${timeOf(event)}`)
+                          .join("; ")}`}
+                      </span>
+                    ) : null}
+                  </div>
+                )
+              })}
+            </div>
+          ))}
+        </div>
+        <div
+          data-slot="calendar-agenda"
+          className="flex flex-1 flex-col gap-2 @3xl/calendar:flex-none @5xl/calendar:min-h-0 @5xl/calendar:w-64 @5xl/calendar:overflow-y-auto"
+        >
+          <div
+            id={agendaId}
+            data-slot="calendar-agenda-title"
+            className="text-sm font-medium"
+          >
+            {agendaDay ? agendaFormat.format(agendaDay) : null}
+          </div>
+          {agendaEvents.length ? (
+            <ul
+              aria-labelledby={agendaId}
+              data-slot="calendar-agenda-list"
+              className="flex flex-col gap-1"
+            >
+              {agendaEvents.map((event) => {
+                const content = (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="w-1 shrink-0 self-stretch rounded-full bg-primary"
+                    />
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate text-sm font-medium">
+                        {event.title}
+                      </span>
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {timeOf(event)}
+                      </span>
+                    </span>
+                  </>
+                )
+                const rowClass =
+                  "flex w-full gap-3 rounded-lg px-2 py-1.5 text-left"
+                return (
+                  <li key={event.id} data-slot="calendar-event">
+                    {onEventClick ? (
+                      <button
+                        type="button"
+                        onClick={() => onEventClick(event)}
+                        className={cn(
+                          rowClass,
+                          "outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+                        )}
+                      >
+                        {content}
+                      </button>
+                    ) : (
+                      <div className={rowClass}>{content}</div>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          ) : (
+            <p
+              data-slot="calendar-agenda-empty"
+              className="px-2 py-1.5 text-sm text-muted-foreground"
+            >
+              {text.noEvents}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export { Calendar, useToday }
 export type {
+  CalendarEvent,
+  CalendarLabels,
   CalendarProps,
   CalendarRangeProps,
   CalendarSingleProps,

@@ -2,9 +2,31 @@ import { describe, expect, it, vi } from "vitest"
 import { page, userEvent } from "vitest/browser"
 import { render } from "vitest-browser-react"
 
-import { Calendar } from "./calendar.js"
+import { hydrateRoot } from "react-dom/client"
+import { renderToString } from "react-dom/server"
+
+import { formatTime, formatTimeRange } from "@workspace/ui/lib/dates"
+
+import { Calendar, type CalendarEvent } from "./calendar.js"
 
 const october = new Date(2026, 9, 1)
+
+const event = (
+  id: string,
+  day: number,
+  hour: number,
+  extra: Partial<CalendarEvent> = {}
+): CalendarEvent => ({
+  id,
+  title: `Event ${id}`,
+  start: new Date(2026, 9, day, hour),
+  ...extra,
+})
+
+const dayButton = (container: HTMLElement, key: string) =>
+  container.querySelector<HTMLElement>(
+    `[data-slot="calendar-day"][data-date="${key}"]:not([data-outside])`
+  )!
 
 describe("Calendar", () => {
   it("starts the week on the day it's given", async () => {
@@ -224,5 +246,219 @@ describe("Calendar", () => {
     expect(second!.getBoundingClientRect().top).toBe(
       first!.getBoundingClientRect().top
     )
+  })
+})
+
+describe("Calendar month type", () => {
+  it("puts each event on the day it starts, all-day events first", async () => {
+    await page.viewport(1200, 900)
+    const screen = await render(
+      <div style={{ height: 800, display: "flex" }}>
+        <Calendar
+          type="month"
+          defaultMonth={october}
+          events={[
+            event("late", 20, 23),
+            event("early", 20, 8),
+            event("all", 20, 0, { allDay: true }),
+            event("other", 21, 9),
+          ]}
+        />
+      </div>
+    )
+    const twentieth = dayButton(screen.container, "2026-10-20")
+    expect(twentieth.dataset.events).toBe("3")
+    const titles = [
+      ...twentieth.querySelectorAll('[data-slot="calendar-event-card"]'),
+    ].map((card) => card.textContent)
+    expect(titles[0]).toContain("Event all")
+    expect(titles[1]).toContain("Event early")
+    expect(dayButton(screen.container, "2026-10-21").dataset.events).toBe("1")
+    expect(dayButton(screen.container, "2026-10-22").dataset.events).toBe(
+      undefined
+    )
+  })
+
+  it("shows two cards and counts the rest", async () => {
+    await page.viewport(1200, 900)
+    const screen = await render(
+      <div style={{ height: 800, display: "flex" }}>
+        <Calendar
+          type="month"
+          defaultMonth={october}
+          events={[1, 2, 3, 4, 5].map((n) => event(`e${n}`, 14, 8 + n))}
+        />
+      </div>
+    )
+    const day = dayButton(screen.container, "2026-10-14")
+    expect(
+      day.querySelectorAll('[data-slot="calendar-event-card"]')
+    ).toHaveLength(2)
+    expect(
+      day.querySelector('[data-slot="calendar-event-more"]')?.textContent
+    ).toBe("+3 more")
+  })
+
+  it("switches to compact cells by its own width, not the viewport's", async () => {
+    await page.viewport(1600, 900)
+    const events = [event("a", 14, 9), event("b", 14, 10)]
+    const screen = await render(
+      <div style={{ display: "flex", gap: 16, height: 800 }}>
+        <div data-testid="wide" style={{ width: 1100, display: "flex" }}>
+          <Calendar type="month" defaultMonth={october} events={events} />
+        </div>
+        <div data-testid="narrow" style={{ width: 390, display: "flex" }}>
+          <Calendar type="month" defaultMonth={october} events={events} />
+        </div>
+      </div>
+    )
+    const parts = (testId: string) => {
+      const root = screen.getByTestId(testId).element()
+      const day = dayButton(root as HTMLElement, "2026-10-14")
+      const cards = day.querySelector('[data-slot="calendar-day-events"]')!
+      const dots = day.querySelector('[data-slot="calendar-day-dots"]')!
+      const grid = root
+        .querySelector('[data-slot="calendar-grid"]')!
+        .getBoundingClientRect()
+      const agenda = root
+        .querySelector('[data-slot="calendar-agenda"]')!
+        .getBoundingClientRect()
+      return {
+        cards: getComputedStyle(cards).display,
+        dots: getComputedStyle(dots).display,
+        agendaBelow: agenda.top >= grid.bottom,
+      }
+    }
+    expect(parts("wide")).toEqual({
+      cards: "flex",
+      dots: "none",
+      agendaBelow: false,
+    })
+    expect(parts("narrow")).toEqual({
+      cards: "none",
+      dots: "flex",
+      agendaBelow: true,
+    })
+  })
+
+  it("lists the selected day's events, or says there are none", async () => {
+    const onEventClick = vi.fn()
+    const screen = await render(
+      <Calendar
+        type="month"
+        defaultMonth={october}
+        defaultValue={new Date(2026, 9, 14)}
+        events={[event("a", 14, 9, { title: "Standup" })]}
+        onEventClick={onEventClick}
+      />
+    )
+    await screen.getByRole("button", { name: /Standup/ }).click()
+    expect(onEventClick).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "a" })
+    )
+    await screen
+      .getByRole("button", { name: "Thursday, October 15, 2026" })
+      .click()
+    await expect.element(screen.getByText("No events")).toBeVisible()
+  })
+
+  it("goes back to today's month with Today", async () => {
+    const onMonthChange = vi.fn()
+    const screen = await render(
+      <Calendar
+        type="month"
+        defaultMonth={new Date(2020, 0, 1)}
+        onMonthChange={onMonthChange}
+      />
+    )
+    await expect
+      .element(screen.getByText("January 2020", { exact: true }))
+      .toBeInTheDocument()
+    await screen.getByRole("button", { name: "Today" }).click()
+    const now = new Date()
+    expect(onMonthChange).toHaveBeenLastCalledWith(
+      new Date(now.getFullYear(), now.getMonth(), 1)
+    )
+    const today = screen.container.querySelector<HTMLElement>(
+      '[data-slot="calendar-day"][data-today]:not([data-outside])'
+    )
+    expect(today?.getAttribute("tabindex")).toBe("0")
+  })
+
+  it("turns the page when a day from the month before is picked", async () => {
+    const onChange = vi.fn()
+    const screen = await render(
+      <Calendar type="month" defaultMonth={october} onChange={onChange} />
+    )
+    const outside = screen.container.querySelector<HTMLElement>(
+      '[data-slot="calendar-day"][data-outside][data-date="2026-09-30"]'
+    )!
+    outside.click()
+    expect(onChange).toHaveBeenCalledWith(new Date(2026, 8, 30))
+    await expect
+      .element(screen.getByText("September 2026", { exact: true }))
+      .toBeInTheDocument()
+  })
+
+  it("draws a range calendar as paged and warns", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const screen = await render(
+      // @ts-expect-error The month type picks one day only.
+      <Calendar type="month" mode="range" defaultMonth={october} />
+    )
+    expect(
+      screen.container
+        .querySelector('[data-slot="calendar"]')
+        ?.getAttribute("data-type")
+    ).toBe("paged")
+    expect(warn).toHaveBeenCalledOnce()
+    warn.mockRestore()
+  })
+})
+
+describe("Calendar month type on a server", () => {
+  it("hydrates the server's markup without a difference", async () => {
+    const tree = (
+      <Calendar
+        type="month"
+        defaultMonth={october}
+        defaultValue={new Date(2026, 9, 14)}
+        events={[
+          event("a", 14, 9, { end: new Date(2026, 9, 14, 10) }),
+          event("b", 20, 0, { allDay: true }),
+        ]}
+      />
+    )
+    const html = renderToString(tree)
+    expect(html).not.toContain('aria-current="date"')
+    expect(html).not.toMatch(/[\u2009\u202f]/)
+    const host = document.createElement("div")
+    host.innerHTML = html
+    document.body.append(host)
+    const errors: unknown[] = []
+    const root = hydrateRoot(host, tree, {
+      onRecoverableError: (error) => errors.push(error),
+    })
+    // Today arrives on the client, after hydration, and enables its button.
+    await expect
+      .poll(() =>
+        host
+          .querySelector('[data-slot="calendar-today"]')
+          ?.hasAttribute("disabled")
+      )
+      .toBe(false)
+    expect(errors).toEqual([])
+    root.unmount()
+    host.remove()
+  })
+})
+
+describe("time formatting", () => {
+  it("writes times with plain spaces, so server and client markup match", () => {
+    const start = new Date(2026, 9, 5, 9, 30)
+    const end = new Date(2026, 9, 5, 10, 0)
+    expect(formatTime(start)).toBe("9:30 AM")
+    expect(formatTimeRange(start, end)).toBe("9:30 – 10:00 AM")
+    expect(formatTimeRange(start, end)).not.toMatch(/[\u2009\u202f]/)
   })
 })
