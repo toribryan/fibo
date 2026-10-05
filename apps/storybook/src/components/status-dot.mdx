@@ -1,0 +1,188 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/status-dot.stories"
+import { StatusDot } from "../../../../packages/ui/src/components/status-dot"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Status dot
+
+A small mark for whether someone is present, away or offline. Put it in an
+avatar, a sticker avatar or a badge; the part it sits in places it.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Told apart by shape, a dot, a crescent and a ring, so status reads without
+  colour, and coloured with fibo's `success`, `warning` and
+  `muted-foreground` tokens.
+- A page-coloured disc behind the mark keeps a clear edge on a photo or a
+  sticker.
+- Says its status to screen readers, in words you can translate, and joins
+  the name of a sticker avatar it sits in.
+- Placed by its host: pinned to an avatar's corner, tilted on a sticker,
+  leading the text in a badge.
+
+## Installation
+
+<Install
+  name="status-dot"
+  exports={[
+    "StatusDot",
+    "statusDotVariants",
+    "type StatusDotProps",
+    "type StatusDotStatus",
+  ]}
+/>
+
+It installs `class-variance-authority`.
+
+## Examples
+
+### Status by shape
+
+Present is a dot, away a crescent, offline a ring.
+
+<Canvas of={Stories.Statuses} />
+
+### Without colour
+
+`variant="mono"` draws the marks in the text colour, for places where
+colour would compete, such as a dense list.
+
+<Canvas of={Stories.Mono} />
+
+### Sizes
+
+`size` is `xs`, `sm`, `default` or `lg`: 8, 10, 12 and 16 pixels. A host
+can size it too; Avatar matches it to its own size.
+
+<Canvas of={Stories.Sizes} />
+
+### On avatars
+
+Put it in an Avatar or a Sticker avatar as a child. Avatar pins it to the
+corner; Sticker avatar sets it on the paper, turned against the tilt, and
+adds its label to the sticker's name.
+
+<Canvas of={Stories.OnAvatars} />
+
+### In a badge
+
+A badge leads with it. The badge's text already says the status, so the dot
+gets `label={null}`.
+
+<Canvas of={Stories.InABadge} />
+
+## Usage
+
+```tsx
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { StatusDot } from "@/components/ui/status-dot"
+
+export function Member() {
+  return (
+    <Avatar>
+      <AvatarImage src="/ana.jpg" alt="Ana Ruiz" />
+      <AvatarFallback>AR</AvatarFallback>
+      <StatusDot status="away" />
+    </Avatar>
+  )
+}
+```
+
+Let the dot say the status, or the text beside it, never both: pass
+`label={null}` when the words are already on screen.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use it for presence: whether someone is here, away or gone. For a state of a thing, such as Paid or Failed, use a Badge.",
+    "Pass label to translate the status, or to say it the way your product does, such as Online or Here.",
+    "Keep it on the avatar or in the badge it belongs to, not floating beside a name on its own.",
+    "Use mono where colour would compete; the shapes still tell the states apart.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <span className="flex items-center gap-2 text-sm">
+            <StatusDot status="away" label={null} />
+            Away
+          </span>
+        ),
+        description: "Silence the dot when the word beside it says the status.",
+      },
+      negative: {
+        component: (
+          <span className="flex items-center gap-2 text-sm">
+            <StatusDot status="away" />
+            Away
+          </span>
+        ),
+        description:
+          "Don't let both speak, or screen readers hear the status twice.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="status-dot"',
+      element: "The dot",
+      when: "Always. Hosts place it through this slot.",
+    },
+    {
+      attribute: "data-status",
+      element: "The dot",
+      when: (
+        <>
+          Always. <code>present</code>, <code>away</code> or{" "}
+          <code>offline</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-variant",
+      element: "The dot",
+      when: (
+        <>
+          Always. <code>color</code> or <code>mono</code>.
+        </>
+      ),
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The status is in a visually hidden span, read after whatever comes before it: the photo's alt in an Avatar, the name in a Sticker avatar.",
+    "A Sticker avatar is one image to screen readers, so the dot's label joins its name through aria-labelledby: Ana Ruiz, Away.",
+    "Shape carries the status as well as colour, so it holds for colour blindness and in mono.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Avatar", "Sticker avatar", "Badge"]} />

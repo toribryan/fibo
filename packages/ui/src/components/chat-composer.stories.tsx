@@ -44,7 +44,6 @@ const meta: Meta<typeof LocalChatComposerProvider> = {
     ChatComposerSubmit,
     ChatComposerDropZone,
   },
-  tags: ["new"],
   argTypes: {
     defaultValue: { control: "text" },
     disabled: { control: "boolean" },
