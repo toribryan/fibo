@@ -10,6 +10,10 @@ has the same history with links into the docs.
 
 ### Added
 
+- Status dot: a presence mark told apart by shape, a dot, a crescent and a
+  ring, with a spoken label. Avatar pins it to its corner, Sticker avatar sets
+  it on the paper and adds its label to the sticker's name, and Badge leads
+  with it.
 - Command menu `variant`, `default` or `inset`: `inset` sets the list in a
   card inside a muted shell that holds the search box and keyboard hints.
 - Data table on TanStack Table: `useDataTable` takes your rows and columns,
@@ -55,6 +59,11 @@ has the same history with links into the docs.
 
 ### Deprecated
 
+- Sticker avatar's `status`, `statusLabel` and `statusColor` props. Put a
+  `<StatusDot>` in the sticker instead, with `label` and `variant`; the props
+  draw the same dot until they're removed in 0.3.0. Move them with
+  `pnpm dlx jscodeshift --parser tsx -t
+https://fibo.toribryan.com/codemods/sticker-status-to-child.js src`.
 - Data table's `rowIds`, `totalCount`, `value`, `defaultValue` and
   `onValueChange` props, `useDataTableSelection`, and hand-written
   `DataTableRow`, `DataTableCell` and `DataTableHead`. Use `useDataTable`

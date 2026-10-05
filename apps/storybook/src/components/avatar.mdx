@@ -50,10 +50,18 @@ When the photo fails to load, the initials stay.
 
 <Canvas of={Stories.Sizes} />
 
+### With status
+
+Put a [Status dot](?path=/docs/base-components-display-status-dot--docs) in the
+avatar for presence. It pins to the corner, grows with the avatar, and its
+label is read after the photo's `alt`.
+
+<Canvas of={Stories.WithStatus} />
+
 ### With badge
 
-AvatarBadge puts a dot in the corner. Here it uses the success colour for
-online.
+AvatarBadge puts a small badge in the corner for anything that isn't
+presence, such as an icon. Name it in the photo's `alt`.
 
 <Canvas of={Stories.WithBadge} />
 
@@ -102,7 +110,7 @@ the photo fails.
       {
         name: "AvatarBadge",
         slot: "avatar-badge",
-        note: "Optional. A dot in the corner.",
+        note: "Optional. A small badge in the corner, such as an icon. For presence, use a StatusDot instead.",
       },
     ],
   }}
@@ -229,7 +237,7 @@ wait before showing, so a fast photo doesn't flash the initials first.
 
 ## Related components
 
-<RelatedComponents names={["Badge", "Skeleton"]} />
+<RelatedComponents names={["Status dot", "Badge", "Skeleton"]} />
 
 ## References
 

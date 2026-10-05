@@ -2,18 +2,19 @@
 
 import * as React from "react"
 
+import {
+  StatusDot,
+  StatusDotHostProvider,
+  useStatusDotHost,
+  type StatusDotStatus,
+} from "@workspace/ui/components/status-dot"
 import { cn } from "@workspace/ui/lib/utils"
 
-type StickerAvatarStatus = "present" | "away" | "offline"
+/** @deprecated Use StatusDotStatus from status-dot. */
+type StickerAvatarStatus = StatusDotStatus
 
 /** How the sticker was cut: from the image's own shape, round, or from initials. */
 type StickerAvatarShape = "cutout" | "round" | "initials"
-
-const STATUS_LABELS: Record<StickerAvatarStatus, string> = {
-  present: "Present",
-  away: "Away",
-  offline: "Offline",
-}
 
 // Big uploads are scaled down before anything is measured or stamped.
 const MAX_SOURCE = 512
@@ -248,66 +249,12 @@ const PAPER_SHADOW =
 const PAPER_SHADOW_LIFTED =
   "motion-safe:group-hover/sticker-avatar:[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_calc(var(--sticker-edge-width)*1.1)_calc(var(--sticker-edge-width)*1.4)_var(--sticker-shadow))] motion-safe:group-hover/sticker:[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_calc(var(--sticker-edge-width)*1.1)_calc(var(--sticker-edge-width)*1.4)_var(--sticker-shadow))]"
 
-// Each status keeps the semantic token it means everywhere else in fibo.
-const STATUS_FILL: Record<StickerAvatarStatus, string> = {
-  present: "fill-success",
-  away: "fill-warning",
-  offline: "fill-muted-foreground",
-}
-const STATUS_STROKE: Record<StickerAvatarStatus, string> = {
-  present: "stroke-success",
-  away: "stroke-warning",
-  offline: "stroke-muted-foreground",
-}
+// A StatusDot child sits on the corner like a second, smaller sticker: it
+// turns against the avatar's tilt and casts the same shadow.
+const STATUS_PLACEMENT =
+  "*:data-[slot=status-dot]:absolute *:data-[slot=status-dot]:-right-[6%] *:data-[slot=status-dot]:-bottom-[6%] *:data-[slot=status-dot]:size-[34%] *:data-[slot=status-dot]:min-h-[11px] *:data-[slot=status-dot]:min-w-[11px] *:data-[slot=status-dot]:rotate-[calc(var(--sticker-tilt)*-2)] *:data-[slot=status-dot]:[filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_1px_1px_var(--sticker-shadow))]"
 
-function StatusSticker({
-  status,
-  colored,
-}: {
-  status: StickerAvatarStatus
-  colored: boolean
-}) {
-  return (
-    <span
-      data-slot="sticker-avatar-status"
-      data-status={status}
-      aria-hidden="true"
-      className="absolute -right-[6%] -bottom-[6%] size-[34%] min-h-[11px] min-w-[11px] rotate-[calc(var(--sticker-tilt)*-2)] [filter:drop-shadow(0_0_0.5px_var(--ring))_drop-shadow(0_1px_1px_var(--sticker-shadow))]"
-    >
-      {/* Unlike the avatar's edge, this disc is the page colour, not paper:
-          fibo's status tokens are tuned for the page in each theme, and on
-          white paper the dark-theme ones fall under 3:1. The shapes still
-          tell status apart without colour. */}
-      <svg viewBox="0 0 20 20" className="size-full overflow-visible">
-        <circle cx="10" cy="10" r="10" className="fill-background" />
-        {status === "offline" ? (
-          <circle
-            cx="10"
-            cy="10"
-            r="4.75"
-            strokeWidth="3.5"
-            className={cn(
-              "fill-none",
-              colored ? STATUS_STROKE[status] : "stroke-foreground"
-            )}
-          />
-        ) : (
-          <circle
-            cx="10"
-            cy="10"
-            r="6.5"
-            className={colored ? STATUS_FILL[status] : "fill-foreground"}
-          />
-        )}
-        {status === "away" ? (
-          <circle cx="6.5" cy="6.5" r="5" className="fill-background" />
-        ) : null}
-      </svg>
-    </span>
-  )
-}
-
-type StickerAvatarProps = Omit<React.ComponentProps<"span">, "children"> & {
+type StickerAvatarProps = React.ComponentProps<"span"> & {
   /** The person's name. Their accessible name, the seed for the tilt, and the initials when there is no image. */
   name: string
   /** Image URL. A transparent cut-out gets a die-cut edge; a photo with a background becomes round. */
@@ -316,11 +263,11 @@ type StickerAvatarProps = Omit<React.ComponentProps<"span">, "children"> & {
   size?: number
   /** Paper edge in pixels. Defaults to one sixteenth of the size, never under 2px. */
   edge?: number
-  /** Shows a status sticker on the corner, told apart by shape. */
+  /** @deprecated Put a `<StatusDot status>` in the avatar instead. */
   status?: StickerAvatarStatus
-  /** Overrides the status's spoken label, for translation. */
+  /** @deprecated Use the StatusDot's `label`. */
   statusLabel?: string
-  /** Colours the status with fibo's semantic tokens. Off, it is drawn in the foreground colour. */
+  /** @deprecated Use the StatusDot's `variant`, `color` or `mono`. */
   statusColor?: boolean
   /** `true` tilts by a stable angle from the name, a number sets degrees, `false` keeps it straight. */
   tilt?: boolean | number
@@ -346,8 +293,11 @@ function StickerAvatar({
   pixelated = false,
   className,
   style,
+  children,
   ...props
 }: StickerAvatarProps) {
+  const nameId = React.useId()
+  const { labelledBy, host } = useStatusDotHost()
   const ref = React.useRef<HTMLSpanElement>(null)
   const edgeWidth = edge ?? stickerEdge(size)
   const angle =
@@ -402,79 +352,91 @@ function StickerAvatar({
         : settled.failed === "taint"
           ? "round"
           : "initials"
-  const label = status
-    ? `${name}, ${statusLabel ?? STATUS_LABELS[status]}`
-    : name
-
   return (
-    <span
-      ref={ref}
-      role="img"
-      aria-label={label}
-      data-slot="sticker-avatar"
-      data-shape={shape}
-      data-status={status}
-      className={cn(
-        "group/sticker-avatar relative inline-block shrink-0 rotate-(--sticker-tilt) align-middle transition-[rotate,translate,scale] duration-200 ease-out",
-        lift &&
-          "motion-safe:group-hover/sticker:-translate-y-0.5 motion-safe:group-hover/sticker:scale-105 motion-safe:group-hover/sticker:rotate-0 motion-safe:hover:-translate-y-0.5 motion-safe:hover:scale-105 motion-safe:hover:rotate-0",
-        className
-      )}
-      style={
-        {
-          width: size,
-          height: size,
-          "--sticker-tilt": `${angle}deg`,
-          "--sticker-edge-width": `${edgeWidth}px`,
-          ...style,
-        } as React.CSSProperties
-      }
-      {...props}
-    >
-      {settled?.baked ? (
-        <img
-          data-slot="sticker-avatar-image"
-          src={settled.baked.url}
-          alt=""
-          draggable={false}
-          className={cn(
-            "pointer-events-none absolute -inset-(--sticker-edge-width) size-[calc(100%+var(--sticker-edge-width)*2)] max-w-none select-none",
-            PAPER_SHADOW,
-            lift && PAPER_SHADOW_LIFTED
-          )}
-        />
-      ) : shape === "round" ? (
-        // The host serves the image without CORS, so its pixels can't be
-        // read or cut. A paper ring in CSS keeps it looking like a sticker.
-        <img
-          data-slot="sticker-avatar-image"
-          src={src}
-          alt=""
-          draggable={false}
-          className={cn(
-            "pointer-events-none size-full rounded-full object-cover shadow-[0_0_0_var(--sticker-edge-width)_var(--sticker-edge)] select-none",
-            PAPER_SHADOW,
-            lift && PAPER_SHADOW_LIFTED
-          )}
-        />
-      ) : shape === "initials" ? (
-        // The letters are the sticker: a stroke painted under the fill
-        // grows each glyph by the edge width, the same die-cut in CSS.
-        <span
-          data-slot="sticker-avatar-fallback"
-          aria-hidden="true"
-          className={cn(
-            "flex size-full items-center justify-center leading-none font-bold tracking-tight text-sticker-ink select-none [-webkit-text-stroke:calc(var(--sticker-edge-width)*2)_var(--sticker-edge)] [paint-order:stroke_fill]",
-            PAPER_SHADOW,
-            lift && PAPER_SHADOW_LIFTED
-          )}
-          style={{ fontSize: size * 0.42 }}
-        >
-          {initials(name)}
-        </span>
-      ) : null}
-      {status ? <StatusSticker status={status} colored={statusColor} /> : null}
-    </span>
+    <>
+      {/* The name lives outside the image so it isn't part of the sticker's
+          own text. The comma keeps name and status apart when read as one. */}
+      <span id={nameId} hidden>
+        {labelledBy ? `${name},` : name}
+      </span>
+      <span
+        ref={ref}
+        role="img"
+        aria-labelledby={labelledBy ? `${nameId} ${labelledBy}` : nameId}
+        data-slot="sticker-avatar"
+        data-shape={shape}
+        className={cn(
+          "group/sticker-avatar relative inline-block shrink-0 rotate-(--sticker-tilt) align-middle transition-[rotate,translate,scale] duration-200 ease-out",
+          STATUS_PLACEMENT,
+          lift &&
+            "motion-safe:group-hover/sticker:-translate-y-0.5 motion-safe:group-hover/sticker:scale-105 motion-safe:group-hover/sticker:rotate-0 motion-safe:hover:-translate-y-0.5 motion-safe:hover:scale-105 motion-safe:hover:rotate-0",
+          className
+        )}
+        style={
+          {
+            width: size,
+            height: size,
+            "--sticker-tilt": `${angle}deg`,
+            "--sticker-edge-width": `${edgeWidth}px`,
+            ...style,
+          } as React.CSSProperties
+        }
+        {...props}
+      >
+        {settled?.baked ? (
+          <img
+            data-slot="sticker-avatar-image"
+            src={settled.baked.url}
+            alt=""
+            draggable={false}
+            className={cn(
+              "pointer-events-none absolute -inset-(--sticker-edge-width) size-[calc(100%+var(--sticker-edge-width)*2)] max-w-none select-none",
+              PAPER_SHADOW,
+              lift && PAPER_SHADOW_LIFTED
+            )}
+          />
+        ) : shape === "round" ? (
+          // The host serves the image without CORS, so its pixels can't be
+          // read or cut. A paper ring in CSS keeps it looking like a sticker.
+          <img
+            data-slot="sticker-avatar-image"
+            src={src}
+            alt=""
+            draggable={false}
+            className={cn(
+              "pointer-events-none size-full rounded-full object-cover shadow-[0_0_0_var(--sticker-edge-width)_var(--sticker-edge)] select-none",
+              PAPER_SHADOW,
+              lift && PAPER_SHADOW_LIFTED
+            )}
+          />
+        ) : shape === "initials" ? (
+          // The letters are the sticker: a stroke painted under the fill
+          // grows each glyph by the edge width, the same die-cut in CSS.
+          <span
+            data-slot="sticker-avatar-fallback"
+            aria-hidden="true"
+            className={cn(
+              "flex size-full items-center justify-center leading-none font-bold tracking-tight text-sticker-ink select-none [-webkit-text-stroke:calc(var(--sticker-edge-width)*2)_var(--sticker-edge)] [paint-order:stroke_fill]",
+              PAPER_SHADOW,
+              lift && PAPER_SHADOW_LIFTED
+            )}
+            style={{ fontSize: size * 0.42 }}
+          >
+            {initials(name)}
+          </span>
+        ) : null}
+        <StatusDotHostProvider host={host}>
+          {status ? (
+            <StatusDot
+              status={status}
+              label={statusLabel}
+              variant={statusColor ? "color" : "mono"}
+            />
+          ) : null}
+          {children}
+        </StatusDotHostProvider>
+      </span>
+    </>
   )
 }
 

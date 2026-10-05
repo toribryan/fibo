@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { ComponentProps } from "react"
 import { Badge } from "./badge.js"
+import { StatusDot } from "./status-dot.js"
 
 const meta: Meta<typeof Badge> = {
   title: "Base components/Display/Badge",
@@ -48,6 +49,23 @@ export const AllVariants: Story = {
           {variant}
         </Badge>
       ))}
+    </div>
+  ),
+}
+
+export const WithStatus: Story = {
+  name: "With a status dot",
+  render: () => (
+    <div className="flex items-center gap-3">
+      {/* The text says the status, so the dot stays quiet. */}
+      <Badge variant="outline">
+        <StatusDot status="present" label={null} />
+        Online
+      </Badge>
+      <Badge variant="secondary">
+        <StatusDot status="away" label={null} />
+        Away
+      </Badge>
     </div>
   ),
 }
