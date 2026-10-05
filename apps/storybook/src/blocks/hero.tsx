@@ -79,7 +79,8 @@ const WIDE: Geometry = {
   rects: [
     { x: 210, y: 50.5, width: 30, height: 30 },
     { x: 240, y: 60.5, width: 20, height: 20 },
-    { x: 240, y: 50.5, width: 20, height: 10 },
+    { x: 240, y: 50.5, width: 10, height: 10 },
+    { x: 250, y: 50.5, width: 10, height: 10 },
   ],
   fibo: { x: 300, y: 80.5 },
   stroke: 0.62,
@@ -135,9 +136,16 @@ const TALL: Geometry = {
     {
       x: 159.5,
       y: 240,
-      width: 20,
+      width: 10,
       height: 10,
       transform: "rotate(90 159.5 240)",
+    },
+    {
+      x: 159.5,
+      y: 250,
+      width: 10,
+      height: 10,
+      transform: "rotate(90 159.5 250)",
     },
   ],
   fibo: { x: 30, y: 340 },
