@@ -4,12 +4,16 @@ import {
   ArrowUpIcon,
   ArrowUpRightIcon,
   AtSignIcon,
+  BoldIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   CircleCheckIcon,
   CompassIcon,
   HouseIcon,
+  ItalicIcon,
+  LinkIcon,
+  ListIcon,
   ListFilterIcon,
   PaperclipIcon,
   PlusIcon,
@@ -158,6 +162,20 @@ const PREVIEWS: Record<string, ReactNode> = {
           <ArrowUpIcon className="size-4" />
         </span>
       </div>
+    </div>
+  ),
+  "rich-text-editor": (
+    <div className="flex w-60 flex-col rounded-lg border border-input bg-input-subtle">
+      <div className="flex items-center gap-2.5 border-b border-border px-3 py-2 text-muted-foreground">
+        <BoldIcon className="size-3.5 text-foreground" />
+        <ItalicIcon className="size-3.5" />
+        <ListIcon className="size-3.5" />
+        <LinkIcon className="size-3.5" />
+      </div>
+      <p className="px-3 py-2.5 text-sm text-muted-foreground">
+        <strong className="font-semibold text-foreground">Ship</strong> the
+        tokens first
+      </p>
     </div>
   ),
   switch: (

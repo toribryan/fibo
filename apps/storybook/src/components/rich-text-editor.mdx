@@ -1,0 +1,341 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/rich-text-editor.stories"
+import { RichTextEditor } from "../../../../packages/ui/src/components/rich-text-editor"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Rich text editor
+
+A rich text editor takes formatted writing: headings, emphasis, lists, quotes
+and links. It runs on Tiptap, with a toolbar for people who reach for the
+pointer and Markdown shortcuts for people who don't.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Bold, italic, strikethrough, inline code, a heading, lists, quotes and links
+  from the toolbar, a shortcut, or Markdown as you type (`## `, `- `, `1. `,
+  `> `, backticks).
+- One tab stop for the whole toolbar; arrows, Home and End move inside it, and
+  each button says whether it's on.
+- Links go in through a row under the toolbar, never a browser prompt.
+- `maxLength` stops typing and pasting at the limit and counts down from 80%.
+
+## Installation
+
+<Install name="rich-text-editor" exports={["RichTextEditor"]} />
+
+It installs Button, Input and Tooltip, and the `@tiptap/react`,
+`@tiptap/starter-kit` and `@tiptap/extensions` packages. Rich text editor and
+Data table are the two base components that depend on a package beyond Base
+UI, class-variance-authority and lucide-react; plans 005 and 009 say why.
+
+## Examples
+
+### With a limit
+
+From 80% of `maxLength` a count of what's left shows in the corner, and turns
+destructive at the limit. Screen readers hear it when it first shows, at
+each further ten characters, and at the limit, not on every keystroke.
+
+<Canvas of={Stories.WithLimit} />
+
+### Minimal tools
+
+`tools` picks which buttons show. They keep the toolbar's order whatever order
+you list them in.
+
+<Canvas of={Stories.MinimalTools} />
+
+### Read only
+
+`editable={false}` drops the toolbar and shows the document as it will read.
+
+<Canvas of={Stories.ReadOnly} />
+
+### Proposal reply
+
+A reply box with a short toolbar and a limit. The visible label names the
+writing area through `aria-labelledby` and the hint describes it through
+`aria-describedby`. Sending clears it by remounting it with a new `key`.
+
+<Canvas of={Stories.ProposalReplyBox} />
+
+## Usage
+
+```tsx
+import { Label } from "@/components/ui/label"
+import {
+  RichTextEditor,
+  type RichTextEditorTool,
+} from "@/components/ui/rich-text-editor"
+
+// "heading" | "bold" | "italic" | "strike" | "code" | "bullet" | "ordered"
+// | "quote" | "link" | "history"
+const tools: RichTextEditorTool[] = [
+  "heading",
+  "bold",
+  "italic",
+  "bullet",
+  "link",
+  "history",
+]
+
+export function ReleaseNote({ onSave }: { onSave: (html: string) => void }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <Label id="release-note-label">Release note</Label>
+      <RichTextEditor
+        aria-labelledby="release-note-label"
+        defaultValue="<p>What changed, and who it affects.</p>"
+        tools={tools}
+        maxLength={2000}
+        onChange={(html) => onSave(html)}
+      />
+    </div>
+  )
+}
+```
+
+A label's `for` can't point at the writing area, which is not a form control,
+so name it with `aria-labelledby` and the label's `id`. The same works with
+Field: give `FieldLabel` an `id`, and `FieldDescription` one for
+`aria-describedby`. `id`, `aria-labelledby`, `aria-describedby` and
+`aria-invalid` all go on the writing area, not the frame.
+
+The editor owns the document once it mounts: pass `defaultValue` to start it
+and read `onChange` to keep up. To clear or replace it, change its `key`, or
+use the Tiptap editor that `onChange` hands you. Sanitise the HTML on the
+server before you show it to anyone else.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "RichTextEditor",
+    slot: "rich-text-editor",
+    note: "The frame. Carries the focus ring while the writing area has focus.",
+    children: [
+      {
+        name: "Toolbar",
+        slot: "rich-text-editor-toolbar",
+        note: "Base UI's Toolbar. Hidden when read only or when tools is empty.",
+        children: [
+          {
+            name: "Tool",
+            slot: "rich-text-editor-tool",
+            note: "One button per tool, named in data-tool, with a tooltip.",
+          },
+        ],
+      },
+      {
+        name: "Link row",
+        slot: "rich-text-editor-link-row",
+        note: "The address field and Apply, while a link is being added.",
+      },
+      {
+        name: "Content",
+        slot: "rich-text-editor-content",
+        note: "Tiptap's writing area, a multi-line textbox.",
+      },
+      {
+        name: "Count",
+        slot: "rich-text-editor-count",
+        note: "What's left of maxLength, shown from 80%. Hidden from screen readers.",
+      },
+      {
+        name: "Announcer",
+        slot: "rich-text-editor-announcer",
+        note: "A visually hidden live region that reads the count at thresholds.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use it where formatting changes what the words mean: notes, proposals, release notes, replies. For a plain message or a short answer, use Textarea or Chat composer.",
+    "Show only the tools the content needs. A comment box rarely needs headings or code.",
+    "State a length limit before people reach it, in the label or a description, not only in the counter.",
+    "Store and send the HTML, and sanitise it wherever it's shown to someone else.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="w-full">
+            <RichTextEditor
+              label="Comment"
+              tools={["bold", "italic", "link"]}
+              minHeight={60}
+              placeholder="Add a comment…"
+            />
+          </div>
+        ),
+        description: "Trim the toolbar to what the content needs.",
+      },
+      negative: {
+        component: (
+          <div className="w-full">
+            <RichTextEditor
+              label="Comment"
+              minHeight={60}
+              placeholder="Add a comment…"
+            />
+          </div>
+        ),
+        description:
+          "Don't hand a one-line comment box every tool. The toolbar outweighs the writing.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="rich-text-editor"',
+      element: "The frame",
+      when: "Always.",
+    },
+    {
+      attribute: "data-readonly",
+      element: "The frame",
+      when: (
+        <>
+          <code>editable</code> is false.
+        </>
+      ),
+    },
+    {
+      attribute: "data-invalid",
+      element: "The frame",
+      when: (
+        <>
+          <code>aria-invalid</code> is set.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="rich-text-editor-toolbar"',
+      element: "The toolbar",
+      when: "Editable, with at least one tool.",
+    },
+    {
+      attribute: 'data-slot="rich-text-editor-tool"',
+      element: "Each toolbar button",
+      when: "Always.",
+    },
+    {
+      attribute: "data-tool",
+      element: "Each toolbar button",
+      when: (
+        <>
+          Always. The tool, such as <code>bold</code> or <code>undo</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-disabled",
+      element: "Undo and Redo",
+      when: "There is nothing to undo or redo.",
+    },
+    {
+      attribute: 'data-slot="rich-text-editor-link-row"',
+      element: "The link address row",
+      when: "While a link is being added.",
+    },
+    {
+      attribute: 'data-slot="rich-text-editor-content"',
+      element: "The writing area",
+      when: "Once the editor has mounted in the browser.",
+    },
+    {
+      attribute: 'data-slot="rich-text-editor-skeleton"',
+      element: "An empty box the size of the writing area",
+      when: "Before the editor mounts, such as in server-rendered HTML.",
+    },
+    {
+      attribute: 'data-slot="rich-text-editor-count"',
+      element: "The visible count",
+      when: (
+        <>
+          Editable, with <code>maxLength</code> set.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="rich-text-editor-announcer"',
+      element: "The hidden live region",
+      when: (
+        <>
+          Editable, with <code>maxLength</code> set.
+        </>
+      ),
+    },
+    {
+      attribute: "data-limit",
+      element: "The count",
+      when: (
+        <>
+          The document has reached <code>maxLength</code>.
+        </>
+      ),
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The writing area is a multi-line <code>textbox</code>, named by{" "}
+      <code>aria-labelledby</code> when it's given and by <code>label</code>{" "}
+      otherwise. Point <code>aria-labelledby</code> at a visible label.
+    </>,
+    <>
+      The toolbar is one tab stop. Arrow keys, Home and End move between its
+      buttons, following the ARIA toolbar pattern. Marks and blocks carry{" "}
+      <code>aria-pressed</code>.
+    </>,
+    "Clicking a tool keeps focus and the selection in the writing area. Running one from the keyboard sends focus back there.",
+    "Undo and Redo stay focusable when there's nothing to do, so the toolbar's keyboard path never changes length.",
+    <>
+      Escape closes the link row and returns to the writing area. The visible
+      count is hidden from screen readers; a separate{" "}
+      <code>aria-live="polite"</code> region reads it when it first shows, at
+      each further ten characters, and at the limit.
+    </>,
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Textarea", "Chat composer", "Field", "Tooltip"]} />
+
+## References
+
+- [Tiptap](https://tiptap.dev/docs/editor/getting-started/overview)
+- [Base UI Toolbar](https://base-ui.com/react/components/toolbar)
+- [WAI-ARIA toolbar pattern](https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/)
