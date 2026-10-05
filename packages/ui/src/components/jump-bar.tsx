@@ -3,6 +3,7 @@
 import * as React from "react"
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react"
 
+import { Button } from "@workspace/ui/components/button"
 import { formatCount } from "@workspace/ui/lib/format-count"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -53,9 +54,6 @@ type JumpBarProps = Omit<React.ComponentProps<"div">, "children"> & {
   strings?: Partial<JumpBarStrings>
 }
 
-const BUTTON =
-  "inline-flex items-center gap-1.5 rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle [&_svg]:size-3.5 [&_svg]:shrink-0"
-
 function JumpBar({
   type,
   count = 0,
@@ -89,32 +87,25 @@ function JumpBar({
         data-slot="jump-bar"
         data-type={type}
         className={cn(
-          "absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2 rounded-lg bg-primary px-1 text-xs text-primary-foreground shadow-md",
+          "absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2 rounded-lg bg-primary p-1 text-xs text-primary-foreground shadow-md",
           className
         )}
         {...props}
       >
-        <button
-          type="button"
-          className={cn(
-            BUTTON,
-            "min-w-0 px-2 py-1.5 font-medium hover:bg-primary-hover"
-          )}
-          onClick={onJump}
-        >
-          <ArrowUpIcon aria-hidden />
+        {/* Default buttons on the bar's own primary fill: they show only on
+            hover, in primary-hover. */}
+        <Button size="xs" className="min-w-0" onClick={onJump}>
+          <ArrowUpIcon aria-hidden data-icon="inline-start" />
           <span className="truncate">
             {strings.unreadAbove(count, shown, time)}
           </span>
           {exact}
-        </button>
-        <button
-          type="button"
-          className={cn(BUTTON, "shrink-0 px-2 py-1 hover:bg-primary-hover")}
-          onClick={onMarkRead}
-        >
-          {strings.markRead}
-        </button>
+        </Button>
+        {onMarkRead ? (
+          <Button size="xs" className="font-normal" onClick={onMarkRead}>
+            {strings.markRead}
+          </Button>
+        ) : null}
       </div>
     )
   }
@@ -130,18 +121,15 @@ function JumpBar({
         )}
         {...props}
       >
-        <button
-          type="button"
-          className={cn(
-            BUTTON,
-            "pointer-events-auto h-8 rounded-full bg-primary px-3 text-xs font-medium text-primary-foreground shadow-md hover:bg-primary-hover"
-          )}
+        <Button
+          size="sm"
+          className="pointer-events-auto text-xs shadow-md"
           onClick={onJump}
         >
           {strings.newBelow(count, shown)}
           {exact}
-          <ArrowDownIcon aria-hidden />
-        </button>
+          <ArrowDownIcon aria-hidden data-icon="inline-end" />
+        </Button>
       </div>
     )
   }
@@ -159,14 +147,10 @@ function JumpBar({
       <span className="min-w-0 truncate text-muted-foreground">
         {strings.history}
       </span>
-      <button
-        type="button"
-        className={cn(BUTTON, "shrink-0 px-2 py-1 font-medium hover:bg-muted")}
-        onClick={onJump}
-      >
+      <Button variant="ghost" size="xs" className="shrink-0" onClick={onJump}>
         {strings.jumpToPresent}
-        <ArrowDownIcon aria-hidden />
-      </button>
+        <ArrowDownIcon aria-hidden data-icon="inline-end" />
+      </Button>
     </div>
   )
 }

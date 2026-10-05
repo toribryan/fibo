@@ -5,6 +5,7 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import { cva, type VariantProps } from "class-variance-authority"
 import { motion, useReducedMotion, type Variants } from "motion/react"
 
+import { Button } from "@workspace/ui/components/button"
 import { Count } from "@workspace/ui/components/count"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -487,11 +488,12 @@ function Reactions({
       data-slot="reactions-trigger"
       data-state={open ? "open" : "closed"}
       aria-label={triggerLabel}
+      render={<Button variant="ghost" size="icon-sm" />}
       className={cn(
-        "group/trigger relative inline-flex shrink-0 items-center justify-center rounded-full transition-[background-color,color,transform,box-shadow] duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle",
+        "group/trigger relative",
         type === "inline"
-          ? "size-7 text-muted-foreground hover:bg-muted hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground [&_svg]:size-4"
-          : "size-8 touch-manipulation text-foreground hover:bg-muted data-[state=open]:bg-muted motion-safe:active:scale-95 [&_svg]:size-4"
+          ? "text-muted-foreground"
+          : "touch-manipulation motion-safe:active:scale-95"
       )}
     >
       <SmilePlus open={open} />
