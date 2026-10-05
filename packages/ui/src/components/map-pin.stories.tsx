@@ -253,7 +253,6 @@ const cafe = PLACES[0]!
 const meta: Meta<typeof MapPin> = {
   title: "Special components/Map pin",
   component: MapPin,
-  tags: ["new"],
   parameters: {
     layout: "centered",
     controls: {
