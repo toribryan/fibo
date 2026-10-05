@@ -755,7 +755,7 @@ export const ColumnVisibility: Story = {
     await userEvent.keyboard("{End}")
     await userEvent.keyboard(" ")
     await expect(
-      canvas.getByRole("columnheader", { name: "Last active" })
+      await canvas.findByRole("columnheader", { name: "Last active" })
     ).toBeInTheDocument()
     await userEvent.keyboard("{Escape}")
     await waitFor(() => expect(body.queryByRole("menu")).toBeNull())
