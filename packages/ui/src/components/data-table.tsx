@@ -71,6 +71,7 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Count } from "@workspace/ui/components/count"
+import { Separator } from "@workspace/ui/components/separator"
 import { Input } from "@workspace/ui/components/input"
 import {
   Menu,
@@ -1752,7 +1753,10 @@ function DataTableBulkActions({
       {onDelete ? (
         <>
           {hasOthers ? (
-            <span aria-hidden="true" className="mx-1 h-5 w-px bg-border" />
+            <Separator
+              orientation="vertical"
+              className="mx-1 h-5 self-center"
+            />
           ) : null}
           <span id={countId} hidden>
             {reach}

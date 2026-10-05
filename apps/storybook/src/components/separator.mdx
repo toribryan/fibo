@@ -1,0 +1,145 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/separator.stories"
+import { Separator } from "../../../../packages/ui/src/components/separator"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Separator
+
+A thin rule between groups of content, across or down, with an optional
+label in the middle.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Horizontal across its container, or vertical down the height of its row.
+- Children make a labelled rule: a line, the label, a line. A text label is
+  also its name for screen readers.
+- A `separator` role with its orientation, from Base UI.
+
+## Installation
+
+<Install name="separator" exports={["Separator"]} />
+
+## Examples
+
+### Vertical
+
+Between items in a row, such as actions in a toolbar. It takes the row's
+height.
+
+<Canvas of={Stories.Vertical} />
+
+### With a label
+
+Children sit between two lines, such as a date in a conversation.
+
+<Canvas of={Stories.WithLabel} />
+
+### In a list
+
+<Canvas of={Stories.InAList} />
+
+## Usage
+
+```tsx
+import { Separator } from "@/components/ui/separator"
+
+export function Day({ date }: { date: string }) {
+  return <Separator>{date}</Separator>
+}
+```
+
+Use space before a rule: reach for a separator only when groups would run
+together without one.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Separate groups, not every item. A list where every row has a rule reads as a grid.",
+    "Keep labels to a word or two, such as a date or New.",
+    "Inside a Menu or a Select, use their own MenuSeparator and SelectSeparator, which sit inside the popup's padding.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 flex-col gap-2 text-sm">
+            <span>Profile</span>
+            <span>Settings</span>
+            <Separator />
+            <span>Sign out</span>
+          </div>
+        ),
+        description: "Set off a group that does something different.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 flex-col gap-2 text-sm">
+            <span>Profile</span>
+            <Separator />
+            <span>Settings</span>
+            <Separator />
+            <span>Sign out</span>
+          </div>
+        ),
+        description: "Don't rule off every row.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="separator"',
+      element: "The rule",
+      when: "Always.",
+    },
+    {
+      attribute: "data-orientation",
+      element: "The rule",
+      when: (
+        <>
+          Always. <code>horizontal</code> or <code>vertical</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="separator-label"',
+      element: "The label",
+      when: "With children.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "It has the separator role and aria-orientation, so screen readers announce a break.",
+    "A separator's children aren't read, so a text label becomes its aria-label. Pass aria-label yourself when the label isn't plain text.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Menu", "Message list"]} />
