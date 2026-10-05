@@ -732,6 +732,29 @@ export const FacetedFilters: Story = {
   },
 }
 
+export const Empty: Story = {
+  name: "Empty and no matches",
+  render: (args) => (
+    <div className="flex flex-col gap-6">
+      <MembersTable {...args} members={[]} aria-label="Invited members" />
+      <MembersTable {...args} toolbar={<MembersToolbar />} />
+    </div>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    await expect(canvas.getByText("No members yet")).toBeVisible()
+    await userEvent.type(
+      canvas.getByRole("searchbox", { name: "Search members" }),
+      "zzz"
+    )
+    await expect(await canvas.findByText("No matching members")).toBeVisible()
+    await userEvent.click(canvas.getByRole("button", { name: "Clear filters" }))
+    const search = canvas.getByRole("searchbox", { name: "Search members" })
+    await waitFor(() => expect(search).toHaveValue(""))
+    await expect(search).toHaveFocus()
+    await expect(canvas.queryByText("No matching members")).toBeNull()
+  },
+}
+
 export const ColumnVisibility: Story = {
   name: "Column visibility and pinning",
   render: (args) => (
