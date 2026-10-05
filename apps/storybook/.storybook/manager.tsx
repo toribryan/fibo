@@ -1,24 +1,5 @@
 import React, { useEffect, useState } from "react"
-import {
-  BellIcon,
-  CompassIcon,
-  ComponentIcon,
-  ContrastIcon,
-  DiamondIcon,
-  FileTextIcon,
-  FolderIcon,
-  HashIcon,
-  LayersIcon,
-  LayoutGridIcon,
-  MoonIcon,
-  MousePointerClickIcon,
-  RabbitIcon,
-  SunIcon,
-  TextCursorInputIcon,
-  TypeIcon,
-  WorkflowIcon,
-  type LucideIcon,
-} from "lucide-react"
+import { MoonIcon, SunIcon, type LucideIcon } from "lucide-react"
 import {
   SET_INDEX,
   STORY_CHANGED,
@@ -26,6 +7,8 @@ import {
 } from "storybook/internal/core-events"
 import { addons, types, type API } from "storybook/manager-api"
 
+import { BRIDGE_READY } from "./manager-bridge.js"
+import { iconFor } from "./sidebar-icons.js"
 import { MOBILE_QUERY, OPEN_MENU } from "./site-nav-sync.js"
 import { darkTheme, lightTheme } from "./theme.js"
 import {
@@ -41,53 +24,9 @@ import {
 // suffixes, so adding or dropping one never changes a docs URL.
 const STATUSES = ["new", "beta", "deprecated"]
 
-// Lucide icons stand in for Storybook's own sidebar icons, which are hidden
-// in manager-head.html. They are picked to echo Figma's layers panel, so the
-// tree reads like the Figma file: frames, components and their instances.
-// Foundations pages get the icon for the kind of token they document; every
-// other entry gets one for its type.
-const ICON_BY_ID: Record<string, LucideIcon> = {
-  "about-fibo--docs": RabbitIcon,
-  "foundations-colors--docs": ContrastIcon,
-  "foundations-typography--docs": TypeIcon,
-}
-
-// Each group inside a shelf has an icon for what its parts do.
-const ICON_BY_GROUP: Record<string, LucideIcon> = {
-  Actions: MousePointerClickIcon,
-  Forms: TextCursorInputIcon,
-  Display: LayoutGridIcon,
-  Navigation: CompassIcon,
-  Overlays: LayersIcon,
-  Feedback: BellIcon,
-  Diagrams: WorkflowIcon,
-}
-
-const ICON_BY_TYPE: Record<string, LucideIcon> = {
-  root: HashIcon,
-  group: FolderIcon,
-  component: ComponentIcon,
-  docs: FileTextIcon,
-  story: DiamondIcon,
-}
-
-// Top-level pages sit on the canvas like frames; a docs page under a
-// component or section is a page of that part.
-function iconFor(item: {
-  id: string
-  name: string
-  type: string
-  parent?: string
-}) {
-  if (ICON_BY_ID[item.id]) return ICON_BY_ID[item.id]
-  if (item.type === "group" && ICON_BY_GROUP[item.name])
-    return ICON_BY_GROUP[item.name]
-  if (item.type === "docs" && !item.parent) return HashIcon
-  return ICON_BY_TYPE[item.type]
-}
-
 const initialTheme = readTheme()
 document.documentElement.dataset.fiboTheme = initialTheme
+document.documentElement.classList.toggle("dark", initialTheme === "dark")
 
 addons.setConfig({
   theme: initialTheme === "dark" ? darkTheme : lightTheme,
@@ -129,6 +68,8 @@ function ThemeTool({ api }: { api: API }) {
   // dark around a light page.
   useEffect(() => {
     document.documentElement.dataset.fiboTheme = theme
+    // fibo's parts in the sidebar read the theme from the dark class.
+    document.documentElement.classList.toggle("dark", theme === "dark")
     api.setOptions({ theme: theme === "dark" ? darkTheme : lightTheme })
     saveTheme(theme)
     api.emit(THEME_EVENT, theme)
@@ -257,6 +198,18 @@ function openMovedPart(api: API) {
   if (moved) api.navigate(`/${viewMode ?? "docs"}/${moved}`)
   return Boolean(moved)
 }
+
+addons.register("fibo/manager-bridge", (api) => {
+  window.__FIBO_MANAGER__ = {
+    getIndex: () => api.getIndex()?.entries ?? {},
+    onIndex: (listener) => {
+      api.on(SET_INDEX, listener)
+      return () => api.off(SET_INDEX, listener)
+    },
+    navigate: (path) => api.navigate(path),
+  }
+  window.dispatchEvent(new Event(BRIDGE_READY))
+})
 
 addons.register("fibo/moved-parts", (api) => {
   api.on(SET_INDEX, () => openMovedPart(api))

@@ -79,3 +79,6 @@ brand/kit/img/
 
 # vitest browser failure screenshots
 .vitest
+
+# storybook: built by apps/storybook/vite.manager.config.ts
+apps/storybook/public/fibo-manager/

@@ -6,5 +6,5 @@ import { config } from "@workspace/eslint-config/react-internal"
 export default [
   ...config,
   ...storybook.configs["flat/recommended"],
-  { ignores: ["storybook-static/**"] },
+  { ignores: ["storybook-static/**", "public/fibo-manager/**"] },
 ]
