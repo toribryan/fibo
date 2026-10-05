@@ -287,6 +287,35 @@ async function shipLib(name) {
   return file
 }
 
+// The dependency rule from AGENTS.md. A base part may also take the packages
+// its plan names; a special part may add motion.
+const BASE_DEPENDENCIES = [
+  "@base-ui/react",
+  "class-variance-authority",
+  "lucide-react",
+]
+const NAMED_EXCEPTIONS = {
+  "data-table": ["@tanstack/react-table", "@tanstack/react-store"],
+  "rich-text-editor": [
+    "@tiptap/react",
+    "@tiptap/starter-kit",
+    "@tiptap/extensions",
+  ],
+}
+function checkDependencies(name, tier, dependencies) {
+  const allowed = new Set([
+    ...BASE_DEPENDENCIES,
+    ...(NAMED_EXCEPTIONS[name] ?? []),
+    ...(tier === "special-components" ? ["motion"] : []),
+  ])
+  const extra = [...dependencies].filter((pkg) => !allowed.has(pkg))
+  if (extra.length) {
+    throw new Error(
+      `${name} imports ${extra.join(", ")}, which a ${tier} part may not depend on. See "Two shelves" in AGENTS.md.`
+    )
+  }
+}
+
 const items = []
 for (const file of files) {
   const name = file.replace(/\.tsx$/, "")
@@ -317,6 +346,8 @@ for (const file of files) {
       if (pkg !== "react" && pkg !== "react-dom") dependencies.add(pkg)
     }
   }
+
+  checkDependencies(name, info.tier, dependencies)
 
   const transformed = rewrites.reduce(
     (code, [pattern, replacement]) => code.replace(pattern, replacement),
