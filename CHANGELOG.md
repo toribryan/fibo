@@ -10,6 +10,10 @@ has the same history with links into the docs.
 
 ### Added
 
+- Input group: `InputGroup`, `InputGroupAddon` and `InputGroupInput`, an
+  input with an icon, text or button beside it. `variant="ghost"` drops the
+  border for a search at the top of a menu. Command menu, Filter menu and
+  Data table draw their searches with it.
 - Separator: a rule across or down, and with children a labelled rule.
   Message list's day dividers and Data table's bulk actions use it.
 - Progress `type="circle"` with `size` `xs` to `lg`: a ring in the text
