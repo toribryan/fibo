@@ -210,4 +210,19 @@ describe("Calendar", () => {
       first!.getBoundingClientRect().right
     )
   })
+
+  it("keeps two months side by side when the caller pads it", async () => {
+    await page.viewport(1200, 900)
+    const screen = await render(
+      <div style={{ display: "flex" }}>
+        <Calendar months={2} defaultMonth={october} className="p-3" />
+      </div>
+    )
+    const [first, second] = screen.container.querySelectorAll(
+      '[data-slot="calendar-month"]'
+    )
+    expect(second!.getBoundingClientRect().top).toBe(
+      first!.getBoundingClientRect().top
+    )
+  })
 })
