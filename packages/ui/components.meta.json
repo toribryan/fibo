@@ -21,6 +21,13 @@
     "group": "Actions",
     "figma": "169-12"
   },
+  "calendar": {
+    "title": "Calendar",
+    "description": "A month grid for picking a day or a range, with full keyboard use; pages side by side or scrolls on phones.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new"
+  },
   "chapter-scrubber": {
     "title": "Chapter scrubber",
     "description": "A rail of marks that swell under the pointer like the Dock, previewing the chapter at the crest.",
@@ -102,7 +109,6 @@
     "description": "An input with an icon, text or button beside it, drawn as one field.",
     "tier": "base-components",
     "group": "Forms",
-    "status": "new",
     "figma": "707-59"
   },
   "integration-visual": {
@@ -208,7 +214,6 @@
     "description": "A thin rule between groups of content, across or down, with an optional label.",
     "tier": "base-components",
     "group": "Display",
-    "status": "new",
     "figma": "704-2"
   },
   "sheet": {

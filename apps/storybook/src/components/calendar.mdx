@@ -1,0 +1,355 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/calendar.stories"
+import { Calendar } from "../../../../packages/ui/src/components/calendar"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Calendar
+
+A month grid for picking one day or a range. It works on its own on a page,
+and it's the grid inside Date picker and Date range picker.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- `mode="range"` picks a start and an end. The range is drawn as one bar
+  per week, and while the second day is chosen it previews under the
+  pointer or the keyboard.
+- The whole keyboard model of a date grid: arrows by day and week, Home and
+  End, Page Up and Page Down by month, Shift for a year.
+- Bounds and rules: `minDate`, `maxDate` and `isDateDisabled`, with the
+  week starting on Sunday or Monday and names in any locale.
+- `type="scroll"` stacks a year either side in one vertical scroll with
+  44 pixel days, for a drawer on a phone.
+
+## Installation
+
+<Install name="calendar" exports={["Calendar"]} />
+
+It installs Button with it, and `lib/dates.ts`, the date helpers it uses.
+`useToday` is exported too.
+
+## Examples
+
+### Range
+
+Two months side by side. The first pick sets the start, and the bar
+follows the pointer until the second; picking an earlier day orders the
+range. Where there isn't room for two months side by side, they stack;
+the days never shrink below their size.
+
+<Canvas of={Stories.Range} />
+
+### Disabled days
+
+Days before `minDate`, after `maxDate` or rejected by `isDateDisabled` are
+struck through and can't be picked. They still take focus, so the keyboard
+walks through them.
+
+<Canvas of={Stories.DisabledDays} />
+
+### Week starts Monday
+
+`weekStartsOn={1}` puts Monday in the first column. Home and End follow it.
+
+<Canvas of={Stories.WeekStartsMonday} />
+
+### Locale
+
+Month names, weekdays and day numbers come from `Intl` in the `locale`
+given.
+
+<Canvas of={Stories.Locale} />
+
+## Usage
+
+```tsx
+import { Calendar } from "@/components/ui/calendar"
+
+export function Availability() {
+  const [range, setRange] = useState<{ from: Date; to?: Date } | null>(null)
+  return (
+    <Calendar
+      mode="range"
+      months={2}
+      value={range}
+      onChange={setRange}
+      minDate={new Date()}
+    />
+  )
+}
+```
+
+In range mode `onChange` fires after each pick: with only `from` after the
+first, with both after the second. Wait for `to` before you act on it.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Calendar",
+    slot: "calendar",
+    note: "The whole calendar, paged or scrolling.",
+    children: [
+      {
+        name: "months",
+        slot: "calendar-months",
+        note: "Paged only. The months on screen; slides when the page turns.",
+        children: [
+          {
+            name: "month",
+            slot: "calendar-month",
+            children: [
+              { name: "title", slot: "calendar-month-title" },
+              {
+                name: "grid",
+                slot: "calendar-grid",
+                note: "A grid labelled by the title, one row per week.",
+                children: [
+                  {
+                    name: "range bar",
+                    slot: "calendar-range-bar",
+                    note: "One per week row the range crosses.",
+                  },
+                  {
+                    name: "day",
+                    slot: "calendar-day",
+                    note: "A button in each cell, named with the full date.",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      { name: "previous", slot: "calendar-previous", note: "Paged only." },
+      { name: "next", slot: "calendar-next", note: "Paged only." },
+      {
+        name: "weekdays",
+        slot: "calendar-weekdays",
+        note: "Scroll only. The weekday header that stays put above the scroll.",
+      },
+      {
+        name: "scroll",
+        slot: "calendar-scroll",
+        note: "Scroll only. Holds the stacked months.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use Calendar on its own when the dates are the content, such as availability on a booking page. In a form, use Date picker so the field takes one line until it's needed.",
+    "Show two months for a range that often crosses a month end, such as a stay or a report period. One is enough for a single day.",
+    <>
+      Set bounds with <code>minDate</code> and <code>maxDate</code> rather than
+      rejecting a pick after the fact.
+    </>,
+    "Start the week where your readers do: Monday in most of Europe, Sunday in the US.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Calendar
+            defaultMonth={new Date(2026, 9, 1)}
+            minDate={new Date(2026, 9, 5)}
+          />
+        ),
+        description:
+          "Do disable the days that can't be picked, so people see the rule before they try.",
+      },
+      negative: {
+        component: (
+          <div className="flex flex-col items-center gap-2">
+            <Calendar
+              defaultMonth={new Date(2026, 9, 1)}
+              defaultValue={new Date(2026, 9, 2)}
+            />
+            <p className="text-sm text-destructive">
+              Pick a day from October 5.
+            </p>
+          </div>
+        ),
+        description:
+          "Don't let them pick it and then explain why it was wrong.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="calendar"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="calendar-previous"',
+      element: "The previous month button",
+      when: "Paged only. Before the months, so it's first in the focus order.",
+    },
+    {
+      attribute: 'data-slot="calendar-next"',
+      element: "The next month button",
+      when: "Paged only.",
+    },
+    {
+      attribute: 'data-slot="calendar-months"',
+      element: "The months on screen",
+      when: "Paged only.",
+    },
+    {
+      attribute: 'data-slot="calendar-weekdays"',
+      element: "The weekday header above the scroll",
+      when: "Scroll only.",
+    },
+    {
+      attribute: 'data-slot="calendar-scroll"',
+      element: "The scrolling list of months",
+      when: "Scroll only.",
+    },
+    {
+      attribute: 'data-slot="calendar-month"',
+      element: "Each month",
+      when: "One per month shown.",
+    },
+    {
+      attribute: 'data-slot="calendar-month-title"',
+      element: "A month's title, which labels its grid",
+      when: "One per month.",
+    },
+    {
+      attribute: 'data-slot="calendar-grid"',
+      element: "A month's grid",
+      when: "One per month.",
+    },
+    {
+      attribute: 'data-slot="calendar-range-bar"',
+      element: "The bar behind a week's days in range",
+      when: "Range mode, one per week row the range or its preview crosses.",
+    },
+    {
+      attribute: 'data-slot="calendar-day"',
+      element: "Each day button",
+      when: "One per day of the month.",
+    },
+    {
+      attribute: "data-type",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>paged</code> or <code>scroll</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-size",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>default</code> or <code>lg</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-slide",
+      element: "The months",
+      when: (
+        <>
+          After a page turn: <code>next</code> or <code>previous</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-focus-month",
+      element: "A month",
+      when: "It holds the day with the tab stop. A scroll calendar opens scrolled to it.",
+    },
+    {
+      attribute: "data-date",
+      element: "A day",
+      when: (
+        <>
+          Always, as <code>2026-10-05</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-today",
+      element: "A day",
+      when: "It's today.",
+    },
+    {
+      attribute: "data-selected",
+      element: "A day",
+      when: "It's the picked day, or either end of the range.",
+    },
+    {
+      attribute: "data-range-start, data-range-end",
+      element: "A day",
+      when: "Range mode, at the ends of the range or its preview.",
+    },
+    {
+      attribute: "data-in-range",
+      element: "A day",
+      when: "Range mode, between the ends.",
+    },
+    {
+      attribute: "data-preview",
+      element: "A day or a range bar",
+      when: "The day or bar shows where the range would end, before the second pick.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "A day",
+      when: "It can't be picked.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "Each month is a grid labelled by its title. Column headers carry the full weekday name, and each day button the full date, such as Tuesday, October 20, 2026.",
+    "The grid is one tab stop. Arrows move by a day or a week, Home and End to the ends of the week, Page Up and Page Down by a month, and with Shift by a year. Moving past the page turns it.",
+    "Enter or Space picks the focused day. The picked days' cells are aria-selected, and today is aria-current.",
+    "Days that can't be picked are aria-disabled rather than disabled, so they stay in the keyboard path and are announced as unavailable.",
+    "In range mode a polite live region says what happened: the start and that an end is needed, then the range and its length.",
+    "The page slide fades in and is off under reduced motion.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Date picker", "Field", "Sheet"]} />
+
+## References
+
+- [WAI-ARIA date picker dialog example](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/examples/datepicker-dialog/),
+  for the grid's keyboard model and roles
+- [`Intl.DateTimeFormat`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat),
+  for names and `formatRange`
