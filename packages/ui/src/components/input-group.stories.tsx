@@ -11,7 +11,6 @@ import { Kbd } from "./kbd.js"
 const meta: Meta<typeof InputGroup> = {
   title: "Base components/Forms/Input group",
   component: InputGroup,
-  tags: ["new"],
   argTypes: {
     variant: { control: "inline-radio", options: ["default", "ghost"] },
     size: { control: "inline-radio", options: ["sm", "default"] },

@@ -5,6 +5,7 @@ import {
   ArrowUpRightIcon,
   AtSignIcon,
   BoldIcon,
+  CalendarIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -122,6 +123,40 @@ const PREVIEWS: Record<string, ReactNode> = {
       <Checkbox defaultChecked />
       <span className="text-sm">Remember me</span>
     </div>
+  ),
+  calendar: (
+    <span className="flex flex-col gap-1 text-[10px] tabular-nums">
+      <span className="text-center text-xs font-medium">October</span>
+      {[
+        [null, null, null, null, 1, 2, 3],
+        [4, 5, 6, 7, 8, 9, 10],
+        [11, 12, 13, 14, 15, 16, 17],
+      ].map((week, row) => (
+        <span key={row} className="relative grid grid-cols-7">
+          {row === 1 ? (
+            <span className="absolute inset-y-0 right-[21.43%] left-[35.71%] bg-secondary" />
+          ) : null}
+          {week.map((day, col) => (
+            <span
+              key={col}
+              className={cn(
+                "relative flex size-6 items-center justify-center rounded-full",
+                (day === 6 || day === 9) && "bg-primary text-primary-foreground"
+              )}
+            >
+              {day}
+            </span>
+          ))}
+        </span>
+      ))}
+    </span>
+  ),
+  "date-picker": (
+    <span className="flex h-8 w-52 items-center gap-2 rounded-sm border border-input bg-input-subtle px-3 text-sm">
+      <CalendarIcon className="size-4 text-muted-foreground" />
+      <span className="flex-1">Oct 6 – 9, 2026</span>
+      <ChevronDownIcon className="size-4 text-muted-foreground" />
+    </span>
   ),
   "empty-state": (
     <span className="flex flex-col items-center gap-2">
