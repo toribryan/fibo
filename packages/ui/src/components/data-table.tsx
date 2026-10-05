@@ -78,6 +78,7 @@ import {
   EmptyStateTitle,
 } from "@workspace/ui/components/empty-state"
 import { Separator } from "@workspace/ui/components/separator"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   InputGroup,
   InputGroupAddon,
@@ -575,6 +576,7 @@ type DataTableContextValue = {
   cards: boolean
   narrowLayout: DataTableNarrowLayout
   empty: React.ReactNode
+  loading: boolean
 }
 
 const DataTableContext = React.createContext<DataTableContextValue | null>(null)
@@ -786,6 +788,8 @@ type DataTableProps<TData extends RowData = RowData> = Omit<
   narrowLayout?: DataTableNarrowLayout
   /** Shown in place of the rows when there are none. Defaults to DataTableEmpty. */
   empty?: React.ReactNode
+  /** Shows skeleton rows in place of the body while the data loads. */
+  loading?: boolean
   /**
    * The ids of the rows on this page, in the order they're shown.
    * @deprecated Pass `table` from useDataTable; its data sets the rows.
@@ -1047,6 +1051,7 @@ function DataTableRoot({
   onShowSelectedOnlyChange,
   narrowLayout = "scroll",
   empty,
+  loading = false,
   children,
   ...props
 }: RootProps &
@@ -1202,6 +1207,7 @@ function DataTableRoot({
       cards,
       narrowLayout,
       empty: empty === undefined ? <DataTableEmpty /> : empty,
+      loading,
     }),
     [
       table,
@@ -1217,6 +1223,7 @@ function DataTableRoot({
       cards,
       narrowLayout,
       empty,
+      loading,
     ]
   )
 
@@ -1883,7 +1890,7 @@ function DataTableContent({
   children,
   ...props
 }: React.ComponentProps<typeof Table>) {
-  const { cards, narrowLayout } = useDataTableRoot()
+  const { cards, narrowLayout, loading } = useDataTableRoot()
   const tableRef = React.useRef<HTMLTableElement>(null)
 
   // Scroll shadows: mark the edges a pinned column covers while there's more
@@ -1920,6 +1927,7 @@ function DataTableContent({
     <Table
       ref={tableRef}
       data-slot="data-table-content"
+      aria-busy={loading || undefined}
       className={cn(
         "table-fixed",
         // Before the first measurement, CSS keeps a narrow cards table from
@@ -2157,12 +2165,13 @@ function useRowModelInputs() {
 }
 
 function ModelRows() {
-  const { table, empty } = useDataTableRoot()
+  const { table, empty, loading } = useDataTableRoot()
   const inputs = useRowModelInputs()
   // TanStack keeps a row's object until the data changes, so new columns or
   // a new lockedReason over the same data have to reach the memo as props.
   const columns = table.getVisibleLeafColumns()
   const lockedReason = table.options.meta?.lockedReason
+  if (loading) return <DataTableSkeleton />
   const { rows } = table.getRowModel()
   if (rows.length === 0) {
     return empty ? (
@@ -2462,11 +2471,12 @@ function DataTableCards({
   /** Cards written by hand, or a function that renders one for each row. */
   children?: React.ReactNode | ((row: DataTableAnyRow) => React.ReactNode)
 }) {
-  const { cards } = useDataTableRoot()
+  const { cards, loading } = useDataTableRoot()
   if (!cards) return null
   return (
     <ul
       data-slot="data-table-cards"
+      aria-busy={loading || undefined}
       className={cn("flex flex-col", className)}
       {...props}
     >
@@ -2484,8 +2494,9 @@ function ModelCards({
 }: {
   render?: (row: DataTableAnyRow) => React.ReactNode
 }) {
-  const { table, empty } = useDataTableRoot()
+  const { table, empty, loading } = useDataTableRoot()
   useRowModelInputs()
+  if (loading) return <DataTableSkeleton />
   const { rows } = table.getRowModel()
   if (rows.length === 0) {
     return empty ? <li data-slot="data-table-empty-card">{empty}</li> : null
@@ -2651,6 +2662,131 @@ function DataTableCardField({
   )
 }
 
+// Varied so the rows read as text rather than a grid of equal bars.
+const SKELETON_WIDTHS = ["w-3/4", "w-1/2", "w-2/3", "w-2/5"]
+
+/**
+ * Placeholder rows shaped like the visible columns, or placeholder cards
+ * on a narrow cards table. The body and the cards show it while `loading`
+ * is set; a hand-written body can render it too. Hidden from screen
+ * readers: the table is aria-busy instead.
+ */
+function DataTableSkeleton({
+  rows = 5,
+}: {
+  /** How many placeholder rows or cards. */
+  rows?: number
+}) {
+  const { table, cards } = useDataTableRoot()
+  useRowModelInputs()
+  const columns = table.getVisibleLeafColumns()
+  const indexes = Array.from({ length: rows }, (_, i) => i)
+
+  if (cards) {
+    // As many fields as ModelCard lays out, so the cards keep their height
+    // when the data arrives.
+    const typeOf = (column: DataTableAnyColumn) =>
+      column.columnDef.meta?.type ?? "text"
+    const title =
+      columns.find((column) =>
+        ["primary", "person"].includes(typeOf(column))
+      ) ?? columns[0]
+    const fields = columns.filter(
+      (column) =>
+        column !== title &&
+        typeOf(column) !== "status" &&
+        typeOf(column) !== "actions"
+    ).length
+    return indexes.map((i) => (
+      <li
+        key={i}
+        aria-hidden="true"
+        data-slot="data-table-skeleton"
+        className="flex gap-3 border-b border-border p-3 last:border-b-0"
+      >
+        <span className="flex pt-0.5">
+          <Skeleton className="size-4 rounded-sm" />
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
+          <div className="flex h-6 items-center gap-2">
+            {title && typeOf(title) === "person" ? (
+              <Skeleton className="size-6 shrink-0 rounded-full" />
+            ) : null}
+            <Skeleton className={cn("h-3.5", SKELETON_WIDTHS[i % 4])} />
+          </div>
+          {fields ? (
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+              {Array.from({ length: fields }, (_, j) => (
+                <div key={j} className="flex flex-col">
+                  <div className="flex h-4 items-center">
+                    <Skeleton className="h-2.5 w-12" />
+                  </div>
+                  <div className="flex h-5 items-center">
+                    <Skeleton className="h-3.5 w-20" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      </li>
+    ))
+  }
+
+  return indexes.map((i) => (
+    <TableRow
+      key={i}
+      aria-hidden="true"
+      data-slot="data-table-skeleton"
+      className="[tbody>&]:hover:bg-background"
+    >
+      <TableCell className={selectColumnClasses}>
+        <Skeleton className="size-4 rounded-sm" />
+      </TableCell>
+      {columns.map((column, j) => {
+        const type = column.columnDef.meta?.type ?? "text"
+        const pinned = pinnedOf(column)
+        return (
+          <TableCell
+            key={column.id}
+            data-type={type}
+            data-pinned={pinned === "none" ? undefined : pinned}
+            className={cn(
+              pinnedClasses[pinned],
+              column.columnDef.meta?.className
+            )}
+          >
+            <div
+              className={cn(
+                // The heights of an avatar and of a row's action button,
+                // so the rows keep their height when the data arrives.
+                "flex h-6 items-center gap-2",
+                type === "actions" && "h-8",
+                (type === "numeric" || type === "actions") && "justify-end"
+              )}
+            >
+              {type === "person" ? (
+                <Skeleton className="size-6 shrink-0 rounded-full" />
+              ) : null}
+              {type === "status" ? (
+                <Skeleton className="h-5 w-16 rounded-full" />
+              ) : type === "actions" ? (
+                <Skeleton className="size-6" />
+              ) : type === "numeric" ? (
+                <Skeleton className="h-3.5 w-10" />
+              ) : (
+                <Skeleton
+                  className={cn("h-3.5", SKELETON_WIDTHS[(i + j) % 4])}
+                />
+              )}
+            </div>
+          </TableCell>
+        )
+      })}
+    </TableRow>
+  ))
+}
+
 /**
  * What a table with no rows shows. With a search or filter on, it says
  * nothing matched and offers to clear them; otherwise it says there are no
@@ -2789,6 +2925,7 @@ export {
   DataTableCardField,
   DataTableCards,
   DataTableEmpty,
+  DataTableSkeleton,
   DataTableCell,
   DataTableColumns,
   DataTableContent,

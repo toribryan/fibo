@@ -755,6 +755,56 @@ export const Empty: Story = {
   },
 }
 
+function LoadingTables(args: Partial<MembersTableProps>) {
+  const [loading, setLoading] = React.useState(true)
+  return (
+    <div className="flex flex-col items-start gap-4">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setLoading((value) => !value)}
+      >
+        {loading ? "Finish loading" : "Load again"}
+      </Button>
+      <div className="flex w-full flex-wrap items-start gap-6">
+        <MembersTable
+          {...args}
+          loading={loading}
+          toolbar={<MembersToolbar />}
+          className="min-w-0 flex-1"
+        />
+        <div className="w-[375px]">
+          <MembersTable
+            {...args}
+            loading={loading}
+            narrowLayout="cards"
+            aria-label="Members, narrow"
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const Loading: Story = {
+  render: (args) => <LoadingTables {...args} />,
+  play: async ({ canvas, userEvent }) => {
+    const table = canvas.getByRole("table")
+    await expect(table).toHaveAttribute("aria-busy", "true")
+    // Placeholder rows are hidden, so only the header row is exposed.
+    await expect(within(table).getAllByRole("row")).toHaveLength(1)
+    await expect(canvas.queryByText("No members yet")).toBeNull()
+
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Finish loading" })
+    )
+    await expect(table).not.toHaveAttribute("aria-busy")
+    await expect(
+      within(table).getByRole("checkbox", { name: "Select Priya Raman" })
+    ).toBeInTheDocument()
+  },
+}
+
 export const ColumnVisibility: Story = {
   name: "Column visibility and pinning",
   render: (args) => (
