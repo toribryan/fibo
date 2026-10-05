@@ -10,7 +10,6 @@ import { RichTextEditor, type RichTextEditorTool } from "./rich-text-editor.js"
 const meta: Meta<typeof RichTextEditor> = {
   title: "Base components/Forms/Rich text editor",
   component: RichTextEditor,
-  tags: ["new"],
   argTypes: {
     placeholder: { control: "text" },
     label: { control: "text" },

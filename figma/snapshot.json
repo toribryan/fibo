@@ -650,6 +650,19 @@
       "count": "BOOLEAN",
       "state": ["default", "focused", "invalid", "disabled", "read only"]
     },
-    "Rich text editor link row": {}
+    "Rich text editor link row": {},
+    "Tabs trigger": {
+      "label": "TEXT",
+      "icon": "BOOLEAN",
+      "iconSwap": "INSTANCE_SWAP",
+      "variant": ["default", "line"],
+      "size": ["sm", "default"],
+      "state": ["default", "selected", "disabled"]
+    },
+    "Tabs": {
+      "variant": ["default", "line"],
+      "size": ["sm", "default"],
+      "orientation": ["horizontal", "vertical"]
+    }
   }
 }
