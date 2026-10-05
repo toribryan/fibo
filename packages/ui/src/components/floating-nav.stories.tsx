@@ -46,6 +46,35 @@ function Feed() {
   )
 }
 
+// Busy content right under the bar, so the glass has something to bend.
+function Gallery() {
+  return (
+    <div className="flex h-full flex-col gap-3 p-5 pt-8">
+      <span className="text-lg font-semibold">Library</span>
+      <div className="grid flex-1 grid-cols-3 gap-1.5">
+        {Array.from({ length: 15 }, (_, i) => (
+          <span
+            key={i}
+            className={
+              [
+                "bg-foreground",
+                "bg-muted-foreground",
+                "bg-muted",
+                "bg-border",
+                "bg-primary",
+              ][(i * 2) % 5] + " rounded-md"
+            }
+          />
+        ))}
+      </div>
+      <p className="m-0 text-sm text-muted-foreground">
+        The golden section turns up in seed heads, shells and the spiral of a
+        rabbit population, each term the sum of the two before.
+      </p>
+    </div>
+  )
+}
+
 const meta: Meta<typeof FloatingNav> = {
   title: "Special components/Floating nav",
   component: FloatingNav,
@@ -57,6 +86,7 @@ const meta: Meta<typeof FloatingNav> = {
     labels: { control: "inline-radio", options: ["active", "always"] },
     size: { control: "inline-radio", options: ["sm", "default"] },
     position: { control: "inline-radio", options: ["fixed", "static"] },
+    variant: { control: "inline-radio", options: ["default", "glass"] },
     hideOnScroll: { control: "boolean" },
     defaultValue: {
       control: "select",
@@ -72,6 +102,7 @@ const meta: Meta<typeof FloatingNav> = {
     size: "default",
     position: "fixed",
     hideOnScroll: false,
+    variant: "default",
     defaultValue: "home",
     onValueChange: fn(),
   },
@@ -82,7 +113,12 @@ const meta: Meta<typeof FloatingNav> = {
       if (parameters.frame === "none") return <Story />
       return (
         <Phone>
-          {parameters.frame === "empty" ? null : <Feed />}
+          {parameters.frame === "empty" ? null : parameters.frame ===
+            "gallery" ? (
+            <Gallery />
+          ) : (
+            <Feed />
+          )}
           <Story />
         </Phone>
       )
@@ -116,6 +152,22 @@ export const Default: Story = {
       await userEvent.keyboard("{Enter}")
       await waitFor(() => expect(saved).toHaveAttribute("aria-current", "true"))
     })
+  },
+}
+
+export const Glass: Story = {
+  name: "Liquid glass",
+  args: { variant: "glass" },
+  parameters: { frame: "gallery" },
+  play: async ({ canvas, canvasElement }) => {
+    const explore = canvas.getByRole("button", { name: "Explore" })
+    await userEvent.click(explore)
+    await expect(explore).toHaveAttribute("aria-current", "true")
+    // The surface is decoration: hidden, so the list still holds four items.
+    await expect(
+      canvasElement.querySelector('[data-slot="floating-nav-glass"]')
+    ).toHaveAttribute("aria-hidden", "true")
+    await expect(canvas.getAllByRole("listitem")).toHaveLength(4)
   },
 }
 

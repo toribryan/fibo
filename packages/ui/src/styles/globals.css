@@ -21,6 +21,9 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-popover-overlay: var(--popover-overlay);
   --color-backdrop: var(--backdrop);
+  --color-glass: var(--glass);
+  --color-glass-edge: var(--glass-edge);
+  --color-glass-lens: var(--glass-lens);
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -172,6 +175,10 @@
   --popover-foreground: var(--color-neutral-950);
   --popover-overlay: color-mix(in oklch, var(--color-white) 85%, transparent);
   --backdrop: color-mix(in oklch, var(--color-neutral-950) 20%, transparent);
+  /* Liquid glass: a clear tint, a bright rim, and the lens on a current item. */
+  --glass: color-mix(in oklch, var(--color-neutral-50) 20%, transparent);
+  --glass-edge: color-mix(in oklch, var(--color-white) 85%, transparent);
+  --glass-lens: color-mix(in oklch, var(--color-neutral-900) 10%, transparent);
 
   --primary: var(--color-neutral-900);
   --primary-foreground: var(--color-neutral-50);
@@ -293,6 +300,9 @@
     transparent
   );
   --backdrop: color-mix(in oklch, var(--color-black) 60%, transparent);
+  --glass: color-mix(in oklch, var(--color-neutral-950) 20%, transparent);
+  --glass-edge: color-mix(in oklch, var(--color-white) 15%, transparent);
+  --glass-lens: color-mix(in oklch, var(--color-white) 10%, transparent);
 
   --primary: var(--color-neutral-50);
   --primary-foreground: var(--color-neutral-900);

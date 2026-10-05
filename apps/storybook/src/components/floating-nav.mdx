@@ -37,6 +37,8 @@ while people read.
   takes focus.
 - Items are links or buttons, controlled or uncontrolled, so it works with any
   router.
+- `variant="glass"` turns it into Apple's liquid glass: a clear bar that bends
+  the page behind its edges, with a glass lens on the current item.
 
 It is also how this site gets around on a phone: open fibo.toribryan.com on
 one and the bar replaces Storybook's own.
@@ -45,12 +47,27 @@ one and the bar replaces Storybook's own.
 
 <Install
   name="floating-nav"
-  exports={["FloatingNav", "floatingNavItemVariants", "type FloatingNavItem"]}
+  exports={[
+    "FloatingNav",
+    "floatingNavVariants",
+    "floatingNavItemVariants",
+    "type FloatingNavItem",
+  ]}
 />
 
 It installs `motion` with it, for the indicator and the slide.
 
 ## Examples
+
+### Liquid glass
+
+`variant="glass"` draws the bar as liquid glass. A lightly blurred, tinted
+layer and a bright rim work in every browser. In Chromium the page behind the
+rim also bends, through an SVG displacement filter sized to the bar; Safari and
+Firefox keep the blur and rim. The current item sits under a glass lens that
+overshoots a little as it lands, and the bar swells a touch under a finger.
+
+<Canvas of={Stories.Glass} />
 
 ### Labels always shown
 
@@ -243,6 +260,15 @@ Style parts by slot or state, for example with
       when: "Always.",
     },
     {
+      attribute: 'data-slot="floating-nav-glass"',
+      element: "The glass surface, under the items",
+      when: (
+        <>
+          <code>variant="glass"</code>.
+        </>
+      ),
+    },
+    {
       attribute: "data-current",
       element: "An item",
       when: "It is the current destination.",
@@ -277,6 +303,15 @@ Style parts by slot or state, for example with
       ),
     },
     {
+      attribute: "data-variant",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>default</code> or <code>glass</code>.
+        </>
+      ),
+    },
+    {
       attribute: "data-size",
       element: "The root",
       when: (
@@ -302,6 +337,7 @@ Style parts by slot or state, for example with
       labels stay in the DOM, so every item keeps its name.
     </>,
     "Items are plain links and buttons in the tab order. Tabbing into a hidden bar brings it back.",
+    "Glass shows the page through it, so its labels' contrast depends on what scrolls beneath. Use it over images and media, and the default bar over dense text.",
     'Every item is at least 44px square, or 36px with size="sm", well above the 24px minimum target. With reduced motion the indicator and the bar move without animating.',
   ]}
 />
