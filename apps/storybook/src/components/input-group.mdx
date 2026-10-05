@@ -1,0 +1,218 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+import { SearchIcon } from "lucide-react"
+
+import * as Stories from "../../../../packages/ui/src/components/input-group.stories"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../../../../packages/ui/src/components/input-group"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Input group
+
+An input with an icon, text or button beside it, drawn as one field.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Addons at the start or end hold an icon, text, a Kbd or a Button.
+  Pressing an addon focuses the input.
+- The group draws the border, focus ring and invalid state, so they wrap
+  the addons too.
+- `variant="ghost"` drops the border for a search at the top of a menu.
+- The input is Base UI's Input, so a Field around the group labels,
+  describes and validates it. `render` swaps in another input, such as an
+  Autocomplete's.
+
+## Installation
+
+<Install
+  name="input-group"
+  exports={["InputGroup", "InputGroupAddon", "InputGroupInput"]}
+/>
+
+## Examples
+
+### Small
+
+`size="sm"` matches a small Button or Select, as in a toolbar. Inside a
+FieldGroup it takes the group's size.
+
+<Canvas of={Stories.Small} />
+
+### Ghost, in a menu
+
+No border or background: the popup is the field. Command menu and Filter
+menu draw their searches this way.
+
+<Canvas of={Stories.Ghost} />
+
+### With a button
+
+An end addon with an icon button clears the search. Name the button.
+
+<Canvas of={Stories.WithAButton} />
+
+### In a field
+
+The Field's label, description and invalid state reach the input inside
+the group.
+
+<Canvas of={Stories.InAField} />
+
+## Usage
+
+```tsx
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+
+export function Search() {
+  return (
+    <InputGroup>
+      <InputGroupAddon>
+        <SearchIcon />
+      </InputGroupAddon>
+      <InputGroupInput type="search" aria-label="Search" />
+    </InputGroup>
+  )
+}
+```
+
+Put the label outside the group, in a FieldLabel or `aria-label`. An icon
+in an addon is decoration, not a name.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "InputGroup",
+    slot: "input-group",
+    note: "Draws the field: border, focus ring and invalid state.",
+    children: [
+      {
+        name: "InputGroupAddon",
+        slot: "input-group-addon",
+        note: "An icon, text or button at the start or end.",
+      },
+      {
+        name: "InputGroupInput",
+        slot: "input-group-control",
+        note: "The input, with no border of its own.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "One addon on each side at most. More reads as a toolbar, not a field.",
+    "Use a leading icon only when it says what the field is for, such as search or a handle's @.",
+    "Use the ghost variant only where the surface around it marks the field, such as a popup's header.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <InputGroup className="w-56">
+            <InputGroupAddon>
+              <SearchIcon aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput aria-label="Search" placeholder="Search" />
+          </InputGroup>
+        ),
+        description: "Draw the icon inside the group, so the ring wraps it.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 items-center gap-2">
+            <SearchIcon className="size-4 text-muted-foreground" />
+            <InputGroup>
+              <InputGroupInput aria-label="Search" placeholder="Search" />
+            </InputGroup>
+          </div>
+        ),
+        description: "Don't set an icon outside the field it belongs to.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="input-group"',
+      element: "The group",
+      when: "Always.",
+    },
+    {
+      attribute: "data-variant",
+      element: "The group",
+      when: (
+        <>
+          Always. <code>default</code> or <code>ghost</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-size",
+      element: "The group",
+      when: (
+        <>
+          Always. <code>sm</code> or <code>default</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-align",
+      element: "An addon",
+      when: (
+        <>
+          Always. <code>inline-start</code> or <code>inline-end</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="input-group-control"',
+      element: "The input",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The group has the group role; the input needs its own name, from a FieldLabel or aria-label.",
+    "Hide decorative icons in addons with aria-hidden.",
+    "Pressing an addon moves focus to the input without blurring it first, so the caret stays put. Buttons in an addon work as usual.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Input", "Field", "Command menu"]} />

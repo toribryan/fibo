@@ -9,6 +9,11 @@ import { ChevronLeftIcon, ChevronRightIcon, SearchIcon } from "lucide-react"
 
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@workspace/ui/components/input-group"
 import { Kbd, KbdGroup } from "@workspace/ui/components/kbd"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -528,43 +533,44 @@ function CommandMenu({
             autoHighlight="always"
             keepHighlight
           >
-            <div
+            <InputGroup
+              variant="ghost"
               data-slot="command-menu-search"
               className={cn(
-                "flex h-12 shrink-0 items-center gap-2 px-3",
+                "h-12 shrink-0",
                 variant === "default" && "border-b border-border"
               )}
             >
-              {page ? (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    data-slot="command-menu-back"
-                    aria-label={text.back(parent ? parent.label : text.home)}
-                    onClick={() => {
-                      back()
-                      inputRef.current?.focus()
-                    }}
-                    className="text-muted-foreground"
-                  >
-                    <ChevronLeftIcon aria-hidden="true" className="size-4" />
-                  </Button>
-                  <Badge
-                    variant="secondary"
-                    data-slot="command-menu-breadcrumb"
-                    className="shrink-0 font-medium"
-                  >
-                    {page.label}
-                  </Badge>
-                </>
-              ) : (
-                <SearchIcon
-                  aria-hidden="true"
-                  className="mx-1 size-4 shrink-0 text-muted-foreground"
-                />
-              )}
-              <AutocompletePrimitive.Input
+              <InputGroupAddon className="has-[>button]:pl-3">
+                {page ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      data-slot="command-menu-back"
+                      aria-label={text.back(parent ? parent.label : text.home)}
+                      onClick={() => {
+                        back()
+                        inputRef.current?.focus()
+                      }}
+                      className="text-muted-foreground"
+                    >
+                      <ChevronLeftIcon aria-hidden="true" className="size-4" />
+                    </Button>
+                    <Badge
+                      variant="secondary"
+                      data-slot="command-menu-breadcrumb"
+                      className="shrink-0 font-medium"
+                    >
+                      {page.label}
+                    </Badge>
+                  </>
+                ) : (
+                  <SearchIcon aria-hidden="true" className="mx-1" />
+                )}
+              </InputGroupAddon>
+              <InputGroupInput
+                render={<AutocompletePrimitive.Input />}
                 ref={inputRef}
                 aria-label={page ? `${label}, ${page.label}` : label}
                 placeholder={page?.placeholder ?? placeholder}
@@ -575,9 +581,9 @@ function CommandMenu({
                     back()
                   }
                 }}
-                className="h-full min-w-0 flex-1 bg-transparent text-sm outline-hidden placeholder:text-muted-foreground"
+                className="text-sm"
               />
-            </div>
+            </InputGroup>
             <div
               data-slot="command-menu-body"
               className={cn(

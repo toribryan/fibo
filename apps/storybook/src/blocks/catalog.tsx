@@ -22,6 +22,11 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Input } from "@workspace/ui/components/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@workspace/ui/components/input-group"
 import { Kbd, KbdGroup } from "@workspace/ui/components/kbd"
 import { Label } from "@workspace/ui/components/label"
 import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
@@ -111,6 +116,14 @@ const PREVIEWS: Record<string, ReactNode> = {
     </div>
   ),
   input: <Input placeholder="you@example.com" className="w-48" />,
+  "input-group": (
+    <InputGroup className="w-48">
+      <InputGroupAddon>
+        <SearchIcon aria-hidden="true" />
+      </InputGroupAddon>
+      <InputGroupInput placeholder="Search" aria-label="Search" />
+    </InputGroup>
+  ),
   spinner: <Spinner size="lg" label="Spinner preview" />,
   label: (
     <div className="flex w-48 flex-col gap-1.5">

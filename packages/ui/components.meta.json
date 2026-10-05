@@ -53,8 +53,7 @@
     "title": "Count",
     "description": "A number at a glance: capped at 99+, shortened to 1.2K or signed as +4, read out in full.",
     "tier": "base-components",
-    "group": "Display",
-    "status": "new"
+    "group": "Display"
   },
   "data-table": {
     "title": "Data table",
@@ -91,6 +90,14 @@
     "tier": "base-components",
     "group": "Forms",
     "figma": "169-15"
+  },
+  "input-group": {
+    "title": "Input group",
+    "description": "An input with an icon, text or button beside it, drawn as one field.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new",
+    "figma": "707-59"
   },
   "integration-visual": {
     "title": "Integration visual",
