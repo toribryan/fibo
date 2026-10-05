@@ -215,6 +215,18 @@
         "Light": "alpha/neutral-950/20",
         "Dark": "alpha/black/60"
       },
+      "glass": {
+        "Light": "alpha/neutral-50/20",
+        "Dark": "alpha/neutral-950/20"
+      },
+      "glass-edge": {
+        "Light": "alpha/white/85",
+        "Dark": "alpha/white/15"
+      },
+      "glass-lens": {
+        "Light": "alpha/neutral-900/10",
+        "Dark": "alpha/white/10"
+      },
       "sticker-edge": {
         "Light": "base/white",
         "Dark": "base/white"
@@ -423,7 +435,8 @@
     },
     "Floating nav": {
       "labels": ["active", "always"],
-      "size": ["sm", "default"]
+      "size": ["sm", "default"],
+      "variant": ["default", "glass"]
     },
     "Floating nav item": {
       "label": "TEXT",
@@ -431,7 +444,8 @@
       "type": ["icon", "text"],
       "labels": ["active", "always"],
       "size": ["sm", "default"],
-      "state": ["default", "current"]
+      "state": ["default", "current"],
+      "variant": ["default", "glass"]
     },
     "Map pin": {
       "label": "TEXT",
