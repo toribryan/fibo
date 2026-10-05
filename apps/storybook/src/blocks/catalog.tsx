@@ -23,6 +23,10 @@ import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Input } from "@workspace/ui/components/input"
 import {
+  EmptyState,
+  EmptyStateTitle,
+} from "@workspace/ui/components/empty-state"
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
@@ -114,6 +118,16 @@ const PREVIEWS: Record<string, ReactNode> = {
       <Checkbox defaultChecked />
       <span className="text-sm">Remember me</span>
     </div>
+  ),
+  "empty-state": (
+    <span className="flex flex-col items-center gap-2">
+      <span className="flex size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+        <SearchIcon className="size-4" />
+      </span>
+      <EmptyState size="sm" className="p-0">
+        <EmptyStateTitle>No results</EmptyStateTitle>
+      </EmptyState>
+    </span>
   ),
   input: <Input placeholder="you@example.com" className="w-48" />,
   "input-group": (

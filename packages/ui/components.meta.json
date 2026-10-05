@@ -62,12 +62,19 @@
     "group": "Display",
     "figma": "230-2"
   },
+  "empty-state": {
+    "title": "Empty state",
+    "description": "What shows where content would be: a title, why it's empty, and what to do next.",
+    "tier": "base-components",
+    "group": "Feedback",
+    "status": "new",
+    "figma": "710-144"
+  },
   "field": {
     "title": "Field",
     "description": "A label, description and error wired to one form control, with a group that sets the size of a whole form.",
     "tier": "base-components",
     "group": "Forms",
-    "status": "new",
     "figma": "696-2"
   },
   "filter-menu": {

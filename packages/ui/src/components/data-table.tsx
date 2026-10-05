@@ -71,6 +71,12 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Count } from "@workspace/ui/components/count"
+import {
+  EmptyState,
+  EmptyStateActions,
+  EmptyStateDescription,
+  EmptyStateTitle,
+} from "@workspace/ui/components/empty-state"
 import { Separator } from "@workspace/ui/components/separator"
 import {
   InputGroup,
@@ -568,6 +574,7 @@ type DataTableContextValue = {
   narrow: boolean
   cards: boolean
   narrowLayout: DataTableNarrowLayout
+  empty: React.ReactNode
 }
 
 const DataTableContext = React.createContext<DataTableContextValue | null>(null)
@@ -777,6 +784,8 @@ type DataTableProps<TData extends RowData = RowData> = Omit<
   onShowSelectedOnlyChange?: (showSelectedOnly: boolean) => void
   /** Under 32rem: keep the table and scroll it, or show DataTableCards instead. */
   narrowLayout?: DataTableNarrowLayout
+  /** Shown in place of the rows when there are none. Defaults to DataTableEmpty. */
+  empty?: React.ReactNode
   /**
    * The ids of the rows on this page, in the order they're shown.
    * @deprecated Pass `table` from useDataTable; its data sets the rows.
@@ -1037,6 +1046,7 @@ function DataTableRoot({
   showSelectedOnly = false,
   onShowSelectedOnlyChange,
   narrowLayout = "scroll",
+  empty,
   children,
   ...props
 }: RootProps &
@@ -1191,6 +1201,7 @@ function DataTableRoot({
       narrow,
       cards,
       narrowLayout,
+      empty: empty === undefined ? <DataTableEmpty /> : empty,
     }),
     [
       table,
@@ -1205,6 +1216,7 @@ function DataTableRoot({
       narrow,
       cards,
       narrowLayout,
+      empty,
     ]
   )
 
@@ -2145,23 +2157,39 @@ function useRowModelInputs() {
 }
 
 function ModelRows() {
-  const { table } = useDataTableRoot()
+  const { table, empty } = useDataTableRoot()
   const inputs = useRowModelInputs()
   // TanStack keeps a row's object until the data changes, so new columns or
   // a new lockedReason over the same data have to reach the memo as props.
   const columns = table.getVisibleLeafColumns()
   const lockedReason = table.options.meta?.lockedReason
-  return table
-    .getRowModel()
-    .rows.map((row) => (
-      <ModelRow
-        key={row.id}
-        row={row}
-        inputs={inputs}
-        columns={columns}
-        lockedReason={lockedReason?.(row.original)}
-      />
-    ))
+  const { rows } = table.getRowModel()
+  if (rows.length === 0) {
+    return empty ? (
+      <TableRow
+        data-slot="data-table-empty-row"
+        className="hover:bg-transparent"
+      >
+        {/* One more for the selection column. */}
+        <TableCell colSpan={columns.length + 1} className="p-0">
+          {/* The table can be wider than its scroller, so the message keeps
+              to the visible width rather than centring on the whole row. */}
+          <div className="sticky left-0 w-[100cqw] whitespace-normal">
+            {empty}
+          </div>
+        </TableCell>
+      </TableRow>
+    ) : null
+  }
+  return rows.map((row) => (
+    <ModelRow
+      key={row.id}
+      row={row}
+      inputs={inputs}
+      columns={columns}
+      lockedReason={lockedReason?.(row.original)}
+    />
+  ))
 }
 
 const ModelRow = React.memo(function ModelRow({
@@ -2456,17 +2484,19 @@ function ModelCards({
 }: {
   render?: (row: DataTableAnyRow) => React.ReactNode
 }) {
-  const { table } = useDataTableRoot()
+  const { table, empty } = useDataTableRoot()
   useRowModelInputs()
-  return table
-    .getRowModel()
-    .rows.map((row) =>
-      render ? (
-        <React.Fragment key={row.id}>{render(row)}</React.Fragment>
-      ) : (
-        <ModelCard key={row.id} row={row} />
-      )
+  const { rows } = table.getRowModel()
+  if (rows.length === 0) {
+    return empty ? <li data-slot="data-table-empty-card">{empty}</li> : null
+  }
+  return rows.map((row) =>
+    render ? (
+      <React.Fragment key={row.id}>{render(row)}</React.Fragment>
+    ) : (
+      <ModelCard key={row.id} row={row} />
     )
+  )
 }
 
 function ModelCard({ row }: { row: DataTableAnyRow }) {
@@ -2621,6 +2651,60 @@ function DataTableCardField({
   )
 }
 
+/**
+ * What a table with no rows shows. With a search or filter on, it says
+ * nothing matched and offers to clear them; otherwise it says there are no
+ * rows yet. Children replace the copy and the button.
+ */
+function DataTableEmpty({
+  children,
+  ...props
+}: React.ComponentProps<typeof EmptyState>) {
+  const { table, noun } = useDataTableRoot()
+  const filtered = useSelector(
+    table.store,
+    (state) => state.columnFilters.length > 0 || Boolean(state.globalFilter)
+  )
+  return (
+    <EmptyState data-slot="data-table-empty" {...props}>
+      {children ?? (
+        <>
+          <EmptyStateTitle>
+            {filtered ? `No matching ${noun.other}` : `No ${noun.other} yet`}
+          </EmptyStateTitle>
+          {filtered ? (
+            <>
+              <EmptyStateDescription>
+                Try another search, or clear the filters.
+              </EmptyStateDescription>
+              <EmptyStateActions>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(event) => {
+                    // The button leaves with the empty state, so focus goes
+                    // to the search, where someone would try again.
+                    event.currentTarget
+                      .closest('[data-slot="data-table"]')
+                      ?.querySelector<HTMLElement>(
+                        '[data-slot="data-table-search"] input'
+                      )
+                      ?.focus()
+                    table.resetColumnFilters(true)
+                    table.setGlobalFilter("")
+                  }}
+                >
+                  Clear filters
+                </Button>
+              </EmptyStateActions>
+            </>
+          ) : null}
+        </>
+      )}
+    </EmptyState>
+  )
+}
+
 function DataTableFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -2704,6 +2788,7 @@ export {
   DataTableCard,
   DataTableCardField,
   DataTableCards,
+  DataTableEmpty,
   DataTableCell,
   DataTableColumns,
   DataTableContent,

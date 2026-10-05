@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import type { CSSProperties } from "react"
-import { expect, userEvent } from "storybook/test"
+import { expect, userEvent, within } from "storybook/test"
 
 import {
   MessageList,
@@ -223,6 +223,17 @@ export const Spacing: Story = {
       "--message-gap": "0.25rem",
       "--message-group-gap": "1.5rem",
     } as CSSProperties,
+  },
+}
+
+export const Empty: Story = {
+  args: { messages: [] },
+  play: async ({ canvas }) => {
+    await expect(
+      within(canvas.getByRole("log", { name: "Messages" })).getByText(
+        "No messages yet"
+      )
+    ).toBeVisible()
   },
 }
 

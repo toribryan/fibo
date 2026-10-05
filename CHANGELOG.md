@@ -10,6 +10,13 @@ has the same history with links into the docs.
 
 ### Added
 
+- Empty state: `EmptyState` with `EmptyStateMedia`, `EmptyStateTitle`,
+  `EmptyStateDescription` and `EmptyStateActions`, `size` `sm` or `default`.
+- Data table `DataTableEmpty` and an `empty` prop: a table with no rows says
+  so, and offers Clear filters when a search or filter hid them. Pass
+  `empty={null}` for the old blank body.
+- Message list `empty` prop and `strings.empty`, shown before the first
+  message.
 - Input group: `InputGroup`, `InputGroupAddon` and `InputGroupInput`, an
   input with an icon, text or button beside it. `variant="ghost"` drops the
   border for a search at the top of a menu. Command menu, Filter menu and

@@ -8,6 +8,10 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@workspace/ui/components/avatar"
+import {
+  EmptyState,
+  EmptyStateTitle,
+} from "@workspace/ui/components/empty-state"
 import { Separator } from "@workspace/ui/components/separator"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -176,6 +180,8 @@ type MessageListStrings = {
   replyingTo: (name: string) => string
   /** The label on the unread divider. */
   unread: string
+  /** Shown when there are no messages yet. */
+  empty: string
 }
 
 const defaultStrings: MessageListStrings = {
@@ -189,6 +195,7 @@ const defaultStrings: MessageListStrings = {
   deleted: "This message was deleted.",
   replyingTo: (name) => `Replying to ${name}`,
   unread: "New",
+  empty: "No messages yet",
 }
 
 const FOCUSABLE = [
@@ -271,6 +278,8 @@ type MessageListProps = Omit<React.ComponentProps<"div">, "children"> &
     locale?: string
     /** Copy for screen readers and deleted messages. Swap it to translate. */
     strings?: Partial<MessageListStrings>
+    /** Shown in place of the conversation when there are no messages. Defaults to an EmptyState with `strings.empty`; null shows nothing. */
+    empty?: React.ReactNode
   }
 
 function MessageList({
@@ -282,6 +291,7 @@ function MessageList({
   headingLevel = 3,
   locale = "en",
   strings: stringOverrides,
+  empty,
   className,
   onKeyDown,
   onFocus,
@@ -433,6 +443,15 @@ function MessageList({
       }}
       {...props}
     >
+      {messages.length === 0 ? (
+        empty === undefined ? (
+          <EmptyState>
+            <EmptyStateTitle>{strings.empty}</EmptyStateTitle>
+          </EmptyState>
+        ) : (
+          empty
+        )
+      ) : null}
       {grouped.map(({ message, position, breakReason, newDay }, i) => {
         const sent = time.format(message.sentAt)
         const iso = message.sentAt.toISOString()

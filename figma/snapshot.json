@@ -583,6 +583,15 @@
       "ground": "BOOLEAN",
       "size": ["sm", "default", "lg"]
     },
+    "Empty state": {
+      "title": "TEXT",
+      "description": "TEXT",
+      "showMedia": "BOOLEAN",
+      "mediaSwap": "INSTANCE_SWAP",
+      "showDescription": "BOOLEAN",
+      "showActions": "BOOLEAN",
+      "size": ["sm", "default"]
+    },
     "Field": {
       "description": "TEXT",
       "showDescription": "BOOLEAN",
