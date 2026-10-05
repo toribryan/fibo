@@ -23,7 +23,7 @@
   },
   "calendar": {
     "title": "Calendar",
-    "description": "A month grid for picking a day or a range, with full keyboard use; pages side by side or scrolls on phones.",
+    "description": "A month grid for picking a day or a range, with full keyboard use; pages side by side, scrolls on phones, or fills a page with a month of events.",
     "tier": "base-components",
     "group": "Forms",
     "status": "new"

@@ -28,6 +28,9 @@ and it's the grid inside Date picker and Date range picker.
   week starting on Sunday or Monday and names in any locale.
 - `type="scroll"` stacks a year either side in one vertical scroll with
   44 pixel days, for a drawer on a phone.
+- `type="month"` fills its parent with one month of events and lists the
+  selected day's. In a narrow column it switches to compact cells with
+  dots.
 
 ## Installation
 
@@ -68,6 +71,74 @@ given.
 
 <Canvas of={Stories.Locale} />
 
+## Month view
+
+`type="month"` is a full-page month of events: the month and its date span
+as the title, Previous, Today and Next, and a grid of bordered day cells
+that fills its parent. Each cell shows its day and the first two events as
+cards, then a count of the rest. Picking a day lists all its events, where
+`onEventClick` makes them buttons: beside the grid from 1024 pixels wide,
+under it below that. It picks one day, with the same `value`, `onChange`,
+`month` and bounds as the other types.
+
+<Canvas of={Stories.Month} />
+
+### On a phone
+
+The layout follows the calendar's own width, not the screen's. Below 768
+pixels the cells shrink to the day and up to three dots, and the selected
+day's events fill the space under the grid.
+
+<Canvas of={Stories.MonthOnAPhone} />
+
+### Empty
+
+A day with no events says so in the list.
+
+<Canvas of={Stories.MonthEmpty} />
+
+### Many events
+
+A cell shows two cards and counts the rest; the selected day's list has
+them all.
+
+<Canvas of={Stories.MonthWithManyEvents} />
+
+### With actions
+
+Children go at the end of the header, for actions such as search and a new
+event. The other types ignore children.
+
+<Canvas of={Stories.MonthWithActions} />
+
+```tsx
+type CalendarEvent = {
+  id: string
+  title: string
+  start: Date // the day it shows on
+  end?: Date // same day
+  allDay?: boolean
+}
+;<div className="flex h-dvh flex-col p-6">
+  <Calendar
+    type="month"
+    events={events}
+    value={day}
+    onChange={setDay}
+    onEventClick={(event) => openEvent(event.id)}
+  >
+    <Button size="sm" onClick={newEvent}>
+      <PlusIcon data-icon="inline-start" />
+      New event
+    </Button>
+  </Calendar>
+</div>
+```
+
+The month view fills its parent, so give the parent a height. It picks one
+day: with `mode="range"` it draws the paged type and warns in the console.
+Its English words (Today, +N more, No events, All day) come from `labels`.
+
 ## Usage
 
 ```tsx
@@ -96,7 +167,7 @@ first, with both after the second. Wait for `to` before you act on it.
   root={{
     name: "Calendar",
     slot: "calendar",
-    note: "The whole calendar, paged or scrolling.",
+    note: "The whole calendar: paged, scrolling, or a month of events. The month type's width picks its layout.",
     children: [
       {
         name: "months",
@@ -129,8 +200,16 @@ first, with both after the second. Wait for `to` before you act on it.
           },
         ],
       },
-      { name: "previous", slot: "calendar-previous", note: "Paged only." },
-      { name: "next", slot: "calendar-next", note: "Paged only." },
+      {
+        name: "previous",
+        slot: "calendar-previous",
+        note: "Paged. The month type has it in its nav.",
+      },
+      {
+        name: "next",
+        slot: "calendar-next",
+        note: "Paged. The month type has it in its nav.",
+      },
       {
         name: "weekdays",
         slot: "calendar-weekdays",
@@ -140,6 +219,101 @@ first, with both after the second. Wait for `to` before you act on it.
         name: "scroll",
         slot: "calendar-scroll",
         note: "Scroll only. Holds the stacked months.",
+      },
+      {
+        name: "header",
+        slot: "calendar-header",
+        note: "Month only.",
+        children: [
+          {
+            name: "title",
+            slot: "calendar-month-title",
+            note: "Labels the grid.",
+          },
+          { name: "span", slot: "calendar-month-span" },
+          {
+            name: "nav",
+            slot: "calendar-nav",
+            children: [
+              { name: "previous", slot: "calendar-previous" },
+              { name: "today", slot: "calendar-today" },
+              { name: "next", slot: "calendar-next" },
+            ],
+          },
+          {
+            name: "actions",
+            slot: "calendar-actions",
+            note: "Holds the children, when there are any.",
+          },
+        ],
+      },
+      {
+        name: "body",
+        slot: "calendar-body",
+        note: "Month only. The grid and the selected day's events.",
+        children: [
+          {
+            name: "grid",
+            slot: "calendar-grid",
+            note: "Bordered cells, including the ends of the months either side.",
+            children: [
+              {
+                name: "day",
+                slot: "calendar-day",
+                note: "A button filling each cell, described by its events.",
+                children: [
+                  { name: "number", slot: "calendar-day-number" },
+                  {
+                    name: "events",
+                    slot: "calendar-day-events",
+                    note: "Wide only. Hidden from assistive technology.",
+                    children: [
+                      {
+                        name: "event card",
+                        slot: "calendar-event-card",
+                        note: "Up to two.",
+                      },
+                      {
+                        name: "more",
+                        slot: "calendar-event-more",
+                        note: "When there are more than two.",
+                      },
+                    ],
+                  },
+                  {
+                    name: "dots",
+                    slot: "calendar-day-dots",
+                    note: "Narrow only. Up to three.",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            name: "agenda",
+            slot: "calendar-agenda",
+            note: "The selected day's events: beside the grid from 1024 pixels wide, under it below that.",
+            children: [
+              { name: "agenda title", slot: "calendar-agenda-title" },
+              {
+                name: "agenda list",
+                slot: "calendar-agenda-list",
+                children: [
+                  {
+                    name: "event",
+                    slot: "calendar-event",
+                    note: "A button when onEventClick is given.",
+                  },
+                ],
+              },
+              {
+                name: "empty",
+                slot: "calendar-agenda-empty",
+                note: "In place of the list when the day has no events.",
+              },
+            ],
+          },
+        ],
       },
     ],
   }}
@@ -156,6 +330,11 @@ first, with both after the second. Wait for `to` before you act on it.
       rejecting a pick after the fact.
     </>,
     "Start the week where your readers do: Monday in most of Europe, Sunday in the US.",
+    <>
+      Use <code>type="month"</code> when events are the content and the calendar
+      has the page, or most of it. Give its parent a height. Put actions such as
+      New event in as children rather than beside it, so they sit in its header.
+    </>,
   ]}
 />
 
@@ -209,12 +388,92 @@ first, with both after the second. Wait for `to` before you act on it.
     {
       attribute: 'data-slot="calendar-previous"',
       element: "The previous month button",
-      when: "Paged only. Before the months, so it's first in the focus order.",
+      when: "Paged and month. Before the months, so it's first in the focus order.",
     },
     {
       attribute: 'data-slot="calendar-next"',
       element: "The next month button",
-      when: "Paged only.",
+      when: "Paged and month.",
+    },
+    {
+      attribute: 'data-slot="calendar-header"',
+      element: "The title, nav and actions",
+      when: "Month only.",
+    },
+    {
+      attribute: 'data-slot="calendar-month-span"',
+      element: "The month's first and last dates, under the title",
+      when: "Month only.",
+    },
+    {
+      attribute: 'data-slot="calendar-nav"',
+      element: "Previous, Today and Next, joined",
+      when: "Month only.",
+    },
+    {
+      attribute: 'data-slot="calendar-today"',
+      element: "The button back to today's month",
+      when: "Month only.",
+    },
+    {
+      attribute: 'data-slot="calendar-actions"',
+      element: "The children, at the end of the header",
+      when: "Month only, when there are children.",
+    },
+    {
+      attribute: 'data-slot="calendar-body"',
+      element: "The grid and the selected day's events",
+      when: "Month only.",
+    },
+    {
+      attribute: 'data-slot="calendar-day-number"',
+      element: "A day's number inside its button",
+      when: "Month only.",
+    },
+    {
+      attribute: 'data-slot="calendar-day-events"',
+      element: "A day's event cards",
+      when: "Month only, on a day with events. Shown when the calendar is 768 pixels wide or more.",
+    },
+    {
+      attribute: 'data-slot="calendar-event-card"',
+      element: "One event's title and time in a cell",
+      when: "Month only, up to two per day.",
+    },
+    {
+      attribute: 'data-slot="calendar-event-more"',
+      element: "The count of a day's events past the cards",
+      when: "Month only, on a day with more than two.",
+    },
+    {
+      attribute: 'data-slot="calendar-day-dots"',
+      element: "A day's event dots",
+      when: "Month only, on a day with events. Shown below 768 pixels wide.",
+    },
+    {
+      attribute: 'data-slot="calendar-agenda"',
+      element: "The selected day's events",
+      when: "Month only.",
+    },
+    {
+      attribute: 'data-slot="calendar-agenda-title"',
+      element: "The selected day, labelling its list",
+      when: "Month only.",
+    },
+    {
+      attribute: 'data-slot="calendar-agenda-list"',
+      element: "The list of the selected day's events",
+      when: "Month only, when the day has events.",
+    },
+    {
+      attribute: 'data-slot="calendar-event"',
+      element: "One event in the list",
+      when: "Month only.",
+    },
+    {
+      attribute: 'data-slot="calendar-agenda-empty"',
+      element: "The line saying the day has no events",
+      when: "Month only, when the day has none.",
     },
     {
       attribute: 'data-slot="calendar-months"',
@@ -261,7 +520,7 @@ first, with both after the second. Wait for `to` before you act on it.
       element: "The root",
       when: (
         <>
-          Always. <code>paged</code> or <code>scroll</code>.
+          Always. <code>paged</code>, <code>scroll</code> or <code>month</code>.
         </>
       ),
     },
@@ -270,13 +529,13 @@ first, with both after the second. Wait for `to` before you act on it.
       element: "The root",
       when: (
         <>
-          Always. <code>default</code> or <code>lg</code>.
+          Paged and scroll. <code>default</code> or <code>lg</code>.
         </>
       ),
     },
     {
       attribute: "data-slide",
-      element: "The months",
+      element: "The months, or the month type's grid",
       when: (
         <>
           After a page turn: <code>next</code> or <code>previous</code>.
@@ -327,6 +586,16 @@ first, with both after the second. Wait for `to` before you act on it.
       element: "A day",
       when: "It can't be picked.",
     },
+    {
+      attribute: "data-outside",
+      element: "A day",
+      when: "Month only. It belongs to the month before or after; picking it turns the page.",
+    },
+    {
+      attribute: "data-events",
+      element: "A day",
+      when: "Month only. How many events it has, when it has any.",
+    },
   ]}
 />
 
@@ -339,6 +608,8 @@ first, with both after the second. Wait for `to` before you act on it.
     "Enter or Space picks the focused day. The picked days' cells are aria-selected, and today is aria-current.",
     "Days that can't be picked are aria-disabled rather than disabled, so they stay in the keyboard path and are announced as unavailable.",
     "In range mode a polite live region says what happened: the start and that an end is needed, then the range and its length.",
+    "In the month type each cell holds one day button, so the grid keeps the same keyboard model. The cards and dots inside it are hidden from assistive technology; the button is described by a spoken list of the day's events instead.",
+    "The month type's events become buttons in the selected day's list, outside the grid, so nothing inside a cell takes focus. Tab moves from the grid to that list.",
     "The page slide fades in and is off under reduced motion.",
   ]}
 />
