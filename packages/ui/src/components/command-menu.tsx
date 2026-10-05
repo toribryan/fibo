@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Autocomplete as AutocompletePrimitive } from "@base-ui/react/autocomplete"
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
+import { cva } from "class-variance-authority"
 import { motion, useReducedMotion, type Transition } from "motion/react"
 import { ChevronLeftIcon, ChevronRightIcon, SearchIcon } from "lucide-react"
 
@@ -107,6 +108,8 @@ type CommandMenuProps = {
    * rather than over the page.
    */
   modal?: boolean
+  /** `inset` sets the list in a card inside a muted shell that holds the search and hints. */
+  variant?: "default" | "inset"
   /** Where the dialog portals to. Defaults to the body. */
   container?: DialogPrimitive.Portal.Props["container"]
   /** Classes for the trigger. */
@@ -126,6 +129,21 @@ type Entry = {
 
 type Row = { key: string; entry: Entry; context?: string }
 type Section = { label: string; items: Row[] }
+
+const commandMenuVariants = cva(
+  "fixed top-[15vh] left-1/2 z-50 flex h-[min(26rem,70vh)] w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 flex-col overflow-hidden border border-border text-popover-foreground shadow-lg outline-hidden transition-[max-width] duration-150 motion-reduce:animate-none motion-reduce:transition-none sm:data-preview:max-w-3xl data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+  {
+    variants: {
+      variant: {
+        default: "rounded-xl bg-popover",
+        // The shell is muted so the list's card reads as a layer above it,
+        // lighter in light mode and darker in dark.
+        inset: "rounded-2xl bg-muted p-1",
+      },
+    },
+    defaultVariants: { variant: "default" },
+  }
+)
 
 const SLIDE: Transition = { duration: 0.2, ease: [0.22, 1, 0.36, 1] }
 const INSTANT: Transition = { duration: 0 }
@@ -235,6 +253,7 @@ function CommandMenu({
   labels,
   hints = true,
   modal = true,
+  variant = "default",
   container,
   className,
   popupClassName,
@@ -481,11 +500,9 @@ function CommandMenu({
           data-slot="command-menu"
           data-page={page ? page.value : undefined}
           data-preview={hasPreview || undefined}
+          data-variant={variant}
           initialFocus={modal ? inputRef : false}
-          className={cn(
-            "fixed top-[15vh] left-1/2 z-50 flex h-[min(26rem,70vh)] w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 flex-col overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg outline-hidden transition-[max-width] duration-150 motion-reduce:animate-none motion-reduce:transition-none sm:data-preview:max-w-3xl data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-            popupClassName
-          )}
+          className={cn(commandMenuVariants({ variant }), popupClassName)}
         >
           <DialogPrimitive.Title className="sr-only">
             {label}
@@ -512,7 +529,10 @@ function CommandMenu({
           >
             <div
               data-slot="command-menu-search"
-              className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-3"
+              className={cn(
+                "flex h-12 shrink-0 items-center gap-2 px-3",
+                variant === "default" && "border-b border-border"
+              )}
             >
               {page ? (
                 <>
@@ -555,7 +575,14 @@ function CommandMenu({
                 className="h-full min-w-0 flex-1 bg-transparent text-sm outline-hidden placeholder:text-muted-foreground"
               />
             </div>
-            <div className="flex min-h-0 flex-1">
+            <div
+              data-slot="command-menu-body"
+              className={cn(
+                "flex min-h-0 flex-1",
+                variant === "inset" &&
+                  "overflow-hidden rounded-xl border border-border bg-popover shadow-xs"
+              )}
+            >
               <motion.div
                 key={pageKey}
                 initial={
@@ -626,7 +653,10 @@ function CommandMenu({
             <div
               data-slot="command-menu-hints"
               aria-hidden="true"
-              className="flex h-10 shrink-0 items-center gap-4 border-t border-border px-4 text-xs text-muted-foreground"
+              className={cn(
+                "flex h-10 shrink-0 items-center gap-4 text-xs text-muted-foreground",
+                variant === "default" ? "border-t border-border px-4" : "px-3"
+              )}
             >
               <span className="flex items-center gap-1.5">
                 <Kbd>↵</Kbd>
@@ -729,7 +759,7 @@ function CommandMenuRow({
   )
 }
 
-export { CommandMenu }
+export { CommandMenu, commandMenuVariants }
 export type {
   CommandMenuGroup,
   CommandMenuItem,
