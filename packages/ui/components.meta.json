@@ -183,6 +183,14 @@
     "group": "Forms",
     "figma": "247-1593"
   },
+  "separator": {
+    "title": "Separator",
+    "description": "A thin rule between groups of content, across or down, with an optional label.",
+    "tier": "base-components",
+    "group": "Display",
+    "status": "new",
+    "figma": "704-2"
+  },
   "sheet": {
     "title": "Sheet",
     "description": "A panel that slides in from an edge for a focused task.",
@@ -223,7 +231,6 @@
     "description": "A small mark for whether someone is present, away or offline, told apart by shape.",
     "tier": "base-components",
     "group": "Display",
-    "status": "new",
     "figma": "691-2"
   },
   "sticker-avatar": {
