@@ -35,10 +35,41 @@
   }
 }
 
-/* Room for the floating nav to sit below the last line on phones. */
+/* Room for the floating nav to sit below the last line on phones, and a
+   narrower gutter so a 320px screen still fits a props table. */
 @media (max-width: 599px) {
   .sbdocs.sbdocs-wrapper {
+    padding-inline: 1rem;
     padding-bottom: 8rem;
+  }
+
+  /* Storybook fixes the Description column at 200px; let every column
+     take what its content needs. */
+  .sbdocs .docblock-argstable th,
+  .sbdocs .docblock-argstable td {
+    width: auto !important;
+    padding: 0.625rem 0.75rem !important;
+  }
+
+  .sbdocs .docblock-argstable td * {
+    min-width: 0 !important;
+  }
+
+  .sbdocs .docblock-argstable td code {
+    white-space: normal !important;
+  }
+
+  /* A prop name stays whole; the description takes the squeeze. A name too
+     long even for that scrolls the table inside its box, not the page. */
+  .sbdocs .docblock-argstable td:first-child,
+  .sbdocs .docblock-argstable td:first-child * {
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+  .sbdocs .docblock-argstable {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
   }
 }
 
@@ -81,6 +112,13 @@
   box-shadow: none !important;
   outline: 1px solid var(--border);
   border-radius: 0.75rem;
+}
+
+/* A prop's type or default, such as a long union, is one unbroken string
+   that would hold the table wider than a phone. Let it break instead. */
+.sbdocs .docblock-argstable td,
+.sbdocs .docblock-argstable td * {
+  overflow-wrap: anywhere;
 }
 
 /* Raw <code> written as JSX in MDX skips the markdown mapping. */

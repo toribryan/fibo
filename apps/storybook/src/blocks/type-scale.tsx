@@ -28,7 +28,7 @@ function TypeSizes() {
       {SCALE.map(({ className, spec }) => (
         <div
           key={className}
-          className="flex items-baseline gap-6 border-b border-border pb-6"
+          className="flex flex-col gap-2 border-b border-border pb-6 sm:flex-row sm:items-baseline sm:gap-6"
         >
           <div className="flex w-32 shrink-0 flex-col gap-0.5">
             <code className="text-sm font-medium">{className}</code>
@@ -36,7 +36,7 @@ function TypeSizes() {
               {spec}
             </code>
           </div>
-          <p className={`${className} m-0 text-foreground`}>
+          <p className={`${className} m-0 min-w-0 break-words text-foreground`}>
             Design systems ship faster
           </p>
         </div>
