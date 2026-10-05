@@ -26,7 +26,7 @@ type SpinnerProps = Omit<React.ComponentProps<"span">, "children"> &
   }
 
 /**
- * @deprecated Use `<Progress value={null} />` instead. Removed in 0.3.0.
+ * @deprecated Use `<Progress type="circle" value={null} />` instead. Removed in 0.3.0.
  * Run the `spinner-to-progress` codemod to migrate.
  */
 function Spinner({

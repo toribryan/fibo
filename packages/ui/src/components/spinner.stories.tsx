@@ -33,7 +33,11 @@ export const Sizes: Story = {
 export const Replacement: Story = {
   render: () => (
     <div className="flex w-80 flex-col gap-6">
-      <Progress value={null} aria-label="Loading" />
+      <div className="flex items-center gap-4">
+        <Progress type="circle" size="xs" value={null} aria-label="Loading" />
+        <Progress type="circle" size="sm" value={null} aria-label="Loading" />
+        <Progress type="circle" size="lg" value={null} aria-label="Loading" />
+      </div>
       <Progress value={null}>
         <ProgressLabel>Loading comments</ProgressLabel>
       </Progress>
