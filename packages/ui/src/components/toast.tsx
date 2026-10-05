@@ -6,12 +6,12 @@ import {
   CircleAlertIcon,
   CircleCheckIcon,
   InfoIcon,
-  Loader2Icon,
   TriangleAlertIcon,
   XIcon,
 } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import { Progress } from "@workspace/ui/components/progress"
 import { cn } from "@workspace/ui/lib/utils"
 
 /**
@@ -155,7 +155,13 @@ const ICONS: Record<string, React.ReactNode> = {
   warning: <TriangleAlertIcon className="text-warning" />,
   error: <CircleAlertIcon className="text-destructive" />,
   loading: (
-    <Loader2Icon className="animate-spin text-muted-foreground motion-reduce:animate-none" />
+    <Progress
+      type="circle"
+      size="sm"
+      value={null}
+      aria-hidden="true"
+      className="text-muted-foreground"
+    />
   ),
 }
 
