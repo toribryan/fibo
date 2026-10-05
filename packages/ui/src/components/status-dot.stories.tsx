@@ -15,7 +15,6 @@ const SIZES = ["xs", "sm", "default", "lg"] as const
 const meta: Meta<typeof StatusDot> = {
   title: "Base components/Display/Status dot",
   component: StatusDot,
-  tags: ["new"],
   argTypes: {
     status: { control: "inline-radio", options: STATUSES },
     variant: { control: "inline-radio", options: ["color", "mono"] },

@@ -10,6 +10,8 @@ has the same history with links into the docs.
 
 ### Added
 
+- Separator: a rule across or down, and with children a labelled rule.
+  Message list's day dividers and Data table's bulk actions use it.
 - Progress `type="circle"` with `size` `xs` to `lg`: a ring in the text
   colour that fits in a button. With `value={null}` it turns. Toast's loading
   icon and Chat composer's sending button use it, and the Spinner codemod

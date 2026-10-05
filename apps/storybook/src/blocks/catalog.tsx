@@ -203,6 +203,13 @@ const PREVIEWS: Record<string, ReactNode> = {
       <span>+4</span>
     </span>
   ),
+  separator: (
+    <span className="flex w-40 items-center gap-3 text-xs text-muted-foreground">
+      <span className="h-px flex-1 bg-border" />
+      Today
+      <span className="h-px flex-1 bg-border" />
+    </span>
+  ),
   "status-dot": (
     <span className="flex items-center gap-5">
       <StatusDot status="present" size="lg" label={null} />

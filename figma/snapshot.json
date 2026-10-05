@@ -528,6 +528,11 @@
     },
     "Menu separator": {},
     "Menu": {},
+    "Separator": {
+      "showLabel": "BOOLEAN",
+      "label": "TEXT",
+      "orientation": ["horizontal", "vertical"]
+    },
     "Sheet": {
       "title": "TEXT",
       "description": "TEXT",
