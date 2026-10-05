@@ -1,9 +1,52 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { expect, fn, waitFor } from "storybook/test"
+import { PlusIcon, SearchIcon } from "lucide-react"
+import { expect, fn, waitFor, within } from "storybook/test"
 
-import { Calendar } from "./calendar.js"
+import { Button } from "./button.js"
+import { Calendar, type CalendarEvent, type CalendarProps } from "./calendar.js"
 
 const october = new Date(2026, 9, 1)
+
+const at = (day: number, hour: number, minute = 0, month = 9) =>
+  new Date(2026, month, day, hour, minute)
+
+const monthEvents: CalendarEvent[] = [
+  {
+    id: "planning",
+    title: "Quarterly planning",
+    start: at(1, 9),
+    end: at(1, 11),
+  },
+  { id: "review-5", title: "Design review", start: at(5, 10), end: at(5, 11) },
+  { id: "one-on-one", title: "1:1 with Ana", start: at(5, 14) },
+  { id: "offsite", title: "Team offsite", start: at(8, 0), allDay: true },
+  { id: "standup", title: "Standup", start: at(14, 9, 30) },
+  { id: "launch", title: "Launch prep", start: at(14, 13), end: at(14, 15) },
+  { id: "review-20", title: "Design review", start: at(20, 10) },
+  { id: "dentist", title: "Dentist", start: at(20, 16, 30) },
+  { id: "workshop", title: "Research workshop", start: at(21, 13) },
+  { id: "release", title: "Release 0.3", start: at(23, 0), allDay: true },
+  { id: "retro", title: "Retro", start: at(27, 15), end: at(27, 16) },
+  { id: "party", title: "Halloween party", start: at(30, 18) },
+  { id: "sprint", title: "Sprint start", start: at(2, 9, 0, 10) },
+]
+
+const busyEvents: CalendarEvent[] = [
+  ...monthEvents,
+  { id: "sync", title: "Product sync", start: at(14, 11) },
+  { id: "lunch", title: "Lunch with Kai", start: at(14, 12, 30) },
+  { id: "interview", title: "Interview", start: at(14, 16) },
+  { id: "drinks", title: "Drinks", start: at(14, 18) },
+  { id: "crit", title: "Crit", start: at(15, 10) },
+  { id: "pairing", title: "Pairing", start: at(15, 11) },
+  { id: "docs", title: "Docs review", start: at(15, 14) },
+]
+
+const monthArgs = {
+  type: "month",
+  events: monthEvents,
+  onEventClick: fn(),
+} as const
 
 const meta: Meta<typeof Calendar> = {
   title: "Base components/Forms/Calendar",
@@ -11,7 +54,7 @@ const meta: Meta<typeof Calendar> = {
   tags: ["new"],
   argTypes: {
     mode: { control: "inline-radio", options: ["single", "range"] },
-    type: { control: "inline-radio", options: ["paged", "scroll"] },
+    type: { control: "inline-radio", options: ["paged", "scroll", "month"] },
     size: { control: "inline-radio", options: ["default", "lg"] },
     months: { control: "inline-radio", options: [1, 2] },
     weekStartsOn: { control: "inline-radio", options: [0, 1] },
@@ -25,6 +68,10 @@ const meta: Meta<typeof Calendar> = {
     minDate: { control: false },
     maxDate: { control: false },
     isDateDisabled: { control: false },
+    events: { control: false },
+    onEventClick: { control: false },
+    labels: { control: false },
+    children: { control: false },
   },
   parameters: {
     controls: {
@@ -38,6 +85,10 @@ const meta: Meta<typeof Calendar> = {
         "minDate",
         "maxDate",
         "isDateDisabled",
+        "events",
+        "onEventClick",
+        "labels",
+        "children",
       ],
     },
   },
@@ -184,4 +235,133 @@ export const Locale: Story = {
       "lundi"
     )
   },
+}
+
+const fill = (args: CalendarProps) => (
+  <div className="flex h-[760px] flex-col">
+    <Calendar {...args} />
+  </div>
+)
+
+export const Month: Story = {
+  args: { ...monthArgs, defaultValue: new Date(2026, 9, 14) },
+  render: fill,
+  play: async ({ args, canvas, canvasElement, userEvent }) => {
+    const day = (name: string) =>
+      canvas.getByRole("button", { name: new RegExp(`^${name}`) })
+    const agenda = () =>
+      canvasElement.querySelector<HTMLElement>('[data-slot="calendar-agenda"]')!
+
+    // The selected day's events are listed beside the grid.
+    await expect(within(agenda()).getByText("Launch prep")).toBeVisible()
+
+    await userEvent.click(day("Tuesday, October 20, 2026"))
+    await expect(args.onChange).toHaveBeenLastCalledWith(new Date(2026, 9, 20))
+    await expect(
+      day("Tuesday, October 20, 2026").closest('[role="gridcell"]')
+    ).toHaveAttribute("aria-selected", "true")
+    await expect(day("Tuesday, October 20, 2026")).toHaveAccessibleDescription(
+      "2 events: Design review, 10:00 AM; Dentist, 4:30 PM"
+    )
+    await expect(within(agenda()).getByText("Dentist")).toBeVisible()
+
+    // By keyboard: one tab stop, arrows move a day or a week, Enter picks.
+    await expect(day("Tuesday, October 20, 2026")).toHaveFocus()
+    await userEvent.keyboard("{ArrowRight}")
+    await expect(day("Wednesday, October 21, 2026")).toHaveFocus()
+    await userEvent.keyboard("{Enter}")
+    await expect(args.onChange).toHaveBeenLastCalledWith(new Date(2026, 9, 21))
+    await userEvent.click(
+      within(agenda()).getByRole("button", { name: /Research workshop/ })
+    )
+    await expect(args.onEventClick).toHaveBeenLastCalledWith(
+      expect.objectContaining({ id: "workshop" })
+    )
+
+    await userEvent.click(canvas.getByRole("button", { name: "Next month" }))
+    await waitFor(() =>
+      expect(canvas.getByText("November 2026")).toBeInTheDocument()
+    )
+    await expect(args.onMonthChange).toHaveBeenLastCalledWith(
+      new Date(2026, 10, 1)
+    )
+
+    await userEvent.click(canvas.getByRole("button", { name: "Today" }))
+    const thisMonth = new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      year: "numeric",
+    }).format(new Date())
+    await waitFor(() => expect(canvas.getByText(thisMonth)).toBeInTheDocument())
+    await expect(
+      canvasElement.querySelector('[data-slot="calendar-day"][data-today]')
+    ).toHaveAttribute("tabindex", "0")
+
+    // Back to October 2026, so the story's last frame doesn't depend on the
+    // date it runs.
+    const now = new Date()
+    const offset = (now.getFullYear() - 2026) * 12 + (now.getMonth() - 9)
+    const back = canvas.getByRole("button", {
+      name: offset > 0 ? "Previous month" : "Next month",
+    })
+    for (let i = 0; i < Math.abs(offset); i++) await userEvent.click(back)
+    await waitFor(() =>
+      expect(canvas.getByText("October 2026")).toBeInTheDocument()
+    )
+  },
+}
+
+export const MonthOnAPhone: Story = {
+  name: "Month on a phone",
+  args: { ...monthArgs, defaultValue: new Date(2026, 9, 20) },
+  render: (args) => (
+    <div className="flex h-[760px] w-[390px] max-w-full flex-col">
+      <Calendar {...args} />
+    </div>
+  ),
+}
+
+export const MonthEmpty: Story = {
+  name: "Month, empty",
+  args: { ...monthArgs, events: [], defaultValue: new Date(2026, 9, 14) },
+  render: fill,
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText("No events")).toBeVisible()
+  },
+}
+
+export const MonthWithManyEvents: Story = {
+  name: "Month with many events",
+  args: {
+    ...monthArgs,
+    events: busyEvents,
+    defaultValue: new Date(2026, 9, 14),
+  },
+  render: fill,
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText("+4 more")).toBeVisible()
+    await expect(canvas.getByText("+1 more")).toBeVisible()
+  },
+}
+
+export const MonthWithActions: Story = {
+  name: "Month with actions",
+  args: { ...monthArgs, defaultValue: new Date(2026, 9, 14) },
+  render: (args) => (
+    <div className="flex h-[760px] flex-col">
+      <Calendar {...args}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Search"
+        >
+          <SearchIcon aria-hidden="true" />
+        </Button>
+        <Button type="button" size="sm">
+          <PlusIcon aria-hidden="true" data-icon="inline-start" />
+          New event
+        </Button>
+      </Calendar>
+    </div>
+  ),
 }

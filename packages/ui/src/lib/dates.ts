@@ -172,3 +172,25 @@ export function formatDateRange(range: DateRange, locale = "en-US"): string {
   }).formatRange(range.from, range.to)
   return plainSpaces(text)
 }
+
+/** A time of day the way the locale writes one, such as "9:30 AM". */
+export function formatTime(date: Date, locale = "en-US"): string {
+  const text = new Intl.DateTimeFormat(locale, {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date)
+  return plainSpaces(text)
+}
+
+/** Two times on one day, sharing what they have in common: "9:30 – 10:00 AM". */
+export function formatTimeRange(
+  from: Date,
+  to: Date,
+  locale = "en-US"
+): string {
+  const text = new Intl.DateTimeFormat(locale, {
+    hour: "numeric",
+    minute: "2-digit",
+  }).formatRange(from, to)
+  return plainSpaces(text)
+}
