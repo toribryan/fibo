@@ -91,6 +91,7 @@ function SiteNav() {
       items={ITEMS}
       value={shown}
       size="sm"
+      variant="glass"
       hideOnScroll
       onValueChange={(value, event) => {
         if (event.metaKey || event.ctrlKey) return
