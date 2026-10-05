@@ -24,7 +24,6 @@ import { Textarea } from "./textarea.js"
 const meta: Meta<typeof Field> = {
   title: "Base components/Forms/Field",
   component: Field,
-  tags: ["new"],
   argTypes: {
     orientation: {
       control: "inline-radio",

@@ -23,6 +23,10 @@ import { Button } from "@workspace/ui/components/button"
 import { CheckboxMark } from "@workspace/ui/components/checkbox"
 import { Count } from "@workspace/ui/components/count"
 import {
+  EmptyState,
+  EmptyStateTitle,
+} from "@workspace/ui/components/empty-state"
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
@@ -706,9 +710,9 @@ function FilterMenu({
                   >
                     <View key={viewKey} {...slides}>
                       {count === 0 ? (
-                        <p className="px-2 py-6 text-center text-sm text-muted-foreground">
-                          {emptyText}
-                        </p>
+                        <EmptyState size="sm">
+                          <EmptyStateTitle>{emptyText}</EmptyStateTitle>
+                        </EmptyState>
                       ) : (
                         groups.map((group, index) => (
                           <div

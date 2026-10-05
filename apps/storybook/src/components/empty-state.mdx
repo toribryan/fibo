@@ -1,0 +1,216 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+import { UsersIcon } from "lucide-react"
+
+import * as Stories from "../../../../packages/ui/src/components/empty-state.stories"
+import { Button } from "../../../../packages/ui/src/components/button"
+import {
+  EmptyState,
+  EmptyStateActions,
+  EmptyStateDescription,
+  EmptyStateMedia,
+  EmptyStateTitle,
+} from "../../../../packages/ui/src/components/empty-state"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Empty state
+
+What shows where content would be: a title, why it's empty, and what to do
+next.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- A title, an optional icon, a description and actions, each its own part.
+- `size="sm"` for a line in a menu or popover, `default` for a table, list
+  or page.
+- Data table shows one when it has no rows, with Clear filters when a
+  search or filter hid them. Message list shows one before the first
+  message.
+
+## Installation
+
+<Install
+  name="empty-state"
+  exports={[
+    "EmptyState",
+    "EmptyStateMedia",
+    "EmptyStateTitle",
+    "EmptyStateDescription",
+    "EmptyStateActions",
+  ]}
+/>
+
+## Examples
+
+### Small, in a menu
+
+The title alone, in muted text. Command menu and Filter menu show their no
+results line this way.
+
+<Canvas of={Stories.Small} />
+
+### No matches
+
+When a search or filter hid everything, say so and offer the way back.
+
+<Canvas of={Stories.NoMatches} />
+
+### Title only
+
+When there's nothing to do about it, the title is enough.
+
+<Canvas of={Stories.TitleOnly} />
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button"
+import {
+  EmptyState,
+  EmptyStateActions,
+  EmptyStateDescription,
+  EmptyStateTitle,
+} from "@/components/ui/empty-state"
+
+export function NoMembers({ onInvite }: { onInvite: () => void }) {
+  return (
+    <EmptyState>
+      <EmptyStateTitle>No members yet</EmptyStateTitle>
+      <EmptyStateDescription>
+        Invite people to work on this project with you.
+      </EmptyStateDescription>
+      <EmptyStateActions>
+        <Button size="sm" onClick={onInvite}>
+          Invite members
+        </Button>
+      </EmptyStateActions>
+    </EmptyState>
+  )
+}
+```
+
+Say what's missing in the title and what to do in the action; the
+description is for why, when it isn't obvious.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "EmptyState",
+    slot: "empty-state",
+    note: "Centres its parts and sets their size.",
+    children: [
+      {
+        name: "EmptyStateMedia",
+        slot: "empty-state-media",
+        note: "An icon in a muted tile. Hidden from screen readers.",
+      },
+      {
+        name: "EmptyStateTitle",
+        slot: "empty-state-title",
+        note: "What's missing.",
+      },
+      {
+        name: "EmptyStateDescription",
+        slot: "empty-state-description",
+        note: "Why, or what fills it.",
+      },
+      {
+        name: "EmptyStateActions",
+        slot: "empty-state-actions",
+        note: "One or two buttons.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Name what's missing in the title: No members yet, not Nothing here.",
+    "Tell first-run empty apart from no matches. One invites people to add something, the other to clear a search.",
+    "One primary action at most. A second one, if any, is outline or ghost.",
+    "Leave the icon out of small empty states; a menu has no room for it.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <EmptyState className="py-6">
+            <EmptyStateMedia>
+              <UsersIcon />
+            </EmptyStateMedia>
+            <EmptyStateTitle>No members yet</EmptyStateTitle>
+            <EmptyStateActions>
+              <Button size="sm">Invite members</Button>
+            </EmptyStateActions>
+          </EmptyState>
+        ),
+        description: "Say what's missing and offer the next step.",
+      },
+      negative: {
+        component: (
+          <EmptyState className="py-6">
+            <EmptyStateTitle>Nothing here</EmptyStateTitle>
+            <EmptyStateDescription>
+              There is no data to display at this time.
+            </EmptyStateDescription>
+          </EmptyState>
+        ),
+        description: "Don't leave people with a dead end.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="empty-state"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-size",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>sm</code> or <code>default</code>.
+        </>
+      ),
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The title and description are plain text, read in order with what's around them.",
+    "The icon is hidden from screen readers; the title says it in words.",
+    "Where an empty state replaces results as someone types, put it in a live region so the change is announced. Command menu's already is.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Data table", "Message list", "Command menu"]} />

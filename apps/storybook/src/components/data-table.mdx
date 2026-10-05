@@ -64,6 +64,7 @@ Data table in the Figma library.
     "DataTableBulkAction",
     "DataTableContent",
     "DataTableCards",
+    "DataTableEmpty",
     "DataTableFooter",
     "DataTablePagination",
     "DataTableSelectionCount",
@@ -91,6 +92,15 @@ Each filter menu shows how many rows hold each value under the other
 filters, so a choice never leads to an empty table. Status and Team here.
 
 <Canvas of={Stories.FacetedFilters} />
+
+### Empty and no matches
+
+With no rows, the table says so in place of the body. When a search or
+filter hid them, it says nothing matched and offers Clear filters, which
+puts focus back in the search. Pass `empty` for your own copy, such as an
+EmptyState with an invite button, or `empty={null}` for a blank body.
+
+<Canvas of={Stories.Empty} />
 
 ### Column visibility and pinning
 
