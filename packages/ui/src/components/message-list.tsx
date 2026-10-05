@@ -8,6 +8,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@workspace/ui/components/avatar"
+import { Separator } from "@workspace/ui/components/separator"
 import { cn } from "@workspace/ui/lib/utils"
 
 type ChatAuthor = {
@@ -574,31 +575,24 @@ function MessageDivider({
   unread?: string
 }) {
   return (
-    <div
-      role="separator"
-      aria-label={[label, unread].filter(Boolean).join(", ")}
+    <Separator
       data-slot="message-divider"
       data-unread={unread ? "" : undefined}
-      className="group/divider mt-[var(--message-group-gap)] flex items-center gap-3 text-xs font-medium text-muted-foreground first:mt-0"
+      aria-label={[label, unread].filter(Boolean).join(", ")}
+      className="mt-[var(--message-group-gap)] first:mt-0 data-unread:*:data-[slot=separator-line]:bg-destructive"
     >
-      <span className="h-px flex-1 bg-border group-data-unread/divider:bg-destructive" />
-      {label ? (
-        <>
-          {label}
-          <span className="h-px flex-1 bg-border group-data-unread/divider:bg-destructive" />
-        </>
-      ) : null}
+      {label}
       {unread ? (
         // A word as well as a colour, since red alone carries nothing for
         // people who can't tell it apart (WCAG 1.4.1).
         <span
           data-slot="message-divider-unread"
-          className="-ml-3 rounded-sm bg-destructive px-1.5 py-0.5 text-[10px] leading-none font-semibold text-destructive-foreground"
+          className="rounded-sm bg-destructive px-1.5 py-0.5 text-[10px] leading-none font-semibold text-destructive-foreground not-first:ml-3"
         >
           {unread}
         </span>
       ) : null}
-    </div>
+    </Separator>
   )
 }
 
