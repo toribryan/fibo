@@ -1,0 +1,248 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/field.stories"
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+} from "../../../../packages/ui/src/components/field"
+import { Input } from "../../../../packages/ui/src/components/input"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Field
+
+Puts a label, a description and an error round one form control and wires
+them to it, so nothing needs an `id`. FieldGroup sets the size of every
+control in a form at once.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Names the control from `FieldLabel` and describes it with
+  `FieldDescription`, through Base UI's Field, for Input, Textarea, Select,
+  Checkbox, Radio group, Switch and Slider.
+- `invalid` turns the control's border destructive and shows `FieldError`;
+  `disabled` disables the control and dims its label.
+- `orientation="horizontal"` lays a checkbox or switch beside its label, and
+  `FieldItem` does the same for each option in a radio group.
+- `FieldGroup size="sm"` makes every Input, Select and Switch inside it
+  small; a field's or control's own `size` still wins.
+
+## Installation
+
+<Install
+  name="field"
+  exports={[
+    "Field",
+    "FieldGroup",
+    "FieldLabel",
+    "FieldDescription",
+    "FieldError",
+    "FieldContent",
+    "FieldItem",
+    "fieldVariants",
+  ]}
+/>
+
+It installs `class-variance-authority` and the `field-size` helper into
+`lib/`, which Input, Select and Switch read too.
+
+## Examples
+
+### Invalid
+
+`invalid` marks the control and shows `FieldError`. Set it from your own
+validation or a server's response.
+
+<Canvas of={Stories.Invalid} />
+
+### Disabled
+
+<Canvas of={Stories.Disabled} />
+
+### With a textarea
+
+<Canvas of={Stories.WithTextarea} />
+
+### Horizontal
+
+A checkbox leads its label; a switch follows it. `FieldContent` stacks the
+label and description.
+
+<Canvas of={Stories.Horizontal} />
+
+### A dense group
+
+`FieldGroup size="sm"` makes the Input, Select and Switch small, and tightens
+the space between fields.
+
+<Canvas of={Stories.DenseGroup} />
+
+## Usage
+
+```tsx
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+
+export function EmailField({ error }: { error?: string }) {
+  return (
+    <Field invalid={Boolean(error)}>
+      <FieldLabel>Work email</FieldLabel>
+      <Input type="email" />
+      <FieldDescription>We send receipts here.</FieldDescription>
+      <FieldError>{error}</FieldError>
+    </Field>
+  )
+}
+```
+
+One control per Field. For a group of options, put the Radio group in the
+Field and each option in a `FieldItem`.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Field",
+    slot: "field",
+    note: "Wraps one control and wires its label, description and error to it.",
+    children: [
+      {
+        name: "FieldLabel",
+        slot: "field-label",
+        note: "Names the control.",
+      },
+      {
+        name: "Control",
+        slot: "input, select-trigger, switch…",
+        note: "Any fibo form control.",
+      },
+      {
+        name: "FieldContent",
+        slot: "field-content",
+        note: "Optional. Stacks the label and description beside a checkbox or switch.",
+      },
+      {
+        name: "FieldDescription",
+        slot: "field-description",
+        note: "Optional. Hint text, read with the control.",
+      },
+      {
+        name: "FieldError",
+        slot: "field-error",
+        note: "Optional. Shown while the field is invalid.",
+      },
+    ],
+  }}
+/>
+
+`FieldGroup` (`field-group`) stacks fields and sets their size. `FieldItem`
+(`field-item`) holds one option of a radio group with its own label.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Give every control a FieldLabel. Placeholders vanish as people type and are no substitute.",
+    "Use FieldDescription for what people need before they fill it in, such as a format. Keep it to a sentence.",
+    "Write FieldError as what to do, not what went wrong: Enter an email address, not Invalid input.",
+    "Use one size across a form, set once on FieldGroup.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Field className="w-64">
+            <FieldLabel>Work email</FieldLabel>
+            <Input placeholder="you@company.com" />
+          </Field>
+        ),
+        description:
+          "Label every field, and use the placeholder for an example.",
+      },
+      negative: {
+        component: (
+          <Field className="w-64">
+            <Input placeholder="Work email" aria-label="Work email" />
+          </Field>
+        ),
+        description: "Don't use the placeholder as the label.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="field"',
+      element: "The field",
+      when: "Always.",
+    },
+    {
+      attribute: "data-orientation",
+      element: "The field",
+      when: (
+        <>
+          Always. <code>vertical</code> or <code>horizontal</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-invalid",
+      element: "The field and its control",
+      when: "While the field is invalid.",
+    },
+    {
+      attribute: "data-disabled",
+      element: "The field and its control",
+      when: "While the field is disabled.",
+    },
+    {
+      attribute: "data-focused",
+      element: "The field",
+      when: "While its control has focus.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "FieldLabel is a label element tied to the control, so clicking it focuses or toggles the control.",
+    "FieldDescription and FieldError are linked with aria-describedby, so screen readers read them with the control.",
+    "invalid sets aria-invalid on the control as well as the colour, so it isn't told by colour alone.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Input", "Select", "Switch"]} />
+
+## References
+
+- [Base UI Field](https://base-ui.com/react/components/field)

@@ -10,6 +10,12 @@ has the same history with links into the docs.
 
 ### Added
 
+- Field: `FieldLabel`, `FieldDescription` and `FieldError` wired to one form
+  control, `orientation="horizontal"` for a checkbox or switch, `FieldItem`
+  for each option in a radio group, and `FieldGroup` to set the size of a
+  whole form. Input, Select and Switch take their size from it, and Textarea
+  now joins a Field the way Input does.
+- Slider `SliderLabel` and `SliderValue`, on one row above the track.
 - Count: a number capped at 99+, shortened to 1.2K or signed as +4, with
   the exact number or your label for screen readers, and a `formatCount`
   helper for counts inside a sentence. Reactions, Jump bar, Filter menu,

@@ -63,6 +63,14 @@
     "group": "Display",
     "figma": "230-2"
   },
+  "field": {
+    "title": "Field",
+    "description": "A label, description and error wired to one form control, with a group that sets the size of a whole form.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new",
+    "figma": "696-2"
+  },
   "filter-menu": {
     "title": "Filter menu",
     "description": "A filter menu of fields and values that turns into a search as you type.",
@@ -279,7 +287,6 @@
     "description": "An aluminium recorder that writes down what you say, with the transcript filling in beside it as you talk.",
     "tier": "special-components",
     "group": "Forms",
-    "status": "new",
     "figma": "621-7"
   }
 }

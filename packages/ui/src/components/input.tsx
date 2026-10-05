@@ -1,14 +1,18 @@
+"use client"
+
 import * as React from "react"
 import { Input as InputPrimitive } from "@base-ui/react/input"
 
+import { useFieldSize } from "@workspace/ui/lib/field-size"
 import { cn } from "@workspace/ui/lib/utils"
 
 type InputProps = Omit<React.ComponentProps<"input">, "size"> & {
-  /** Height of the field. `sm` matches a small Select or Button in dense forms. */
+  /** Height of the field. `sm` matches a small Select or Button in dense forms. Defaults to the size of the Field or FieldGroup around it. */
   size?: "sm" | "default"
 }
 
-function Input({ className, type, size = "default", ...props }: InputProps) {
+function Input({ className, type, size: sizeProp, ...props }: InputProps) {
+  const size = useFieldSize(sizeProp)
   return (
     <InputPrimitive
       type={type}

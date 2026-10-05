@@ -10,7 +10,6 @@ const script =
 const meta: Meta<typeof VoiceMemo> = {
   title: "Special components/Voice memo",
   component: VoiceMemo,
-  tags: ["new"],
   parameters: {
     layout: "centered",
     controls: {

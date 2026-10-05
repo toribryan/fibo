@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { expect, fn } from "storybook/test"
 
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldItem,
+  FieldLabel,
+} from "./field.js"
 import { Label } from "./label.js"
 import { RadioGroup, RadioGroupItem } from "./radio-group.js"
 
@@ -73,31 +80,23 @@ export const Disabled: Story = {
 export const WithDescriptions: Story = {
   name: "With descriptions",
   render: (args) => (
-    <RadioGroup {...args} className="w-72 gap-4">
-      {[
-        ["hobby", "Hobby", "For side projects. One seat."],
-        ["pro", "Pro", "For freelancers. Unlimited projects."],
-        ["team", "Team", "For studios. Shared billing and roles."],
-      ].map(([value, title, detail]) => (
-        <div key={value} className="flex items-start gap-3">
-          <RadioGroupItem
-            value={value!}
-            id={`described-${value}`}
-            aria-describedby={`described-${value}-detail`}
-            className="mt-0.5"
-          />
-          <div className="flex flex-col gap-1">
-            <Label htmlFor={`described-${value}`}>{title}</Label>
-            <p
-              id={`described-${value}-detail`}
-              className="text-sm text-muted-foreground"
-            >
-              {detail}
-            </p>
-          </div>
-        </div>
-      ))}
-    </RadioGroup>
+    <Field className="w-72">
+      <RadioGroup {...args} className="gap-4">
+        {[
+          ["hobby", "Hobby", "For side projects. One seat."],
+          ["pro", "Pro", "For freelancers. Unlimited projects."],
+          ["team", "Team", "For studios. Shared billing and roles."],
+        ].map(([value, title, detail]) => (
+          <FieldItem key={value}>
+            <RadioGroupItem value={value!} className="mt-0.5" />
+            <FieldContent>
+              <FieldLabel>{title}</FieldLabel>
+              <FieldDescription>{detail}</FieldDescription>
+            </FieldContent>
+          </FieldItem>
+        ))}
+      </RadioGroup>
+    </Field>
   ),
 }
 

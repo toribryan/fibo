@@ -28,7 +28,7 @@ track. It suits values where roughly right is right enough.
 
 ## Installation
 
-<Install name="slider" exports={["Slider"]} />
+<Install name="slider" exports={["Slider", "SliderLabel", "SliderValue"]} />
 
 ## Examples
 
@@ -40,7 +40,9 @@ Two thumbs pick a start and an end. Each has its own name.
 
 ### With label and value
 
-A controlled slider that shows its value beside the label.
+`SliderLabel` and `SliderValue` go inside the slider and sit on one row above
+the track. The label names the thumb, and the value formats itself with
+`format`, here as a percentage.
 
 <Canvas of={Stories.WithLabelAndValue} />
 
@@ -242,7 +244,7 @@ Slider takes every prop of Base UI's `Slider.Root`, including `value`,
 
 ## Related components
 
-<RelatedComponents names={["Input", "Radio group", "Label"]} />
+<RelatedComponents names={["Field", "Input", "Radio group"]} />
 
 ## References
 

@@ -566,6 +566,13 @@
     "Pixel snail": {
       "ground": "BOOLEAN",
       "size": ["sm", "default", "lg"]
+    },
+    "Field": {
+      "description": "TEXT",
+      "showDescription": "BOOLEAN",
+      "error": "TEXT",
+      "orientation": ["vertical", "horizontal"],
+      "state": ["default", "invalid", "disabled"]
     }
   }
 }

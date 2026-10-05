@@ -4,6 +4,7 @@ import * as React from "react"
 import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
+import { useFieldSize } from "@workspace/ui/lib/field-size"
 import { cn } from "@workspace/ui/lib/utils"
 
 const Select = SelectPrimitive.Root
@@ -30,13 +31,14 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
 
 function SelectTrigger({
   className,
-  size = "default",
+  size: sizeProp,
   children,
   ...props
 }: SelectPrimitive.Trigger.Props & {
   /** Matches Input at 36 pixels tall, or 32 for dense forms. */
   size?: "sm" | "default"
 }) {
+  const size = useFieldSize(sizeProp)
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
