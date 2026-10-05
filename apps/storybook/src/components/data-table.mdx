@@ -65,6 +65,7 @@ Data table in the Figma library.
     "DataTableContent",
     "DataTableCards",
     "DataTableEmpty",
+    "DataTableSkeleton",
     "DataTableFooter",
     "DataTablePagination",
     "DataTableSelectionCount",
@@ -92,6 +93,15 @@ Each filter menu shows how many rows hold each value under the other
 filters, so a choice never leads to an empty table. Status and Team here.
 
 <Canvas of={Stories.FacetedFilters} />
+
+### Loading
+
+Set `loading` while the data is on its way. The body shows skeleton rows
+shaped like the visible columns, narrow cards show skeleton cards, and the
+table is `aria-busy`. Both keep the real rows' height, so nothing jumps when
+the data arrives. A hand-written body can render `DataTableSkeleton` itself.
+
+<Canvas of={Stories.Loading} />
 
 ### Empty and no matches
 
@@ -833,6 +843,16 @@ for the one release they remain.
       attribute: 'data-slot="data-table-card"',
       element: "Card",
       when: "Narrow with narrowLayout=cards.",
+    },
+    {
+      attribute: 'data-slot="data-table-skeleton"',
+      element: "Placeholder row or card",
+      when: "While loading is set.",
+    },
+    {
+      attribute: 'data-slot="data-table-empty"',
+      element: "Empty state",
+      when: "When no rows are left, unless empty is null.",
     },
     {
       attribute: 'data-slot="data-table-card-field"',
