@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "storybook dev -p 6006 --no-open",
-    "build": "storybook build",
+    "dev": "pnpm manager:build && storybook dev -p 6006 --no-open",
+    "build": "pnpm manager:build && storybook build",
+    "manager:build": "vite build -c vite.manager.config.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint --max-warnings 0",
     "test": "vitest run",
@@ -27,6 +28,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.1",
     "@vitest/browser": "^5.0.3",
     "@vitest/browser-playwright": "^5.0.3",
     "@vitest/coverage-v8": "^5.0.3",
@@ -39,6 +41,7 @@
     "storybook": "10.6.0",
     "tailwindcss": "^4",
     "typescript": "^6.0.3",
+    "vite": "^8.2.2",
     "vitest": "^5.0.3"
   }
 }

@@ -32,6 +32,8 @@
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap"
 />
+<link rel="stylesheet" href="fibo-manager/fibo-manager.css" />
+<script type="module" src="fibo-manager/fibo-manager.js"></script>
 <style>
   :root {
     --fibo-bg: #ffffff;
@@ -63,9 +65,19 @@
     margin-top: 2px !important;
     margin-left: 12px !important;
   }
-  .sidebar-container .search-field,
-  #storybook-explorer-searchfield {
-    border-radius: 20px;
+  /* fibo's command menu replaces Storybook's search (command-search.tsx). */
+  .sidebar-container .search-field {
+    display: none !important;
+  }
+  .fibo-search {
+    flex: 1;
+    min-width: 0;
+    background: none;
+  }
+  /* Storybook outlines every focused input; the menu's search box sits in
+     its own field and needs none. */
+  .fibo-ui [data-slot="input-group-control"]:focus {
+    outline: none;
   }
 
   #storybook-explorer-menu .sidebar-item {
