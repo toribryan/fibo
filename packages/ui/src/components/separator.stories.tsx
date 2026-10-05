@@ -6,7 +6,6 @@ import { Separator } from "./separator.js"
 const meta: Meta<typeof Separator> = {
   title: "Base components/Display/Separator",
   component: Separator,
-  tags: ["new"],
   argTypes: {
     orientation: {
       control: "inline-radio",
