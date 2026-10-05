@@ -10,6 +10,8 @@ has the same history with links into the docs.
 
 ### Added
 
+- Command menu `variant`, `default` or `inset`: `inset` sets the list in a
+  card inside a muted shell that holds the search box and keyboard hints.
 - Data table on TanStack Table: `useDataTable` takes your rows and columns,
   and the table sorts, searches, filters, pages and selects them. New parts
   draw each piece: `DataTableSearch`, `DataTableFacetFilter` with counts per
