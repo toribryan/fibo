@@ -10,6 +10,10 @@ has the same history with links into the docs.
 
 ### Added
 
+- Progress `type="circle"` with `size` `xs` to `lg`: a ring in the text
+  colour that fits in a button. With `value={null}` it turns. Toast's loading
+  icon and Chat composer's sending button use it, and the Spinner codemod
+  now writes it, at the Spinner's own size.
 - Field: `FieldLabel`, `FieldDescription` and `FieldError` wired to one form
   control, `orientation="horizontal"` for a checkbox or switch, `FieldItem`
   for each option in a radio group, and `FieldGroup` to set the size of a

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { useEffect, useState } from "react"
 import { expect } from "storybook/test"
+import { ArrowUpIcon } from "lucide-react"
 
 import { Button } from "./button.js"
 import { Progress, ProgressLabel, ProgressValue } from "./progress.js"
@@ -105,4 +106,53 @@ function Simulated() {
 
 export const Live: Story = {
   render: () => <Simulated />,
+}
+
+export const Circle: Story = {
+  render: () => (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center gap-4 text-primary">
+        <Progress type="circle" value={null} aria-label="Loading" />
+        <Progress type="circle" value={25} aria-label="Upload" />
+        <Progress type="circle" value={60} aria-label="Upload" />
+        <Progress type="circle" value={100} aria-label="Upload" />
+      </div>
+      <div className="flex items-end gap-4 text-muted-foreground">
+        {(["xs", "sm", "default", "lg"] as const).map((size) => (
+          <Progress
+            key={size}
+            type="circle"
+            size={size}
+            value={null}
+            aria-label="Loading"
+          />
+        ))}
+      </div>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const bars = canvas.getAllByRole("progressbar", { name: "Upload" })
+    await expect(bars[1]).toHaveAttribute("aria-valuenow", "60")
+    await expect(
+      canvas.getAllByRole("progressbar", { name: "Loading" })[0]
+    ).not.toHaveAttribute("aria-valuenow")
+  },
+}
+
+export const InAButton: Story = {
+  name: "In a button",
+  render: () => (
+    <div className="flex items-center gap-3">
+      <Button disabled>
+        <Progress type="circle" size="sm" value={null} aria-hidden="true" />
+        Saving
+      </Button>
+      <Button size="icon" aria-label="Sending" disabled>
+        <Progress type="circle" size="sm" value={null} aria-hidden="true" />
+      </Button>
+      <Button size="icon" aria-label="Send">
+        <ArrowUpIcon />
+      </Button>
+    </div>
+  ),
 }

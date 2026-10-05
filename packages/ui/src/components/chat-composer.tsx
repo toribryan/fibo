@@ -1,15 +1,10 @@
 "use client"
 
 import * as React from "react"
-import {
-  ArrowUpIcon,
-  AtSignIcon,
-  LoaderCircleIcon,
-  PaperclipIcon,
-  XIcon,
-} from "lucide-react"
+import { ArrowUpIcon, AtSignIcon, PaperclipIcon, XIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
+import { Progress } from "@workspace/ui/components/progress"
 import {
   Tooltip,
   TooltipContent,
@@ -543,7 +538,7 @@ function ChatComposerSubmit({
       className={cn("rounded-full", className)}
     >
       {state.submitting ? (
-        <LoaderCircleIcon className="animate-spin motion-reduce:animate-none" />
+        <Progress type="circle" size="sm" value={null} aria-hidden="true" />
       ) : children ? null : (
         <ArrowUpIcon />
       )}

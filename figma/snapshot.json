@@ -542,6 +542,8 @@
       "showHeader": "BOOLEAN",
       "label": "TEXT",
       "value": "TEXT",
+      "type": ["bar", "circle"],
+      "size": ["xs", "sm", "default", "lg"],
       "state": ["default", "indeterminate"]
     },
     "Skeleton": {},
