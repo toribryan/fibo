@@ -9,6 +9,9 @@
   "include": [
     ".storybook/**/*.ts",
     ".storybook/**/*.tsx",
+    "manager-ui/**/*.ts",
+    "manager-ui/**/*.tsx",
+    "vite.manager.config.ts",
     "src/**/*.ts",
     "src/**/*.tsx"
   ],
