@@ -10,6 +10,8 @@ has the same history with links into the docs.
 
 ### Added
 
+- Data table `loading` and `DataTableSkeleton`: placeholder rows or cards
+  while the data loads, with the table `aria-busy`.
 - Empty state: `EmptyState` with `EmptyStateMedia`, `EmptyStateTitle`,
   `EmptyStateDescription` and `EmptyStateActions`, `size` `sm` or `default`.
 - Data table `DataTableEmpty` and an `empty` prop: a table with no rows says
