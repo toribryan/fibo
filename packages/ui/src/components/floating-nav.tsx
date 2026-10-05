@@ -141,7 +141,7 @@ function edgeMap(axis: "x" | "y", width: number, height: number) {
 }
 
 /*
- * The liquid glass surface, under the items. A tinted, lightly blurred layer
+ * The liquid glass surface, under the items. A tinted, lightly frosted layer
  * works everywhere. Over it, a layer whose backdrop runs through an SVG
  * displacement filter bends what's behind the edges; only Chromium applies
  * url() in backdrop-filter, and elsewhere that layer is clear, so the bar
@@ -216,7 +216,7 @@ function GlassSurface() {
           </filter>
         </svg>
       ) : null}
-      <span className="absolute inset-0 rounded-full bg-glass backdrop-blur-[1px] backdrop-saturate-150" />
+      <span className="absolute inset-0 rounded-full bg-glass backdrop-blur-xs backdrop-saturate-150" />
       <span
         className="absolute inset-0 rounded-full"
         style={box ? { backdropFilter: `url(#${filterId})` } : undefined}
