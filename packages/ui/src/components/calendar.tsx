@@ -422,12 +422,13 @@ function Calendar(props: CalendarProps) {
   const atMin = !!minMonth && !!month && month <= minMonth
   const atMax = !!maxMonth && !!lastShown && lastShown >= maxMonth
 
-  // The calendar is a size container, so two months stack when there isn't
-  // room for them side by side rather than squeezing their days. A size
+  // The months sit in a size container, so two of them stack when there
+  // isn't room side by side rather than squeezing their days. A size
   // container can't take its width from its content, so it's told the width
-  // the months need: a popover still sizes to it, and a narrower column
-  // gets the stack. The padding is 4px a side.
-  const pageWidth = monthCount * MONTH_WIDTH[size] + (monthCount - 1) * 24 + 8
+  // the months need: a popover still sizes to it, and a narrower column gets
+  // the stack. It has no padding of its own, so a caller's padding on the
+  // root can't throw the measurement off.
+  const pageWidth = monthCount * MONTH_WIDTH[size] + (monthCount - 1) * 24
 
   return (
     <div
@@ -435,56 +436,62 @@ function Calendar(props: CalendarProps) {
       data-slot="calendar"
       data-type="paged"
       data-size={size}
-      className={cn("@container/calendar overflow-hidden p-1", className)}
-      style={{
-        maxWidth: pageWidth,
-        containIntrinsicInlineSize: `${pageWidth}px`,
-        ...style,
-      }}
+      className={cn("overflow-hidden p-1", className)}
+      style={style}
       {...rest}
     >
-      <div className="relative w-fit">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          data-slot="calendar-previous"
-          aria-label="Previous month"
-          disabled={!month || atMin}
-          onClick={() => month && changeMonth(addMonths(month, -1), "previous")}
-          className="absolute top-0 left-0"
-        >
-          <ChevronLeftIcon aria-hidden="true" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          data-slot="calendar-next"
-          aria-label="Next month"
-          disabled={!month || atMax}
-          onClick={() => month && changeMonth(addMonths(month, 1), "next")}
-          className="absolute top-0 right-0"
-        >
-          <ChevronRightIcon aria-hidden="true" />
-        </Button>
-        <div
-          key={monthKey}
-          data-slot="calendar-months"
-          data-slide={slide ?? undefined}
-          className={cn(
-            "flex flex-col gap-6",
-            monthCount > 1 &&
-              (size === "lg"
-                ? "@min-[640px]/calendar:flex-row"
-                : "@min-[528px]/calendar:flex-row"),
-            slide &&
-              "animate-in duration-200 ease-out fade-in-0 motion-reduce:animate-none",
-            slide === "next" && "slide-in-from-right-6",
-            slide === "previous" && "slide-in-from-left-6"
-          )}
-        >
-          {grids}
+      <div
+        className="@container/calendar"
+        style={{
+          maxWidth: pageWidth,
+          containIntrinsicInlineSize: `${pageWidth}px`,
+        }}
+      >
+        <div className="relative w-fit">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            data-slot="calendar-previous"
+            aria-label="Previous month"
+            disabled={!month || atMin}
+            onClick={() =>
+              month && changeMonth(addMonths(month, -1), "previous")
+            }
+            className="absolute top-0 left-0"
+          >
+            <ChevronLeftIcon aria-hidden="true" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            data-slot="calendar-next"
+            aria-label="Next month"
+            disabled={!month || atMax}
+            onClick={() => month && changeMonth(addMonths(month, 1), "next")}
+            className="absolute top-0 right-0"
+          >
+            <ChevronRightIcon aria-hidden="true" />
+          </Button>
+          <div
+            key={monthKey}
+            data-slot="calendar-months"
+            data-slide={slide ?? undefined}
+            className={cn(
+              "flex flex-col gap-6",
+              monthCount > 1 &&
+                (size === "lg"
+                  ? "@min-[640px]/calendar:flex-row"
+                  : "@min-[528px]/calendar:flex-row"),
+              slide &&
+                "animate-in duration-200 ease-out fade-in-0 motion-reduce:animate-none",
+              slide === "next" && "slide-in-from-right-6",
+              slide === "previous" && "slide-in-from-left-6"
+            )}
+          >
+            {grids}
+          </div>
         </div>
       </div>
       <div aria-live="polite" className="sr-only">
