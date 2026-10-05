@@ -825,6 +825,13 @@ export const ColumnVisibility: Story = {
     await userEvent.keyboard("{Enter}")
     const body = within(canvasElement.ownerDocument.body)
     await body.findByRole("menuitemcheckbox", { name: "Last active" })
+    // The menu takes focus a frame after it opens; End before then lands on
+    // the trigger, and the menu's own first-item focus wins the race.
+    await waitFor(() =>
+      expect(body.getByRole("menu")).toContainElement(
+        canvasElement.ownerDocument.activeElement as HTMLElement
+      )
+    )
     await userEvent.keyboard("{End}")
     await userEvent.keyboard(" ")
     await expect(
