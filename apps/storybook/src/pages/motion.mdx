@@ -1,0 +1,55 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+import { DurationScale, EnterExit } from "../blocks/foundations"
+import { Tip } from "../blocks/guidelines"
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+Motion in fibo says where something came from and where it went. It is short,
+it eases out, and it stops entirely when someone asks for less motion.
+
+## Durations
+
+Four durations, from Tailwind's scale. The shorter the trip, the shorter the
+time. Press Play to compare them.
+
+<DurationScale />
+
+## Entering and leaving
+
+Popups fade and scale up from 95% toward what opened them, and leave the same
+way in reverse, over 100ms: Menu, Select and Tooltip all do this, with
+`tw-animate-css`'s `animate-in` and `animate-out`. Sheets and toasts slide in
+from their edge instead.
+
+<EnterExit />
+
+## Springs
+
+Parts on the Special shelf move with `motion`, on springs rather than
+durations, so a move that's interrupted carries on from where it is. A stiff,
+well-damped spring settles quickly without bouncing; a looser one overshoots
+a little, which fibo keeps for moments meant to feel physical, such as
+Floating nav's glass lens or a reaction landing. Base parts use CSS only.
+
+## Reduced motion
+
+Every animation in fibo has a `motion-reduce` fallback or reads
+`useReducedMotion()`: popups appear in place, indicators jump instead of
+sliding, and continuous animation such as a progress ring or typing dots
+stops.
+
+<Tip>
+  Continuous animation stays off unless it is the point of the part. A spinner
+  is; a decorative shimmer isn't.
+</Tip>
+
+## Rules
+
+- Ease out for things arriving, so they slow into place.
+- Prefer `transform` and `opacity`. Animating width or height lays the page
+  out again on every frame, so keep it to small, contained parts, such as a
+  nav label growing into view.
+- Keep motion under 300ms for anything a person waits on.
