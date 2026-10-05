@@ -15,9 +15,7 @@
     "info-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
     "info-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
     "info-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status colour.",
-    "sticker-edge": "Sticker avatar's paper and ink, white and near-black in both themes. Sticker avatar has no Figma component yet; add both with it.",
-    "sticker-ink": "Sticker avatar's paper and ink, white and near-black in both themes. Sticker avatar has no Figma component yet; add both with it.",
-    "sticker-shadow": "Sticker avatar's lift shadow, the same in both themes. Sticker avatar has no Figma component yet; add it with the component.",
+    "sticker-shadow": "Sticker avatar's lift shadow, the same in both themes. Figma's Sticker avatar draws it as a fixed drop shadow; add the variable when effects bind to it.",
     "particle-shadow": "Reactions' flying emoji shadow, the same in both themes. Particles only exist in motion, so Figma has nothing to bind it to."
   },
   "figmaOnlyProps": {
@@ -30,7 +28,19 @@
     "Message divider.unread": "Code draws the unread divider above the message named by unreadFrom.",
     "Data table.selection": "In code the selection is state, from value or defaultValue; Figma shows each state as a variant.",
     "Data table.width": "Code reads the container's width and switches at 32rem; Figma picks narrow by hand.",
-    "Floating nav item.type": "Code makes an item text-only when it has no icon; designers pick it by hand."
+    "Floating nav item.type": "Code makes an item text-only when it has no icon; designers pick it by hand.",
+    "Sticker avatar.shape": "Code picks the shape from the image: a cut-out when its border is clear, round for a photo, initials with no image. Designers pick it by hand.",
+    "Radio group item.checked": "Base UI checks the item whose value matches the group's value; designers pick it by hand.",
+    "Switch.checked": "Base UI's checked and defaultChecked props, not a fibo prop.",
+    "Slider.thumbs": "Code draws one thumb per value passed; Figma picks one or two by hand.",
+    "Pagination.position": "Code disables Previous and Next from page and pageCount; designers pick first, middle or last by hand.",
+    "Menu checkbox item.checked": "Base UI's checked and defaultChecked props, not a fibo prop.",
+    "Menu radio item.checked": "Base UI checks the item whose value matches the radio group's value; designers pick it by hand.",
+    "Toast.type": "The type is passed to toast.add() as data, not as a component prop.",
+    "Filter menu.view": "Which view shows is internal state in code.",
+    "Filter menu row.kind": "Code renders a field or an option row from its data; designers pick it by hand.",
+    "Filter menu row.checked": "Code checks options and counts a field from the value; designers pick it by hand.",
+    "Pixel snail.size": "size is keyof typeof SCALE in code, which the check cannot read; its options are sm, default and lg, as here."
   },
   "codeOnlyProps": {
     "reactions.position": "Which viewport corner the floating bar pins to; Figma shows the bar on its own."
@@ -48,7 +58,23 @@
     "Message": "message-list",
     "Message divider": "message-list",
     "Map pin preview": "map-pin",
-    "Floating nav item": "floating-nav"
+    "Floating nav item": "floating-nav",
+    "Sticker avatar status": "sticker-avatar",
+    "Sticker avatar count": "sticker-avatar",
+    "Voice memo device": "voice-memo",
+    "Voice memo transcript": "voice-memo",
+    "Radio group item": "radio-group",
+    "Table head": "table",
+    "Table cell": "table",
+    "Menu item": "menu",
+    "Menu checkbox item": "menu",
+    "Menu radio item": "menu",
+    "Menu sub trigger": "menu",
+    "Menu label": "menu",
+    "Menu separator": "menu",
+    "Filter menu row": "filter-menu"
   },
-  "codeOnlyComponents": {}
+  "codeOnlyComponents": {
+    "spinner": "Deprecated, and removed at the next minor release, so it gets no Figma component."
+  }
 }

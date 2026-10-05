@@ -4,7 +4,7 @@
     "key": "LJZ5Tt4Ba7NPPi8Xnq8i0e",
     "name": "Fibo-DS"
   },
-  "readAt": "2026-10-02",
+  "readAt": "2026-10-04",
   "variables": {
     "Color": {
       "background": {
@@ -214,6 +214,14 @@
       "backdrop": {
         "Light": "alpha/neutral-950/20",
         "Dark": "alpha/black/60"
+      },
+      "sticker-edge": {
+        "Light": "base/white",
+        "Dark": "base/white"
+      },
+      "sticker-ink": {
+        "Light": "neutral/900",
+        "Dark": "neutral/900"
       }
     },
     "Border": {
@@ -431,6 +439,130 @@
       "title": "TEXT",
       "description": "TEXT",
       "showContent": "BOOLEAN"
+    },
+    "Sticker avatar": {
+      "showStatus": "BOOLEAN",
+      "initials": "TEXT",
+      "shape": ["cutout", "round", "initials"]
+    },
+    "Sticker avatar status": {
+      "status": ["present", "away", "offline"]
+    },
+    "Sticker avatar count": {
+      "count": "TEXT"
+    },
+    "Voice memo": {
+      "showTranscript": "BOOLEAN",
+      "side": ["right", "bottom"]
+    },
+    "Voice memo device": {
+      "wordmark": "TEXT",
+      "size": ["sm", "default"],
+      "recording": ["false", "true"]
+    },
+    "Voice memo transcript": {
+      "transcript": "TEXT",
+      "state": ["listening", "done"]
+    },
+    "Radio group item": {
+      "checked": ["false", "true"],
+      "state": ["default", "focused", "invalid", "disabled"]
+    },
+    "Radio group": {
+      "option1": "TEXT",
+      "option2": "TEXT",
+      "option3": "TEXT"
+    },
+    "Slider": {
+      "thumbs": ["one", "two"],
+      "state": ["default", "focused", "disabled"]
+    },
+    "Switch": {
+      "size": ["sm", "default"],
+      "checked": ["false", "true"],
+      "state": ["default", "focused", "disabled"]
+    },
+    "Table head": {
+      "label": "TEXT"
+    },
+    "Table cell": {
+      "value": "TEXT",
+      "state": ["default", "hover", "selected"]
+    },
+    "Table": {
+      "showFooter": "BOOLEAN",
+      "showCaption": "BOOLEAN"
+    },
+    "Pagination": {
+      "showRange": "BOOLEAN",
+      "range": "TEXT",
+      "page": "TEXT",
+      "position": ["first", "middle", "last"]
+    },
+    "Menu item": {
+      "label": "TEXT",
+      "showIcon": "BOOLEAN",
+      "icon": "INSTANCE_SWAP",
+      "showShortcut": "BOOLEAN",
+      "shortcut": "TEXT",
+      "variant": ["default", "destructive"],
+      "state": ["default", "highlighted", "disabled"]
+    },
+    "Menu checkbox item": {
+      "label": "TEXT",
+      "checked": ["false", "true"]
+    },
+    "Menu radio item": {
+      "label": "TEXT",
+      "checked": ["false", "true"]
+    },
+    "Menu sub trigger": {
+      "label": "TEXT",
+      "state": ["default", "open"]
+    },
+    "Menu label": {
+      "label": "TEXT"
+    },
+    "Menu separator": {},
+    "Menu": {},
+    "Sheet": {
+      "title": "TEXT",
+      "description": "TEXT",
+      "showCloseButton": "BOOLEAN",
+      "showFooter": "BOOLEAN",
+      "side": ["top", "right", "bottom", "left"]
+    },
+    "Tooltip": {
+      "label": "TEXT"
+    },
+    "Progress": {
+      "showHeader": "BOOLEAN",
+      "label": "TEXT",
+      "value": "TEXT",
+      "state": ["default", "indeterminate"]
+    },
+    "Skeleton": {},
+    "Toast": {
+      "showDescription": "BOOLEAN",
+      "showAction": "BOOLEAN",
+      "type": ["default", "success", "info", "warning", "error", "loading"]
+    },
+    "Filter menu": {
+      "search": ["button", "inline"],
+      "view": ["fields", "values", "search"]
+    },
+    "Filter menu row": {
+      "label": "TEXT",
+      "showIcon": "BOOLEAN",
+      "icon": "INSTANCE_SWAP",
+      "count": "TEXT",
+      "kind": ["field", "option"],
+      "checked": ["false", "true"],
+      "state": ["default", "highlighted"]
+    },
+    "Pixel snail": {
+      "ground": "BOOLEAN",
+      "size": ["sm", "default", "lg"]
     }
   }
 }

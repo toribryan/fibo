@@ -22,7 +22,9 @@ Load the `figma-use` skill before the first `use_figma` call.
 2. **Pages.** One read-only call:
    `return figma.root.children.map((p) => ({ id: p.id, name: p.name }))`.
    Component pages are the `↳` pages under **Base components** and
-   **Special components**; skip Icons and guide pages such as Table guide.
+   **Special components**; skip Icons, the group pages (Actions, Forms,
+   Display, Navigation, Overlays, Feedback) and guide pages such as Data
+   table guide.
 3. **Components.** In one message, one `use_figma` call per component page
    running [`read-components.js`](read-components.js) with its `PAGE_ID`.
    Never loop over pages inside a single script.
