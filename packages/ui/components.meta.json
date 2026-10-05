@@ -67,7 +67,6 @@
     "description": "What shows where content would be: a title, why it's empty, and what to do next.",
     "tier": "base-components",
     "group": "Feedback",
-    "status": "new",
     "figma": "710-144"
   },
   "field": {
@@ -189,6 +188,13 @@
     "tier": "special-components",
     "group": "Feedback",
     "figma": "169-18"
+  },
+  "rich-text-editor": {
+    "title": "Rich text editor",
+    "description": "Formatted writing on Tiptap: headings, marks, lists, quotes and links from a toolbar or Markdown shortcuts, with an optional character limit.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new"
   },
   "select": {
     "title": "Select",

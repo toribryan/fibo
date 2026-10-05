@@ -18,7 +18,6 @@ type PlaygroundArgs = React.ComponentProps<typeof EmptyState> & {
 const meta: Meta<PlaygroundArgs> = {
   title: "Base components/Feedback/Empty state",
   component: EmptyState,
-  tags: ["new"],
   argTypes: {
     size: { control: "inline-radio", options: ["sm", "default"] },
     onAction: { control: false },
