@@ -19,7 +19,6 @@ import {
   WorkflowIcon,
   type LucideIcon,
 } from "lucide-react"
-import { IconButton } from "storybook/internal/components"
 import {
   SET_INDEX,
   STORY_CHANGED,
@@ -118,6 +117,11 @@ addons.setConfig({
   },
 })
 
+const THEMES: { value: Theme; label: string; Icon: LucideIcon }[] = [
+  { value: "light", label: "Light theme", Icon: SunIcon },
+  { value: "dark", label: "Dark theme", Icon: MoonIcon },
+]
+
 function ThemeTool({ api }: { api: API }) {
   const [theme, setTheme] = useState<Theme>(initialTheme)
 
@@ -137,15 +141,22 @@ function ThemeTool({ api }: { api: API }) {
     return () => api.off(THEME_REQUEST, reply)
   }, [api, theme])
 
-  const next = theme === "dark" ? "light" : "dark"
   return (
-    <IconButton
-      title={`Switch to ${next} theme`}
-      onClick={() => setTheme(next)}
-    >
-      {theme === "dark" ? <MoonIcon size={14} /> : <SunIcon size={14} />}
-      {theme === "dark" ? "Dark" : "Light"}
-    </IconButton>
+    <div className="fibo-theme" role="group" aria-label="Theme">
+      {THEMES.map(({ value, label, Icon }) => (
+        <button
+          key={value}
+          type="button"
+          className="fibo-theme-option"
+          aria-label={label}
+          aria-pressed={theme === value}
+          title={label}
+          onClick={() => setTheme(value)}
+        >
+          <Icon size={14} strokeWidth={1.75} aria-hidden />
+        </button>
+      ))}
+    </div>
   )
 }
 
