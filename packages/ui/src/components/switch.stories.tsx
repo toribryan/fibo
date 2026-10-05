@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { expect, fn } from "storybook/test"
 
+import { Field, FieldContent, FieldDescription, FieldLabel } from "./field.js"
 import { Label } from "./label.js"
 import { Switch } from "./switch.js"
 
@@ -76,13 +77,13 @@ export const SettingsList: Story = {
         ["Email digest", "A summary every Monday.", false],
         ["Read receipts", "Show when you've read a message.", true],
       ].map(([title, detail, on], index) => (
-        <div key={index} className="flex items-center gap-4 p-4">
-          <div className="flex flex-1 flex-col gap-0.5">
-            <Label htmlFor={`setting-${index}`}>{title}</Label>
-            <p className="text-sm text-muted-foreground">{detail}</p>
-          </div>
-          <Switch id={`setting-${index}`} defaultChecked={on as boolean} />
-        </div>
+        <Field key={index} orientation="horizontal" className="p-4">
+          <FieldContent>
+            <FieldLabel>{title}</FieldLabel>
+            <FieldDescription>{detail}</FieldDescription>
+          </FieldContent>
+          <Switch defaultChecked={on as boolean} />
+        </Field>
       ))}
     </div>
   ),

@@ -2,16 +2,18 @@
 
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch"
 
+import { useFieldSize } from "@workspace/ui/lib/field-size"
 import { cn } from "@workspace/ui/lib/utils"
 
 function Switch({
   className,
-  size = "default",
+  size: sizeProp,
   ...props
 }: SwitchPrimitive.Root.Props & {
   /** The track's size: 32 by 18 pixels, or 24 by 14 for dense rows. */
   size?: "sm" | "default"
 }) {
+  const size = useFieldSize(sizeProp)
   return (
     <SwitchPrimitive.Root
       data-slot="switch"

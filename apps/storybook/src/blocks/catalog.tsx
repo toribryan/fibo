@@ -187,6 +187,15 @@ const PREVIEWS: Record<string, ReactNode> = {
       <span className="absolute left-[calc(60%-8px)] size-4 rounded-full border border-primary bg-background shadow-sm" />
     </span>
   ),
+  field: (
+    <span className="flex w-40 flex-col gap-1.5 text-left">
+      <span className="text-xs font-medium">Work email</span>
+      <span className="h-7 rounded-sm border border-input bg-input-subtle" />
+      <span className="text-[10px] text-muted-foreground">
+        We send receipts here.
+      </span>
+    </span>
+  ),
   count: (
     <span className="flex items-center gap-3 text-sm font-medium">
       <span className="rounded-full bg-secondary px-2 py-0.5">99+</span>
