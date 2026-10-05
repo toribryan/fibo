@@ -37,11 +37,16 @@ one.
 
 <Install
   name="command-menu"
-  exports={["CommandMenu", "type CommandMenuGroup", "type CommandMenuItem"]}
+  exports={[
+    "CommandMenu",
+    "commandMenuVariants",
+    "type CommandMenuGroup",
+    "type CommandMenuItem",
+  ]}
 />
 
-It installs the Button and Kbd components, the `motion` package, and the
-`--backdrop` token.
+It installs the Button and Kbd components, the `motion` and
+`class-variance-authority` packages, and the `--backdrop` token.
 
 ## Examples
 
@@ -58,6 +63,14 @@ Files and people carry a `preview`, so the dialog widens and a pane follows
 the highlight. Actions without one show a placeholder.
 
 <Canvas of={Stories.WithPreview} />
+
+### Inset
+
+`variant="inset"` sets the list in a card inside a muted shell. The search
+box and the keyboard hints sit on the shell, with no rules between them, so
+the results read as a layer of their own.
+
+<Canvas of={Stories.Inset} />
 
 ### With recents
 

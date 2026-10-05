@@ -367,6 +367,7 @@
     },
     "Command menu": {
       "hints": "BOOLEAN",
+      "variant": ["default", "inset"],
       "view": ["home", "results", "page"],
       "preview": ["false", "true"]
     },

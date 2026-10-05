@@ -208,6 +208,7 @@ const meta: Meta<typeof CommandMenu> = {
     hotkey: { control: "text" },
     hints: { control: "boolean" },
     modal: { control: "boolean" },
+    variant: { control: "inline-radio", options: ["default", "inset"] },
     maxRecent: { control: { type: "range", min: 0, max: 10, step: 1 } },
     groups: { control: false },
     trigger: { control: false },
@@ -226,6 +227,7 @@ const meta: Meta<typeof CommandMenu> = {
     hotkey: "k",
     hints: true,
     modal: true,
+    variant: "default",
     maxRecent: 5,
     onSelect: fn(),
     onOpenChange: fn(),
@@ -334,6 +336,20 @@ export const WithPreview: Story = {
     await waitFor(() => expect(pane).toHaveTextContent("Edited yesterday"))
     await userEvent.keyboard("grace")
     await waitFor(() => expect(pane).toHaveTextContent("Platform"))
+    await settle()
+  },
+}
+
+export const Inset: Story = {
+  args: { variant: "inset" },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(canvas.getByRole("button", { name: /Search/ }))
+    await page.findByRole("combobox", { name: "Command menu" })
+    const popup = canvasElement.ownerDocument.querySelector(
+      '[data-slot="command-menu"]'
+    )
+    await expect(popup).toHaveAttribute("data-variant", "inset")
     await settle()
   },
 }
