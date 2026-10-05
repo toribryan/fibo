@@ -74,6 +74,7 @@
     "Filter menu row": "filter-menu"
   },
   "codeOnlyComponents": {
-    "spinner": "Deprecated, and removed at the next minor release, so it gets no Figma component."
+    "spinner": "Deprecated, and removed at the next minor release, so it gets no Figma component.",
+    "count": "Count is figures in text, styled by the part it sits in; in Figma it is typed into that part's text layer, such as 99+ or +4."
   }
 }

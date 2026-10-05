@@ -70,6 +70,7 @@ import {
 } from "@workspace/ui/components/avatar"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
+import { Count } from "@workspace/ui/components/count"
 import { Input } from "@workspace/ui/components/input"
 import {
   Menu,
@@ -1544,11 +1545,11 @@ function DataTableFacetFilter({
         <ListFilterIcon data-icon="inline-start" />
         {name}
         {ticked.length ? (
-          <span className="rounded-sm bg-muted px-1 text-xs tabular-nums">
-            <span className="sr-only">, </span>
-            {ticked.length}
-            <span className="sr-only"> selected</span>
-          </span>
+          <Count
+            value={ticked.length}
+            label={(n) => `, ${n} selected`}
+            className="rounded-sm bg-muted px-1 text-xs"
+          />
         ) : null}
       </MenuTrigger>
       <MenuContent>
@@ -1561,9 +1562,10 @@ function DataTableFacetFilter({
               onCheckedChange={(checked) => toggle(value, checked)}
             >
               <span className="flex-1 truncate">{String(value)}</span>{" "}
-              <span className="ml-auto text-xs text-muted-foreground tabular-nums">
-                {count}
-              </span>
+              <Count
+                value={count}
+                className="ml-auto text-xs text-muted-foreground"
+              />
             </MenuCheckboxItem>
           ))}
         </MenuGroup>

@@ -187,6 +187,13 @@ const PREVIEWS: Record<string, ReactNode> = {
       <span className="absolute left-[calc(60%-8px)] size-4 rounded-full border border-primary bg-background shadow-sm" />
     </span>
   ),
+  count: (
+    <span className="flex items-center gap-3 text-sm font-medium">
+      <span className="rounded-full bg-secondary px-2 py-0.5">99+</span>
+      <span className="text-muted-foreground">1.2K</span>
+      <span>+4</span>
+    </span>
+  ),
   "status-dot": (
     <span className="flex items-center gap-5">
       <StatusDot status="present" size="lg" label={null} />

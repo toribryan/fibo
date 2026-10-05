@@ -8,6 +8,7 @@ import {
   useStatusDotHost,
   type StatusDotStatus,
 } from "@workspace/ui/components/status-dot"
+import { Count, type CountProps } from "@workspace/ui/components/count"
 import { cn } from "@workspace/ui/lib/utils"
 
 /** @deprecated Use StatusDotStatus from status-dot. */
@@ -459,6 +460,7 @@ function StickerAvatarGroup({
 
 function StickerAvatarCount({
   count,
+  label = (n) => `${n} more`,
   size = 40,
   edge,
   tilt = true,
@@ -468,6 +470,8 @@ function StickerAvatarCount({
 }: Omit<React.ComponentProps<"span">, "children"> & {
   /** How many people are not shown. Rendered as "+count". */
   count: number
+  /** What screen readers hear, for translation. Defaults to "4 more". */
+  label?: CountProps["label"]
   /** Width and height in pixels. Match the stickers beside it. */
   size?: number
   /** Paper edge in pixels. Defaults to the same rule as StickerAvatar. */
@@ -486,7 +490,7 @@ function StickerAvatarCount({
     <span
       data-slot="sticker-avatar-count"
       className={cn(
-        "relative inline-flex shrink-0 rotate-(--sticker-tilt) items-center justify-center rounded-full bg-sticker-ink font-semibold text-sticker-edge tabular-nums shadow-[0_0_0_var(--sticker-edge-width)_var(--sticker-edge)] select-none",
+        "relative inline-flex shrink-0 rotate-(--sticker-tilt) items-center justify-center rounded-full bg-sticker-ink font-semibold text-sticker-edge shadow-[0_0_0_var(--sticker-edge-width)_var(--sticker-edge)] select-none",
         PAPER_SHADOW,
         className
       )}
@@ -502,7 +506,7 @@ function StickerAvatarCount({
       }
       {...props}
     >
-      +{count}
+      <Count value={count} plus label={label} />
     </span>
   )
 }
