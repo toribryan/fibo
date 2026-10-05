@@ -5,6 +5,7 @@ import {
   ArrowUpRightIcon,
   AtSignIcon,
   BoldIcon,
+  CalendarIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -148,6 +149,13 @@ const PREVIEWS: Record<string, ReactNode> = {
           ))}
         </span>
       ))}
+    </span>
+  ),
+  "date-picker": (
+    <span className="flex h-8 w-52 items-center gap-2 rounded-sm border border-input bg-input-subtle px-3 text-sm">
+      <CalendarIcon className="size-4 text-muted-foreground" />
+      <span className="flex-1">Oct 6 – 9, 2026</span>
+      <ChevronDownIcon className="size-4 text-muted-foreground" />
     </span>
   ),
   "empty-state": (

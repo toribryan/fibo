@@ -69,6 +69,13 @@
     "group": "Display",
     "figma": "230-2"
   },
+  "date-picker": {
+    "title": "Date picker",
+    "description": "A field that opens a calendar to pick a day, or a range with presets and Apply; a popover on desktop, a drawer on phones.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new"
+  },
   "empty-state": {
     "title": "Empty state",
     "description": "What shows where content would be: a title, why it's empty, and what to do next.",
