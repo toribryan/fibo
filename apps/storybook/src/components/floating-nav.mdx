@@ -67,6 +67,12 @@ rim also bends, through an SVG displacement filter sized to the bar; Safari and
 Firefox keep the blur and rim. The current item sits under a glass lens that
 overshoots a little as it lands, and the bar swells a touch under a finger.
 
+Pressing the bar lifts the lens off it, the way iOS does as you change tabs:
+it grows past the bar's edges, clears, and magnifies the item beneath with a
+fringe of colour at its rim, then travels to the new item and settles back
+into its tint. In Safari and Firefox it lifts and clears without the
+magnifying. With reduced motion it stays put.
+
 <Canvas of={Stories.Glass} />
 
 ### Labels always shown
@@ -267,6 +273,20 @@ Style parts by slot or state, for example with
           <code>variant="glass"</code>.
         </>
       ),
+    },
+    {
+      attribute: 'data-slot="floating-nav-lens"',
+      element: "The glass lens on the current item",
+      when: (
+        <>
+          <code>variant="glass"</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-lifted",
+      element: "The glass lens",
+      when: "From a press until it settles on the new item.",
     },
     {
       attribute: "data-current",
