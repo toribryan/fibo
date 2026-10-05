@@ -32,6 +32,7 @@ import {
   StickerAvatarCount,
   StickerAvatarGroup,
 } from "@workspace/ui/components/sticker-avatar"
+import { StatusDot } from "@workspace/ui/components/status-dot"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -184,6 +185,13 @@ const PREVIEWS: Record<string, ReactNode> = {
       <span className="h-1.5 w-full rounded-full bg-input" />
       <span className="absolute left-0 h-1.5 w-[60%] rounded-full bg-primary" />
       <span className="absolute left-[calc(60%-8px)] size-4 rounded-full border border-primary bg-background shadow-sm" />
+    </span>
+  ),
+  "status-dot": (
+    <span className="flex items-center gap-5">
+      <StatusDot status="present" size="lg" label={null} />
+      <StatusDot status="away" size="lg" label={null} />
+      <StatusDot status="offline" size="lg" label={null} />
     </span>
   ),
   avatar: (
@@ -524,13 +532,12 @@ const PREVIEWS: Record<string, ReactNode> = {
   ),
   "sticker-avatar": (
     <StickerAvatarGroup className="-space-x-2">
-      <StickerAvatar
-        name="Tori Bryan"
-        size={52}
-        status="present"
-        lift={false}
-      />
-      <StickerAvatar name="Ana Ruiz" size={52} status="away" lift={false} />
+      <StickerAvatar name="Tori Bryan" size={52} lift={false}>
+        <StatusDot status="present" />
+      </StickerAvatar>
+      <StickerAvatar name="Ana Ruiz" size={52} lift={false}>
+        <StatusDot status="away" />
+      </StickerAvatar>
       <StickerAvatarCount count={4} size={52} />
     </StickerAvatarGroup>
   ),

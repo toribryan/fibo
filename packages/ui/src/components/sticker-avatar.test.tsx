@@ -2,6 +2,7 @@ import type * as React from "react"
 import { describe, expect, it } from "vitest"
 import { render } from "vitest-browser-react"
 
+import { StatusDot } from "./status-dot.js"
 import {
   StickerAvatar,
   StickerAvatarCount,
@@ -67,7 +68,32 @@ describe("StickerAvatar", () => {
       .toHaveAttribute("data-shape", "initials")
   })
 
-  it("names the status, and lets it be translated", async () => {
+  it("joins a StatusDot's label to its name", async () => {
+    const screen = await render(
+      <>
+        <StickerAvatar name="Ana">
+          <StatusDot status="away" />
+        </StickerAvatar>
+        <StickerAvatar name="Mei">
+          <StatusDot status="present" label="Here" />
+        </StickerAvatar>
+        <StickerAvatar name="Kofi">
+          <StatusDot status="offline" label={null} />
+        </StickerAvatar>
+      </>
+    )
+    await expect
+      .element(screen.getByRole("img", { name: "Ana, Away" }))
+      .toBeInTheDocument()
+    await expect
+      .element(screen.getByRole("img", { name: "Mei, Here" }))
+      .toBeInTheDocument()
+    await expect
+      .element(screen.getByRole("img", { name: "Kofi" }))
+      .toBeInTheDocument()
+  })
+
+  it("still names the status from the deprecated props", async () => {
     const screen = await render(
       <>
         <StickerAvatar name="Ana" status="away" />
