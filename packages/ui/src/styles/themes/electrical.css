@@ -50,6 +50,17 @@
   --ring: #4f5a52;
   --ring-subtle: color-mix(in oklch, #f5c518 60%, transparent);
 
+  /*
+   * Icons stay monochrome, so the chart tokens are greys, as in fibo. They
+   * are set here rather than inherited, or a region in this theme would pick
+   * up a surrounding theme's colours.
+   */
+  --chart-1: var(--color-neutral-300);
+  --chart-2: var(--color-neutral-500);
+  --chart-3: var(--color-neutral-600);
+  --chart-4: var(--color-neutral-700);
+  --chart-5: var(--color-neutral-800);
+
   --sidebar: #e8ebe5;
   --sidebar-foreground: #141a16;
   --sidebar-primary: #16201b;
