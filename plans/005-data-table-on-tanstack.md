@@ -20,7 +20,7 @@ slots and markup. What changes is where rows and state come from:
 - Sorting, filters and pagination can be passed in as external atoms, and a
   small `useSearchParamsAtom` helper keeps an atom in the URL.
 
-This amends plan 003, which kept TanStack out.
+This replaces the data table's first design, which kept TanStack out.
 
 ## Why now
 
@@ -117,7 +117,7 @@ many are hidden. Someone filtering to find more rows to add shouldn't lose
 the ones they already picked, and saying the hidden count keeps a bulk
 delete from reaching rows nobody mentioned.
 
-**Semantics.** Unchanged from plan 003: a native `<table>`, not
+**Semantics.** Unchanged from the first design: a native `<table>`, not
 `role="grid"`, with `aria-sort` on the sorted `<th>` only.
 
 **Migration.** Plan 002 gives a replaced API one minor release. The current
