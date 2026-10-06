@@ -12,10 +12,16 @@ import { iconFor } from "./sidebar-icons.js"
 import { MOBILE_QUERY, OPEN_MENU } from "./site-nav-sync.js"
 import { darkTheme, lightTheme } from "./theme.js"
 import {
+  DESIGN_THEME_EVENT,
+  DESIGN_THEME_REQUEST,
+  DESIGN_THEMES,
+  readDesignTheme,
   readTheme,
+  saveDesignTheme,
   saveTheme,
   THEME_EVENT,
   THEME_REQUEST,
+  type DesignTheme,
   type Theme,
 } from "./theme-sync.js"
 
@@ -101,11 +107,54 @@ function ThemeTool({ api }: { api: API }) {
   )
 }
 
+const DESIGN_THEME_LABELS: Record<DesignTheme, string> = {
+  fibo: "fibo",
+  mechanical: "Mechanical",
+}
+
+// The manager's chrome keeps fibo's look; only the preview takes the theme.
+function DesignThemeTool({ api }: { api: API }) {
+  const [theme, setTheme] = useState<DesignTheme>(readDesignTheme)
+
+  useEffect(() => {
+    saveDesignTheme(theme)
+    api.emit(DESIGN_THEME_EVENT, theme)
+  }, [api, theme])
+
+  useEffect(() => {
+    const reply = () => api.emit(DESIGN_THEME_EVENT, theme)
+    api.on(DESIGN_THEME_REQUEST, reply)
+    return () => api.off(DESIGN_THEME_REQUEST, reply)
+  }, [api, theme])
+
+  return (
+    <div className="fibo-theme" role="group" aria-label="Design theme">
+      {DESIGN_THEMES.map((value) => (
+        <button
+          key={value}
+          type="button"
+          className="fibo-theme-option fibo-theme-option--text"
+          aria-pressed={theme === value}
+          title={`${DESIGN_THEME_LABELS[value]} theme`}
+          onClick={() => setTheme(value)}
+        >
+          {DESIGN_THEME_LABELS[value]}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 addons.register("fibo/theme", (api) => {
   addons.add("fibo/theme/tool", {
     type: types.TOOL,
     title: "Theme",
-    render: () => <ThemeTool api={api} />,
+    render: () => (
+      <>
+        <DesignThemeTool api={api} />
+        <ThemeTool api={api} />
+      </>
+    ),
   })
 })
 

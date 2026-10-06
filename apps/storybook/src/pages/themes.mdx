@@ -1,0 +1,93 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+import { ThemeCompare } from "../blocks/theme-compare"
+
+<Meta title="Foundations/Themes" />
+
+# Themes
+
+Every fibo part reads semantic tokens, so a theme is mostly a new set of
+token values. fibo ships its own achromatic look and one experimental theme,
+Mechanical. Switch between them with the theme switch in the toolbar, beside
+light and dark.
+
+<ThemeCompare />
+
+The right column sets `data-theme="mechanical"` on itself. The left column
+shows whatever the toolbar has picked, so set the toolbar to fibo to compare
+the two.
+
+## Mechanical
+
+A warm, tactile theme for tools that want to feel like hardware.
+
+- **Surfaces.** A warm off-white page, white cards and fields, near-black
+  text and warm grey hairlines. Dark mode is a warm near-black with slightly
+  lighter cards.
+- **Primary.** Amber, with a near-black label, in both modes.
+- **The edge.** Buttons, select and date picker triggers, the selected tab
+  in a segmented control and keyboard keys sit on a solid bottom edge, and
+  press down onto it like a key. Inputs stay flat and take a soft warm ring
+  on focus.
+- **Shape and type.** 6px corners on controls and IBM Plex Sans, with labels,
+  buttons and tabs at 600.
+- **Colour in icons.** The chart tokens are saturated, so an icon in a menu,
+  Command menu, Filter menu or Floating nav can take its own colour with
+  `className="text-chart-2"`. In fibo's own look the chart tokens are greys.
+
+## Use it
+
+Set the attribute on `<html>` for the whole app, or on any element for one
+region of it. Dark mode follows the `dark` class as usual.
+
+```tsx
+<html lang="en" data-theme="mechanical">
+```
+
+Install it from the registry. It adds the theme's tokens and edge rules to
+your global stylesheet, all scoped to the attribute, so nothing changes until
+you set it.
+
+```bash
+pnpm dlx shadcn@latest add @fibo/theme-mechanical
+```
+
+The theme names IBM Plex Sans but doesn't load it. Add it from Google Fonts,
+or set `--font-sans` to a font your app already loads:
+
+```html
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+/>
+```
+
+## The edge tokens
+
+The edge is drawn from five tokens. fibo's own values give it no depth and no
+colour, so the default look is flat; Mechanical turns it on.
+
+- **`--edge-depth`**: how far a key travels. `0px` in fibo; `3px` in
+  Mechanical, and `2px` on xs and sm buttons.
+- **`--primary-edge`**: under the primary button. A darker amber, `#b17816`
+  light and `#8a5b0c` dark.
+- **`--secondary-edge`**: under the secondary button. `#a8a99f` light,
+  `#0b0c09` dark.
+- **`--outline-edge`**: under outline buttons, triggers, the selected tab and
+  keys. `#b6b7af` light, `#0b0c09` dark.
+- **`--destructive-edge`**: under the destructive button, mixed from
+  `--destructive`.
+
+All five are `transparent` or zero in fibo's own look.
+
+The rules that draw it live in the theme's stylesheet and find parts by the
+data attributes they already carry: Button's `data-variant` and `data-size`,
+`data-slot` on select and date picker triggers, Tabs' `data-slot` and
+`data-variant`, and Kbd's `data-slot`. Ghost and link buttons stay flat.
+
+## Make another theme
+
+Copy `packages/ui/src/styles/themes/mechanical.css`, rename the attribute,
+and change the values. Override only semantic tokens, keep the dark block in
+step with the light one, and add rules for shape only where a token can't say
+it. Plan 011 in the repository has the reasoning.

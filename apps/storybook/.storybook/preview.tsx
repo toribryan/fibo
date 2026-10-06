@@ -6,9 +6,13 @@ import "../src/docs.css"
 import { FiboDocsContainer } from "../src/blocks/docs-container.js"
 import { mdxComponents } from "../src/blocks/typography.js"
 import {
+  DESIGN_THEME_EVENT,
+  DESIGN_THEME_REQUEST,
+  readDesignTheme,
   readTheme,
   THEME_EVENT,
   THEME_REQUEST,
+  type DesignTheme,
   type Theme,
 } from "./theme-sync.js"
 
@@ -16,10 +20,19 @@ function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark")
 }
 
+// fibo is the default look, so it leaves no attribute behind.
+function applyDesignTheme(theme: DesignTheme) {
+  if (theme === "fibo") delete document.documentElement.dataset.theme
+  else document.documentElement.dataset.theme = theme
+}
+
 applyTheme(readTheme())
+applyDesignTheme(readDesignTheme())
 const channel = addons.getChannel()
 channel.on(THEME_EVENT, applyTheme)
+channel.on(DESIGN_THEME_EVENT, applyDesignTheme)
 channel.emit(THEME_REQUEST)
+channel.emit(DESIGN_THEME_REQUEST)
 
 const preview: Preview = {
   parameters: {
@@ -59,7 +72,7 @@ const preview: Preview = {
           "Changelog",
           "Design skills",
           "Foundations",
-          ["Colors", "Typography", "Spacing", "Elevation", "Motion"],
+          ["Colors", "Typography", "Spacing", "Elevation", "Motion", "Themes"],
           // Base groups in the order the Catalog page shows them. Parts keep
           // the stories' import order, which is alphabetical by file, and
           // special parts sit straight under their shelf.

@@ -32,3 +32,37 @@ export function saveTheme(theme: Theme) {
     // Not saving only costs the choice on the next reload.
   }
 }
+
+/*
+ * The design theme is a second, independent choice: fibo's own look or one
+ * of the themes in packages/ui/src/styles/themes. It travels the same way
+ * as light and dark, and the preview sets it as `data-theme` on <html>.
+ */
+export const DESIGN_THEME_EVENT = "fibo/design-theme"
+export const DESIGN_THEME_REQUEST = "fibo/design-theme-request"
+
+export const DESIGN_THEMES = ["fibo", "mechanical"] as const
+export type DesignTheme = (typeof DESIGN_THEMES)[number]
+
+const DESIGN_KEY = "fibo-design-theme"
+
+const isDesignTheme = (value: unknown): value is DesignTheme =>
+  DESIGN_THEMES.includes(value as DesignTheme)
+
+export function readDesignTheme(): DesignTheme {
+  try {
+    const saved = window.localStorage.getItem(DESIGN_KEY)
+    if (isDesignTheme(saved)) return saved
+  } catch {
+    // Storage can be blocked; fall back to fibo's own look.
+  }
+  return "fibo"
+}
+
+export function saveDesignTheme(theme: DesignTheme) {
+  try {
+    window.localStorage.setItem(DESIGN_KEY, theme)
+  } catch {
+    // Not saving only costs the choice on the next reload.
+  }
+}
