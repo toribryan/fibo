@@ -30,7 +30,7 @@
   --primary: #16201b;
   --primary-foreground: #ffffff;
   --primary-hover: #2a3830;
-  --primary-subtle: color-mix(in oklch, #f6d365 55%, transparent);
+  --primary-subtle: color-mix(in oklch, #fcd132 55%, transparent);
   --secondary: #dde2da;
   --secondary-foreground: #141a16;
   --secondary-hover: #d1d7ce;
@@ -48,7 +48,7 @@
   --input-subtle: #ffffff;
   --input-subtle-hover: #f7f9f5;
   --ring: #4f5a52;
-  --ring-subtle: color-mix(in oklch, #eec94a 60%, transparent);
+  --ring-subtle: color-mix(in oklch, #f5c518 60%, transparent);
 
   --sidebar: #e8ebe5;
   --sidebar-foreground: #141a16;
@@ -60,7 +60,7 @@
   --sidebar-ring: #4f5a52;
 
   /* The highlighter. Only ever behind ink, never as text. */
-  --highlight: #f6d365;
+  --highlight: #fcd132;
   --highlight-foreground: #141a16;
 
   /* Crisp corners: fields and buttons 4px, cards 8px. */
@@ -92,10 +92,10 @@
   --popover-overlay: color-mix(in oklch, #1c211d 85%, transparent);
   --backdrop: color-mix(in oklch, #000000 60%, transparent);
 
-  --primary: #f2cc5c;
+  --primary: #fbcb2a;
   --primary-foreground: #141a16;
-  --primary-hover: #e6bd45;
-  --primary-subtle: color-mix(in oklch, #f2cc5c 22%, transparent);
+  --primary-hover: #efbd14;
+  --primary-subtle: color-mix(in oklch, #fbcb2a 22%, transparent);
   --secondary: #262c27;
   --secondary-foreground: #e8ece6;
   --secondary-hover: #2e352f;
@@ -112,18 +112,18 @@
   --input-subtle: #181d19;
   --input-subtle-hover: #1d231e;
   --ring: #8a968c;
-  --ring-subtle: color-mix(in oklch, #f2cc5c 40%, transparent);
+  --ring-subtle: color-mix(in oklch, #fbcb2a 40%, transparent);
 
   --sidebar: #161a17;
   --sidebar-foreground: #e8ece6;
-  --sidebar-primary: #f2cc5c;
+  --sidebar-primary: #fbcb2a;
   --sidebar-primary-foreground: #141a16;
   --sidebar-accent: #252b26;
   --sidebar-accent-foreground: #e8ece6;
   --sidebar-border: #2b322c;
   --sidebar-ring: #8a968c;
 
-  --highlight: #f2cc5c;
+  --highlight: #fbcb2a;
 }
 
 [data-theme="sage"]
