@@ -813,7 +813,10 @@ function SkillsBrowser() {
           "Loading the file tree from GitHub"
         )}
       </p>
-      <div className="grid overflow-hidden rounded-2xl border border-border md:h-[44rem] md:grid-cols-[17rem_minmax(0,1fr)]">
+      <div
+        data-surface
+        className="grid overflow-hidden rounded-2xl border border-border md:h-[44rem] md:grid-cols-[17rem_minmax(0,1fr)]"
+      >
         <nav
           aria-label="Design skills"
           className="max-h-80 overflow-y-auto border-b border-border p-2 md:max-h-none md:border-r md:border-b-0"
