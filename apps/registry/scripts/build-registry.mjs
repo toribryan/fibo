@@ -420,7 +420,7 @@ const THEMES = {
   mechanical: {
     title: "Mechanical theme",
     description:
-      'A warm, tactile theme: an off-white page, an amber primary, and raised controls that press onto a solid bottom edge like keys. Applies under data-theme="mechanical", in light and dark. Uses IBM Plex Sans, which your app loads.',
+      'A warm, tactile theme: a beige page, a terracotta primary, and raised controls that press onto a solid bottom edge like keys. Applies under data-theme="mechanical", in light and dark. Uses IBM Plex Sans, which your app loads.',
   },
 }
 

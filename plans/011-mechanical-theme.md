@@ -4,8 +4,8 @@
 
 fibo gets its first experimental theme, Mechanical: a warm, tactile look
 where raised controls sit on a solid bottom edge and press down onto it, like
-keys. It has a warm off-white page, white fields and cards, near-black text,
-warm grey hairlines, small radii, semibold labels and an amber primary, in
+keys. It has a beige page, cream cards, near-white fields, near-black text,
+sand hairlines, small radii, semibold labels and a terracotta primary, in
 light and dark. Icons in nav-like lists can carry their own colour.
 
 It ships three ways:
@@ -96,38 +96,39 @@ at 3:1 or better on the page, menus and their highlight.
 
 ## Values
 
-Literal colours rather than Tailwind's ramps: none of the ramps has this warm
-grey or amber, and the registry ships the file to apps that may not have them.
+Literal colours rather than Tailwind's ramps: none of the ramps has this beige
+or terracotta, and the registry ships the file to apps that may not have them.
 
 | Token                       | Light                  | Dark                   |
 | --------------------------- | ---------------------- | ---------------------- |
-| `background`                | `#eeefe9`              | `#171814`              |
-| `card`, `popover`           | `#ffffff`              | `#1f201b`, `#22231e`   |
-| `foreground`                | `#151512`              | `#edede6`              |
-| `muted`                     | `#e4e5dd`              | `#282923`              |
-| `muted-foreground`          | `#5c5e55`              | `#a2a398`              |
-| `primary`                   | `#f1a82c`              | `#f1a82c`              |
-| `primary-foreground`        | `#151512`              | `#151512`              |
-| `secondary`                 | `#e4e5dd`              | `#33342d`              |
-| `border`, `input`           | `#d0d1c9`, `#c6c7be`   | `#36372f`, `#47483f`   |
-| `input-subtle` (field face) | `#ffffff`              | `#1f201b`              |
-| `ring-subtle`               | `#b6b7af` at 55%       | `#8c8e84` at 40%       |
+| `background`                | `#efe9dd`              | `#1a1714`              |
+| `card`, `popover`           | `#fbf8f2`              | `#221e1a`, `#26211c`   |
+| `foreground`                | `#1c1915`              | `#efe9dd`              |
+| `muted`                     | `#e6dfd1`              | `#2a2520`              |
+| `muted-foreground`          | `#62594d`              | `#a89f92`              |
+| `primary`                   | `#d9653b`              | `#d9653b`              |
+| `primary-foreground`        | `#1c1915`              | `#1c1915`              |
+| `secondary`                 | `#e6dfd1`              | `#332d27`              |
+| `border`, `input`           | `#d8cfbf`, `#cfc5b3`   | `#3a332c`, `#4a423a`   |
+| `input-subtle` (field face) | `#fffdf9`              | `#221e1a`              |
+| `ring-subtle`               | `#c9b998` at 55%       | `#a8987c` at 40%       |
 | `edge-depth`                | `3px` (2px xs, sm)     | same                   |
-| `primary-edge`              | `#b17816`              | `#8a5b0c`              |
-| `secondary-edge`            | `#a8a99f`              | `#0b0c09`              |
-| `outline-edge`              | `#b6b7af`              | `#0b0c09`              |
+| `primary-edge`              | `#9e4325`              | `#8a3a1f`              |
+| `secondary-edge`            | `#b3a894`              | `#0d0b09`              |
+| `outline-edge`              | `#bdb2a0`              | `#0d0b09`              |
 | `destructive-edge`          | destructive, 45% white | destructive, 35% black |
 | `radius`                    | `0.625rem`             | same                   |
 
 fibo's status text sits on the 700 step, which drops under 4.5:1 for success
-and warning on the warm page, so Mechanical points `--success-text` and
+and warning on the beige page, so Mechanical points `--success-text` and
 `--warning-text` at the 800 step (plan 003's property tokens doing their
 job). Fills, borders and icons keep 700. A unit test checks every text,
 label and icon pair in both modes.
 
-Amber is a fill, too light for text, so a link button is ink with an amber
-underline. The theme keeps one property of its own, `--key-face`, for the
-selected tab: white (`card`) in light, `secondary` in dark, where a white key
+White on terracotta is 3.6:1, so the primary label is near-black (4.9:1),
+which keeps the colour exact. Terracotta is a fill, too light for text on the
+page, so a link button is ink with a terracotta underline. The theme keeps one property of its own, `--key-face`, for the
+selected tab: cream (`card`) in light, `secondary` in dark, where a white key
 would glare. Setting it in the two token blocks also avoids a mode-specific
 selector, which in testing nudged the anti-aliasing of fibo's own tab pill.
 
