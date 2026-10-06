@@ -18,11 +18,12 @@ function MenuContent({
   sideOffset = 4,
   align = "start",
   alignOffset = 0,
+  collisionAvoidance,
   ...props
 }: MenuPrimitive.Popup.Props &
   Pick<
     MenuPrimitive.Positioner.Props,
-    "align" | "alignOffset" | "side" | "sideOffset"
+    "align" | "alignOffset" | "side" | "sideOffset" | "collisionAvoidance"
   >) {
   return (
     <MenuPrimitive.Portal>
@@ -31,6 +32,7 @@ function MenuContent({
         sideOffset={sideOffset}
         align={align}
         alignOffset={alignOffset}
+        collisionAvoidance={collisionAvoidance}
         className="isolate z-50 outline-none"
       >
         <MenuPrimitive.Popup
