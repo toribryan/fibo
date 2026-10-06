@@ -43,16 +43,13 @@ function Scene({
   theme,
 }: {
   name: string
-  theme?: "mechanical" | "electrical"
+  theme: "fibo" | "mechanical" | "electrical"
 }) {
   return (
     <section
       aria-label={name}
       data-theme={theme}
-      className={cn(
-        "flex min-w-0 flex-col gap-5 rounded-xl border border-border p-5",
-        !theme && "bg-background"
-      )}
+      className="flex min-w-0 flex-col gap-5 rounded-xl border border-border p-5"
     >
       <h3 className="m-0 text-sm font-medium text-muted-foreground">{name}</h3>
       <div className="flex flex-wrap gap-2">
@@ -116,7 +113,7 @@ function Scene({
 function ThemeCompare() {
   return (
     <div className="my-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <Scene name="fibo" />
+      <Scene name="fibo" theme="fibo" />
       <Scene name="Mechanical" theme="mechanical" />
       <Scene name="Electrical" theme="electrical" />
     </div>
