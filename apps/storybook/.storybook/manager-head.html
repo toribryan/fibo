@@ -74,6 +74,15 @@
     min-width: 0;
     background: none;
   }
+  /* The theme menu (theme-menu.tsx) takes the place of Storybook's
+     create-story button, which only works in dev. */
+  .sidebar-container button[aria-label="Create a new story"] {
+    display: none !important;
+  }
+  .fibo-theme-menu {
+    flex: none;
+    background: none;
+  }
   /* Storybook outlines every focused input; the menu's search box sits in
      its own field and needs none. */
   .fibo-ui [data-slot="input-group-control"]:focus {
@@ -266,14 +275,6 @@
   .fibo-theme-option:focus-visible {
     outline: 2px solid var(--fibo-muted);
     outline-offset: 1px;
-  }
-  /* The design theme switch names its themes, since no icon says them. */
-  .fibo-theme-option--text {
-    width: auto;
-    padding: 0 8px;
-    font: inherit;
-    font-size: 12px;
-    font-weight: 500;
   }
 
   /* Storybook's own type icons give way to the Lucide ones in the label. */

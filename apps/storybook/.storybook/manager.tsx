@@ -107,56 +107,41 @@ function ThemeTool({ api }: { api: API }) {
   )
 }
 
-const DESIGN_THEME_LABELS: Record<DesignTheme, string> = {
-  fibo: "fibo",
-  mechanical: "Mechanical",
-}
-
-// The manager's chrome keeps fibo's look; only the preview takes the theme.
-function DesignThemeTool({ api }: { api: API }) {
-  const [theme, setTheme] = useState<DesignTheme>(readDesignTheme)
-
-  useEffect(() => {
-    saveDesignTheme(theme)
-    api.emit(DESIGN_THEME_EVENT, theme)
-  }, [api, theme])
-
-  useEffect(() => {
-    const reply = () => api.emit(DESIGN_THEME_EVENT, theme)
-    api.on(DESIGN_THEME_REQUEST, reply)
-    return () => api.off(DESIGN_THEME_REQUEST, reply)
-  }, [api, theme])
-
-  return (
-    <div className="fibo-theme" role="group" aria-label="Design theme">
-      {DESIGN_THEMES.map((value) => (
-        <button
-          key={value}
-          type="button"
-          className="fibo-theme-option fibo-theme-option--text"
-          aria-pressed={theme === value}
-          title={`${DESIGN_THEME_LABELS[value]} theme`}
-          onClick={() => setTheme(value)}
-        >
-          {DESIGN_THEME_LABELS[value]}
-        </button>
-      ))}
-    </div>
-  )
-}
-
 addons.register("fibo/theme", (api) => {
   addons.add("fibo/theme/tool", {
     type: types.TOOL,
     title: "Theme",
-    render: () => (
-      <>
-        <DesignThemeTool api={api} />
-        <ThemeTool api={api} />
-      </>
-    ),
+    render: () => <ThemeTool api={api} />,
   })
 })
+
+/*
+ * The design theme is picked from the sidebar's theme menu
+ * (manager-ui/theme-menu.tsx) and held here, where the channel to the
+ * preview is. The manager's chrome keeps fibo's look; only the preview
+ * takes the theme.
+ */
+let designTheme = readDesignTheme()
+const designListeners = new Set<(theme: DesignTheme) => void>()
+
+function designThemeBridge(api: API) {
+  api.on(DESIGN_THEME_REQUEST, () => api.emit(DESIGN_THEME_EVENT, designTheme))
+  api.emit(DESIGN_THEME_EVENT, designTheme)
+  return {
+    getDesignTheme: () => designTheme,
+    setDesignTheme: (theme: DesignTheme) => {
+      if (!DESIGN_THEMES.includes(theme) || theme === designTheme) return
+      designTheme = theme
+      saveDesignTheme(theme)
+      api.emit(DESIGN_THEME_EVENT, theme)
+      designListeners.forEach((listener) => listener(theme))
+    },
+    onDesignTheme: (listener: (theme: DesignTheme) => void) => {
+      designListeners.add(listener)
+      return () => void designListeners.delete(listener)
+    },
+  }
+}
 
 // Docs pages carry the floating nav on phones, so Storybook's bottom bar is
 // hidden there (manager-head.html) and only returns for a story's canvas.
@@ -256,6 +241,7 @@ addons.register("fibo/manager-bridge", (api) => {
       return () => api.off(SET_INDEX, listener)
     },
     navigate: (path) => api.navigate(path),
+    ...designThemeBridge(api),
   }
   window.dispatchEvent(new Event(BRIDGE_READY))
 })
