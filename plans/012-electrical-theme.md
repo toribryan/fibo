@@ -32,6 +32,14 @@ edge tokens keep fibo's zero values. In dark mode ink can't be a fill, so the
 yellow becomes the primary, under an ink label. Chart tokens stay fibo's
 greys: icons in Electrical are monochrome.
 
+**Icons.** Lucide icons carry the `lucide` class, so one rule restyles every
+icon in every part. Options: thinner technical lines, heavier signage
+strokes, tiles behind icons in nav lists, or the highlight behind the active
+item's icon. Chosen: technical lines, a 1.25 stroke with square caps and
+mitred joins. The stroke is `non-scaling-stroke`, so it is 1.25 screen
+pixels whatever the icon's size; a scaling 1.25 stroke would draw a 12px icon
+at 0.6px.
+
 `--highlight` and `--highlight-foreground` belong to the theme, like
 Mechanical's `--key-face`, and aren't in `globals.css`. Only Electrical's own rules
 read them.

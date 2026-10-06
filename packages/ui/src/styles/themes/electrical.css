@@ -134,6 +134,28 @@
   color: var(--highlight-foreground);
 }
 
+/*
+ * Icons are drawn like a schematic: one hairline weight, square ends and
+ * sharp corners. The stroke doesn't scale, so a 12px icon and a 20px one
+ * share the same 1.25px line instead of thinning out as they shrink.
+ */
+[data-theme="electrical"]
+  svg.lucide:not(
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
+  ) {
+  stroke-width: 1.25;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+[data-theme="electrical"]
+  svg.lucide
+  > *:not(
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
+  ) {
+  vector-effect: non-scaling-stroke;
+}
+
 /* Tight, confident headings. */
 [data-theme="electrical"]
   :is(h1, h2, h3):not(
