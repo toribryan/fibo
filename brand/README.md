@@ -11,7 +11,7 @@ the posters and the motion prototype. The published kit lives at
 | `rabbit.js`                       | fibo, 20 × 20 pixels. The one source for every drawing of him here        |
 | `rabbit.mjs`                      | The same grid for Node, with the dark-ground inverse and an SVG writer    |
 | `logo.js`, `logo.html`            | The logo: the rabbit on the baseline of "fibo" in Geist Medium            |
-| `cards.mjs`                       | The ten launch cards, the avatar and the banner, as HTML                  |
+| `cards.mjs`                       | The ten launch cards, the avatar, the banner and the link preview         |
 | `tensions.html`                   | The six tension cards, each split on the golden section                   |
 | `window.html`                     | The golden window poster                                                  |
 | `mosaic-lib.js`, `texture-lib.js` | Photo sampling, pixel texture, dither and grain for the canvas pages      |

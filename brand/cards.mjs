@@ -367,6 +367,22 @@ export const CARDS = [
       <div class="abs" style="left:1060px; top:230px; display:flex; gap:21px; align-items:flex-end;">${draw(fibo(), { size: 7 })}</div>
       <span class="mono abs" style="left:89px; bottom:34px; font-size:21px; color:var(--soft);">fibo.toribryan.com</span>`,
   },
+  {
+    // The link preview for fibo.toribryan.com, copied to apps/storybook/public/og.png.
+    id: "og",
+    w: 1200,
+    h: 630,
+    theme: "light",
+    html: () => `
+      ${construction(WIDE, "right:-55px; top:-21px; height:672px;")}
+      <div class="abs" style="left:89px; top:89px; width:610px;">
+        <span class="eyebrow" style="font-family:Geist, sans-serif;">Open source design system</span>
+        <h1 class="t144 mark">fibo</h1>
+        <p class="lede">Parts for <b>experimental projects</b> and <b>special components</b>, installed as source with one shadcn command.</p>
+      </div>
+      <div class="abs" style="left:853px; top:233px;">${draw(fibo(), { size: 13 })}</div>
+      <span class="abs" style="left:89px; bottom:55px; font-size:21px; color:var(--soft);">fibo.toribryan.com</span>`,
+  },
 ]
 
 export function render(card) {
