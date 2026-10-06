@@ -26,7 +26,7 @@ const THEMES: { value: DesignTheme; label: string; description: string }[] = [
     label: "Mechanical",
     description: "Terracotta keys on beige",
   },
-  { value: "sage", label: "Sage", description: "Ink and a lime highlight" },
+  { value: "sage", label: "Sage", description: "Ink and a yellow highlight" },
 ]
 
 // A chip of the theme's own page and primary, drawn by the theme itself.

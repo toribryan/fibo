@@ -25,11 +25,11 @@ third option no longer fits a toolbar of text buttons.
 modern fintech marketing: flat surfaces, ink buttons, crisp corners, tight
 type, tabular figures and one bright highlight. Chosen: a sage page, white
 cards, an ink primary with a white label, 4px corners on controls and Inter
-Tight. A lime `--highlight` marks what is selected: the active segment of a
+Tight. A yellow `--highlight` marks what is selected: the active segment of a
 tab list, the active reaction (through `--primary-subtle`), a link's
 underline drawn like a highlighter and selected text. Controls stay flat; the
 edge tokens keep fibo's zero values. In dark mode ink can't be a fill, so the
-lime becomes the primary, under an ink label. Chart tokens stay fibo's
+yellow becomes the primary, under an ink label. Chart tokens stay fibo's
 greys: icons in Sage are monochrome.
 
 `--highlight` and `--highlight-foreground` belong to the theme, like
@@ -47,7 +47,7 @@ stylesheet.
 
 **Nested themes.** The Themes page shows each theme in a column with its own
 `data-theme`, inside a page in whichever theme is picked. Tokens already stop
-at the nearest region; rules didn't, so Sage's lime tab showed up in the
+at the nearest region; rules didn't, so Sage's highlighted tab showed up in the
 Mechanical column. Options: CSS `@scope` with a lower bound, or a `:not()`
 guard on every rule. `@scope` nests, and the registry ships flat rules.
 Chosen: the guard, `:not([data-theme="sage"] [data-theme]:not([data-theme="sage"]) *)`,

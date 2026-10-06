@@ -1,6 +1,6 @@
 /*
  * Sage (plans/012-sage-theme.md): a flat, ledger-like theme. A sage page,
- * white cards, ink buttons and one lime highlight, used the way a highlighter
+ * white cards, ink buttons and one yellow highlight, used the way a highlighter
  * is: on the selected thing, the active reaction, a link's underline and
  * selected text. Everything else stays green-grey.
  *
@@ -30,7 +30,7 @@
   --primary: #16201b;
   --primary-foreground: #ffffff;
   --primary-hover: #2a3830;
-  --primary-subtle: color-mix(in oklch, #c6e14b 55%, transparent);
+  --primary-subtle: color-mix(in oklch, #f6d365 55%, transparent);
   --secondary: #dde2da;
   --secondary-foreground: #141a16;
   --secondary-hover: #d1d7ce;
@@ -48,7 +48,7 @@
   --input-subtle: #ffffff;
   --input-subtle-hover: #f7f9f5;
   --ring: #4f5a52;
-  --ring-subtle: color-mix(in oklch, #b9d63c 60%, transparent);
+  --ring-subtle: color-mix(in oklch, #eec94a 60%, transparent);
 
   --sidebar: #e2e6de;
   --sidebar-foreground: #141a16;
@@ -60,7 +60,7 @@
   --sidebar-ring: #4f5a52;
 
   /* The highlighter. Only ever behind ink, never as text. */
-  --highlight: #c6e14b;
+  --highlight: #f6d365;
   --highlight-foreground: #141a16;
 
   /* Crisp corners: fields and buttons 4px, cards 8px. */
@@ -79,7 +79,7 @@
 
 /*
  * Dark mode turns the highlighter into the primary: ink can't be a fill on
- * a near-black page, and lime under an ink label reads at a glance.
+ * a near-black page, and yellow under an ink label reads at a glance.
  */
 .dark[data-theme="sage"],
 .dark [data-theme="sage"] {
@@ -92,10 +92,10 @@
   --popover-overlay: color-mix(in oklch, #1c211d 85%, transparent);
   --backdrop: color-mix(in oklch, #000000 60%, transparent);
 
-  --primary: #cfe86b;
+  --primary: #f2cc5c;
   --primary-foreground: #141a16;
-  --primary-hover: #bfdb52;
-  --primary-subtle: color-mix(in oklch, #cfe86b 22%, transparent);
+  --primary-hover: #e6bd45;
+  --primary-subtle: color-mix(in oklch, #f2cc5c 22%, transparent);
   --secondary: #262c27;
   --secondary-foreground: #e8ece6;
   --secondary-hover: #2e352f;
@@ -112,18 +112,18 @@
   --input-subtle: #181d19;
   --input-subtle-hover: #1d231e;
   --ring: #8a968c;
-  --ring-subtle: color-mix(in oklch, #cfe86b 40%, transparent);
+  --ring-subtle: color-mix(in oklch, #f2cc5c 40%, transparent);
 
   --sidebar: #161a17;
   --sidebar-foreground: #e8ece6;
-  --sidebar-primary: #cfe86b;
+  --sidebar-primary: #f2cc5c;
   --sidebar-primary-foreground: #141a16;
   --sidebar-accent: #252b26;
   --sidebar-accent-foreground: #e8ece6;
   --sidebar-border: #2b322c;
   --sidebar-ring: #8a968c;
 
-  --highlight: #cfe86b;
+  --highlight: #f2cc5c;
 }
 
 [data-theme="sage"]

@@ -425,7 +425,7 @@ const THEMES = {
   sage: {
     title: "Sage theme",
     description:
-      'A flat, ledger-like theme: a sage page, white cards, ink buttons and one lime highlight on whatever is selected. Applies under data-theme="sage", in light and dark. Uses Inter Tight, which your app loads.',
+      'A flat, ledger-like theme: a sage page, white cards, ink buttons and one yellow highlight on whatever is selected. Applies under data-theme="sage", in light and dark. Uses Inter Tight, which your app loads.',
   },
 }
 
