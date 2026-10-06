@@ -21,7 +21,9 @@
     "primary-edge": "Pressed-key edge colour from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
     "secondary-edge": "Pressed-key edge colour from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
     "outline-edge": "Pressed-key edge colour from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
-    "destructive-edge": "Pressed-key edge colour from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it."
+    "destructive-edge": "Pressed-key edge colour from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
+    "surface": "Surface layer from plans/013-surfaces.md. Figma gets the variable when the library's frames are rebuilt on surfaces.",
+    "surface-foreground": "Surface layer from plans/013-surfaces.md. Figma gets the variable when the library's frames are rebuilt on surfaces."
   },
   "figmaOnlyProps": {
     "Avatar.type": "Code picks image or initials from whether src loads; designers pick it by hand.",

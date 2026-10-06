@@ -20,6 +20,8 @@
 [data-theme="electrical"] {
   --background: #f0f2ed;
   --foreground: #141a16;
+  --surface: #f8f9f6;
+  --surface-foreground: #141a16;
   --card: #ffffff;
   --card-foreground: #141a16;
   --popover: #ffffff;
@@ -96,6 +98,8 @@
 .dark [data-theme="electrical"] {
   --background: #111512;
   --foreground: #e8ece6;
+  --surface: #151a16;
+  --surface-foreground: #e8ece6;
   --card: #181d19;
   --card-foreground: #e8ece6;
   --popover: #1c211d;

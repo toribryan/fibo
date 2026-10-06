@@ -287,6 +287,49 @@
    */
   /* Touch screens keep no hover: a tapped row would stay lit, with its item
      menu showing, after the finger lifts. */
+  /*
+   * Each design theme lays the chrome out its own way, after shadcn's
+   * sidebar blocks. fibo floats the sidebar as a surface card over the page
+   * (sidebar-04). Mechanical leaves the sidebar on the page and insets the
+   * toolbar and preview in a surface panel (sidebar-08); the preview's body
+   * is that surface too (preview.tsx). Electrical keeps the sidebar flat
+   * beside the page. Phones keep Storybook's own sheet.
+   */
+  @media (min-width: 600px) {
+    /* The card's edge or the panel's is the divide; the sidebar column's
+       border and the resize handle's line would be a second one. The handle
+       still resizes. */
+    :is(:root:not([data-theme]), :root[data-theme="mechanical"])
+      div:has(> [aria-label="Sidebar resize handle"]) {
+      border-right: none !important;
+    }
+    :is(:root:not([data-theme]), :root[data-theme="mechanical"])
+      [aria-label="Sidebar resize handle"]::after {
+      display: none;
+    }
+    :root:not([data-theme]) #storybook-sidebar-region {
+      inset: 8px 4px 8px 8px;
+      width: auto !important;
+      height: auto !important;
+      border: 1px solid var(--fibo-border);
+      border-radius: 12px;
+      background: var(--fibo-surface) !important;
+      box-shadow:
+        0 1px 3px rgb(0 0 0 / 0.08),
+        0 1px 2px rgb(0 0 0 / 0.04);
+    }
+
+    :root[data-theme="mechanical"] div:has(> main #storybook-preview-wrapper) {
+      height: calc(100% - 16px);
+      margin: 8px 8px 8px 0;
+      overflow: hidden;
+      border: 1px solid var(--fibo-border);
+      border-radius: 12px;
+      background: var(--fibo-surface);
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+    }
+  }
+
   @media (hover: none) {
     #storybook-explorer-menu [data-item-id]:hover {
       background-color: transparent;

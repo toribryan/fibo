@@ -44,6 +44,13 @@ export const DESIGN_THEME_REQUEST = "fibo/design-theme-request"
 export const DESIGN_THEMES = ["fibo", "mechanical", "electrical"] as const
 export type DesignTheme = (typeof DESIGN_THEMES)[number]
 
+/*
+ * Each theme lays out Storybook's chrome its own way (manager-head.html):
+ * fibo floats the sidebar as a card over the page, Electrical keeps it flat
+ * beside the page, and these themes inset the page in a surface panel.
+ */
+export const INSET_THEMES: readonly DesignTheme[] = ["mechanical"]
+
 const DESIGN_KEY = "fibo-design-theme"
 
 const isDesignTheme = (value: unknown): value is DesignTheme =>

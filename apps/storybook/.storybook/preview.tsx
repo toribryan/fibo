@@ -8,6 +8,7 @@ import { mdxComponents } from "../src/blocks/typography.js"
 import {
   DESIGN_THEME_EVENT,
   DESIGN_THEME_REQUEST,
+  INSET_THEMES,
   readDesignTheme,
   readTheme,
   THEME_EVENT,
@@ -24,6 +25,8 @@ function applyTheme(theme: Theme) {
 function applyDesignTheme(theme: DesignTheme) {
   if (theme === "fibo") delete document.documentElement.dataset.theme
   else document.documentElement.dataset.theme = theme
+  // An inset page is the surface panel itself, so its parts match it.
+  document.body.toggleAttribute("data-surface", INSET_THEMES.includes(theme))
 }
 
 applyTheme(readTheme())

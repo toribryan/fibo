@@ -1,6 +1,6 @@
 import { create } from "storybook/theming"
 
-import type { DesignTheme, Theme } from "./theme-sync.js"
+import { INSET_THEMES, type DesignTheme, type Theme } from "./theme-sync.js"
 
 const fontCode =
   "'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace"
@@ -25,6 +25,7 @@ const mark = (color: string, path: string, font: string) =>
  */
 type Chrome = {
   bg: string
+  surface: string
   fg: string
   muted: string
   hover: string
@@ -35,7 +36,8 @@ type Chrome = {
 const CHROME: Record<DesignTheme, Record<Theme, Chrome>> = {
   fibo: {
     light: {
-      bg: "#ffffff",
+      bg: "#fafafa",
+      surface: "#ffffff",
       fg: "#0a0a0a",
       muted: "#737373",
       hover: "#f5f5f5",
@@ -44,6 +46,7 @@ const CHROME: Record<DesignTheme, Record<Theme, Chrome>> = {
     },
     dark: {
       bg: "#0a0a0a",
+      surface: "#171717",
       fg: "#fafafa",
       muted: "#a3a3a3",
       hover: "#171717",
@@ -53,25 +56,28 @@ const CHROME: Record<DesignTheme, Record<Theme, Chrome>> = {
   },
   mechanical: {
     light: {
-      bg: "#efe9dd",
-      fg: "#1c1915",
-      muted: "#62594d",
-      hover: "#e6dfd1",
-      border: "#d8cfbf",
-      input: "#fffdf9",
+      bg: "#ece9e3",
+      surface: "#f5f3ef",
+      fg: "#1b1917",
+      muted: "#5e5a54",
+      hover: "#e3dfd8",
+      border: "#d4cfc8",
+      input: "#fefdfb",
     },
     dark: {
-      bg: "#1a1714",
-      fg: "#efe9dd",
-      muted: "#a89f92",
-      hover: "#2a2520",
-      border: "#3a332c",
-      input: "#221e1a",
+      bg: "#191716",
+      surface: "#1d1b19",
+      fg: "#ece9e3",
+      muted: "#a4a099",
+      hover: "#282523",
+      border: "#373430",
+      input: "#201e1c",
     },
   },
   electrical: {
     light: {
       bg: "#f0f2ed",
+      surface: "#f8f9f6",
       fg: "#141a16",
       muted: "#4f5a52",
       hover: "#dfe3dc",
@@ -80,6 +86,7 @@ const CHROME: Record<DesignTheme, Record<Theme, Chrome>> = {
     },
     dark: {
       bg: "#111512",
+      surface: "#151a16",
       fg: "#e8ece6",
       muted: "#9aa49c",
       hover: "#1f2420",
@@ -104,6 +111,7 @@ export function chromeColors(design: DesignTheme, mode: Theme) {
 export function managerTheme(design: DesignTheme, mode: Theme) {
   const c = CHROME[design][mode]
   const fontBase = FONTS[design]
+  const content = INSET_THEMES.includes(design) ? c.surface : c.bg
   return create({
     base: mode,
     fontBase,
@@ -114,14 +122,14 @@ export function managerTheme(design: DesignTheme, mode: Theme) {
     colorPrimary: c.fg,
     colorSecondary: c.fg,
     appBg: c.bg,
-    appContentBg: c.bg,
-    appPreviewBg: c.bg,
+    appContentBg: content,
+    appPreviewBg: content,
     appBorderColor: c.border,
     appBorderRadius: 8,
     textColor: c.fg,
     textMutedColor: c.muted,
     textInverseColor: c.bg,
-    barBg: c.bg,
+    barBg: content,
     barTextColor: c.muted,
     barSelectedColor: c.fg,
     barHoverColor: c.fg,

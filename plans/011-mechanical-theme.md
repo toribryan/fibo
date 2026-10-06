@@ -101,21 +101,21 @@ or terracotta, and the registry ships the file to apps that may not have them.
 
 | Token                       | Light                  | Dark                   |
 | --------------------------- | ---------------------- | ---------------------- |
-| `background`                | `#efe9dd`              | `#1a1714`              |
-| `card`, `popover`           | `#fbf8f2`              | `#221e1a`, `#26211c`   |
-| `foreground`                | `#1c1915`              | `#efe9dd`              |
-| `muted`                     | `#e6dfd1`              | `#2a2520`              |
-| `muted-foreground`          | `#62594d`              | `#a89f92`              |
+| `background`                | `#ece9e3`              | `#191716`              |
+| `card`, `popover`           | `#faf8f5`              | `#201e1c`, `#24211f`   |
+| `foreground`                | `#1b1917`              | `#ece9e3`              |
+| `muted`                     | `#e3dfd8`              | `#282523`              |
+| `muted-foreground`          | `#5e5a54`              | `#a4a099`              |
 | `primary`                   | `#bc5530`              | `#bc5530`              |
 | `primary-foreground`        | `#ffffff`              | `#ffffff`              |
-| `secondary`                 | `#e6dfd1`              | `#332d27`              |
-| `border`, `input`           | `#d8cfbf`, `#cfc5b3`   | `#3a332c`, `#4a423a`   |
-| `input-subtle` (field face) | `#fffdf9`              | `#221e1a`              |
-| `ring-subtle`               | `#c9b998` at 55%       | `#a8987c` at 40%       |
+| `secondary`                 | `#e3dfd8`              | `#312d2b`              |
+| `border`, `input`           | `#d4cfc8`, `#cbc5bd`   | `#373430`, `#47433f`   |
+| `input-subtle` (field face) | `#fefdfb`              | `#201e1c`              |
+| `ring-subtle`               | `#c2baaa` at 55%       | `#a1998c` at 40%       |
 | `edge-depth`                | `3px` (2px xs, sm)     | same                   |
 | `primary-edge`              | `#7f3418`              | `#5c2410`              |
-| `secondary-edge`            | `#b3a894`              | `#0d0b09`              |
-| `outline-edge`              | `#bdb2a0`              | `#0d0b09`              |
+| `secondary-edge`            | `#aea99f`              | `#0c0b0a`              |
+| `outline-edge`              | `#b8b3aa`              | `#0c0b0a`              |
 | `destructive-edge`          | destructive, 45% white | destructive, 35% black |
 | `radius`                    | `0.625rem`             | same                   |
 
