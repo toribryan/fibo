@@ -35,7 +35,8 @@ thumb, Sheet and Tabs' indicator use `bg-background` to blend with the page.
 On a surface they would show as a band. Options: give each part a surface
 variant, or re-point the token. Chosen: `data-surface` sets `--background`
 to `--surface` inside it, so those parts match whichever plane they are on
-with no change to them.
+with no change to them. A surface inside another, such as a panel on Mechanical's inset
+page, steps up to the card colour so it still reads apart.
 
 **Status text on the tinted page.** At 700, success and warning text on its
 own 6% tint drops just under 4.5:1 on `neutral-50`. Thinner tints were too

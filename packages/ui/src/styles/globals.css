@@ -464,6 +464,11 @@
     --foreground: var(--surface-foreground);
     @apply bg-background text-foreground;
   }
+  /* A surface on a surface steps up to the card, so it still reads apart. */
+  [data-surface] [data-surface] {
+    --background: var(--card);
+    --foreground: var(--card-foreground);
+  }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
