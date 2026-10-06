@@ -66,11 +66,11 @@ const preview: Preview = {
       storySort: {
         order: [
           "Welcome",
-          "About fibo",
           "Getting started",
           "Catalog",
           "Changelog",
           "Design skills",
+          "About fibo",
           "Foundations",
           ["Colors", "Typography", "Spacing", "Elevation", "Motion", "Themes"],
           // Base groups in the order the Catalog page shows them. Parts keep
