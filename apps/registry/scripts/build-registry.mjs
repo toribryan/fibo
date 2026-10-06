@@ -126,7 +126,7 @@ function declarations(body) {
 // A top-level rule, so the `:root` inside `@layer base` is never matched.
 function topLevel(selector) {
   const at = globals.search(
-    new RegExp(`^${selector.replace(/[.:]/g, "\\$&")} \\{`, "m")
+    new RegExp(`^${selector.replace(/[.:]/g, "\\$&")}(?:,[^{]*)? \\{`, "m")
   )
   if (at === -1) throw new Error(`globals.css has no top-level ${selector}`)
   return declarations(blockBody(globals, at))

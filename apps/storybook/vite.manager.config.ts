@@ -44,7 +44,7 @@ function managerCss(): Plugin {
           .replace('@import "tailwindcss";', "")
           .replace(/@source "[^"]+";/, `@source "${resolve(ui, "src")}";`)
           .replace(/\n {2}\* \{/, "\n  .fibo-ui, .fibo-ui * {")
-          .replace(/\n {2}body \{/, "\n  .fibo-ui {"),
+          .replace(/\n {2}body,/, "\n  .fibo-ui,"),
         `@source "${resolve(app, "manager-ui")}";`,
       ].join("\n")
       mkdirSync(dirname(file), { recursive: true })
