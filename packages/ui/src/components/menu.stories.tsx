@@ -1,5 +1,5 @@
 import * as React from "react"
-import type { Meta, StoryObj } from "@storybook/react-vite"
+import type { Meta, StoryContext, StoryObj } from "@storybook/react-vite"
 import {
   BugIcon,
   ChartColumnIcon,
@@ -39,6 +39,24 @@ type MenuStoryArgs = React.ComponentProps<typeof MenuContent> & {
   onAction: (action: string) => void
 }
 
+/*
+ * On the docs page each menu is already open beside its trigger, so a reader
+ * sees it without clicking. It stays open and doesn't trap focus there; the
+ * story itself, its tests and Chromatic open it by hand as usual.
+ */
+function shownInDocs(context: Pick<StoryContext, "viewMode">) {
+  return context.viewMode === "docs"
+    ? { open: true, modal: false, onOpenChange: () => {} }
+    : {}
+}
+
+// Below its trigger even near the window's edge, so it never covers the text.
+function pinnedInDocs(context: Pick<StoryContext, "viewMode">) {
+  return context.viewMode === "docs"
+    ? { collisionAvoidance: { side: "none" as const } }
+    : {}
+}
+
 const meta: Meta<MenuStoryArgs> = {
   title: "Base components/Overlays/Menu",
   component: MenuContent,
@@ -63,16 +81,28 @@ const meta: Meta<MenuStoryArgs> = {
       options: ["start", "center", "end"],
     },
     sideOffset: { control: { type: "range", min: 0, max: 16, step: 1 } },
+    collisionAvoidance: { control: false },
     onAction: { control: false },
     children: { control: false },
     render: { control: false },
   },
   parameters: { controls: { exclude: ["onAction", "children", "render"] } },
+  // Room under the trigger for the menu that's open on the docs page.
+  decorators: [
+    (Story, context) =>
+      context.viewMode === "docs" ? (
+        <div className="flex min-h-60 items-start">
+          <Story />
+        </div>
+      ) : (
+        <Story />
+      ),
+  ],
   args: { side: "bottom", align: "start", sideOffset: 4, onAction: fn() },
-  render: ({ onAction, ...args }) => (
-    <Menu>
+  render: ({ onAction, ...args }, context) => (
+    <Menu {...shownInDocs(context)}>
       <MenuTrigger render={<Button variant="outline" />}>More</MenuTrigger>
-      <MenuContent {...args}>
+      <MenuContent {...args} {...pinnedInDocs(context)}>
         <MenuItem onClick={() => onAction("edit")}>
           <PencilIcon />
           Edit
@@ -136,10 +166,10 @@ export const Default: Story = {
 
 export const RowActions: Story = {
   name: "Row actions",
-  render: () => (
+  render: (_args, context) => (
     <div className="flex w-72 items-center justify-between rounded-md border border-border px-3 py-2 text-sm">
       Maya Okafor
-      <Menu>
+      <Menu {...shownInDocs(context)}>
         <MenuTrigger
           render={
             <Button
@@ -151,7 +181,7 @@ export const RowActions: Story = {
         >
           <EllipsisIcon aria-hidden="true" />
         </MenuTrigger>
-        <MenuContent align="end">
+        <MenuContent align="end" {...pinnedInDocs(context)}>
           <MenuItem>
             <PencilIcon />
             Edit
@@ -172,7 +202,7 @@ export const RowActions: Story = {
 }
 
 export const Checkboxes: Story = {
-  render: function Render() {
+  render: function Render(_args, context) {
     const [columns, setColumns] = React.useState({
       team: true,
       role: true,
@@ -181,9 +211,9 @@ export const Checkboxes: Story = {
     const toggle = (key: keyof typeof columns) => (checked: boolean) =>
       setColumns((current) => ({ ...current, [key]: checked }))
     return (
-      <Menu>
+      <Menu {...shownInDocs(context)}>
         <MenuTrigger render={<Button variant="outline" />}>Columns</MenuTrigger>
-        <MenuContent>
+        <MenuContent {...pinnedInDocs(context)}>
           <MenuGroup>
             <MenuLabel inset>Show columns</MenuLabel>
             <MenuCheckboxItem
@@ -212,12 +242,12 @@ export const Checkboxes: Story = {
 }
 
 export const Radio: Story = {
-  render: function Render() {
+  render: function Render(_args, context) {
     const [sort, setSort] = React.useState("name")
     return (
-      <Menu>
+      <Menu {...shownInDocs(context)}>
         <MenuTrigger render={<Button variant="outline" />}>Sort</MenuTrigger>
-        <MenuContent>
+        <MenuContent {...pinnedInDocs(context)}>
           <MenuGroup>
             <MenuLabel inset>Sort by</MenuLabel>
             <MenuRadioGroup value={sort} onValueChange={setSort}>
@@ -233,10 +263,10 @@ export const Radio: Story = {
 }
 
 export const Submenu: Story = {
-  render: () => (
-    <Menu>
+  render: (_args, context) => (
+    <Menu {...shownInDocs(context)}>
       <MenuTrigger render={<Button variant="outline" />}>Members</MenuTrigger>
-      <MenuContent>
+      <MenuContent {...pinnedInDocs(context)}>
         <MenuItem>Change role</MenuItem>
         <MenuSub>
           <MenuSubTrigger>Change team</MenuSubTrigger>
@@ -259,10 +289,10 @@ export const Submenu: Story = {
  */
 export const ColouredIcons: Story = {
   name: "Coloured icons",
-  render: () => (
-    <Menu>
+  render: (_args, context) => (
+    <Menu {...shownInDocs(context)}>
       <MenuTrigger render={<Button variant="outline" />}>Products</MenuTrigger>
-      <MenuContent>
+      <MenuContent {...pinnedInDocs(context)}>
         <MenuItem>
           <ChartColumnIcon className="text-chart-1" />
           Product analytics
