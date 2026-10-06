@@ -296,6 +296,17 @@
    * beside the page. Phones keep Storybook's own sheet.
    */
   @media (min-width: 600px) {
+    /* The card's edge or the panel's is the divide; the sidebar column's
+       border and the resize handle's line would be a second one. The handle
+       still resizes. */
+    :is(:root:not([data-theme]), :root[data-theme="mechanical"])
+      div:has(> [aria-label="Sidebar resize handle"]) {
+      border-right: none !important;
+    }
+    :is(:root:not([data-theme]), :root[data-theme="mechanical"])
+      [aria-label="Sidebar resize handle"]::after {
+      display: none;
+    }
     :root:not([data-theme]) #storybook-sidebar-region {
       inset: 8px 4px 8px 8px;
       width: auto !important;
