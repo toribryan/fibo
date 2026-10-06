@@ -18,7 +18,7 @@
  */
 
 [data-theme="sage"] {
-  --background: #e9ece6;
+  --background: #f0f2ed;
   --foreground: #141a16;
   --card: #ffffff;
   --card-foreground: #141a16;
@@ -50,7 +50,7 @@
   --ring: #4f5a52;
   --ring-subtle: color-mix(in oklch, #eec94a 60%, transparent);
 
-  --sidebar: #e2e6de;
+  --sidebar: #e8ebe5;
   --sidebar-foreground: #141a16;
   --sidebar-primary: #16201b;
   --sidebar-primary-foreground: #ffffff;
