@@ -6,6 +6,7 @@ import "@workspace/ui/themes/mechanical.css"
 import "@workspace/ui/themes/electrical.css"
 
 import { Button } from "@workspace/ui/components/button"
+import { Kbd } from "@workspace/ui/components/kbd"
 import {
   Menu,
   MenuContent,
@@ -19,29 +20,23 @@ import {
 import type { FiboManagerBridge } from "../.storybook/manager-bridge.js"
 import type { DesignTheme } from "../.storybook/theme-sync.js"
 
-const THEMES: { value: DesignTheme; label: string; description: string }[] = [
-  { value: "fibo", label: "fibo", description: "Achromatic, the default" },
-  {
-    value: "mechanical",
-    label: "Mechanical",
-    description: "Terracotta keys on beige",
-  },
-  {
-    value: "electrical",
-    label: "Electrical",
-    description: "Ink and a yellow highlight",
-  },
+const THEMES: { value: DesignTheme; label: string }[] = [
+  { value: "fibo", label: "Original" },
+  { value: "mechanical", label: "Mechanical" },
+  { value: "electrical", label: "Electrical" },
 ]
 
-// A chip of the theme's own page and primary, drawn by the theme itself.
-function Swatch({ theme }: { theme: DesignTheme }) {
+/*
+ * A key drawn by the theme itself: fibo's Kbd inside the theme's scope, so
+ * it can't drift from the stylesheet. The scope is display: contents, so
+ * the theme's page colour has no box to paint.
+ */
+function ThemeKey({ theme }: { theme: DesignTheme }) {
   return (
-    <span
-      aria-hidden="true"
-      data-theme={theme}
-      className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-sm border border-border bg-background"
-    >
-      <span className="size-2.5 rounded-full bg-primary" />
+    <span data-theme={theme} className="contents">
+      <Kbd aria-hidden="true" className="size-5">
+        @
+      </Kbd>
     </span>
   )
 }
@@ -65,7 +60,7 @@ function ThemeMenu({ bridge }: { bridge: FiboManagerBridge }) {
           </Button>
         }
       />
-      <MenuContent align="end" className="w-60">
+      <MenuContent align="end" className="w-56">
         <MenuGroup>
           <MenuLabel>Theme</MenuLabel>
           <MenuRadioGroup
@@ -74,19 +69,16 @@ function ThemeMenu({ bridge }: { bridge: FiboManagerBridge }) {
               bridge.setDesignTheme(value as DesignTheme)
             }
           >
-            {THEMES.map(({ value, label, description }) => (
+            {/* The key marks each theme, and the current one is highlighted,
+                so the radio dot gives way. */}
+            {THEMES.map(({ value, label }) => (
               <MenuRadioItem
                 key={value}
                 value={value}
-                className="h-auto items-start gap-2.5 py-1.5"
+                className="pl-2 data-checked:bg-accent data-checked:text-accent-foreground [&>span:first-child]:hidden"
               >
-                <Swatch theme={value} />
-                <span className="flex min-w-0 flex-col">
-                  <span>{label}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {description}
-                  </span>
-                </span>
+                <ThemeKey theme={value} />
+                <span className="truncate">{label}</span>
               </MenuRadioItem>
             ))}
           </MenuRadioGroup>
