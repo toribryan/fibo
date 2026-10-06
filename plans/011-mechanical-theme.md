@@ -145,8 +145,9 @@ selector, which in testing nudged the anti-aliasing of fibo's own tab pill.
    one is missing rather than a theme variant.
 4. Keep rules flat and unlayered; compose any `box-shadow` with Tailwind's
    ring variables.
-5. Add the name to `THEMES` in `build-registry.mjs` and `DESIGN_THEMES` in
-   `theme-sync.ts`, and a contrast test beside the stylesheet.
+5. Add the name to `THEMES` in `build-registry.mjs`, `DESIGN_THEMES` in
+   `theme-sync.ts` and the theme menu (plan 012), import the stylesheet in
+   `docs.css`, and add the theme to `themes.test.ts`.
 
 ## Not in scope
 

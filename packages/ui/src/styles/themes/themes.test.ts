@@ -1,9 +1,10 @@
 import { afterEach, describe, expect, it } from "vitest"
 
 import "./mechanical.css"
+import "./sage.css"
 
 /*
- * Mechanical's pairs, in both modes, read from the real utility classes with
+ * Each theme's pairs, in both modes, read from the real utility classes with
  * the theme on <html>: text needs 4.5:1 (WCAG 1.4.3), icons 3:1 (1.4.11).
  */
 
@@ -53,9 +54,19 @@ function contrast(fore: string, back: string) {
   return Math.round(((hi! + 0.05) / (lo! + 0.05)) * 100) / 100
 }
 
-describe.each(["light", "dark"] as const)("mechanical, %s", (mode) => {
+// Only themes that colour their chart tokens promise coloured icons.
+const THEMES = [
+  { theme: "mechanical", colourIcons: true },
+  { theme: "sage", colourIcons: false },
+]
+
+const CASES = THEMES.flatMap((entry) =>
+  (["light", "dark"] as const).map((mode) => ({ ...entry, mode }))
+)
+
+describe.each(CASES)("$theme, $mode", ({ theme, colourIcons, mode }) => {
   const setTheme = () => {
-    document.documentElement.dataset.theme = "mechanical"
+    document.documentElement.dataset.theme = theme
     document.documentElement.classList.toggle("dark", mode === "dark")
   }
   afterEach(() => {
@@ -102,20 +113,38 @@ describe.each(["light", "dark"] as const)("mechanical, %s", (mode) => {
     }
   })
 
-  it("chart colours clear 3:1 as icons on menus and the page", () => {
-    setTheme()
-    for (const chart of [1, 2, 3, 4, 5]) {
-      for (const surface of ["bg-background", "bg-popover", "bg-accent"]) {
-        expect
-          .soft(
-            contrast(
-              read(`text-chart-${chart}`, "color"),
-              read(surface, "backgroundColor")
-            ),
-            `text-chart-${chart} on ${surface}`
-          )
-          .toBeGreaterThanOrEqual(3)
+  it.runIf(colourIcons)(
+    "chart colours clear 3:1 as icons on menus and the page",
+    () => {
+      setTheme()
+      for (const chart of [1, 2, 3, 4, 5]) {
+        for (const surface of ["bg-background", "bg-popover", "bg-accent"]) {
+          expect
+            .soft(
+              contrast(
+                read(`text-chart-${chart}`, "color"),
+                read(surface, "backgroundColor")
+              ),
+              `text-chart-${chart} on ${surface}`
+            )
+            .toBeGreaterThanOrEqual(3)
+        }
       }
     }
+  )
+
+  it.runIf(theme === "sage")("ink clears 4.5:1 on the highlight", () => {
+    setTheme()
+    const highlight = getComputedStyle(document.documentElement)
+      .getPropertyValue("--highlight")
+      .trim()
+    expect(
+      contrast(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--highlight-foreground")
+          .trim(),
+        highlight
+      )
+    ).toBeGreaterThanOrEqual(4.5)
   })
 })

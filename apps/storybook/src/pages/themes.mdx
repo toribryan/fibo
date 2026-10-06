@@ -7,15 +7,15 @@ import { ThemeCompare } from "../blocks/theme-compare"
 # Themes
 
 Every fibo part reads semantic tokens, so a theme is mostly a new set of
-token values. fibo ships its own achromatic look and one experimental theme,
-Mechanical. Switch between them with the theme switch in the toolbar, beside
-light and dark.
+token values. fibo ships its own achromatic look and two experimental themes,
+Mechanical and Sage. Switch between them with the palette button beside the
+sidebar's search; light and dark stay in the toolbar.
 
 <ThemeCompare />
 
-The right column sets `data-theme="mechanical"` on itself. The left column
-shows whatever the toolbar has picked, so set the toolbar to fibo to compare
-the two.
+The Mechanical and Sage columns set `data-theme` on themselves. The first
+column shows whichever theme the palette menu has picked, so pick fibo to
+compare all three.
 
 ## Mechanical
 
@@ -35,6 +35,21 @@ A warm, tactile theme for tools that want to feel like hardware.
   Command menu, Filter menu or Floating nav can take its own colour with
   `className="text-chart-2"`. In fibo's own look the chart tokens are greys.
 
+## Sage
+
+A flat, ledger-like theme for tools that deal in numbers.
+
+- **Surfaces.** A sage page, white cards and fields, green-black text and
+  green-grey hairlines. Dark mode is a green near-black.
+- **Primary.** Ink with a white label in light mode. In dark mode the lime
+  highlight becomes the primary, under an ink label.
+- **The highlight.** One lime, `--highlight`, marks what is selected: the
+  active segment of a tab list, the active reaction, a link's underline and
+  selected text. Everything else stays green-grey, and icons stay
+  monochrome.
+- **Shape and type.** Flat controls with 4px corners, never pills. Inter
+  Tight, with labels and buttons at 500, tight headings and tabular figures.
+
 ## Use it
 
 Set the attribute on `<html>` for the whole app, or on any element for one
@@ -44,21 +59,26 @@ region of it. Dark mode follows the `dark` class as usual.
 <html lang="en" data-theme="mechanical">
 ```
 
+A region in a different theme inside a themed page keeps its own look: each
+theme's rules stop at a nested `data-theme`.
+
 Install it from the registry. It adds the theme's tokens and edge rules to
 your global stylesheet, all scoped to the attribute, so nothing changes until
 you set it.
 
 ```bash
 pnpm dlx shadcn@latest add @fibo/theme-mechanical
+pnpm dlx shadcn@latest add @fibo/theme-sage
 ```
 
-The theme names IBM Plex Sans but doesn't load it. Add it from Google Fonts,
-or set `--font-sans` to a font your app already loads:
+Each theme names its font but doesn't load it: IBM Plex Sans for Mechanical,
+Inter Tight for Sage. Add it from Google Fonts, or set `--font-sans` to a
+font your app already loads:
 
 ```html
 <link
   rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter+Tight:wght@400..700&display=swap"
 />
 ```
 
@@ -78,7 +98,7 @@ colour, so the default look is flat; Mechanical turns it on.
 - **`--destructive-edge`**: under the destructive button, mixed from
   `--destructive`.
 
-All five are `transparent` or zero in fibo's own look.
+All five are `transparent` or zero in fibo's own look, and in Sage.
 
 The rules that draw it live in the theme's stylesheet and find parts by the
 data attributes they already carry: Button's `data-variant` and `data-size`,
@@ -90,4 +110,5 @@ data attributes they already carry: Button's `data-variant` and `data-size`,
 Copy `packages/ui/src/styles/themes/mechanical.css`, rename the attribute,
 and change the values. Override only semantic tokens, keep the dark block in
 step with the light one, and add rules for shape only where a token can't say
-it. Plan 011 in the repository has the reasoning.
+it, each ending in the nested-theme guard. Plans 011 and 012 in the
+repository have the reasoning.

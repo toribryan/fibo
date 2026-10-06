@@ -36,9 +36,15 @@ const PRODUCTS = [
   { label: "Error tracking", Icon: BugIcon, colour: "text-chart-5" },
 ]
 
-// The same few parts in one theme. The column sets nothing but data-theme,
-// so whatever changes between the two is the theme's doing.
-function Scene({ name, theme }: { name: string; theme?: "mechanical" }) {
+// The same few parts in one theme. A column sets nothing but data-theme, so
+// whatever changes between them is the theme's doing.
+function Scene({
+  name,
+  theme,
+}: {
+  name: string
+  theme?: "mechanical" | "sage"
+}) {
   return (
     <section
       aria-label={name}
@@ -109,9 +115,10 @@ function Scene({ name, theme }: { name: string; theme?: "mechanical" }) {
 
 function ThemeCompare() {
   return (
-    <div className="my-6 grid gap-4 sm:grid-cols-2">
+    <div className="my-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <Scene name="fibo" />
       <Scene name="Mechanical" theme="mechanical" />
+      <Scene name="Sage" theme="sage" />
     </div>
   )
 }
