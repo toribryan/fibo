@@ -171,7 +171,9 @@ export const Minimal: Story = {
     <LocalChatComposerProvider {...args}>
       <ChatComposerFrame className="flex-row items-end">
         <ChatComposerInput placeholder="Ask anything" />
-        <ChatComposerSubmit className="m-2 shrink-0" />
+        {/* The margin centres the button on one line of text: 48px tall with
+            16px text, 44px from md, where the text drops to 14px. */}
+        <ChatComposerSubmit className="m-2 shrink-0 md:my-1.5" />
       </ChatComposerFrame>
     </LocalChatComposerProvider>
   ),
