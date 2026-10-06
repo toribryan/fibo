@@ -62,6 +62,21 @@ Chosen: the guard, `:not([data-theme="electrical"] [data-theme]:not([data-theme=
 which excludes an element inside a different theme's region within this
 one. It is verbose, so each stylesheet explains it once.
 
+**fibo inside a theme.** A region could leave fibo's look but not come back
+to it, so the fibo column on the Themes page took the page's theme.
+`globals.css` now also matches `[data-theme="fibo"]` with its `:root` and
+`.dark` blocks, which repeats fibo's values on that region. The registry and
+drift scripts read those blocks by their first selector, so they still find
+them. A theme that leaves a token unset inherits the surrounding theme's
+value, so Electrical sets its grey chart tokens itself.
+
+**The sidebar.** Storybook's own chrome takes the theme too: manager.tsx sets
+`data-theme` on the manager's document, so fibo's parts in the sidebar and
+the sidebar's icons follow it, and gives Storybook a theme object per design
+theme and mode (`managerTheme` in `theme.ts`), whose colours also feed
+manager-head.html's `--fibo-*` properties. The docs container uses the same
+objects, so canvases and the props table match the page.
+
 **The contrast test.** `themes.test.ts` replaces `mechanical.test.ts` and
 runs the same checks for every theme, in both modes. Coloured chart icons are
 checked only where the theme promises them; Electrical adds ink on its highlight.
@@ -73,4 +88,3 @@ terracotta darkens to `#bc5530`, and its hover darkens rather than lightens.
 
 - Figma has neither theme.
 - Chromatic snapshots only fibo's look.
-- The manager's own chrome stays in fibo's look whatever the theme.

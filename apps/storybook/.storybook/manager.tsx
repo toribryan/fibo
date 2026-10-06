@@ -10,7 +10,7 @@ import { addons, types, type API } from "storybook/manager-api"
 import { BRIDGE_READY } from "./manager-bridge.js"
 import { iconFor } from "./sidebar-icons.js"
 import { MOBILE_QUERY, OPEN_MENU } from "./site-nav-sync.js"
-import { darkTheme, lightTheme } from "./theme.js"
+import { chromeColors, managerTheme } from "./theme.js"
 import {
   DESIGN_THEME_EVENT,
   DESIGN_THEME_REQUEST,
@@ -31,11 +31,29 @@ import {
 const STATUSES = ["new", "beta", "deprecated"]
 
 const initialTheme = readTheme()
-document.documentElement.dataset.fiboTheme = initialTheme
-document.documentElement.classList.toggle("dark", initialTheme === "dark")
+let mode = initialTheme
+let designTheme = readDesignTheme()
+
+/*
+ * The manager's chrome takes both choices: the sidebar and toolbar switch
+ * with the docs, so they never sit in one theme around a page in another.
+ * fibo's parts in the sidebar read `.dark` and `data-theme` like the preview
+ * does, and manager-head.html's own rules read the --fibo-* colours.
+ */
+function paintChrome(mode: Theme, design: DesignTheme) {
+  const root = document.documentElement
+  root.dataset.fiboTheme = mode
+  root.classList.toggle("dark", mode === "dark")
+  if (design === "fibo") delete root.dataset.theme
+  else root.dataset.theme = design
+  for (const [name, value] of Object.entries(chromeColors(design, mode)))
+    root.style.setProperty(`--fibo-${name}`, value)
+}
+
+paintChrome(initialTheme, designTheme)
 
 addons.setConfig({
-  theme: initialTheme === "dark" ? darkTheme : lightTheme,
+  theme: managerTheme(designTheme, initialTheme),
   showToolbar: true,
   sidebar: {
     showRoots: true,
@@ -70,13 +88,10 @@ const THEMES: { value: Theme; label: string; Icon: LucideIcon }[] = [
 function ThemeTool({ api }: { api: API }) {
   const [theme, setTheme] = useState<Theme>(initialTheme)
 
-  // The sidebar and toolbar switch with the docs, so the chrome never sits
-  // dark around a light page.
   useEffect(() => {
-    document.documentElement.dataset.fiboTheme = theme
-    // fibo's parts in the sidebar read the theme from the dark class.
-    document.documentElement.classList.toggle("dark", theme === "dark")
-    api.setOptions({ theme: theme === "dark" ? darkTheme : lightTheme })
+    mode = theme
+    paintChrome(theme, designTheme)
+    api.setOptions({ theme: managerTheme(designTheme, theme) })
     saveTheme(theme)
     api.emit(THEME_EVENT, theme)
   }, [api, theme])
@@ -118,10 +133,8 @@ addons.register("fibo/theme", (api) => {
 /*
  * The design theme is picked from the sidebar's theme menu
  * (manager-ui/theme-menu.tsx) and held here, where the channel to the
- * preview is. The manager's chrome keeps fibo's look; only the preview
- * takes the theme.
+ * preview is.
  */
-let designTheme = readDesignTheme()
 const designListeners = new Set<(theme: DesignTheme) => void>()
 
 function designThemeBridge(api: API) {
@@ -133,6 +146,8 @@ function designThemeBridge(api: API) {
       if (!DESIGN_THEMES.includes(theme) || theme === designTheme) return
       designTheme = theme
       saveDesignTheme(theme)
+      paintChrome(mode, theme)
+      api.setOptions({ theme: managerTheme(theme, mode) })
       api.emit(DESIGN_THEME_EVENT, theme)
       designListeners.forEach((listener) => listener(theme))
     },

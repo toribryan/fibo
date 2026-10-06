@@ -38,7 +38,7 @@ function Swatch({ theme }: { theme: DesignTheme }) {
   return (
     <span
       aria-hidden="true"
-      data-theme={theme === "fibo" ? undefined : theme}
+      data-theme={theme}
       className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-sm border border-border bg-background"
     >
       <span className="size-2.5 rounded-full bg-primary" />
