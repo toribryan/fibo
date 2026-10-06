@@ -14,6 +14,11 @@
  * whatever its specificity. That is what lets the edge replace a part's own
  * radius, weight, shadow and press without touching its classes.
  *
+ * Each rule below ends in `:not([data-theme="mechanical"] [data-theme]:not(…) *)`,
+ * so it stops at a region that sets a different theme inside this one, the
+ * way the tokens do. Without it a page in one theme would reshape the parts
+ * of a nested preview in another.
+ *
  * The palette is literal rather than Tailwind's ramps: none of them has the
  * beige and terracotta this look is built on, and the registry ships the
  * file to apps whose palette may not have them either.
@@ -160,17 +165,25 @@
   --edge-color: var(--primary-edge);
 }
 
-[data-theme="mechanical"] :is(button, a)[data-variant="secondary"][data-size] {
+[data-theme="mechanical"]
+  :is(button, a)[data-variant="secondary"][data-size]:not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   --edge-color: var(--secondary-edge);
 }
 
-[data-theme="mechanical"] :is(button, a)[data-variant="outline"][data-size] {
+[data-theme="mechanical"]
+  :is(button, a)[data-variant="outline"][data-size]:not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   --edge-color: var(--outline-edge);
 }
 
 [data-theme="mechanical"]
   :is(button, a)[data-variant="destructive"][data-size]:not(
     [data-slot="map-pin"]
+  ):not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
   ) {
   --edge-color: var(--destructive-edge);
 }
@@ -181,7 +194,9 @@
     [data-variant="secondary"],
     [data-variant="outline"],
     [data-variant="destructive"]
-  ):not([data-slot="map-pin"]) {
+  ):not([data-slot="map-pin"]):not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   border-radius: calc(var(--radius) - 4px);
   font-weight: 600;
   /* The ring variables keep the focus and invalid rings the classes draw. */
@@ -201,7 +216,9 @@
     [data-variant="secondary"],
     [data-variant="outline"],
     [data-variant="destructive"]
-  ):not([data-slot="map-pin"], :focus-visible, [aria-invalid="true"]) {
+  ):not([data-slot="map-pin"], :focus-visible, [aria-invalid="true"]):not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   border-color: var(--edge-color);
 }
 
@@ -212,7 +229,9 @@
     [data-size="sm"],
     [data-size="icon-xs"],
     [data-size="icon-sm"]
-  )[data-variant]:not([data-slot="map-pin"]) {
+  )[data-variant]:not([data-slot="map-pin"]):not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   --edge-depth: 2px;
 }
 
@@ -267,18 +286,25 @@
     [data-slot="select-trigger"],
     button[data-slot="date-picker"],
     button[data-slot="date-range-picker"]
-  ):not(:focus-visible, [aria-invalid="true"]) {
+  ):not(:focus-visible, [aria-invalid="true"]):not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   border-color: var(--outline-edge);
 }
 
 /* Segmented tabs: a grey track with the active tab as a raised key. */
-[data-theme="mechanical"] [data-slot="tabs-list"][data-variant="default"] {
+[data-theme="mechanical"]
+  [data-slot="tabs-list"][data-variant="default"]:not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   border-radius: calc(var(--radius) - 2px);
 }
 
 [data-theme="mechanical"]
   [data-slot="tabs-list"][data-variant="default"]
-  > [data-slot="tabs-indicator"] {
+  > [data-slot="tabs-indicator"]:not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   border-radius: calc(var(--radius) - 4px);
   background-color: var(--key-face);
   box-shadow:
@@ -286,23 +312,35 @@
     0 2px 0 0 var(--outline-edge);
 }
 
-[data-theme="mechanical"] [data-slot="tabs-trigger"] {
+[data-theme="mechanical"]
+  [data-slot="tabs-trigger"]:not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   font-weight: 600;
 }
 
 /* The keys in a shortcut hint are keys too. */
-[data-theme="mechanical"] [data-slot="kbd"] {
+[data-theme="mechanical"]
+  [data-slot="kbd"]:not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   border-color: var(--outline-edge);
   background-color: var(--card);
   box-shadow: 0 1px 0 0 var(--outline-edge);
   font-weight: 600;
 }
 
-[data-theme="mechanical"] [data-slot="badge"] {
+[data-theme="mechanical"]
+  [data-slot="badge"]:not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   border-radius: calc(var(--radius) - 6px);
   font-weight: 600;
 }
 
-[data-theme="mechanical"] :is([data-slot="label"], [data-slot="field-label"]) {
+[data-theme="mechanical"]
+  :is([data-slot="label"], [data-slot="field-label"]):not(
+    [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *
+  ) {
   font-weight: 600;
 }
