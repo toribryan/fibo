@@ -1,7 +1,7 @@
 /*
  * The theme is not a Storybook global. Changing a global re-renders every
  * docs page under a fresh React key, so each component would mount already
- * in the new theme and never see the change. Instead the toolbar sends an
+ * in the new theme and never see the change. Instead the sidebar sends an
  * event and the preview flips `.dark` on the document, the way next-themes
  * does in a real app. Manager and preview share an origin, so both read the
  * saved choice from the same storage key on load.

@@ -2,14 +2,15 @@
 
 ## What is changing
 
-fibo gets a second experimental theme, Electrical, and Storybook's design theme
-moves from a toolbar switch to a menu in the sidebar.
+fibo gets a second experimental theme, Electrical, and Storybook's theme
+choices move from the toolbar to a menu in the sidebar.
 
 - `packages/ui/src/styles/themes/electrical.css`, scoped to `[data-theme="electrical"]`,
   and the registry item `@fibo/theme-electrical`.
 - A palette button beside the sidebar's search, where Storybook's
-  create-story button sat, opens a menu of fibo, Mechanical and Electrical. The
-  toolbar keeps light and dark.
+  create-story button sat, opens a menu of Original (fibo), Mechanical and
+  Electrical. Light and dark move to a toggle in the sidebar header, where
+  Storybook's settings button sat, and Storybook's toolbar is hidden.
 - Every theme rule stops at a nested region in a different theme.
 
 ## Why now
@@ -45,13 +46,15 @@ Mechanical's `--key-face`, and aren't in `globals.css`. Only Electrical's own ru
 read them.
 
 **Where the menu lives.** In the toolbar, or in the sidebar. Chosen: the
-sidebar, in place of the create-story button, which only works in dev and
-did nothing on the built site. It is fibo's own Button and Menu, so it runs
-in the React 19 manager-ui bundle beside the command search, and reaches the
-preview through `window.__FIBO_MANAGER__`. manager.tsx holds the choice,
-saves it, and answers the preview's request on load, as before. Each item
-shows a swatch drawn by the theme itself, so it can't drift from the
-stylesheet.
+sidebar, beside search, in place of the create-story button, which only
+works in dev. Light and dark move to a toggle in the sidebar header, in
+place of the settings button; with them gone the toolbar held only
+fullscreen, the code view and Share, so it is hidden everywhere. Both are
+fibo's own parts, so they run in the React 19 manager-ui bundle beside the
+command search, and reach the preview through `window.__FIBO_MANAGER__`.
+manager.tsx holds both choices, saves them, and answers the preview's
+requests on load. Each theme is marked by a key drawn by the theme itself,
+so it can't drift from the stylesheet.
 
 **Nested themes.** The Themes page shows each theme in a column with its own
 `data-theme`, inside a page in whichever theme is picked. Tokens already stop

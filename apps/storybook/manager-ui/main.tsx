@@ -2,6 +2,7 @@ import "virtual:fibo-manager.css"
 
 import { BRIDGE_READY } from "../.storybook/manager-bridge.js"
 import { mountCommandSearch } from "./command-search.js"
+import { mountModeToggle } from "./mode-toggle.js"
 import { mountThemeMenu } from "./theme-menu.js"
 
 // manager.tsx sets the bridge once Storybook registers its addons, which can
@@ -11,6 +12,7 @@ function start() {
   if (!bridge) return false
   mountCommandSearch(bridge)
   mountThemeMenu(bridge)
+  mountModeToggle(bridge)
   return true
 }
 

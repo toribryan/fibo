@@ -68,12 +68,15 @@
     min-width: 0;
     background: none;
   }
-  /* The theme menu (theme-menu.tsx) takes the place of Storybook's
-     create-story button, which only works in dev. */
-  .sidebar-container button[aria-label="Create a new story"] {
+  /* Storybook's create-story button only works in dev and gives way to the
+     theme menu (theme-menu.tsx); its settings button gives way to the light
+     and dark toggle (mode-toggle.tsx). */
+  .sidebar-container button[aria-label="Create a new story"],
+  .sidebar-header button[aria-label="Settings"] {
     display: none !important;
   }
-  .fibo-theme-menu {
+  .fibo-theme-menu,
+  .fibo-mode-toggle {
     flex: none;
     background: none;
   }
@@ -229,46 +232,6 @@
   div[role="main"] > div > div > div > div {
     border-bottom: 1px solid var(--fibo-border);
     box-shadow: none !important;
-  }
-
-  /* The theme switch is a two-segment pill in the toolbar; the current
-     theme's segment is filled, the way the selected sidebar row darkens. */
-  .fibo-theme {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    margin: 0 4px;
-    padding: 2px;
-    border: 1px solid var(--fibo-border);
-    border-radius: 999px;
-  }
-  .fibo-theme-option {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: 0;
-    border-radius: 999px;
-    background: none;
-    color: var(--fibo-muted);
-    cursor: pointer;
-    transition:
-      background-color 150ms ease,
-      color 150ms ease;
-  }
-  .fibo-theme-option:hover {
-    color: var(--fibo-fg);
-  }
-  .fibo-theme-option[aria-pressed="true"] {
-    background: var(--fibo-hover);
-    color: var(--fibo-fg);
-    cursor: default;
-  }
-  .fibo-theme-option:focus-visible {
-    outline: 2px solid var(--fibo-muted);
-    outline-offset: 1px;
   }
 
   /* Storybook's own type icons give way to the Lucide ones in the label. */

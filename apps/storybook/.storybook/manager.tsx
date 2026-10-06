@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react"
-import { MoonIcon, SunIcon, type LucideIcon } from "lucide-react"
+import React from "react"
 import {
   SET_INDEX,
   STORY_CHANGED,
   STORY_MISSING,
 } from "storybook/internal/core-events"
-import { addons, types, type API } from "storybook/manager-api"
+import { addons, type API } from "storybook/manager-api"
 
 import { BRIDGE_READY } from "./manager-bridge.js"
 import { iconFor } from "./sidebar-icons.js"
@@ -30,14 +29,13 @@ import {
 // suffixes, so adding or dropping one never changes a docs URL.
 const STATUSES = ["new", "beta", "deprecated"]
 
-const initialTheme = readTheme()
-let mode = initialTheme
+let mode = readTheme()
 let designTheme = readDesignTheme()
 
 /*
- * The manager's chrome takes both choices: the sidebar and toolbar switch
- * with the docs, so they never sit in one theme around a page in another.
- * fibo's parts in the sidebar read `.dark` and `data-theme` like the preview
+ * The manager's chrome takes both choices: the sidebar switches with the
+ * docs, so it never sits in one theme around a page in another. fibo's
+ * parts in the sidebar read `.dark` and `data-theme` like the preview
  * does, and manager-head.html's own rules read the --fibo-* colours.
  */
 function paintChrome(mode: Theme, design: DesignTheme) {
@@ -50,11 +48,13 @@ function paintChrome(mode: Theme, design: DesignTheme) {
     root.style.setProperty(`--fibo-${name}`, value)
 }
 
-paintChrome(initialTheme, designTheme)
+paintChrome(mode, designTheme)
 
 addons.setConfig({
-  theme: managerTheme(designTheme, initialTheme),
-  showToolbar: true,
+  theme: managerTheme(designTheme, mode),
+  // Light, dark and the design theme live in the sidebar, and nothing else
+  // in the toolbar earns its row.
+  showToolbar: false,
   sidebar: {
     showRoots: true,
     renderLabel: (item) => {
@@ -80,74 +80,45 @@ addons.setConfig({
   },
 })
 
-const THEMES: { value: Theme; label: string; Icon: LucideIcon }[] = [
-  { value: "light", label: "Light theme", Icon: SunIcon },
-  { value: "dark", label: "Dark theme", Icon: MoonIcon },
-]
-
-function ThemeTool({ api }: { api: API }) {
-  const [theme, setTheme] = useState<Theme>(initialTheme)
-
-  useEffect(() => {
-    mode = theme
-    paintChrome(theme, designTheme)
-    api.setOptions({ theme: managerTheme(designTheme, theme) })
-    saveTheme(theme)
-    api.emit(THEME_EVENT, theme)
-  }, [api, theme])
-
-  // A preview that loads after the manager asks for the current theme.
-  useEffect(() => {
-    const reply = () => api.emit(THEME_EVENT, theme)
-    api.on(THEME_REQUEST, reply)
-    return () => api.off(THEME_REQUEST, reply)
-  }, [api, theme])
-
-  return (
-    <div className="fibo-theme" role="group" aria-label="Theme">
-      {THEMES.map(({ value, label, Icon }) => (
-        <button
-          key={value}
-          type="button"
-          className="fibo-theme-option"
-          aria-label={label}
-          aria-pressed={theme === value}
-          title={label}
-          onClick={() => setTheme(value)}
-        >
-          <Icon size={14} strokeWidth={1.75} aria-hidden />
-        </button>
-      ))}
-    </div>
-  )
-}
-
-addons.register("fibo/theme", (api) => {
-  addons.add("fibo/theme/tool", {
-    type: types.TOOL,
-    title: "Theme",
-    render: () => <ThemeTool api={api} />,
-  })
-})
-
 /*
- * The design theme is picked from the sidebar's theme menu
- * (manager-ui/theme-menu.tsx) and held here, where the channel to the
- * preview is.
+ * Both choices are picked in the sidebar, light or dark with the toggle in
+ * its header (manager-ui/mode-toggle.tsx) and the design theme from the
+ * theme menu (manager-ui/theme-menu.tsx), and held here, where the
+ * channel to the preview is. A preview that loads after the manager asks for
+ * each on load.
  */
+const modeListeners = new Set<(mode: Theme) => void>()
 const designListeners = new Set<(theme: DesignTheme) => void>()
 
-function designThemeBridge(api: API) {
+function themeBridge(api: API) {
+  api.on(THEME_REQUEST, () => api.emit(THEME_EVENT, mode))
   api.on(DESIGN_THEME_REQUEST, () => api.emit(DESIGN_THEME_EVENT, designTheme))
+  api.emit(THEME_EVENT, mode)
   api.emit(DESIGN_THEME_EVENT, designTheme)
+  const repaint = () => {
+    paintChrome(mode, designTheme)
+    api.setOptions({ theme: managerTheme(designTheme, mode) })
+  }
   return {
+    getMode: () => mode,
+    setMode: (next: Theme) => {
+      if (next === mode) return
+      mode = next
+      saveTheme(next)
+      repaint()
+      api.emit(THEME_EVENT, next)
+      modeListeners.forEach((listener) => listener(next))
+    },
+    onMode: (listener: (mode: Theme) => void) => {
+      modeListeners.add(listener)
+      return () => void modeListeners.delete(listener)
+    },
     getDesignTheme: () => designTheme,
     setDesignTheme: (theme: DesignTheme) => {
       if (!DESIGN_THEMES.includes(theme) || theme === designTheme) return
       designTheme = theme
       saveDesignTheme(theme)
-      paintChrome(mode, theme)
-      api.setOptions({ theme: managerTheme(theme, mode) })
+      repaint()
       api.emit(DESIGN_THEME_EVENT, theme)
       designListeners.forEach((listener) => listener(theme))
     },
@@ -256,7 +227,7 @@ addons.register("fibo/manager-bridge", (api) => {
       return () => api.off(SET_INDEX, listener)
     },
     navigate: (path) => api.navigate(path),
-    ...designThemeBridge(api),
+    ...themeBridge(api),
   }
   window.dispatchEvent(new Event(BRIDGE_READY))
 })
