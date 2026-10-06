@@ -4,11 +4,11 @@
     "key": "LJZ5Tt4Ba7NPPi8Xnq8i0e",
     "name": "Fibo-DS"
   },
-  "readAt": "2026-10-05",
+  "readAt": "2026-10-06",
   "variables": {
     "Color": {
       "background": {
-        "Light": "base/white",
+        "Light": "neutral/50",
         "Dark": "neutral/950"
       },
       "foreground": {
