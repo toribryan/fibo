@@ -229,4 +229,29 @@ describe("FilterMenu", () => {
       scrollIntoView.mockRestore()
     }
   })
+
+  it("keeps a colour set on a field's icon and mutes the rest", async () => {
+    const screen = await openMenu(
+      <FilterMenu
+        fields={[
+          {
+            ...fields[0]!,
+            icon: <svg data-testid="coloured" className="text-chart-2" />,
+          },
+          { ...fields[1]!, icon: <svg data-testid="plain" /> },
+        ]}
+      />
+    )
+    const colour = (id: string) =>
+      getComputedStyle(screen.getByTestId(id).element()).color
+    const probe = document.createElement("span")
+    probe.className = "text-chart-2"
+    document.body.append(probe)
+    const chart = getComputedStyle(probe).color
+    probe.className = "text-muted-foreground"
+    const muted = getComputedStyle(probe).color
+    probe.remove()
+    expect(colour("coloured")).toBe(chart)
+    expect(colour("plain")).toBe(muted)
+  })
 })

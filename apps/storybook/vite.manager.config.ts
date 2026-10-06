@@ -4,8 +4,8 @@
  *
  * globals.css can't be loaded in the manager as it is, because Tailwind's
  * preflight and its base rules would restyle Storybook itself. The CSS entry
- * is globals.css with those scoped to `.fibo-ui`, the element fibo's parts
- * render in, and its `@source` pointed at the components by absolute path.
+ * is globals.css with those scoped to where fibo's parts render (FIBO_ROOTS),
+ * and its `@source` pointed at the components by absolute path.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { createRequire } from "node:module"
@@ -17,6 +17,14 @@ import { defineConfig, type Plugin } from "vite"
 
 const app = dirname(fileURLToPath(import.meta.url))
 const ui = resolve(app, "../../packages/ui")
+
+/*
+ * Where fibo's parts render in the manager: their own `.fibo-ui` hosts, and
+ * the portals Base UI opens on the body for their popups, such as the
+ * command menu's dialog. Storybook itself never uses Base UI, so a portal
+ * here is always fibo's.
+ */
+const FIBO_ROOTS = ".fibo-ui, [data-base-ui-portal]"
 
 function managerCss(): Plugin {
   const id = "virtual:fibo-manager.css"
@@ -39,12 +47,12 @@ function managerCss(): Plugin {
         "@layer theme, base, components, utilities;",
         '@import "tailwindcss/theme.css" layer(theme);',
         '@import "tailwindcss/utilities.css" layer(utilities);',
-        `@layer base { @scope (.fibo-ui) { ${preflight} } }`,
+        `@layer base { @scope (${FIBO_ROOTS}) { ${preflight} } }`,
         globals
           .replace('@import "tailwindcss";', "")
           .replace(/@source "[^"]+";/, `@source "${resolve(ui, "src")}";`)
-          .replace(/\n {2}\* \{/, "\n  .fibo-ui, .fibo-ui * {")
-          .replace(/\n {2}body \{/, "\n  .fibo-ui {"),
+          .replace(/\n {2}\* \{/, `\n  ${FIBO_ROOTS}, :is(${FIBO_ROOTS}) * {`)
+          .replace(/\n {2}body,/, "\n  .fibo-ui,"),
         `@source "${resolve(app, "manager-ui")}";`,
       ].join("\n")
       mkdirSync(dirname(file), { recursive: true })

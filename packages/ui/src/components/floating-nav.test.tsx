@@ -168,4 +168,31 @@ describe("FloatingNav", () => {
       .element(screen.getByRole("button", { name: "Home" }))
       .toHaveAttribute("aria-current", "true")
   })
+
+  it("keeps a colour set on an item's icon", async () => {
+    const screen = await render(
+      <FloatingNav
+        position="static"
+        defaultValue="home"
+        items={[
+          { value: "home", label: "Home", icon: <svg data-testid="home" /> },
+          {
+            value: "saved",
+            label: "Saved",
+            icon: <svg data-testid="saved" className="text-info" />,
+          },
+          { value: "inbox", label: "Inbox", icon: <svg data-testid="inbox" /> },
+        ]}
+      />
+    )
+    const colour = (id: string) =>
+      getComputedStyle(screen.getByTestId(id).element()).color
+    const probe = document.createElement("span")
+    probe.className = "text-info"
+    document.body.append(probe)
+    const info = getComputedStyle(probe).color
+    probe.remove()
+    expect(colour("saved")).toBe(info)
+    expect(colour("inbox")).not.toBe(info)
+  })
 })

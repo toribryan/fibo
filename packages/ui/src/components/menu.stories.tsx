@@ -1,10 +1,16 @@
 import * as React from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
+  BugIcon,
+  ChartColumnIcon,
+  CirclePlayIcon,
   CopyIcon,
   DownloadIcon,
   EllipsisIcon,
+  GlobeIcon,
   PencilIcon,
+  SettingsIcon,
+  SparklesIcon,
   Trash2Icon,
   UserPlusIcon,
 } from "lucide-react"
@@ -244,4 +250,56 @@ export const Submenu: Story = {
       </MenuContent>
     </Menu>
   ),
+}
+
+/*
+ * An icon keeps a colour you give it, so a nav-like menu can tell its
+ * destinations apart. Icons without one stay muted. The chart tokens are
+ * greys in fibo's own theme and saturated in Mechanical.
+ */
+export const ColouredIcons: Story = {
+  name: "Coloured icons",
+  render: () => (
+    <Menu>
+      <MenuTrigger render={<Button variant="outline" />}>Products</MenuTrigger>
+      <MenuContent>
+        <MenuItem>
+          <ChartColumnIcon className="text-chart-1" />
+          Product analytics
+        </MenuItem>
+        <MenuItem>
+          <GlobeIcon className="text-chart-2" />
+          Web analytics
+        </MenuItem>
+        <MenuItem>
+          <SparklesIcon className="text-chart-3" />
+          Assistant
+        </MenuItem>
+        <MenuItem>
+          <CirclePlayIcon className="text-chart-4" />
+          Session replay
+        </MenuItem>
+        <MenuItem>
+          <BugIcon className="text-chart-5" />
+          Error tracking
+        </MenuItem>
+        <MenuSeparator />
+        <MenuItem>
+          <SettingsIcon />
+          Settings
+        </MenuItem>
+      </MenuContent>
+    </Menu>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(canvas.getByRole("button", { name: "Products" }))
+    await page.findByRole("menu")
+    const colour = (name: string) =>
+      getComputedStyle(
+        page.getByRole("menuitem", { name }).querySelector("svg")!
+      ).color
+    await expect(colour("Product analytics")).not.toBe(colour("Settings"))
+    await expect(colour("Product analytics")).not.toBe(colour("Web analytics"))
+  },
 }

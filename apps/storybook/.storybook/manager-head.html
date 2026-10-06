@@ -30,24 +30,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
   rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter+Tight:wght@400..700&display=swap"
 />
 <link rel="stylesheet" href="fibo-manager/fibo-manager.css" />
 <script type="module" src="fibo-manager/fibo-manager.js"></script>
 <style>
+  /* First paint only: manager.tsx sets these from theme.ts for each theme. */
   :root {
     --fibo-bg: #ffffff;
     --fibo-fg: #0a0a0a;
     --fibo-muted: #737373;
     --fibo-hover: #f5f5f5;
     --fibo-border: #e5e5e5;
-  }
-  :root[data-fibo-theme="dark"] {
-    --fibo-bg: #0a0a0a;
-    --fibo-fg: #fafafa;
-    --fibo-muted: #a3a3a3;
-    --fibo-hover: #171717;
-    --fibo-border: #262626;
   }
 
   /*
@@ -72,6 +66,18 @@
   .fibo-search {
     flex: 1;
     min-width: 0;
+    background: none;
+  }
+  /* Storybook's create-story button only works in dev and gives way to the
+     theme menu (theme-menu.tsx); its settings button gives way to the light
+     and dark toggle (mode-toggle.tsx). */
+  .sidebar-container button[aria-label="Create a new story"],
+  .sidebar-header button[aria-label="Settings"] {
+    display: none !important;
+  }
+  .fibo-theme-menu,
+  .fibo-mode-toggle {
+    flex: none;
     background: none;
   }
   /* Storybook outlines every focused input; the menu's search box sits in
@@ -226,46 +232,6 @@
   div[role="main"] > div > div > div > div {
     border-bottom: 1px solid var(--fibo-border);
     box-shadow: none !important;
-  }
-
-  /* The theme switch is a two-segment pill in the toolbar; the current
-     theme's segment is filled, the way the selected sidebar row darkens. */
-  .fibo-theme {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    margin: 0 4px;
-    padding: 2px;
-    border: 1px solid var(--fibo-border);
-    border-radius: 999px;
-  }
-  .fibo-theme-option {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: 0;
-    border-radius: 999px;
-    background: none;
-    color: var(--fibo-muted);
-    cursor: pointer;
-    transition:
-      background-color 150ms ease,
-      color 150ms ease;
-  }
-  .fibo-theme-option:hover {
-    color: var(--fibo-fg);
-  }
-  .fibo-theme-option[aria-pressed="true"] {
-    background: var(--fibo-hover);
-    color: var(--fibo-fg);
-    cursor: default;
-  }
-  .fibo-theme-option:focus-visible {
-    outline: 2px solid var(--fibo-muted);
-    outline-offset: 1px;
   }
 
   /* Storybook's own type icons give way to the Lucide ones in the label. */

@@ -1,14 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import {
+  BugIcon,
   CalendarIcon,
+  ChartColumnIcon,
+  CirclePlayIcon,
   FileTextIcon,
   FilePlusIcon,
+  GlobeIcon,
   InboxIcon,
   LaptopIcon,
   LogOutIcon,
   MoonIcon,
   PaletteIcon,
   SettingsIcon,
+  SparklesIcon,
   SunIcon,
   UserIcon,
   UserPlusIcon,
@@ -431,4 +436,66 @@ export const NonModal: Story = {
 
 export const Controlled: Story = {
   render: (args) => <ControlledExample {...args} />,
+}
+
+/*
+ * An icon keeps a colour you give it, so destinations read apart at a
+ * glance. Icons without one stay muted. The chart tokens are greys in fibo's
+ * own theme and saturated in Mechanical.
+ */
+export const ColouredIcons: Story = {
+  name: "Coloured icons",
+  args: {
+    variant: "inset",
+    placeholder: "Go to…",
+    groups: [
+      {
+        label: "Products",
+        items: [
+          {
+            value: "product-analytics",
+            label: "Product analytics",
+            icon: <ChartColumnIcon className="text-chart-1" />,
+          },
+          {
+            value: "web-analytics",
+            label: "Web analytics",
+            icon: <GlobeIcon className="text-chart-2" />,
+          },
+          {
+            value: "assistant",
+            label: "Assistant",
+            icon: <SparklesIcon className="text-chart-3" />,
+          },
+          {
+            value: "session-replay",
+            label: "Session replay",
+            icon: <CirclePlayIcon className="text-chart-4" />,
+          },
+          {
+            value: "error-tracking",
+            label: "Error tracking",
+            icon: <BugIcon className="text-chart-5" />,
+          },
+        ],
+      },
+      {
+        label: "Account",
+        items: [
+          { value: "settings", label: "Settings", icon: <SettingsIcon /> },
+        ],
+      },
+    ],
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const page = within(canvasElement.ownerDocument.body)
+    await userEvent.click(canvas.getByRole("button", { name: /Search/ }))
+    await page.findByRole("combobox", { name: "Command menu" })
+    const colour = (name: string) =>
+      getComputedStyle(page.getByRole("option", { name }).querySelector("svg")!)
+        .color
+    await expect(colour("Product analytics")).not.toBe(colour("Settings"))
+    await expect(colour("Product analytics")).not.toBe(colour("Web analytics"))
+    await settle()
+  },
 }

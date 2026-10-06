@@ -14,6 +14,7 @@ import {
   RulerIcon,
   SplineIcon,
   SquareStackIcon,
+  SwatchBookIcon,
   TextCursorInputIcon,
   TypeIcon,
   WorkflowIcon,
@@ -32,6 +33,7 @@ const ICON_BY_ID: Record<string, LucideIcon> = {
   "foundations-spacing--docs": RulerIcon,
   "foundations-elevation--docs": SquareStackIcon,
   "foundations-motion--docs": SplineIcon,
+  "foundations-themes--docs": SwatchBookIcon,
 }
 
 // Each group inside a shelf has an icon for what its parts do.

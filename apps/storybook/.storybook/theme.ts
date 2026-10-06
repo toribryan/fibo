@@ -1,12 +1,9 @@
 import { create } from "storybook/theming"
 
-// Hex values mirror the neutral ramp in globals.css. The manager is outside
-// the Tailwind build, so it cannot read those custom properties.
-const fonts = {
-  fontBase:
-    "Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
-  fontCode: "'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace",
-}
+import type { DesignTheme, Theme } from "./theme-sync.js"
+
+const fontCode =
+  "'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace"
 
 // fibo, the pixel rabbit, one unit per art pixel. On light grounds he is a
 // one-pixel outline; on dark ones a solid silhouette with the inner lines
@@ -16,59 +13,121 @@ const FIBO_LINE =
 const FIBO_SOLID =
   "M1 0h3v1h-3zM7 0h3v1h-3zM0 1h5v1h-5zM6 1h5v1h-5zM0 2h2v1h-2zM3 2h2v1h-2zM6 2h2v1h-2zM9 2h2v1h-2zM0 3h2v1h-2zM3 3h2v1h-2zM6 3h2v1h-2zM9 3h2v1h-2zM1 4h4v1h-4zM6 4h2v1h-2zM9 4h2v1h-2zM1 5h9v1h-9zM2 6h9v1h-9zM1 7h11v1h-11zM0 8h12v1h-12zM0 9h2v1h-2zM3 9h4v1h-4zM8 9h4v1h-4zM0 10h2v1h-2zM3 10h4v1h-4zM8 10h7v1h-7zM0 11h4v1h-4zM6 11h4v1h-4zM11 11h5v1h-5zM1 12h7v1h-7zM10 12h7v1h-7zM2 13h10v1h-10zM13 13h5v1h-5zM2 14h9v1h-9zM12 14h8v1h-8zM2 15h4v1h-4zM7 15h3v1h-3zM11 15h6v1h-6zM18 15h2v1h-2zM2 16h4v1h-4zM7 16h2v1h-2zM10 16h7v1h-7zM18 16h2v1h-2zM2 17h4v1h-4zM7 17h2v1h-2zM10 17h9v1h-9zM1 18h4v1h-4zM7 18h1v1h-1zM10 18h7v1h-7zM1 19h16v1h-16z"
 
-const mark = (color: string, path: string) =>
-  `<span style="display:inline-flex;align-items:flex-end;gap:8px;font:500 26px/1 ${fonts.fontBase};color:${color}">` +
+const mark = (color: string, path: string, font: string) =>
+  `<span style="display:inline-flex;align-items:flex-end;gap:8px;font:500 26px/1 ${font};color:${color}">` +
   `<svg width="30" height="30" viewBox="0 0 20 20" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">` +
   `<path d="${path}"/></svg>fibo</span>`
 
-export const lightTheme = create({
-  base: "light",
-  ...fonts,
-  brandTitle: mark("#0a0a0a", FIBO_LINE),
-  brandUrl: "https://fibo.toribryan.com",
-  brandTarget: "_blank",
-  colorPrimary: "#171717",
-  colorSecondary: "#171717",
-  appBg: "#ffffff",
-  appContentBg: "#ffffff",
-  appPreviewBg: "#ffffff",
-  appBorderColor: "#e5e5e5",
-  appBorderRadius: 8,
-  textColor: "#0a0a0a",
-  textMutedColor: "#737373",
-  textInverseColor: "#fafafa",
-  barBg: "#ffffff",
-  barTextColor: "#737373",
-  barSelectedColor: "#0a0a0a",
-  barHoverColor: "#0a0a0a",
-  inputBg: "#ffffff",
-  inputBorder: "#e5e5e5",
-  inputTextColor: "#0a0a0a",
-  inputBorderRadius: 8,
-})
+/*
+ * The manager's chrome in each design theme and mode. The hex values mirror
+ * the tokens in globals.css and styles/themes: the manager is outside the
+ * Tailwind build, so it can't read those custom properties.
+ */
+type Chrome = {
+  bg: string
+  fg: string
+  muted: string
+  hover: string
+  border: string
+  input: string
+}
 
-export const darkTheme = create({
-  base: "dark",
-  ...fonts,
-  brandTitle: mark("#fafafa", FIBO_SOLID),
-  brandUrl: "https://fibo.toribryan.com",
-  brandTarget: "_blank",
-  colorPrimary: "#fafafa",
-  colorSecondary: "#fafafa",
-  appBg: "#0a0a0a",
-  appContentBg: "#0a0a0a",
-  appPreviewBg: "#0a0a0a",
-  appBorderColor: "#262626",
-  appBorderRadius: 8,
-  textColor: "#fafafa",
-  textMutedColor: "#a3a3a3",
-  textInverseColor: "#0a0a0a",
-  barBg: "#0a0a0a",
-  barTextColor: "#a3a3a3",
-  barSelectedColor: "#fafafa",
-  barHoverColor: "#fafafa",
-  inputBg: "#171717",
-  inputBorder: "#262626",
-  inputTextColor: "#fafafa",
-  inputBorderRadius: 8,
-})
+const CHROME: Record<DesignTheme, Record<Theme, Chrome>> = {
+  fibo: {
+    light: {
+      bg: "#ffffff",
+      fg: "#0a0a0a",
+      muted: "#737373",
+      hover: "#f5f5f5",
+      border: "#e5e5e5",
+      input: "#ffffff",
+    },
+    dark: {
+      bg: "#0a0a0a",
+      fg: "#fafafa",
+      muted: "#a3a3a3",
+      hover: "#171717",
+      border: "#262626",
+      input: "#171717",
+    },
+  },
+  mechanical: {
+    light: {
+      bg: "#efe9dd",
+      fg: "#1c1915",
+      muted: "#62594d",
+      hover: "#e6dfd1",
+      border: "#d8cfbf",
+      input: "#fffdf9",
+    },
+    dark: {
+      bg: "#1a1714",
+      fg: "#efe9dd",
+      muted: "#a89f92",
+      hover: "#2a2520",
+      border: "#3a332c",
+      input: "#221e1a",
+    },
+  },
+  electrical: {
+    light: {
+      bg: "#f0f2ed",
+      fg: "#141a16",
+      muted: "#4f5a52",
+      hover: "#dfe3dc",
+      border: "#cfd5cb",
+      input: "#ffffff",
+    },
+    dark: {
+      bg: "#111512",
+      fg: "#e8ece6",
+      muted: "#9aa49c",
+      hover: "#1f2420",
+      border: "#2b322c",
+      input: "#181d19",
+    },
+  },
+}
+
+const FONTS: Record<DesignTheme, string> = {
+  fibo: "Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
+  mechanical:
+    "'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
+  electrical:
+    "'Inter Tight', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
+}
+
+export function chromeColors(design: DesignTheme, mode: Theme) {
+  return CHROME[design][mode]
+}
+
+export function managerTheme(design: DesignTheme, mode: Theme) {
+  const c = CHROME[design][mode]
+  const fontBase = FONTS[design]
+  return create({
+    base: mode,
+    fontBase,
+    fontCode,
+    brandTitle: mark(c.fg, mode === "dark" ? FIBO_SOLID : FIBO_LINE, fontBase),
+    brandUrl: "https://fibo.toribryan.com",
+    brandTarget: "_blank",
+    colorPrimary: c.fg,
+    colorSecondary: c.fg,
+    appBg: c.bg,
+    appContentBg: c.bg,
+    appPreviewBg: c.bg,
+    appBorderColor: c.border,
+    appBorderRadius: 8,
+    textColor: c.fg,
+    textMutedColor: c.muted,
+    textInverseColor: c.bg,
+    barBg: c.bg,
+    barTextColor: c.muted,
+    barSelectedColor: c.fg,
+    barHoverColor: c.fg,
+    inputBg: c.input,
+    inputBorder: c.border,
+    inputTextColor: c.fg,
+    inputBorderRadius: 8,
+  })
+}

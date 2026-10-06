@@ -86,6 +86,7 @@ function CommandSearch({ bridge }: { bridge: FiboManagerBridge }) {
       open={open}
       onOpenChange={show}
       trigger={null}
+      variant="inset"
       label="Search fibo"
       placeholder="Search components and pages…"
       storageKey="fibo-storybook-recent"

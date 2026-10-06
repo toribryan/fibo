@@ -1,21 +1,26 @@
-import React, { useEffect, useState } from "react"
-import { MoonIcon, SunIcon, type LucideIcon } from "lucide-react"
+import React from "react"
 import {
   SET_INDEX,
   STORY_CHANGED,
   STORY_MISSING,
 } from "storybook/internal/core-events"
-import { addons, types, type API } from "storybook/manager-api"
+import { addons, type API } from "storybook/manager-api"
 
 import { BRIDGE_READY } from "./manager-bridge.js"
 import { iconFor } from "./sidebar-icons.js"
 import { MOBILE_QUERY, OPEN_MENU } from "./site-nav-sync.js"
-import { darkTheme, lightTheme } from "./theme.js"
+import { chromeColors, managerTheme } from "./theme.js"
 import {
+  DESIGN_THEME_EVENT,
+  DESIGN_THEME_REQUEST,
+  DESIGN_THEMES,
+  readDesignTheme,
   readTheme,
+  saveDesignTheme,
   saveTheme,
   THEME_EVENT,
   THEME_REQUEST,
+  type DesignTheme,
   type Theme,
 } from "./theme-sync.js"
 
@@ -24,13 +29,32 @@ import {
 // suffixes, so adding or dropping one never changes a docs URL.
 const STATUSES = ["new", "beta", "deprecated"]
 
-const initialTheme = readTheme()
-document.documentElement.dataset.fiboTheme = initialTheme
-document.documentElement.classList.toggle("dark", initialTheme === "dark")
+let mode = readTheme()
+let designTheme = readDesignTheme()
+
+/*
+ * The manager's chrome takes both choices: the sidebar switches with the
+ * docs, so it never sits in one theme around a page in another. fibo's
+ * parts in the sidebar read `.dark` and `data-theme` like the preview
+ * does, and manager-head.html's own rules read the --fibo-* colours.
+ */
+function paintChrome(mode: Theme, design: DesignTheme) {
+  const root = document.documentElement
+  root.dataset.fiboTheme = mode
+  root.classList.toggle("dark", mode === "dark")
+  if (design === "fibo") delete root.dataset.theme
+  else root.dataset.theme = design
+  for (const [name, value] of Object.entries(chromeColors(design, mode)))
+    root.style.setProperty(`--fibo-${name}`, value)
+}
+
+paintChrome(mode, designTheme)
 
 addons.setConfig({
-  theme: initialTheme === "dark" ? darkTheme : lightTheme,
-  showToolbar: true,
+  theme: managerTheme(designTheme, mode),
+  // Light, dark and the design theme live in the sidebar, and nothing else
+  // in the toolbar earns its row.
+  showToolbar: false,
   sidebar: {
     showRoots: true,
     renderLabel: (item) => {
@@ -56,58 +80,54 @@ addons.setConfig({
   },
 })
 
-const THEMES: { value: Theme; label: string; Icon: LucideIcon }[] = [
-  { value: "light", label: "Light theme", Icon: SunIcon },
-  { value: "dark", label: "Dark theme", Icon: MoonIcon },
-]
+/*
+ * Both choices are picked in the sidebar, light or dark with the toggle in
+ * its header (manager-ui/mode-toggle.tsx) and the design theme from the
+ * theme menu (manager-ui/theme-menu.tsx), and held here, where the
+ * channel to the preview is. A preview that loads after the manager asks for
+ * each on load.
+ */
+const modeListeners = new Set<(mode: Theme) => void>()
+const designListeners = new Set<(theme: DesignTheme) => void>()
 
-function ThemeTool({ api }: { api: API }) {
-  const [theme, setTheme] = useState<Theme>(initialTheme)
-
-  // The sidebar and toolbar switch with the docs, so the chrome never sits
-  // dark around a light page.
-  useEffect(() => {
-    document.documentElement.dataset.fiboTheme = theme
-    // fibo's parts in the sidebar read the theme from the dark class.
-    document.documentElement.classList.toggle("dark", theme === "dark")
-    api.setOptions({ theme: theme === "dark" ? darkTheme : lightTheme })
-    saveTheme(theme)
-    api.emit(THEME_EVENT, theme)
-  }, [api, theme])
-
-  // A preview that loads after the manager asks for the current theme.
-  useEffect(() => {
-    const reply = () => api.emit(THEME_EVENT, theme)
-    api.on(THEME_REQUEST, reply)
-    return () => api.off(THEME_REQUEST, reply)
-  }, [api, theme])
-
-  return (
-    <div className="fibo-theme" role="group" aria-label="Theme">
-      {THEMES.map(({ value, label, Icon }) => (
-        <button
-          key={value}
-          type="button"
-          className="fibo-theme-option"
-          aria-label={label}
-          aria-pressed={theme === value}
-          title={label}
-          onClick={() => setTheme(value)}
-        >
-          <Icon size={14} strokeWidth={1.75} aria-hidden />
-        </button>
-      ))}
-    </div>
-  )
+function themeBridge(api: API) {
+  api.on(THEME_REQUEST, () => api.emit(THEME_EVENT, mode))
+  api.on(DESIGN_THEME_REQUEST, () => api.emit(DESIGN_THEME_EVENT, designTheme))
+  api.emit(THEME_EVENT, mode)
+  api.emit(DESIGN_THEME_EVENT, designTheme)
+  const repaint = () => {
+    paintChrome(mode, designTheme)
+    api.setOptions({ theme: managerTheme(designTheme, mode) })
+  }
+  return {
+    getMode: () => mode,
+    setMode: (next: Theme) => {
+      if (next === mode) return
+      mode = next
+      saveTheme(next)
+      repaint()
+      api.emit(THEME_EVENT, next)
+      modeListeners.forEach((listener) => listener(next))
+    },
+    onMode: (listener: (mode: Theme) => void) => {
+      modeListeners.add(listener)
+      return () => void modeListeners.delete(listener)
+    },
+    getDesignTheme: () => designTheme,
+    setDesignTheme: (theme: DesignTheme) => {
+      if (!DESIGN_THEMES.includes(theme) || theme === designTheme) return
+      designTheme = theme
+      saveDesignTheme(theme)
+      repaint()
+      api.emit(DESIGN_THEME_EVENT, theme)
+      designListeners.forEach((listener) => listener(theme))
+    },
+    onDesignTheme: (listener: (theme: DesignTheme) => void) => {
+      designListeners.add(listener)
+      return () => void designListeners.delete(listener)
+    },
+  }
 }
-
-addons.register("fibo/theme", (api) => {
-  addons.add("fibo/theme/tool", {
-    type: types.TOOL,
-    title: "Theme",
-    render: () => <ThemeTool api={api} />,
-  })
-})
 
 // Docs pages carry the floating nav on phones, so Storybook's bottom bar is
 // hidden there (manager-head.html) and only returns for a story's canvas.
@@ -207,6 +227,7 @@ addons.register("fibo/manager-bridge", (api) => {
       return () => api.off(SET_INDEX, listener)
     },
     navigate: (path) => api.navigate(path),
+    ...themeBridge(api),
   }
   window.dispatchEvent(new Event(BRIDGE_READY))
 })

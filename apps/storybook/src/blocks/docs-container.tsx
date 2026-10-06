@@ -13,7 +13,8 @@ import { ArrowUpRightIcon, BugIcon } from "lucide-react"
 
 import componentsMeta from "@workspace/ui/components.meta.json" with { type: "json" }
 
-import { darkTheme, lightTheme } from "../../.storybook/theme.js"
+import { managerTheme } from "../../.storybook/theme.js"
+import { DESIGN_THEMES, type DesignTheme } from "../../.storybook/theme-sync.js"
 import { FigmaIcon } from "./brand-icons.js"
 import { DocTabsContext, useDocTabsState } from "./doc-tabs.js"
 import { LINKS } from "./links.js"
@@ -23,22 +24,29 @@ function subscribe(onChange: () => void) {
   const observer = new MutationObserver(onChange)
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ["class"],
+    attributeFilter: ["class", "data-theme"],
   })
   return () => observer.disconnect()
 }
 
 /*
- * The preview flips `.dark` on the document when the toolbar changes. The
- * container reads that class so Storybook's own blocks (canvases, the props
- * table, code) switch with the page.
+ * The preview flips `.dark` and `data-theme` on the document when the theme
+ * changes. The container reads both so Storybook's own blocks (canvases, the
+ * props table, code) switch with the page.
  */
-function useIsDark() {
-  return useSyncExternalStore(
-    subscribe,
-    () => document.documentElement.classList.contains("dark"),
-    () => false
-  )
+function readTheme() {
+  const root = document.documentElement
+  const design = root.dataset.theme as DesignTheme | undefined
+  const known = design && DESIGN_THEMES.includes(design) ? design : "fibo"
+  return `${known}:${root.classList.contains("dark") ? "dark" : "light"}`
+}
+
+function useStorybookTheme() {
+  const key = useSyncExternalStore(subscribe, readTheme, () => "fibo:light")
+  return useMemo(() => {
+    const [design, mode] = key.split(":") as [DesignTheme, "light" | "dark"]
+    return managerTheme(design, mode)
+  }, [key])
 }
 
 function Footer() {
@@ -188,16 +196,13 @@ function FiboDocsContainer({
   children,
   context,
 }: DocsContainerProps & { children: ReactNode }) {
-  const dark = useIsDark()
+  const theme = useStorybookTheme()
   const tabs = useDocTabsState()
   const tabAwareContext = useTabAwareContext(context, tabs.tabRef)
   const figma = useMemo(() => figmaUrl(context), [context])
   return (
     <DocTabsContext value={tabs}>
-      <DocsContainer
-        context={tabAwareContext}
-        theme={dark ? darkTheme : lightTheme}
-      >
+      <DocsContainer context={tabAwareContext} theme={theme}>
         <Unstyled>
           <div className="fibo-docs font-sans text-foreground antialiased">
             {figma ? <FigmaLink href={figma} /> : null}
