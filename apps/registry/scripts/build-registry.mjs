@@ -411,6 +411,62 @@ items.push({
   css: keyframes,
 })
 
+// Experimental themes (plans/011-mechanical-theme.md). Each file in
+// styles/themes is flat CSS, every rule scoped to its `data-theme`, and ships
+// as written: the token overrides and the rules that reshape parts. They go
+// in `css` rather than `cssVars`, because cssVars always lands on `:root`
+// and `.dark`, and a theme must change nothing until its attribute is set.
+const THEMES = {
+  mechanical: {
+    title: "Mechanical theme",
+    description:
+      'A warm, tactile theme: an off-white page, an amber primary, and raised controls that press onto a solid bottom edge like keys. Applies under data-theme="mechanical", in light and dark. Uses IBM Plex Sans, which your app loads.',
+  },
+}
+
+// A theme file's top-level rules as shadcn's `css` object: selector to
+// declarations, comments dropped and whitespace folded onto one line.
+function themeRules(source) {
+  const flat = source.replace(/\/\*[\s\S]*?\*\//g, "")
+  const rules = {}
+  let at = 0
+  while ((at = flat.indexOf("{", at)) !== -1) {
+    const start = flat.lastIndexOf("}", at) + 1
+    const selector = oneLine(flat.slice(start, at))
+    const body = blockBody(flat, at)
+    if (body.includes("{")) {
+      throw new Error(`Theme rule "${selector}" nests; keep theme files flat`)
+    }
+    rules[selector] = Object.fromEntries(
+      body
+        .split(";")
+        .map((declaration) => declaration.split(/:(.*)/s).map(oneLine))
+        .filter(([property, value]) => property && value)
+    )
+    at += body.length + 2
+  }
+  return rules
+}
+
+for (const [name, info] of Object.entries(THEMES)) {
+  const docs = `${homepage}/?path=/docs/foundations-themes--docs`
+  items.push({
+    name: `theme-${name}`,
+    type: "registry:theme",
+    title: info.title,
+    description: info.description,
+    author: "Tori Bryan",
+    docs: `Set data-theme="${name}" on <html>, or on any element for one region. Docs: ${docs}`,
+    meta: { docs },
+    css: themeRules(
+      await readFile(
+        path.join(root, `packages/ui/src/styles/themes/${name}.css`),
+        "utf8"
+      )
+    ),
+  })
+}
+
 const registry = {
   $schema: "https://ui.shadcn.com/schema/registry.json",
   name: "fibo",
@@ -462,6 +518,16 @@ ${section("base-components")}
 ## Special components
 
 ${section("special-components")}
+
+## Themes
+
+${items
+  .filter((item) => item.name.startsWith("theme-"))
+  .map(
+    (item) =>
+      `- [${item.title}](${item.meta.docs}): ${item.description} Install: \`pnpm dlx shadcn@latest add @fibo/${item.name}\``
+  )
+  .join("\n")}
 
 ## Docs
 
