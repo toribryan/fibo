@@ -3,7 +3,7 @@ import { PaletteIcon } from "lucide-react"
 import { createRoot, type Root } from "react-dom/client"
 
 import "@workspace/ui/themes/mechanical.css"
-import "@workspace/ui/themes/sage.css"
+import "@workspace/ui/themes/electrical.css"
 
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -26,7 +26,11 @@ const THEMES: { value: DesignTheme; label: string; description: string }[] = [
     label: "Mechanical",
     description: "Terracotta keys on beige",
   },
-  { value: "sage", label: "Sage", description: "Ink and a yellow highlight" },
+  {
+    value: "electrical",
+    label: "Electrical",
+    description: "Ink and a yellow highlight",
+  },
 ]
 
 // A chip of the theme's own page and primary, drawn by the theme itself.

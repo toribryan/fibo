@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest"
 
 import "./mechanical.css"
-import "./sage.css"
+import "./electrical.css"
 
 /*
  * Each theme's pairs, in both modes, read from the real utility classes with
@@ -57,7 +57,7 @@ function contrast(fore: string, back: string) {
 // Only themes that colour their chart tokens promise coloured icons.
 const THEMES = [
   { theme: "mechanical", colourIcons: true },
-  { theme: "sage", colourIcons: false },
+  { theme: "electrical", colourIcons: false },
 ]
 
 const CASES = THEMES.flatMap((entry) =>
@@ -133,7 +133,7 @@ describe.each(CASES)("$theme, $mode", ({ theme, colourIcons, mode }) => {
     }
   )
 
-  it.runIf(theme === "sage")("ink clears 4.5:1 on the highlight", () => {
+  it.runIf(theme === "electrical")("ink clears 4.5:1 on the highlight", () => {
     setTheme()
     const highlight = getComputedStyle(document.documentElement)
       .getPropertyValue("--highlight")

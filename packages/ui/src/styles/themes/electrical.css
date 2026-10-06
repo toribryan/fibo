@@ -1,14 +1,14 @@
 /*
- * Sage (plans/012-sage-theme.md): a flat, ledger-like theme. A sage page,
- * white cards, ink buttons and one yellow highlight, used the way a highlighter
- * is: on the selected thing, the active reaction, a link's underline and
- * selected text. Everything else stays green-grey.
+ * Electrical (plans/012-electrical-theme.md): a flat, ledger-like theme. A
+ * sage page, white cards, ink buttons and one yellow highlight, used the way
+ * a highlighter is: on the selected thing, the active reaction, a link's
+ * underline and selected text. Everything else stays green-grey.
  *
- * Scoped to `[data-theme="sage"]` like every theme, and unlayered for the
- * same reason as mechanical.css: an unlayered rule beats Tailwind's
+ * Scoped to `[data-theme="electrical"]` like every theme, and unlayered for
+ * the same reason as mechanical.css: an unlayered rule beats Tailwind's
  * utilities. Controls stay flat, so the edge tokens keep fibo's zero values.
  *
- * Each rule below ends in `:not([data-theme="sage"] [data-theme]:not(…) *)`,
+ * Each rule below ends in `:not([data-theme="electrical"] [data-theme]:not(…) *)`,
  * so it stops at a region that sets a different theme inside this one, the
  * way the tokens do. Without it a page in one theme would reshape the parts
  * of a nested preview in another.
@@ -17,7 +17,7 @@
  * registry ships the file to apps whose palette may not have them either.
  */
 
-[data-theme="sage"] {
+[data-theme="electrical"] {
   --background: #f0f2ed;
   --foreground: #141a16;
   --card: #ffffff;
@@ -81,8 +81,8 @@
  * Dark mode turns the highlighter into the primary: ink can't be a fill on
  * a near-black page, and yellow under an ink label reads at a glance.
  */
-.dark[data-theme="sage"],
-.dark [data-theme="sage"] {
+.dark[data-theme="electrical"],
+.dark [data-theme="electrical"] {
   --background: #111512;
   --foreground: #e8ece6;
   --card: #181d19;
@@ -126,33 +126,35 @@
   --highlight: #fbcb2a;
 }
 
-[data-theme="sage"]
-  :not([data-theme="sage"] [data-theme]:not([data-theme="sage"]) *)::selection {
+[data-theme="electrical"]
+  :not(
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
+  )::selection {
   background-color: var(--highlight);
   color: var(--highlight-foreground);
 }
 
 /* Tight, confident headings. */
-[data-theme="sage"]
+[data-theme="electrical"]
   :is(h1, h2, h3):not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   letter-spacing: -0.02em;
 }
 
 /* Rectangles with a soft corner, never pills. */
-[data-theme="sage"]
+[data-theme="electrical"]
   :is(button, a)[data-variant][data-size]:not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   border-radius: calc(var(--radius) - 2px);
   font-weight: 500;
 }
 
 /* A link is ink, marked with the highlighter rather than a hairline. */
-[data-theme="sage"]
+[data-theme="electrical"]
   :is(button, a)[data-variant="link"][data-size]:not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   color: var(--foreground);
   text-decoration-color: var(--highlight);
@@ -161,65 +163,65 @@
   text-decoration-skip-ink: none;
 }
 
-[data-theme="sage"]
+[data-theme="electrical"]
   [data-slot="tabs-list"][data-variant="default"]:not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   border-radius: var(--radius);
 }
 
 /* The selected segment is highlighted, not lifted. */
-[data-theme="sage"]
+[data-theme="electrical"]
   [data-slot="tabs-list"][data-variant="default"]
   > :is([data-slot="tabs-indicator"], [data-slot="tabs-trigger"]):not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   border-radius: calc(var(--radius) - 2px);
 }
 
-[data-theme="sage"]
+[data-theme="electrical"]
   [data-slot="tabs-list"][data-variant="default"]
   > [data-slot="tabs-indicator"]:not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   background-color: var(--highlight);
   box-shadow: none;
 }
 
-[data-theme="sage"]
+[data-theme="electrical"]
   [data-slot="tabs-list"][data-variant="default"]
   > [data-slot="tabs-trigger"][data-active]:not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   color: var(--highlight-foreground);
 }
 
-[data-theme="sage"]
+[data-theme="electrical"]
   [data-slot="tabs-trigger"]:not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   font-weight: 500;
 }
 
-[data-theme="sage"]
+[data-theme="electrical"]
   [data-slot="badge"]:not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   border-radius: calc(var(--radius) - 2px);
 }
 
-[data-theme="sage"]
+[data-theme="electrical"]
   [data-slot="kbd"]:not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   border: 1px solid var(--border);
   background-color: var(--card);
   box-shadow: none;
 }
 
-[data-theme="sage"]
+[data-theme="electrical"]
   :is([data-slot="label"], [data-slot="field-label"]):not(
-    [data-theme="sage"] [data-theme]:not([data-theme="sage"]) *
+    [data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *
   ) {
   font-weight: 500;
 }

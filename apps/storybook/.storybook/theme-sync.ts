@@ -41,7 +41,7 @@ export function saveTheme(theme: Theme) {
 export const DESIGN_THEME_EVENT = "fibo/design-theme"
 export const DESIGN_THEME_REQUEST = "fibo/design-theme-request"
 
-export const DESIGN_THEMES = ["fibo", "mechanical", "sage"] as const
+export const DESIGN_THEMES = ["fibo", "mechanical", "electrical"] as const
 export type DesignTheme = (typeof DESIGN_THEMES)[number]
 
 const DESIGN_KEY = "fibo-design-theme"

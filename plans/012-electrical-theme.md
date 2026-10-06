@@ -1,14 +1,14 @@
-# 012 Sage theme and the theme menu
+# 012 Electrical theme and the theme menu
 
 ## What is changing
 
-fibo gets a second experimental theme, Sage, and Storybook's design theme
+fibo gets a second experimental theme, Electrical, and Storybook's design theme
 moves from a toolbar switch to a menu in the sidebar.
 
-- `packages/ui/src/styles/themes/sage.css`, scoped to `[data-theme="sage"]`,
-  and the registry item `@fibo/theme-sage`.
+- `packages/ui/src/styles/themes/electrical.css`, scoped to `[data-theme="electrical"]`,
+  and the registry item `@fibo/theme-electrical`.
 - A palette button beside the sidebar's search, where Storybook's
-  create-story button sat, opens a menu of fibo, Mechanical and Sage. The
+  create-story button sat, opens a menu of fibo, Mechanical and Electrical. The
   toolbar keeps light and dark.
 - Every theme rule stops at a nested region in a different theme.
 
@@ -21,7 +21,7 @@ third option no longer fits a toolbar of text buttons.
 
 ## Options and choices
 
-**What Sage looks like.** The brief was a sage palette with the patterns of
+**What Electrical looks like.** The brief was a sage palette with the patterns of
 modern fintech marketing: flat surfaces, ink buttons, crisp corners, tight
 type, tabular figures and one bright highlight. Chosen: a sage page, white
 cards, an ink primary with a white label, 4px corners on controls and Inter
@@ -30,10 +30,10 @@ tab list, the active reaction (through `--primary-subtle`), a link's
 underline drawn like a highlighter and selected text. Controls stay flat; the
 edge tokens keep fibo's zero values. In dark mode ink can't be a fill, so the
 yellow becomes the primary, under an ink label. Chart tokens stay fibo's
-greys: icons in Sage are monochrome.
+greys: icons in Electrical are monochrome.
 
 `--highlight` and `--highlight-foreground` belong to the theme, like
-Mechanical's `--key-face`, and aren't in `globals.css`. Only Sage's own rules
+Mechanical's `--key-face`, and aren't in `globals.css`. Only Electrical's own rules
 read them.
 
 **Where the menu lives.** In the toolbar, or in the sidebar. Chosen: the
@@ -47,16 +47,16 @@ stylesheet.
 
 **Nested themes.** The Themes page shows each theme in a column with its own
 `data-theme`, inside a page in whichever theme is picked. Tokens already stop
-at the nearest region; rules didn't, so Sage's highlighted tab showed up in the
+at the nearest region; rules didn't, so Electrical's highlighted tab showed up in the
 Mechanical column. Options: CSS `@scope` with a lower bound, or a `:not()`
 guard on every rule. `@scope` nests, and the registry ships flat rules.
-Chosen: the guard, `:not([data-theme="sage"] [data-theme]:not([data-theme="sage"]) *)`,
+Chosen: the guard, `:not([data-theme="electrical"] [data-theme]:not([data-theme="electrical"]) *)`,
 which excludes an element inside a different theme's region within this
 one. It is verbose, so each stylesheet explains it once.
 
 **The contrast test.** `themes.test.ts` replaces `mechanical.test.ts` and
 runs the same checks for every theme, in both modes. Coloured chart icons are
-checked only where the theme promises them; Sage adds ink on its highlight.
+checked only where the theme promises them; Electrical adds ink on its highlight.
 
 Mechanical's primary also takes a white label in this change: the
 terracotta darkens to `#bc5530`, and its hover darkens rather than lightens.

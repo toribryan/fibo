@@ -43,7 +43,7 @@ function Scene({
   theme,
 }: {
   name: string
-  theme?: "mechanical" | "sage"
+  theme?: "mechanical" | "electrical"
 }) {
   return (
     <section
@@ -118,7 +118,7 @@ function ThemeCompare() {
     <div className="my-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <Scene name="fibo" />
       <Scene name="Mechanical" theme="mechanical" />
-      <Scene name="Sage" theme="sage" />
+      <Scene name="Electrical" theme="electrical" />
     </div>
   )
 }

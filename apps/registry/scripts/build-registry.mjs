@@ -422,10 +422,10 @@ const THEMES = {
     description:
       'A warm, tactile theme: a beige page, a terracotta primary, and raised controls that press onto a solid bottom edge like keys. Applies under data-theme="mechanical", in light and dark. Uses IBM Plex Sans, which your app loads.',
   },
-  sage: {
-    title: "Sage theme",
+  electrical: {
+    title: "Electrical theme",
     description:
-      'A flat, ledger-like theme: a sage page, white cards, ink buttons and one yellow highlight on whatever is selected. Applies under data-theme="sage", in light and dark. Uses Inter Tight, which your app loads.',
+      'A flat, ledger-like theme: a sage page, white cards, ink buttons and one yellow highlight on whatever is selected. Applies under data-theme="electrical", in light and dark. Uses Inter Tight, which your app loads.',
   },
 }
 
