@@ -11,12 +11,14 @@ import { cn } from "@workspace/ui/lib/utils"
 
 type Values = Record<string, string>
 
-// The top-level `:root` and `.dark` blocks that hold the semantic roles.
+// The top-level `:root` and `.dark` blocks that hold the semantic roles,
+// matched by their first selector: each also lists `[data-theme="fibo"]`.
 // Base-layer blocks are indented, so anchoring at the line start skips them.
 function block(selector: string): Values {
-  const match = new RegExp(`^${selector} \\{([\\s\\S]*?)^\\}`, "m").exec(
-    globals
-  )
+  const match = new RegExp(
+    `^${selector}(?:,[^{]*)? \\{([\\s\\S]*?)^\\}`,
+    "m"
+  ).exec(globals)
   const values: Values = {}
   for (const [, name, value] of match?.[1]?.matchAll(
     /--([\w-]+):\s*([^;]+);/g

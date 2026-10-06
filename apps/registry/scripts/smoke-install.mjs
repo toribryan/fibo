@@ -138,8 +138,11 @@ try {
   const { items } = JSON.parse(
     await readFile(path.join(registryDir, "registry.json"), "utf8")
   )
-  const components = items.filter((item) => item.name !== "theme")
+  const isTheme = (item) =>
+    item.name === "theme" || item.name.startsWith("theme-")
+  const components = items.filter((item) => !isTheme(item))
   const theme = items.find((item) => item.name === "theme")
+  const scopedThemes = items.filter((item) => item.name.startsWith("theme-"))
 
   await run(
     shadcn,
@@ -164,6 +167,34 @@ try {
     failures = await buildAndCheck([...components, theme], tokens, {
       used: false,
     })
+  }
+
+  // Scoped themes go on last, over the full theme, the way an app would add
+  // one. Their rules are matched by the custom properties they set, since a
+  // minifier rewrites selectors.
+  if (failures.length === 0 && scopedThemes.length) {
+    await run(
+      shadcn,
+      ["add", ...scopedThemes.map((item) => `@fibo/${item.name}`), "-y", "-o"],
+      appDir
+    )
+    failures = await buildAndCheck([...components, theme], tokens, {
+      used: false,
+    })
+    const css = await compiledCss(appDir)
+    for (const item of scopedThemes) {
+      for (const declarations of Object.values(item.css)) {
+        for (const [property, value] of Object.entries(declarations)) {
+          if (property.startsWith("--") && !css.includes(`${property}:`)) {
+            failures.push(`${item.name}: ${property} is missing`)
+          }
+          // A literal colour only the theme sets proves its value landed.
+          if (/^#[0-9a-f]{6}$/.test(value) && !css.includes(value)) {
+            failures.push(`${item.name}: ${property} ${value} is missing`)
+          }
+        }
+      }
+    }
   }
 } finally {
   server.close()

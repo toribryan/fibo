@@ -33,7 +33,7 @@ const add = (severity, area, subject, message) =>
 // The body of the top-level `selector { }` block.
 function block(selector) {
   const at = globals.search(
-    new RegExp(`^${selector.replace(/[.:]/g, "\\$&")} \\{`, "m")
+    new RegExp(`^${selector.replace(/[.:]/g, "\\$&")}(?:,[^{]*)? \\{`, "m")
   )
   if (at === -1) throw new Error(`globals.css has no top-level ${selector}`)
   const open = globals.indexOf("{", at)

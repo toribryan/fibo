@@ -1,4 +1,6 @@
 @import "@workspace/ui/globals.css";
+@import "@workspace/ui/themes/mechanical.css";
+@import "@workspace/ui/themes/electrical.css";
 
 /* globals.css only scans packages/ui; the docs blocks and pages live here. */
 @source "./";

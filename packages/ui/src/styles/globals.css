@@ -165,8 +165,12 @@
  * an opacity modifier on a variable-bound fill: `bg-destructive/10` has no
  * equivalent a designer can pick or inspect. Naming them makes both sides
  * agree, and keeps the alpha in one place instead of scattered across classes.
+ *
+ * `[data-theme="fibo"]` repeats fibo's values on a region inside a page in
+ * another theme (styles/themes), so the region keeps fibo's own look.
  */
-:root {
+:root,
+[data-theme="fibo"] {
   --background: var(--color-white);
   --foreground: var(--color-neutral-950);
   --card: var(--color-white);
@@ -255,6 +259,17 @@
   --ring-subtle: color-mix(in oklch, var(--color-neutral-400) 50%, transparent);
 
   /*
+   * The pressed-key edge a theme can draw under raised controls
+   * (plans/011-mechanical-theme.md). fibo's controls are flat, so the edge
+   * has no depth and no colour in either mode; a theme turns it on.
+   */
+  --edge-depth: 0px;
+  --primary-edge: transparent;
+  --secondary-edge: transparent;
+  --outline-edge: transparent;
+  --destructive-edge: transparent;
+
+  /*
    * A sticker is paper: its edge is white and the marks printed on it are
    * dark in both themes, and it casts the same shadow on either page, so
    * these three keep their values in .dark on purpose.
@@ -287,7 +302,8 @@
   --sidebar-ring: var(--color-neutral-400);
 }
 
-.dark {
+.dark,
+.dark [data-theme="fibo"] {
   --background: var(--color-neutral-950);
   --foreground: var(--color-neutral-50);
   --card: var(--color-neutral-900);
@@ -378,6 +394,12 @@
   --ring: var(--color-neutral-500);
   --ring-subtle: color-mix(in oklch, var(--color-neutral-500) 50%, transparent);
 
+  --edge-depth: 0px;
+  --primary-edge: transparent;
+  --secondary-edge: transparent;
+  --outline-edge: transparent;
+  --destructive-edge: transparent;
+
   --sticker-edge: var(--color-white);
   --sticker-ink: var(--color-neutral-900);
   --sticker-shadow: color-mix(in oklch, var(--color-black) 30%, transparent);
@@ -401,7 +423,8 @@
 }
 
 @layer base {
-  :root {
+  :root,
+  [data-theme="fibo"] {
     --font-sans:
       Geist, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
       "Helvetica Neue", Arial, sans-serif;
@@ -412,7 +435,8 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
+  body,
+  [data-theme="fibo"] {
     @apply bg-background font-sans text-foreground;
   }
   button:not(:disabled),
