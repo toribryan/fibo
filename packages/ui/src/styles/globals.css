@@ -15,6 +15,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -171,8 +173,14 @@
  */
 :root,
 [data-theme="fibo"] {
-  --background: var(--color-white);
+  /*
+   * The page is a tint under the surfaces that hold content, so a panel,
+   * a sidebar or a docs column reads as a layer rather than one flat plane.
+   */
+  --background: var(--color-neutral-50);
   --foreground: var(--color-neutral-950);
+  --surface: var(--color-white);
+  --surface-foreground: var(--color-neutral-950);
   --card: var(--color-white);
   --card-foreground: var(--color-neutral-950);
   --popover: var(--color-white);
@@ -227,13 +235,18 @@
   --success: var(--color-green-700);
   --success-foreground: var(--color-neutral-50);
   --success-subtle: color-mix(in oklch, var(--color-green-700) 6%, transparent);
-  --success-text: var(--success);
+  /*
+   * On the tinted page, 700 text on its own 6% tint drops under 4.5:1, so
+   * success and warning text take the 800 step. Fills, borders and icons
+   * keep 700.
+   */
+  --success-text: var(--color-green-800);
   --success-border: var(--success);
   --success-icon: var(--success);
   --warning: var(--color-amber-700);
   --warning-foreground: var(--color-neutral-50);
   --warning-subtle: color-mix(in oklch, var(--color-amber-700) 6%, transparent);
-  --warning-text: var(--warning);
+  --warning-text: var(--color-amber-800);
   --warning-border: var(--warning);
   --warning-icon: var(--warning);
   --info: var(--color-blue-700);
@@ -306,6 +319,8 @@
 .dark [data-theme="fibo"] {
   --background: var(--color-neutral-950);
   --foreground: var(--color-neutral-50);
+  --surface: var(--color-neutral-900);
+  --surface-foreground: var(--color-neutral-50);
   --card: var(--color-neutral-900);
   --card-foreground: var(--color-neutral-50);
   --popover: var(--color-neutral-900);
@@ -438,6 +453,16 @@
   body,
   [data-theme="fibo"] {
     @apply bg-background font-sans text-foreground;
+  }
+  /*
+   * A surface panel. Parts that match what they sit on (a sticky table
+   * header, a switch's thumb, a sheet) read --background, so inside a
+   * surface it points at the surface.
+   */
+  [data-surface] {
+    --background: var(--surface);
+    --foreground: var(--surface-foreground);
+    @apply bg-background text-foreground;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {

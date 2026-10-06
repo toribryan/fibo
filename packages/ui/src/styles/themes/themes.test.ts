@@ -10,6 +10,7 @@ import "./electrical.css"
 
 const SURFACES = [
   "bg-background",
+  "bg-surface",
   "bg-card",
   "bg-popover",
   "bg-muted",

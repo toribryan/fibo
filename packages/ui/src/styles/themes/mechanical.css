@@ -27,6 +27,8 @@
 [data-theme="mechanical"] {
   --background: #efe9dd;
   --foreground: #1c1915;
+  --surface: #f7f3ea;
+  --surface-foreground: #1c1915;
   --card: #fbf8f2;
   --card-foreground: #1c1915;
   --popover: #fbf8f2;
@@ -101,6 +103,8 @@
 .dark [data-theme="mechanical"] {
   --background: #1a1714;
   --foreground: #efe9dd;
+  --surface: #1f1b17;
+  --surface-foreground: #efe9dd;
   --card: #221e1a;
   --card-foreground: #efe9dd;
   --popover: #26211c;

@@ -146,7 +146,16 @@ const FAMILIES: Record<string, Family> = {
     title: "Surfaces",
     description: "The planes content sits on, from the page up to popovers.",
     tokens: [
-      { name: "background", utility: "bg-background", use: "The page." },
+      {
+        name: "background",
+        utility: "bg-background",
+        use: "The page: a tint under the surfaces.",
+      },
+      {
+        name: "surface",
+        utility: "bg-surface",
+        use: "Panels, sidebars and content columns, a step off the page. Mark one with data-surface so the parts inside match it.",
+      },
       {
         name: "card",
         utility: "bg-card",
