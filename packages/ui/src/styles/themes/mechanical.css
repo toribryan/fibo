@@ -29,10 +29,10 @@
   --popover-overlay: color-mix(in oklch, #fbf8f2 85%, transparent);
   --backdrop: color-mix(in oklch, #1c1915 25%, transparent);
 
-  --primary: #d9653b;
-  --primary-foreground: #1c1915;
-  --primary-hover: #e07550;
-  --primary-subtle: color-mix(in oklch, #d9653b 18%, transparent);
+  --primary: #bc5530;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a84a29;
+  --primary-subtle: color-mix(in oklch, #bc5530 18%, transparent);
   --secondary: #e6dfd1;
   --secondary-foreground: #1c1915;
   --secondary-hover: #ded6c6;
@@ -65,15 +65,15 @@
 
   --sidebar: #e8e1d3;
   --sidebar-foreground: #1c1915;
-  --sidebar-primary: #d9653b;
-  --sidebar-primary-foreground: #1c1915;
+  --sidebar-primary: #bc5530;
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #ded6c6;
   --sidebar-accent-foreground: #1c1915;
   --sidebar-border: #d8cfbf;
   --sidebar-ring: #a8987c;
 
   --edge-depth: 3px;
-  --primary-edge: #9e4325;
+  --primary-edge: #7f3418;
   --secondary-edge: #b3a894;
   --outline-edge: #bdb2a0;
   --destructive-edge: color-mix(in oklch, var(--destructive) 45%, #ffffff);
@@ -103,10 +103,10 @@
   --popover-overlay: color-mix(in oklch, #26211c 85%, transparent);
   --backdrop: color-mix(in oklch, #000000 60%, transparent);
 
-  --primary: #d9653b;
-  --primary-foreground: #1c1915;
-  --primary-hover: #e07550;
-  --primary-subtle: color-mix(in oklch, #d9653b 25%, transparent);
+  --primary: #bc5530;
+  --primary-foreground: #ffffff;
+  --primary-hover: #a84a29;
+  --primary-subtle: color-mix(in oklch, #bc5530 25%, transparent);
   --secondary: #332d27;
   --secondary-foreground: #efe9dd;
   --secondary-hover: #3b342d;
@@ -133,15 +133,15 @@
 
   --sidebar: #221e1a;
   --sidebar-foreground: #efe9dd;
-  --sidebar-primary: #d9653b;
-  --sidebar-primary-foreground: #1c1915;
+  --sidebar-primary: #bc5530;
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #2f2924;
   --sidebar-accent-foreground: #efe9dd;
   --sidebar-border: #3a332c;
   --sidebar-ring: #8c7e68;
 
   /* In the dark the edge is a shadow: darker than any surface it sits on. */
-  --primary-edge: #8a3a1f;
+  --primary-edge: #5c2410;
   --secondary-edge: #0d0b09;
   --outline-edge: #0d0b09;
   --destructive-edge: color-mix(in oklch, var(--destructive) 35%, #0d0b09);
@@ -235,8 +235,8 @@
 }
 
 /*
- * Terracotta is a fill, too light for text on the page, so a link button is
- * ink with a terracotta underline.
+ * Terracotta clears 4.5:1 under a white label but not as text on the beige
+ * page, so a link button is ink with a terracotta underline.
  */
 [data-theme="mechanical"] :is(button, a)[data-variant="link"][data-size] {
   color: var(--foreground);

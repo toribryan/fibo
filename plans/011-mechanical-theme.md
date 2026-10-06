@@ -106,14 +106,14 @@ or terracotta, and the registry ships the file to apps that may not have them.
 | `foreground`                | `#1c1915`              | `#efe9dd`              |
 | `muted`                     | `#e6dfd1`              | `#2a2520`              |
 | `muted-foreground`          | `#62594d`              | `#a89f92`              |
-| `primary`                   | `#d9653b`              | `#d9653b`              |
-| `primary-foreground`        | `#1c1915`              | `#1c1915`              |
+| `primary`                   | `#bc5530`              | `#bc5530`              |
+| `primary-foreground`        | `#ffffff`              | `#ffffff`              |
 | `secondary`                 | `#e6dfd1`              | `#332d27`              |
 | `border`, `input`           | `#d8cfbf`, `#cfc5b3`   | `#3a332c`, `#4a423a`   |
 | `input-subtle` (field face) | `#fffdf9`              | `#221e1a`              |
 | `ring-subtle`               | `#c9b998` at 55%       | `#a8987c` at 40%       |
 | `edge-depth`                | `3px` (2px xs, sm)     | same                   |
-| `primary-edge`              | `#9e4325`              | `#8a3a1f`              |
+| `primary-edge`              | `#7f3418`              | `#5c2410`              |
 | `secondary-edge`            | `#b3a894`              | `#0d0b09`              |
 | `outline-edge`              | `#bdb2a0`              | `#0d0b09`              |
 | `destructive-edge`          | destructive, 45% white | destructive, 35% black |
@@ -125,9 +125,12 @@ and warning on the beige page, so Mechanical points `--success-text` and
 job). Fills, borders and icons keep 700. A unit test checks every text,
 label and icon pair in both modes.
 
-White on terracotta is 3.6:1, so the primary label is near-black (4.9:1),
-which keeps the colour exact. Terracotta is a fill, too light for text on the
-page, so a link button is ink with a terracotta underline. The theme keeps one property of its own, `--key-face`, for the
+Terracotta is darkened to `#bc5530` so its white label clears 4.5:1, and
+hover darkens it further rather than lightening it. It still sits under
+4.5:1 as text on the page, so a link button is ink with a terracotta
+underline.
+
+The theme keeps one property of its own, `--key-face`, for the
 selected tab: cream (`card`) in light, `secondary` in dark, where a white key
 would glare. Setting it in the two token blocks also avoids a mode-specific
 selector, which in testing nudged the anti-aliasing of fibo's own tab pill.
