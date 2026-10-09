@@ -92,7 +92,7 @@
     ctx.drawImage(ph.canvas, r.x, r.y)
     ctx.restore()
   }
-  // The graded photo as its own canvas, so blocks can take its colour.
+  // The graded photo as its own canvas, so blocks can take its color.
   window.graded = function (ph, r) {
     const c = document.createElement("canvas")
     c.width = r.w
@@ -102,7 +102,7 @@
     g.drawImage(ph.canvas, 0, 0)
     return c
   }
-  // Average colour per s×s block, from a smoothed downscale.
+  // Average color per s×s block, from a smoothed downscale.
   window.blockMap = function (src, s) {
     const w = Math.ceil(src.width / s),
       h = Math.ceil(src.height / s)

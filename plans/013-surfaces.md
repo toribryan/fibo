@@ -16,7 +16,7 @@
 
 ## Why now
 
-With the page and every panel one colour, the themes read flat: nothing
+With the page and every panel one color, the themes read flat: nothing
 separates the sidebar, the page and the content on it. A surface step gives
 layouts depth without shadows or borders on every edge.
 
@@ -36,7 +36,7 @@ On a surface they would show as a band. Options: give each part a surface
 variant, or re-point the token. Chosen: `data-surface` sets `--background`
 to `--surface` inside it, so those parts match whichever plane they are on
 with no change to them. A surface inside another, such as a panel on
-Mechanical's inset page, steps up to the card colour so it still reads
+Mechanical's inset page, steps up to the card color so it still reads
 apart.
 
 **Status text on the tinted page.** At 700, success and warning text on its

@@ -5,7 +5,7 @@ import { cn } from "@workspace/ui/lib/utils"
 /*
  * Labels in a column either side of a figure, each joined to the part it
  * names by a line ending in a dot. The Colors page and the design anatomy
- * diagrams share it, so every labelled figure in the docs reads the same.
+ * diagrams share it, so every labeled figure in the docs reads the same.
  *
  * List callouts on each side in the order their parts run top to bottom,
  * and no two lines cross.

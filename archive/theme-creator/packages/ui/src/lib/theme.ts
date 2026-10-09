@@ -42,7 +42,7 @@ const MONO_FONTS = [
 ] as const
 
 type Theme = {
-  /** A Tailwind grey, or a custom tint of neutral toward a hue. */
+  /** A Tailwind gray, or a custom tint of neutral toward a hue. */
   neutral:
     | { preset: NeutralPreset }
     | { preset: "custom"; hue: number; amount: number }
@@ -137,7 +137,7 @@ const PRESET_RAMPS: Record<NeutralPreset, Ramp> = {
 }
 
 // How much of a custom tint each step takes: slate's chroma curve, scaled
-// so its peak is 1. Ends stay nearly grey, the middle carries the tint.
+// so its peak is 1. Ends stay nearly gray, the middle carries the tint.
 const TINT_CURVE = [
   0.065, 0.152, 0.283, 0.478, 0.87, 1, 0.935, 0.957, 0.891, 0.913, 0.913,
 ]
@@ -150,9 +150,9 @@ const TINT_MAX = 0.046
  * lightness and chroma, and the dark step keeps its hue offset from the
  * light one, since Tailwind's ramps drift in hue as they lighten.
  *
- * Some of these sit a little outside sRGB, as Tailwind's own colours do for
+ * Some of these sit a little outside sRGB, as Tailwind's own colors do for
  * wide-gamut screens. The CSS keeps them as they are and lets the browser
- * map them; only the sRGB maths (contrast, Figma hex) fits them first.
+ * map them; only the sRGB math (contrast, Figma hex) fits them first.
  */
 const STATUS_STEPS: Record<StatusRole, { light: Oklch; dark: Oklch }> = {
   destructive: {
@@ -216,7 +216,7 @@ function statusColor(role: StatusRole, hue: number, mode: Mode): Oklch {
 
 type Mode = "light" | "dark"
 
-/** One semantic role's value: a colour, and alpha when it's translucent. */
+/** One semantic role's value: a color, and alpha when it's translucent. */
 type Token = { color: Oklch; alpha?: number }
 
 const WHITE: Oklch = { l: 1, c: 0, h: 0 }
@@ -402,7 +402,7 @@ function rgba(token: Token): Rgb {
 
 /*
  * W3C design tokens, one set per mode, as Figma's variables import expects:
- * each role a colour in hex (with alpha where it's translucent), plus the
+ * each role a color in hex (with alpha where it's translucent), plus the
  * radius steps from globals.css.
  */
 function figmaTokens(theme: Theme) {

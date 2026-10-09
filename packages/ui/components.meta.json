@@ -178,7 +178,7 @@
   },
   "pixel-snail": {
     "title": "Pixel snail",
-    "description": "A one-colour pixel snail that crawls on a loop while something loads.",
+    "description": "A one-color pixel snail that crawls on a loop while something loads.",
     "tier": "special-components",
     "group": "Feedback",
     "figma": "631-16"
@@ -312,7 +312,7 @@
   },
   "token-flow": {
     "title": "Token flow",
-    "description": "Walks a colour token from raw value to primitive to semantic role.",
+    "description": "Walks a color token from raw value to primitive to semantic role.",
     "tier": "special-components",
     "group": "Diagrams",
     "figma": "371-6"
@@ -333,7 +333,7 @@
   },
   "voice-memo": {
     "title": "Voice memo",
-    "description": "An aluminium recorder that writes down what you say, with the transcript filling in beside it as you talk.",
+    "description": "An aluminum recorder that writes down what you say, with the transcript filling in beside it as you talk.",
     "tier": "special-components",
     "group": "Forms",
     "figma": "621-7"

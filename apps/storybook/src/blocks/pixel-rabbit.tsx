@@ -167,7 +167,7 @@ function compose(pose: Pose): Grid {
 
 /*
  * On dark grounds he turns solid: his outline and fill both go light and
- * only the inner lines stay dark. Swapping the two colours instead would
+ * only the inner lines stay dark. Swapping the two colors instead would
  * leave a thin light outline round a dark body.
  */
 function invert(grid: Grid): Grid {

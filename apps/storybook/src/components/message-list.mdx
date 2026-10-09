@@ -51,7 +51,7 @@ group starts once five minutes have passed since it began.
 ### Unread
 
 `unreadFrom` names the first unread message. The divider above it is red with
-a "New" label, so it doesn't rely on colour alone, and it breaks the group.
+a "New" label, so it doesn't rely on color alone, and it breaks the group.
 Freeze the value when the conversation opens, so the line stays where it was
 while people read; clear it when they send a message, press Escape or mark
 the conversation read. Pair it with the
@@ -115,7 +115,7 @@ export function Channel({ messages }: { messages: ChatMessage[] }) {
 ```
 
 Pass the whole conversation, oldest first. Grouping looks at each message's
-neighbours, so a list that only holds the rows on screen would start a new
+neighbors, so a list that only holds the rows on screen would start a new
 group at the top of every scroll. If you virtualize, call `groupMessages` on
 the full list and render from its result.
 
@@ -150,7 +150,7 @@ corners where bubbles meet.
       {
         name: "divider",
         slot: "message-divider",
-        note: "One labelled separator above a message that starts a day, carries a label from dividers, or is the first unread.",
+        note: "One labeled separator above a message that starts a day, carries a label from dividers, or is the first unread.",
         children: [
           {
             name: "unread label",

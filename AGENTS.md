@@ -123,8 +123,8 @@ or a component's variants.
 - **Tokens.** Semantic tokens only in components (`bg-primary`,
   `text-muted-foreground`). Primitive ramps (`neutral-*`, `red-*`, `green-*`,
   `amber-*`, `blue-*`) belong in `globals.css`. There is no brand hue:
-  `primary` is a neutral, and colour only carries meaning.
-- **No opacity modifiers** on token colours (`bg-destructive/10`). Figma
+  `primary` is a neutral, and color only carries meaning.
+- **No opacity modifiers** on token colors (`bg-destructive/10`). Figma
   cannot bind opacity to a variable, so those are named roles instead:
   `-subtle`, `-hover`, `-ring`. Figma and code then use the same name.
 - **Imports.** Inside `packages/ui`, import through the workspace alias

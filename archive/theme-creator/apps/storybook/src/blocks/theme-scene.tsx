@@ -57,7 +57,7 @@ import {
 const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const
 
 /*
- * One fibo part on the stage, labelled the way the catalog labels it, so
+ * One fibo part on the stage, labeled the way the catalog labels it, so
  * the scene doubles as a tour of the system in the theme being made.
  */
 function Exhibit({
@@ -91,7 +91,7 @@ function Exhibit({
 }
 
 // The generated ramps across the top, the way Radix shows a scale: neutral
-// steps, then the colours that carry meaning with their tints.
+// steps, then the colors that carry meaning with their tints.
 function Palette({ theme, mode }: { theme: Theme; mode: Mode }) {
   const ramp = neutralRamp(theme.neutral)
   const t = tokens(theme, mode)
@@ -150,7 +150,7 @@ function Type({ theme }: { theme: Theme }) {
         An achromatic system for experimental projects.
       </p>
       <p className="m-0 leading-relaxed text-muted-foreground">
-        Greys do the structural work, and colour only ever carries meaning.
+        Grays do the structural work, and color only ever carries meaning.
         Numbers like{" "}
         <code className="rounded-sm bg-muted px-1 font-mono text-sm text-foreground">
           1,284.60
@@ -345,7 +345,7 @@ function ReactionsExhibit() {
   return (
     <Exhibit name="Reactions" shelf="Special components">
       <p className="m-0 text-sm">
-        Shipped the theme creator. Try tinting the greys.
+        Shipped the theme creator. Try tinting the grays.
       </p>
       <Reactions
         particles={0}

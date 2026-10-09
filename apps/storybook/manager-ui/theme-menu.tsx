@@ -29,7 +29,7 @@ const THEMES: { value: DesignTheme; label: string }[] = [
 /*
  * A key drawn by the theme itself: fibo's Kbd inside the theme's scope, so
  * it can't drift from the stylesheet. The scope is display: contents, so
- * the theme's page colour has no box to paint.
+ * the theme's page color has no box to paint.
  */
 function ThemeKey({ theme }: { theme: DesignTheme }) {
   return (

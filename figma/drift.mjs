@@ -7,7 +7,7 @@
 //   pnpm figma:drift          report, exit 1 on any error
 //   pnpm figma:drift --json   the same findings as JSON
 //
-// Both sides are compared by name, not by computed colour: Figma aliases
+// Both sides are compared by name, not by computed color: Figma aliases
 // `neutral/900` or `alpha/red-700/8`, and code says `var(--color-neutral-900)`
 // or `color-mix(in oklch, var(--color-red-700) 8%, transparent)`, so a match
 // means the two point at the same primitive, which is the contract.

@@ -1,7 +1,7 @@
 import type { FiboLine } from "./lines.js"
 
 /*
- * fibo's chiptune sounds, synthesised so there is nothing to load. Browsers
+ * fibo's chiptune sounds, synthesized so there is nothing to load. Browsers
  * keep audio off until the visitor clicks or presses a key, so the context
  * is made on the first of those anywhere on the page, and any sound asked
  * for before then is skipped. Sounds asked for while it is still waking are

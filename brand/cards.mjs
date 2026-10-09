@@ -198,14 +198,14 @@ export const CARDS = [
       <div class="pad">
         <span class="eyebrow">Principle · achromatic by default</span>
         <h1 class="t144">There is no brand hue.</h1>
-        <p class="lede"><b>Primary is a neutral.</b> Colour only shows up when it means something.</p>
+        <p class="lede"><b>Primary is a neutral.</b> Color only shows up when it means something.</p>
         <div style="display:grid; grid-template-columns:repeat(11,1fr); margin-top:55px; border:2px solid var(--border); border-radius:21px; overflow:hidden; height:233px;">
           ${ramp.map(([n, c]) => `<div style="background:${c}; display:flex; align-items:flex-end; justify-content:center; padding-bottom:13px; font:500 21px/1 'Geist Mono'; color:${+n >= 500 ? "#fafafa" : "#525252"};">${n}</div>`).join("")}
         </div>
         <div style="display:flex; gap:13px; flex-wrap:wrap; margin-top:34px;">
           ${status.map(([n, c]) => `<span style="display:inline-flex; align-items:center; gap:13px; padding:13px 21px; border:2px solid var(--border); border-radius:89px; background:var(--card); font:500 21px/1 'Geist Mono';"><i style="width:21px; height:21px; border-radius:50%; background:${c};"></i>${n}</span>`).join("")}
         </div>
-        <span class="hand" style="margin-top:34px;">the only four colours, and each one means something</span>
+        <span class="hand" style="margin-top:34px;">the only four colors, and each one means something</span>
       </div>
       ${foot(3)}`
     },

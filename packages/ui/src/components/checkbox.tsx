@@ -34,7 +34,7 @@ function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
 }
 
 /**
- * A checkbox's look without its behaviour, for a row that is already the
+ * A checkbox's look without its behavior, for a row that is already the
  * control, such as a listbox option, where a nested checkbox would be a
  * second control inside the first.
  */

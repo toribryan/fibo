@@ -243,7 +243,7 @@ function Pixels({ pixels }: { pixels: Pixel[] }) {
   ))
 }
 
-// The whites of the eyes take the page colour, so the pupils read in either
+// The whites of the eyes take the page color, so the pupils read in either
 // theme.
 function Drawn({ ink, whites }: Drawing) {
   return (
@@ -534,8 +534,8 @@ type PixelSnailProps = Omit<React.ComponentProps<"div">, "children"> & {
 }
 
 /**
- * A one-colour pixel snail that crawls on a loop, for loading states. It
- * draws in `currentColor`, so a text colour class recolours it.
+ * A one-color pixel snail that crawls on a loop, for loading states. It
+ * draws in `currentColor`, so a text color class recolors it.
  */
 function PixelSnail({
   size = "default",

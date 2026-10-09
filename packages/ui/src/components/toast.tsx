@@ -148,7 +148,7 @@ function ToastClose({
   )
 }
 
-// Colour only where the type carries meaning; a plain toast has no icon.
+// Color only where the type carries meaning; a plain toast has no icon.
 const ICONS: Record<string, React.ReactNode> = {
   success: <CircleCheckIcon className="text-success" />,
   info: <InfoIcon className="text-info" />,

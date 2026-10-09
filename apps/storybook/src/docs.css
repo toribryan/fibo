@@ -7,7 +7,7 @@
 
 /*
  * Storybook styles its docs chrome with emotion. These overrides are scoped
- * to `.sbdocs` and swap its shadows and greys for fibo's hairlines and
+ * to `.sbdocs` and swap its shadows and grays for fibo's hairlines and
  * tokens, so a canvas looks like a fibo surface in both themes.
  */
 .sbdocs.sbdocs-wrapper {

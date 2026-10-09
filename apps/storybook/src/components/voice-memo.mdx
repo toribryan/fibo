@@ -12,7 +12,7 @@ import { Install } from "../blocks/install"
 
 # Voice memo
 
-An aluminium recorder, after the clip-on memo devices that hold to the
+An aluminum recorder, after the clip-on memo devices that hold to the
 back of a phone, that writes down what you say. Press it and a transcript
 opens beside it, filling in as you talk; press it again and the transcript
 stays, ready to copy or download as a Markdown file.
@@ -31,9 +31,9 @@ stays, ready to copy or download as a Markdown file.
 - Uses the browser's own speech recognition, with nothing to install, or
   shows text from your own service through `transcript` and `interim`.
 - Tidies what the browser hears: fillers and doubled words dropped, "I" and
-  each sentence capitalised, a full stop or question mark at the end.
-- Aluminium drawn in fibo's tokens, silver in the light theme and space
-  grey in the dark, that lifts on hover and presses in on a click.
+  each sentence capitalized, a period or question mark at the end.
+- Aluminum drawn in fibo's tokens, silver in the light theme and space
+  gray in the dark, that lifts on hover and presses in on a click.
 
 ## Installation
 
@@ -148,7 +148,7 @@ October 2, 2026 at 2:05 PM · 00:42 · 61 words
 
 With your own speech-to-text service, pass what it has settled as
 `transcript` and what it's still guessing as `interim`. The browser's
-recogniser stays off:
+recognizer stays off:
 
 ```tsx
 <VoiceMemo
@@ -180,7 +180,7 @@ Every part the component renders, with the `data-slot` it carries.
       {
         name: "device",
         slot: "voice-memo-device",
-        note: "The aluminium recorder, a toggle button named Transcribe.",
+        note: "The aluminum recorder, a toggle button named Transcribe.",
         children: [
           {
             name: "light",
@@ -240,9 +240,9 @@ Every part the component renders, with the `data-slot` it carries.
     "Do something with the text in onComplete, such as saving it as a note. A transcript that vanishes when closed teaches people not to bother.",
     "Open the transcript to the right where there's room beside the device, and below it in narrow columns and on phones.",
     "Keep the wordmark to one short word. It's raised across the bottom of the device and has room for about six letters.",
-    "Set lang to the language people speak. The recogniser doesn't detect it.",
+    "Set lang to the language people speak. The recognizer doesn't detect it.",
     "Leave simulate for previews and demos. In production it would type out the same script for everyone.",
-    "Give each memo a title people will recognise, such as the meeting. It heads the Markdown file and names it.",
+    "Give each memo a title people will recognize, such as the meeting. It heads the Markdown file and names it.",
   ]}
 />
 

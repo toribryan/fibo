@@ -21,7 +21,7 @@ describe("formatElapsed", () => {
 })
 
 describe("tidyPhrase", () => {
-  it("capitalises and ends a sentence", () => {
+  it("capitalizes and ends a sentence", () => {
     expect(tidyPhrase("so i think we should ship it")).toBe(
       "So I think we should ship it."
     )
@@ -214,7 +214,7 @@ describe("VoiceMemo", () => {
     expect(memo.duration).toBeLessThan(10_000)
   })
 
-  it("switches off and keeps the message when the recogniser fails", async () => {
+  it("switches off and keeps the message when the recognizer fails", async () => {
     const scope = window as unknown as { SpeechRecognition?: unknown }
     const original = scope.SpeechRecognition
     const instances: {

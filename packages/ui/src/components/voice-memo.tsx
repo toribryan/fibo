@@ -43,7 +43,7 @@ type VoiceMemoProps = Omit<
   defaultRecording?: boolean
   /** Called when the device is pressed to start or stop, and with false when transcription fails. */
   onRecordingChange?: (recording: boolean) => void
-  /** The finished text so far, when you transcribe with your own service. The browser's recogniser stays off. */
+  /** The finished text so far, when you transcribe with your own service. The browser's recognizer stays off. */
   transcript?: string
   /** Words still being worked out, shown fainter after `transcript`. */
   interim?: string
@@ -51,7 +51,7 @@ type VoiceMemoProps = Omit<
   onTranscriptChange?: (transcript: string) => void
   /** Called once listening stops, with the finished transcript and the memo, Markdown included. */
   onComplete?: (transcript: string, memo: VoiceMemoResult) => void
-  /** The language spoken, as a BCP 47 tag, for the browser's recogniser. */
+  /** The language spoken, as a BCP 47 tag, for the browser's recognizer. */
   lang?: string
   /** Text to speak in place of a microphone, a word at a time. For previews and demos. */
   simulate?: string
@@ -80,7 +80,7 @@ const voiceMemoVariants = cva(
 const DEVICE = { width: 170, height: 110, radius: 12 }
 
 // The parts of the Web Speech API this uses, declared here: TypeScript's DOM
-// library leaves the recogniser out, since only some browsers ship it, and
+// library leaves the recognizer out, since only some browsers ship it, and
 // older versions of the library lack its events too.
 type RecognitionEvent = {
   resultIndex: number
@@ -89,7 +89,7 @@ type RecognitionEvent = {
 
 type RecognitionErrorEvent = { error: string }
 
-type Recogniser = {
+type Recognizer = {
   continuous: boolean
   interimResults: boolean
   lang: string
@@ -101,11 +101,11 @@ type Recogniser = {
   onend: (() => void) | null
 }
 
-function getRecogniser() {
+function getRecognizer() {
   if (typeof window === "undefined") return undefined
   const scope = window as unknown as {
-    SpeechRecognition?: new () => Recogniser
-    webkitSpeechRecognition?: new () => Recogniser
+    SpeechRecognition?: new () => Recognizer
+    webkitSpeechRecognition?: new () => Recognizer
   }
   return scope.SpeechRecognition ?? scope.webkitSpeechRecognition
 }
@@ -132,11 +132,11 @@ const ASKS =
   /^(?:who|what|when|where|why|how|which|whose|is|are|am|was|were|can|could|would|should|shall|will|do|does|did|have|has|had|may|might|isn't|aren't|can't|won't|don't|doesn't|didn't)\b/i
 
 /*
- * Light grammar for a settled phrase, since browser recognisers mostly
+ * Light grammar for a settled phrase, since browser recognizers mostly
  * return lowercase words with no punctuation. Drops filler sounds and a
- * word said twice in a row, except the doubles English allows, capitalises
- * "I" and each sentence, and ends the phrase with a full stop, or a
- * question mark when it opens like a question. Punctuation the recogniser
+ * word said twice in a row, except the doubles English allows, capitalizes
+ * "I" and each sentence, and ends the phrase with a period, or a
+ * question mark when it opens like a question. Punctuation the recognizer
  * already added is kept.
  */
 function tidyPhrase(phrase: string) {
@@ -215,7 +215,7 @@ function download(markdown: string, filename: string) {
 }
 
 /**
- * A bead-blasted aluminium recorder that writes down what you say. Press it and a
+ * A bead-blasted aluminum recorder that writes down what you say. Press it and a
  * transcript opens beside it, filling in as you talk; press it again and the
  * transcript stays, ready to copy. It uses the browser's own speech
  * recognition, or shows text from your own service through `transcript`.
@@ -251,13 +251,13 @@ function VoiceMemo({
   // The server can't tell, so it assumes support and the browser corrects it.
   const supported = React.useSyncExternalStore(
     noop,
-    () => getRecogniser() !== undefined,
+    () => getRecognizer() !== undefined,
     () => true
   )
-  const usesRecogniser = !external && simulate === undefined
+  const usesRecognizer = !external && simulate === undefined
   const error =
     failure ||
-    (recording && usesRecogniser && !supported
+    (recording && usesRecognizer && !supported
       ? "Transcription isn't available in this browser."
       : "")
   const [announcement, setAnnouncement] = React.useState("")
@@ -266,7 +266,7 @@ function VoiceMemo({
     recording ||
     (!dismissed && (memo !== null || transcript !== "" || error !== ""))
 
-  // The settled text as it stands, so a recogniser rebuilt mid-session for a
+  // The settled text as it stands, so a recognizer rebuilt mid-session for a
   // new language carries on from it rather than starting the page over.
   const said = React.useRef("")
 
@@ -283,7 +283,7 @@ function VoiceMemo({
     () => performance.now() - started.current.at,
     []
   )
-  // Set when the recogniser gives up, so that stop hands back no memo.
+  // Set when the recognizer gives up, so that stop hands back no memo.
   const failed = React.useRef(false)
 
   const begin = React.useEffectEvent(() => {
@@ -337,7 +337,7 @@ function VoiceMemo({
   // Starts and stops a session on each change of the resolved value, so a
   // device switched on by `defaultRecording` or by its parent gets the same
   // session as one that's pressed. A layout effect, so the session has begun
-  // before the recogniser's effect starts listening.
+  // before the recognizer's effect starts listening.
   const previous = React.useRef(false)
   React.useLayoutEffect(() => {
     if (recording === previous.current) return
@@ -354,7 +354,7 @@ function VoiceMemo({
     onRecordingChange?.(next)
   }
 
-  // A recogniser that can't go on switches the device off, and its message
+  // A recognizer that can't go on switches the device off, and its message
   // stays in place of a memo.
   const halt = React.useEffectEvent((message: string) => {
     failed.current = true
@@ -362,17 +362,17 @@ function VoiceMemo({
     setRecording(false)
   })
 
-  // The browser's recogniser, unless the text comes from elsewhere.
+  // The browser's recognizer, unless the text comes from elsewhere.
   React.useEffect(() => {
-    const Recogniser = getRecogniser()
-    if (!recording || !usesRecogniser || !Recogniser) return
-    const recogniser = new Recogniser()
-    recogniser.continuous = true
-    recogniser.interimResults = true
-    recogniser.lang = lang
+    const Recognizer = getRecognizer()
+    if (!recording || !usesRecognizer || !Recognizer) return
+    const recognizer = new Recognizer()
+    recognizer.continuous = true
+    recognizer.interimResults = true
+    recognizer.lang = lang
     let settled = said.current
     let stopped = false
-    recogniser.onresult = (event) => {
+    recognizer.onresult = (event) => {
       let pending = ""
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i]!
@@ -385,7 +385,7 @@ function VoiceMemo({
       settle(settled)
       setGuess(pending)
     }
-    recogniser.onerror = (event) => {
+    recognizer.onerror = (event) => {
       if (event.error === "no-speech" || event.error === "aborted") return
       stopped = true
       halt(
@@ -398,28 +398,28 @@ function VoiceMemo({
               : "Transcription stopped. Press the device to try again."
       )
     }
-    // Recognisers end on their own after a silence; a device that's still
+    // Recognizers end on their own after a silence; a device that's still
     // switched on keeps listening.
-    recogniser.onend = () => {
+    recognizer.onend = () => {
       if (stopped) return
       try {
-        recogniser.start()
+        recognizer.start()
       } catch {
         stopped = true
         halt("Transcription stopped. Press the device to try again.")
       }
     }
-    recogniser.start()
+    recognizer.start()
     // Aborted rather than stopped: a stop sends one last result after
     // onComplete has already had the text. The guess on screen stands in.
     return () => {
       stopped = true
-      recogniser.onresult = null
-      recogniser.onerror = null
-      recogniser.onend = null
-      recogniser.abort()
+      recognizer.onresult = null
+      recognizer.onerror = null
+      recognizer.onend = null
+      recognizer.abort()
     }
-  }, [recording, usesRecogniser, lang, elapsed])
+  }, [recording, usesRecognizer, lang, elapsed])
 
   // A script spoken a word at a time, the newest word still a guess.
   React.useEffect(() => {
@@ -430,7 +430,7 @@ function VoiceMemo({
     const id = window.setInterval(() => {
       if (index > words.length) return
       const done = Math.max(0, index - 1)
-      // A sentence settles as a phrase, as the browser's recogniser would.
+      // A sentence settles as a phrase, as the browser's recognizer would.
       if (done > from && /[.?!]$/.test(words[done - 1]!)) {
         segments.current.push({
           at: elapsed(),
@@ -638,8 +638,8 @@ function VoiceMemo({
 }
 
 /*
- * The aluminium face, drawn rather than photographed so it takes the theme:
- * silver in light, space grey in dark. Hover lifts it and slides the
+ * The aluminum face, drawn rather than photographed so it takes the theme:
+ * silver in light, space gray in dark. Hover lifts it and slides the
  * reflection along; pressing pushes it in.
  */
 function Device({
@@ -681,7 +681,7 @@ function Device({
         <defs>
           {/* Bead-blasted grain: fine noise, the same in every direction,
               pushed hard so only its peaks survive as specks. The red
-              channel becomes alpha, so the specks take the fill's colour.
+              channel becomes alpha, so the specks take the fill's color.
               Two seeds give dark pits and bright glints that don't line up. */}
           {[
             { id: ids.pits, seed: 4 },
@@ -837,7 +837,7 @@ function Device({
           rx={radius}
           fill={`url(#${ids.shade})`}
         />
-        {/* Anodised aluminium is a mid grey; the muted role alone is near
+        {/* Anodized aluminum is a mid gray; the muted role alone is near
             white in the light theme. */}
         <rect
           width={width}

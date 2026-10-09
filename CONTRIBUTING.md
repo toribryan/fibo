@@ -31,7 +31,7 @@ pnpm storybook
   It lists every file a part needs (source, stories, docs page, metadata) and
   the conventions they follow. Coding agents use the same file.
 - **Conventions.** They are in [`AGENTS.md`](./AGENTS.md): semantic tokens
-  only, no opacity modifiers on colours, `data-slot` on every root, and
+  only, no opacity modifiers on colors, `data-slot` on every root, and
   sentence case everywhere.
 
 ## Before you open a pull request

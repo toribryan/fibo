@@ -31,7 +31,7 @@ tab list, the active reaction (through `--primary-subtle`), a link's
 underline drawn like a highlighter and selected text. Controls stay flat; the
 edge tokens keep fibo's zero values. In dark mode ink can't be a fill, so the
 yellow becomes the primary, under an ink label. Chart tokens stay fibo's
-greys: icons in Electrical are monochrome.
+grays: icons in Electrical are monochrome.
 
 **Icons.** Lucide icons carry the `lucide` class, so one rule restyles every
 icon in every part. Options: thinner technical lines, heavier signage
@@ -71,17 +71,17 @@ to it, so the fibo column on the Themes page took the page's theme.
 `.dark` blocks, which repeats fibo's values on that region. The registry and
 drift scripts read those blocks by their first selector, so they still find
 them. A theme that leaves a token unset inherits the surrounding theme's
-value, so Electrical sets its grey chart tokens itself.
+value, so Electrical sets its gray chart tokens itself.
 
 **The sidebar.** Storybook's own chrome takes the theme too: manager.tsx sets
 `data-theme` on the manager's document, so fibo's parts in the sidebar and
 the sidebar's icons follow it, and gives Storybook a theme object per design
-theme and mode (`managerTheme` in `theme.ts`), whose colours also feed
+theme and mode (`managerTheme` in `theme.ts`), whose colors also feed
 manager-head.html's `--fibo-*` properties. The docs container uses the same
 objects, so canvases and the props table match the page.
 
 **The contrast test.** `themes.test.ts` replaces `mechanical.test.ts` and
-runs the same checks for every theme, in both modes. Coloured chart icons are
+runs the same checks for every theme, in both modes. Colored chart icons are
 checked only where the theme promises them; Electrical adds ink on its highlight.
 
 Mechanical's primary also takes a white label in this change: the

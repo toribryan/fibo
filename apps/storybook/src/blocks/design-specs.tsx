@@ -25,7 +25,7 @@ type PartProps = {
 }
 
 /*
- * A live example with its parts labelled the way the Colors page labels its
+ * A live example with its parts labeled the way the Colors page labels its
  * tokens: names in a column either side, a line to each part, and a legend
  * underneath. Pointing at a name or a legend entry outlines its part.
  */

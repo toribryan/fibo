@@ -13,7 +13,7 @@ const RESOURCES = [
     icon: PaletteIcon,
     title: "Foundations",
     description:
-      "Colour, type, spacing, elevation and motion, named the same as in Figma.",
+      "Color, type, spacing, elevation and motion, named the same as in Figma.",
   },
   {
     to: "catalog--docs",
@@ -61,7 +61,7 @@ function Resources() {
 const PRINCIPLES = [
   {
     title: "Quiet until it matters",
-    body: "Greys build the hierarchy with weight, size and space. Colour appears only when it means something: danger, success, warning, information.",
+    body: "Grays build the hierarchy with weight, size and space. Color appears only when it means something: danger, success, warning, information.",
   },
   {
     title: "Proportion, not preference",

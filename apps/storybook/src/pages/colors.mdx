@@ -8,8 +8,8 @@ import { ComponentRules, Tip } from "../blocks/guidelines"
 
 # Colors
 
-fibo is achromatic. Greys do the structural work, and colour only ever carries
-meaning. Components never name a colour: they read semantic tokens, and each
+fibo is achromatic. Grays do the structural work, and color only ever carries
+meaning. Components never name a color: they read semantic tokens, and each
 token points at one of Tailwind's primitives, per mode.
 
 <ColorScale />
@@ -72,7 +72,7 @@ and none of them change.
 
 ## Property tokens
 
-Each status colour has a token per property it paints: `-text` for text,
+Each status color has a token per property it paints: `-text` for text,
 `-border` for borders and `-icon` for icons and marks. The class names don't
 change. `text-success` reads `--success-text`, `border-success` reads
 `--success-border`, and `fill-success` and `stroke-success` read
@@ -82,7 +82,7 @@ They exist because one value can't meet every bar. Text needs 4.5:1 against
 the surface behind it, while borders, icons and marks need 3:1. Holding each
 property to its own bar lets a theme tune one without breaking another, and a
 unit test fails if any of them drops below its bar in either theme. Today they
-match their status colour; see
+match their status color; see
 [plan 003](https://github.com/toribryan/fibo/blob/main/plans/003-property-tokens.md)
 for why they exist and what comes next.
 
@@ -98,7 +98,7 @@ for why they exist and what comes next.
 
 ## Named alpha roles
 
-Tokens that end in `-subtle`, `-hover` or `-ring` are a colour at a set alpha,
+Tokens that end in `-subtle`, `-hover` or `-ring` are a color at a set alpha,
 such as `red-700 at 8%`. They exist instead of opacity modifiers like
 `bg-destructive/10`, because Figma can't bind an opacity to a variable. Naming
 the role keeps the alpha in one place and gives design and code the same name
@@ -106,7 +106,7 @@ to pick.
 
 ## Primitives
 
-These are the only Tailwind steps fibo draws from: one grey ramp for
+These are the only Tailwind steps fibo draws from: one gray ramp for
 structure, and two steps of four hues, 700 in light mode and 400 in dark, for
 status. The rest of [Tailwind's palette](https://tailwindcss.com/docs/colors)
 is there if a theme needs it, but components never use primitives directly.
@@ -134,7 +134,7 @@ is there if a theme needs it, but components never use primitives directly.
           </span>
         ),
         description:
-          "Don't reach for Tailwind colours. They stay put when the theme or the mode changes.",
+          "Don't reach for Tailwind colors. They stay put when the theme or the mode changes.",
       },
     },
     {
@@ -153,7 +153,7 @@ is there if a theme needs it, but components never use primitives directly.
           </span>
         ),
         description:
-          "Don't add an opacity modifier. Figma can't match it, and each one is a new colour to maintain.",
+          "Don't add an opacity modifier. Figma can't match it, and each one is a new color to maintain.",
       },
     },
   ]}

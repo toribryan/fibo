@@ -71,7 +71,7 @@ pnpm dlx shadcn@latest add @fibo/theme
 | Chapter scrubber   | A rail of marks that swell under the pointer, previewing each chapter. |
 | Integration visual | A hub and the tools wired into it, with pulses along the routes.       |
 | Reactions          | Lets people respond to content with an emoji in one tap.               |
-| Token flow         | Walks a colour token from raw value to primitive to semantic role.     |
+| Token flow         | Walks a color token from raw value to primitive to semantic role.      |
 
 Every part has a docs page in [Storybook](https://fibo.toribryan.com) with
 its features, a usage example, the parts it renders, guidelines, do's and
@@ -80,7 +80,7 @@ don'ts, a props and data attributes reference, and accessibility notes.
 ## Principles
 
 - **Achromatic by default.** There is no brand hue. `primary` is a neutral and
-  colour only ever carries meaning: destructive, success, warning, info.
+  color only ever carries meaning: destructive, success, warning, info.
 - **One name on both sides.** Every token in `globals.css` matches a Figma
   variable. Opacity steps get names too (`-subtle`, `-hover`, `-ring`), so a
   designer can bind them.

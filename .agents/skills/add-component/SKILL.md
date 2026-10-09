@@ -150,7 +150,7 @@ controls, keyboard use and reduced motion. Confirm
 ## Porting from another codebase
 
 Treat the original as a reference, not a paste. Swap its utilities for
-`@workspace/ui/lib/utils`, replace colours and opacity modifiers with fibo
+`@workspace/ui/lib/utils`, replace colors and opacity modifiers with fibo
 tokens, move Radix primitives to Base UI, drop site-specific data and copy,
 and replace internal helpers with props. Credit the source in a comment if its
 geometry or artwork is reused.

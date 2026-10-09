@@ -127,7 +127,7 @@ describe("StickerAvatar", () => {
     expect(art.getBoundingClientRect().width).toBe(68)
   })
 
-  it("bakes again when the edge colour changes", async () => {
+  it("bakes again when the edge color changes", async () => {
     const edged = (color: string) => (
       <StickerAvatar
         name="Ghost"

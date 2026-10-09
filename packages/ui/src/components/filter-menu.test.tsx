@@ -230,19 +230,19 @@ describe("FilterMenu", () => {
     }
   })
 
-  it("keeps a colour set on a field's icon and mutes the rest", async () => {
+  it("keeps a color set on a field's icon and mutes the rest", async () => {
     const screen = await openMenu(
       <FilterMenu
         fields={[
           {
             ...fields[0]!,
-            icon: <svg data-testid="coloured" className="text-chart-2" />,
+            icon: <svg data-testid="colored" className="text-chart-2" />,
           },
           { ...fields[1]!, icon: <svg data-testid="plain" /> },
         ]}
       />
     )
-    const colour = (id: string) =>
+    const color = (id: string) =>
       getComputedStyle(screen.getByTestId(id).element()).color
     const probe = document.createElement("span")
     probe.className = "text-chart-2"
@@ -251,7 +251,7 @@ describe("FilterMenu", () => {
     probe.className = "text-muted-foreground"
     const muted = getComputedStyle(probe).color
     probe.remove()
-    expect(colour("coloured")).toBe(chart)
-    expect(colour("plain")).toBe(muted)
+    expect(color("colored")).toBe(chart)
+    expect(color("plain")).toBe(muted)
   })
 })

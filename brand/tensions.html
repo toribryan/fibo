@@ -302,7 +302,7 @@
           foot(ctx, "precise", "whimsical")
           grain(ctx, W, H, 22, 0.45)
         }
-        // 6. Black/white ↔ luminous colour: 1-bit on one side, glowing on the other.
+        // 6. Black/white ↔ luminous color: 1-bit on one side, glowing on the other.
         {
           const ctx = card("bw-luminous")
           const [ph, r] = photo(rabbitImg, { fx: 0.5, fy: 0.35, zoom: 1.2 })
@@ -318,7 +318,7 @@
           gb.drawImage(ph.canvas, r.x, r.y)
           gb.restore()
           join(ctx, a, b)
-          foot(ctx, "black/white", "luminous colour")
+          foot(ctx, "black/white", "luminous color")
           grain(ctx, W, H, 22, 0.4)
         }
         document.title = "done"

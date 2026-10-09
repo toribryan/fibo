@@ -19,7 +19,7 @@ const talk: Chapter[] = [
     id: "audit",
     meta: "02:14",
     title: "The audit",
-    description: "Every colour in production, clustered and counted.",
+    description: "Every color in production, clustered and counted.",
   },
   {
     id: "tokens",

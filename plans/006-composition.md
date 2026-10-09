@@ -39,7 +39,7 @@ The audit of all 38 parts (October 2026) found the same few pieces drawn
 by hand again and again, and three parts that can't be extended without a
 new prop:
 
-- A presence dot in Sticker avatar, a coloured class on `AvatarBadge` with
+- A presence dot in Sticker avatar, a colored class on `AvatarBadge` with
   no spoken label, and a recording dot in Voice memo.
 - A capped, spoken count (99+, `tabular-nums`, an sr-only exact number) in
   Jump bar, Reactions, Filter menu, Data table, Avatar group and Sticker
@@ -81,7 +81,7 @@ All on the Base shelf, using only Base UI, cva and lucide.
 
 | Primitive       | What it is                                                                                                                                                                              | Used by                                                                                                                                        |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **StatusDot**   | Presence mark told by shape and colour, with a spoken label. `status`, `variant` (`color`, `mono`), `size`.                                                                             | Sticker avatar, Avatar (in `AvatarBadge`), Badge (leading dot), Voice memo (recording), Message list (through Avatar), Data table status cells |
+| **StatusDot**   | Presence mark told by shape and color, with a spoken label. `status`, `variant` (`color`, `mono`), `size`.                                                                              | Sticker avatar, Avatar (in `AvatarBadge`), Badge (leading dot), Voice memo (recording), Message list (through Avatar), Data table status cells |
 | **Count**       | A number with an optional cap (99+), `tabular-nums`, and a spoken label from a function.                                                                                                | Jump bar, Reactions, Filter menu, Data table facets, Avatar group count, Sticker avatar count, Menu (`MenuItemCount`)                          |
 | **Field**       | `Field`, `FieldLabel`, `FieldDescription`, `FieldError`, `FieldContent` on `@base-ui/react/field`, with `size` and `orientation` in context; `FieldGroup` sets `size` for a whole form. | Input, Textarea, Select, Checkbox, Radio group, Switch, Slider, Label                                                                          |
 | **Separator**   | A rule, horizontal or vertical, with an optional label.                                                                                                                                 | Data table bulk actions, Menu, Select, Message list divider                                                                                    |

@@ -29,7 +29,7 @@ const uiPackage = JSON.parse(
   await readFile(path.join(uiDir, "package.json"), "utf8")
 )
 
-// Each role and the strength it mixes its base colour at in globals.css.
+// Each role and the strength it mixes its base color at in globals.css.
 // Longer names come first so `input-subtle` never claims `input-subtle-hover`.
 const roles = [
   ["destructive-subtle-hover", "destructive/15"],

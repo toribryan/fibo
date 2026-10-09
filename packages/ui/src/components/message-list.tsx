@@ -124,7 +124,7 @@ type GroupOptions = {
 }
 
 /*
- * Grouping depends on each message's neighbours, so run it over the whole
+ * Grouping depends on each message's neighbors, so run it over the whole
  * list before virtualizing. Run on only the rendered window, the first row
  * would always look like the start of a group.
  */
@@ -323,7 +323,7 @@ function MessageList({
   )
 
   const listRef = React.useRef<HTMLDivElement>(null)
-  // The index is kept so a removed message's neighbour can take its place.
+  // The index is kept so a removed message's neighbor can take its place.
   const [active, setActive] = React.useState<{
     id: string
     index: number
@@ -357,7 +357,7 @@ function MessageList({
 
   /*
    * React fires no blur when a focused element unmounts, so a deleted
-   * message would drop focus to the page. Put it on the neighbour instead.
+   * message would drop focus to the page. Put it on the neighbor instead.
    */
   React.useLayoutEffect(() => {
     const root = listRef.current
@@ -602,7 +602,7 @@ function MessageDivider({
     >
       {label}
       {unread ? (
-        // A word as well as a colour, since red alone carries nothing for
+        // A word as well as a color, since red alone carries nothing for
         // people who can't tell it apart (WCAG 1.4.1).
         <span
           data-slot="message-divider-unread"

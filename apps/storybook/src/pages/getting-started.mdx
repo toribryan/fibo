@@ -16,7 +16,7 @@ import {
 There are two ways to use fibo in a project built on shadcn:
 
 - **Use the fibo theme.** Keep shadcn's components and add `@fibo/theme` to
-  give them fibo's colours, in light and dark.
+  give them fibo's colors, in light and dark.
 - **Add special components.** Install fibo's own parts, such as Command menu,
   Filter menu and Reactions, which shadcn doesn't have.
 
@@ -25,7 +25,7 @@ This guide shows how to do either.
 ## What the registry is
 
 If you've used a Figma team library, you already know most of it. fibo's Figma
-library and its code are one system: every component, property and colour
+library and its code are one system: every component, property and color
 variable has the same name in both.
 
 The registry is how the code half is shared. It's a set of files at
@@ -97,7 +97,7 @@ The command does four things:
    on, such as Base UI, which handles keyboard, focus and screen readers.
 3. **Other fibo parts come too.** A part built from another part brings it:
    Toast brings Button, because its action and close controls are buttons.
-4. **Tokens are added.** The CLI adds any colour token the part uses that your
+4. **Tokens are added.** The CLI adds any color token the part uses that your
    project lacks to `globals.css`, in light and dark. It leaves tokens you
    already have alone.
 
@@ -143,7 +143,7 @@ table of every option.
 
 ## 4. Make it look like fibo
 
-After step 2, your parts use your project's colours for everything standard,
+After step 2, your parts use your project's colors for everything standard,
 such as primary, background and borders, and fibo's only for the few extras.
 That's on purpose, so fibo fits into an existing product without restyling
 it.
@@ -154,11 +154,11 @@ To make everything look as it does here, add the theme:
 pnpm dlx shadcn@latest add @fibo/theme
 ```
 
-This replaces the colour values in your `globals.css` with fibo's, in light
+This replaces the color values in your `globals.css` with fibo's, in light
 and dark.
 
-Every colour is a role, such as `primary` or `border`, that points at a value
-in a colour ramp. To retheme, edit `:root` and `.dark` in `globals.css`;
+Every color is a role, such as `primary` or `border`, that points at a value
+in a color ramp. To retheme, edit `:root` and `.dark` in `globals.css`;
 nothing else needs to change.
 
 ## 5. Change it
@@ -168,8 +168,8 @@ add a variant, change a radius, or delete what you don't use. Nothing in fibo
 overwrites it.
 
 One rule keeps it on-system: style with **tokens** like `bg-primary`, never raw
-colours like `bg-neutral-900` or `#171717`. Tokens follow dark mode and your
-theme; raw colours stay the same everywhere. The <DocLink to="foundations-colors--docs" className="text-foreground underline underline-offset-4">Colors</DocLink> page lists every token and what it's for.
+colors like `bg-neutral-900` or `#171717`. Tokens follow dark mode and your
+theme; raw colors stay the same everywhere. The <DocLink to="foundations-colors--docs" className="text-foreground underline underline-offset-4">Colors</DocLink> page lists every token and what it's for.
 
 ## 6. Get updates
 
@@ -208,7 +208,7 @@ these and adjust it to your project:
 
 <AgentPrompt>
   {
-    "Install @fibo/theme, then check every page in light and dark mode and list anything that uses raw colours instead of tokens."
+    "Install @fibo/theme, then check every page in light and dark mode and list anything that uses raw colors instead of tokens."
   }
 </AgentPrompt>
 
@@ -229,9 +229,9 @@ A part's path from the Figma library to your project:
 <RegistryFlow />
 
 1. **Designed in Figma.** Each component and its properties start in the
-   Figma library, built with fibo's colour variables.
+   Figma library, built with fibo's color variables.
 2. **Built in code.** The component is written in fibo's repo with the same
-   names. Its colours come from tokens in one file, `globals.css`, which
+   names. Its colors come from tokens in one file, `globals.css`, which
    matches the Figma variables one to one.
 3. **Turned into registry files.** A build step reads each component, notes
    the packages and other fibo parts it uses, looks up the tokens its classes
@@ -240,7 +240,7 @@ A part's path from the Figma library to your project:
    each time a change is merged.
 5. **Checked.** Before any change is merged, an automated test installs every
    part into a new project and builds it. If a part would arrive missing a
-   token, such as a hover colour, the change can't ship.
+   token, such as a hover color, the change can't ship.
 6. **Installed.** When you run `add`, the CLI downloads the part's file and
    writes its code, packages and tokens into your project.
 
@@ -296,7 +296,7 @@ Step 1 is missing, or `components.json` has a typo. Check that `"@fibo"` sits
 inside `"registries"` and that the file is still valid JSON: every entry
 except the last ends with a comma.
 
-### A part has no hover colour or focus ring
+### A part has no hover color or focus ring
 
 It was probably added before 30 September 2026, when parts started bringing
 their own tokens. Add it again with `--overwrite`, or add `@fibo/theme`.
@@ -330,8 +330,8 @@ you.
   registries it can install from.
 - **`globals.css`**: the stylesheet that holds your project's tokens, in light
   and dark.
-- **Token**: a named colour, such as `--primary`, that points at a real
-  value per mode. The code version of a Figma colour variable.
+- **Token**: a named color, such as `--primary`, that points at a real
+  value per mode. The code version of a Figma color variable.
 - **Package**: code someone else maintains that a component is built on,
   installed for you by the CLI.
 - **Part**: one fibo component, such as Button or Select.

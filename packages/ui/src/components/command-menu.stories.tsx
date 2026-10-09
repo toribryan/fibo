@@ -284,7 +284,7 @@ export const Default: Story = {
     await waitFor(() => expect(trigger).toHaveFocus())
 
     // The shortcut reopens it on the first page, with the command just run
-    // at the top under Recent, labelled with the page it lives on.
+    // at the top under Recent, labeled with the page it lives on.
     await userEvent.keyboard("{Control>}k{/Control}")
     const recent = await page.findByRole("group", { name: "Recent" })
     await expect(within(recent).getByRole("option")).toHaveTextContent(
@@ -439,12 +439,12 @@ export const Controlled: Story = {
 }
 
 /*
- * An icon keeps a colour you give it, so destinations read apart at a
- * glance. Icons without one stay muted. The chart tokens are greys in fibo's
+ * An icon keeps a color you give it, so destinations read apart at a
+ * glance. Icons without one stay muted. The chart tokens are grays in fibo's
  * own theme and saturated in Mechanical.
  */
-export const ColouredIcons: Story = {
-  name: "Coloured icons",
+export const ColoredIcons: Story = {
+  name: "Colored icons",
   args: {
     variant: "inset",
     placeholder: "Go to…",
@@ -491,11 +491,11 @@ export const ColouredIcons: Story = {
     const page = within(canvasElement.ownerDocument.body)
     await userEvent.click(canvas.getByRole("button", { name: /Search/ }))
     await page.findByRole("combobox", { name: "Command menu" })
-    const colour = (name: string) =>
+    const color = (name: string) =>
       getComputedStyle(page.getByRole("option", { name }).querySelector("svg")!)
         .color
-    await expect(colour("Product analytics")).not.toBe(colour("Settings"))
-    await expect(colour("Product analytics")).not.toBe(colour("Web analytics"))
+    await expect(color("Product analytics")).not.toBe(color("Settings"))
+    await expect(color("Product analytics")).not.toBe(color("Web analytics"))
     await settle()
   },
 }

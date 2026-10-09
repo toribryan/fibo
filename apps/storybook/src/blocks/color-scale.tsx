@@ -147,7 +147,7 @@ const CALLOUTS: Callout[] = [
 
 /**
  * fibo's neutrals as a twelve-step scale, grouped by the job each step does,
- * above a card whose parts are labelled with the tokens that colour them.
+ * above a card whose parts are labeled with the tokens that color them.
  * Switching mode reverses the ramp under the fixed steps, and pointing at a
  * token or a step picks out the other.
  */
@@ -222,7 +222,7 @@ function ColorScale() {
   })
 
   // A run of steps under their headers. A header that spans the run's edge
-  // is cut to it, so a band split across two rows is labelled in both.
+  // is cut to it, so a band split across two rows is labeled in both.
   const scale = (first: number, last: number) => {
     const count = last - first + 1
     return (
@@ -246,8 +246,8 @@ function ColorScale() {
             </div>
           )
         )}
-        {/* The steps stay put; each takes its colour for the mode, and its
-        Tailwind name scrambles over to the new one. Names sit centred in
+        {/* The steps stay put; each takes its color for the mode, and its
+        Tailwind name scrambles over to the new one. Names sit centered in
         fixed cells, so the scramble never moves anything. */}
         {Array.from({ length: count }, (_, i) => {
           const slot = first - 1 + i
@@ -330,7 +330,7 @@ function ColorScale() {
 
   return (
     // The whole exhibit takes the chosen mode's tokens, whatever the page is
-    // in, and every colour in it eases across when the mode changes.
+    // in, and every color in it eases across when the mode changes.
     <figure
       style={modeVars}
       className="my-6 flex flex-col gap-8 rounded-xl border border-border bg-card p-4 text-foreground transition-colors duration-500 motion-reduce:transition-none sm:p-6 [&_*]:transition-[color,background-color,border-color,outline-color,fill,stroke,opacity,box-shadow] [&_*]:duration-500 motion-reduce:[&_*]:transition-none"
@@ -435,7 +435,7 @@ const PICKED =
   "data-picked:outline-2 data-picked:outline-offset-2 data-picked:outline-foreground data-picked:outline-dashed"
 
 // A small settings card on its own page, drawn with the tokens it's
-// labelled with.
+// labeled with.
 function Specimen({ part }: { part: PartProps }): ReactNode {
   return (
     <div
@@ -511,7 +511,7 @@ function Specimen({ part }: { part: PartProps }): ReactNode {
           >
             <span
               {...part("primary-foreground")}
-              // Outlined in its own colour, which is the one that shows
+              // Outlined in its own color, which is the one that shows
               // against the button's fill.
               className={cn(
                 "text-primary-foreground",

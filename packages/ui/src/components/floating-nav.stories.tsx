@@ -178,7 +178,7 @@ export const Glass: Story = {
   },
 }
 
-export const AlwaysLabelled: Story = {
+export const AlwaysLabeled: Story = {
   name: "Labels always shown",
   args: { labels: "always" },
 }

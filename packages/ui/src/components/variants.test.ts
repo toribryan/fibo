@@ -16,7 +16,7 @@ describe("buttonVariants", () => {
     )
   })
 
-  it("never uses an opacity modifier on a token colour", () => {
+  it("never uses an opacity modifier on a token color", () => {
     for (const variant of [
       "default",
       "outline",

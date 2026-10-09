@@ -41,7 +41,7 @@ different set leaves it out.
 submitting a form, so it works outside the frame, such as in a dialog's
 footer, as long as it is inside the provider.
 
-**Changing keyboard behaviour.** Enter sends and Shift+Enter breaks the line.
+**Changing keyboard behavior.** Enter sends and Shift+Enter breaks the line.
 Rather than a `submitOnEnter` prop, `ChatComposerInput` skips its own handling
 when the caller's `onKeyDown` calls `preventDefault`.
 

@@ -77,7 +77,7 @@ changes.
   warns once in the console, since a range caller's `onChange` expects a
   range and a month view would break that contract.
 - **Keyboard and grid.** The grid keeps the date grid's model: a `grid`
-  labelled by the title, one button per cell, one tab stop, arrows by day and
+  labeled by the title, one button per cell, one tab stop, arrows by day and
   week, Home and End, Page Up and Page Down. Each cell's button fills the
   cell, so a click anywhere in it picks the day. The cards, "+N more" and
   dots sit inside that button, hidden from assistive technology, and the

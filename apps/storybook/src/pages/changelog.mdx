@@ -9,7 +9,7 @@ Notable changes, newest first.
 ## October 2026
 
 - New **surface** token: the layer panels and content columns sit on, a step
-  off the page. fibo's light page is now a light grey tint under white
+  off the page. fibo's light page is now a light gray tint under white
   surfaces. Mark a panel with `data-surface` and the parts inside match it.
   Success and warning text in light mode take a darker step to stay legible
   on the tint.
@@ -87,7 +87,7 @@ Notable changes, newest first.
 - New **Status dot** in Base components, under Display: present, away or
   offline, told apart by shape. Put it in an **Avatar**, a **Sticker
   avatar** or a **Badge**. Sticker avatar's `status`, `statusLabel` and
-  `statusColor` still work but are deprecated in favour of the child.
+  `statusColor` still work but are deprecated in favor of the child.
 - **Command menu** has an `inset` variant: a muted shell holds the search
   box and keyboard hints, and the list sits in a card inside it.
 - **Data table** keeps selected rows selected when a search or filter hides
@@ -100,7 +100,7 @@ Notable changes, newest first.
   they watch the viewport with, so they ran everywhere. The registry ships
   the small `mergeRefs` helper they share into `lib/`.
 - **Reactions** shades its flying emoji with a new `--particle-shadow`
-  token, the same in both themes, instead of a colour written into the
+  token, the same in both themes, instead of a color written into the
   code. The registry ships the token with the part.
 
 - **Data table** runs on TanStack Table. `useDataTable` takes your rows and
@@ -169,8 +169,8 @@ Notable changes, newest first.
   hidden bar no longer catches taps.
 
 - **Voice memo** tidies what the browser hears. Each settled phrase drops
-  filler sounds and words said twice, capitalises "I" and each sentence, and
-  ends with a full stop, or a question mark when it opens like a question.
+  filler sounds and words said twice, capitalizes "I" and each sentence, and
+  ends with a period, or a question mark when it opens like a question.
   `tidyPhrase` is exported for text from your own service.
 - **Voice memo**'s raised wordmark no longer shows crossing outlines where
   its letters overlap. Its edges are drawn from the word's merged shape, lit
@@ -188,7 +188,7 @@ Notable changes, newest first.
   links now include the group, such as `base-components-forms-input--docs`;
   old links still open the right page.
 - New **Voice memo** in Special components, inspired by clip-on memo
-  recorders: an aluminium device that writes down what you say.
+  recorders: an aluminum device that writes down what you say.
   Press it and a transcript opens beside it, filling in as you talk; press
   it again and the transcript stays, ready to copy or download as a
   Markdown file with a timestamp on each phrase. It uses the browser's
@@ -203,8 +203,8 @@ Notable changes, newest first.
   for the 21 parts that have a Figma page so far.
 - **Typing indicator** dots no longer get clipped at the top of their
   bounce.
-- New **Map pin** in Special components: a dot, an icon or a labelled
-  pill for a point on a map, in fibo's five status colours, with a preview
+- New **Map pin** in Special components: a dot, an icon or a labeled
+  pill for a point on a map, in fibo's five status colors, with a preview
   card of image, meta, title, description and your own content that springs
   open on click or tap. It brings no map of its own; render it inside
   Mapbox, MapLibre or any map library's marker.
@@ -252,7 +252,7 @@ Notable changes, newest first.
   in full, and jumping moves focus to the message, never leaving it on a bar
   that has gone.
 - **Message list** marks where unread messages begin with `unreadFrom`: a red
-  line labelled "New" that breaks the group and shares a line with the date
+  line labeled "New" that breaks the group and shares a line with the date
   when a day starts there.
 - New **Message list** in Base components: a conversation that groups each
   person's messages under one heading. Every reason a group breaks (a new
@@ -266,7 +266,7 @@ Notable changes, newest first.
   formatter you can translate, waits for typing to settle before a screen
   reader hears it, and keeps its row when nobody is typing so the messages
   don't jump.
-- **Property tokens** for the status colours: `text-success`,
+- **Property tokens** for the status colors: `text-success`,
   `border-success` and `fill-success` now read `--success-text`,
   `--success-border` and `--success-icon`, and the same for destructive,
   warning and info. Class names don't change. Each is held to the contrast
@@ -298,7 +298,7 @@ Notable changes, newest first.
   A deprecated part carries a red pill in the sidebar and catalog, a banner
   on its docs page with what to use instead, a notice when it's installed,
   and a codemod that rewrites a project for you.
-- **Spinner** is the first through it: it ships deprecated in favour of an
+- **Spinner** is the first through it: it ships deprecated in favor of an
   indeterminate **Progress**, and is removed in 0.3.0. Run the codemod on its
   page to migrate.
 - New **Floating nav** in Special components: a pill of destinations that
@@ -320,7 +320,7 @@ Notable changes, newest first.
   what the registry is, how to add, use and update parts, and how it works,
   with a picker that shows exactly what each part brings into a project.
 - Installing a part from the registry now brings the tokens it uses that a
-  stock shadcn theme lacks, so hover states, focus rings and status colours
+  stock shadcn theme lacks, so hover states, focus rings and status colors
   work in any project. **Theme** installs fibo's full token set with
   `shadcn add @fibo/theme`, and CI installs every part into a fresh app to
   keep it that way.
@@ -345,8 +345,8 @@ Notable changes, newest first.
   search box is `search="inline"`.
 - The **Colors** page now explains the token layers and lists every semantic
   token by job, with its light and dark primitive, read from globals.css.
-- New **Theme creator** under Foundations: tint the greys, set the radius,
-  give primary a hue, move the status colours and swap fonts, with live AA
+- New **Theme creator** under Foundations: tint the grays, set the radius,
+  give primary a hue, move the status colors and swap fonts, with live AA
   checks and CSS, Figma and link exports.
 - Added **Filter menu** to Niche: a menu of fields and values that turns into
   a search as you type, or slides over to one from a Search filters button.
@@ -370,7 +370,7 @@ Notable changes, newest first.
 - Added **Integration visual**, with corner, orbit and pipeline layouts.
 - Added **Chapter scrubber**, a Dock-style rail in tick or dot styles, either
   orientation.
-- New docs site, modelled on monday.com's Vibe: a welcome page, a catalog,
+- New docs site, modeled on monday.com's Vibe: a welcome page, a catalog,
   and component pages with usage rules, do's and don'ts, and related parts.
 - Renamed the system from golden-design-system to **fibo**. The registry
   namespace is now `@fibo`.

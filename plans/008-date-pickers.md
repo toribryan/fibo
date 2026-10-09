@@ -72,7 +72,7 @@ both are shown and tested in Storybook at any width.
 - Two parts on the base shelf, group Forms, built on Base UI's Popover and
   on fibo's Sheet (Base UI's Drawer) with a grid written for fibo. No new
   dependencies and no `motion`.
-- The grid follows the WAI-ARIA date picker pattern: `role="grid"` labelled
+- The grid follows the WAI-ARIA date picker pattern: `role="grid"` labeled
   by the month, column headers with the full weekday name, one tab stop,
   arrows by day and week, Home and End to the week's ends, Page Up and Page
   Down by month, with Shift by year. Days outside the bounds stay focusable

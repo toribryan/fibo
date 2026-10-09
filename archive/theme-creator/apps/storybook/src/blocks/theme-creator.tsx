@@ -398,7 +398,7 @@ function pick<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)]!
 }
 
-// A new theme to react to: a grey or a tint, a radius, sometimes an accent,
+// A new theme to react to: a gray or a tint, a radius, sometimes an accent,
 // and a pair of fonts. Status hues stay put, since they carry meaning.
 function shuffle(theme: Theme): Theme {
   const custom = Math.random() < 0.4
@@ -503,7 +503,7 @@ function Panel({
 
       <div className="flex flex-col gap-2">
         <Tile
-          label="Base colour"
+          label="Base color"
           value={
             n.preset === "custom"
               ? `Custom, ${Math.round(n.hue)}°`
@@ -515,7 +515,7 @@ function Panel({
           failing={failing("neutral")}
         >
           <RadioGroup
-            aria-label="Base colour"
+            aria-label="Base color"
             value={n.preset}
             onValueChange={(preset) =>
               set({
@@ -599,14 +599,14 @@ function Panel({
             />
           ) : (
             <p className="m-0 text-xs text-muted-foreground">
-              fibo has no brand hue: primary is a neutral, and colour only
+              fibo has no brand hue: primary is a neutral, and color only
               carries meaning.
             </p>
           )}
         </Tile>
 
         <Tile
-          label="Status colours"
+          label="Status colors"
           value="4 hues"
           indicator={
             <span className="flex -space-x-1.5">

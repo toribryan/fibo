@@ -17,13 +17,13 @@ describe("color", () => {
     expect(contrast({ r: 0, g: 0, b: 0 }, { r: 1, g: 1, b: 1 })).toBeCloseTo(21)
   })
 
-  it("converts OKLCH white and a known Tailwind colour to sRGB", () => {
+  it("converts OKLCH white and a known Tailwind color to sRGB", () => {
     expect(toHex(toRgb({ l: 1, c: 0, h: 0 }))).toBe("#ffffff")
     // Tailwind's red-700 is #c10007.
     expect(toHex(toRgb({ l: 0.505, c: 0.213, h: 27.518 }))).toBe("#c10007")
   })
 
-  it("pulls an out-of-gamut colour in without moving its lightness or hue", () => {
+  it("pulls an out-of-gamut color in without moving its lightness or hue", () => {
     const vivid = { l: 0.5, c: 0.4, h: 150 }
     expect(inGamut(vivid)).toBe(false)
     const fitted = fitGamut(vivid)

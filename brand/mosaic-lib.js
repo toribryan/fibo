@@ -1,6 +1,6 @@
 // fibo mosaic: a sprite scaled up, softened, and sampled into a grid of
 // glyph cells. Density picks the glyph; the ground under a cell picks its
-// colour. Everything is one pass on a canvas.
+// color. Everything is one pass on a canvas.
 ;(function () {
   const rand = (() => {
     let s = 1618033
@@ -86,11 +86,11 @@
     }
   }
 
-  // Draw a mosaic at (ox, oy). `colour(px, py, v)` returns a fill for each cell.
+  // Draw a mosaic at (ox, oy). `color(px, py, v)` returns a fill for each cell.
   window.mosaic = function (
     ctx,
     rows,
-    { ox, oy, cell, k = 3, colour, ...opts }
+    { ox, oy, cell, k = 3, color, ...opts }
   ) {
     const { a, W, H } = coverage(rows, k, opts)
     for (let y = 0; y < H; y++)
@@ -99,7 +99,7 @@
         if (v < 0.03) continue
         const px = ox + x * cell,
           py = oy + y * cell
-        const col = colour(px + cell / 2, py + cell / 2, v)
+        const col = color(px + cell / 2, py + cell / 2, v)
         if (typeof col === "object") {
           // Cut out of a photo: a paper tile with the glyph printed on it, so
           // the photo only shows between tiles and at the thinning edges.
@@ -114,7 +114,7 @@
     return { w: W * cell, h: H * cell }
   }
 
-  // Photo helpers: cover-fit into a rect, and sample colours from it.
+  // Photo helpers: cover-fit into a rect, and sample colors from it.
   window.photoLayer = function (img, rect) {
     const c = document.createElement("canvas")
     c.width = rect.w

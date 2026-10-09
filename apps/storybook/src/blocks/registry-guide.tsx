@@ -106,7 +106,7 @@ function Nothing({ children }: { children: ReactNode }) {
   return <span className="text-muted-foreground">{children}</span>
 }
 
-// A token's value over the page colour of its own mode, so translucent tokens
+// A token's value over the page color of its own mode, so translucent tokens
 // read the way they do in use.
 function Swatch({
   value,
@@ -353,7 +353,7 @@ const COMPARISON = [
   {
     moment: "It brings along",
     figma: "Uses the library's styles and variables, which stay in the library",
-    registry: "The packages, fibo parts and colour tokens it uses",
+    registry: "The packages, fibo parts and color tokens it uses",
   },
 ]
 

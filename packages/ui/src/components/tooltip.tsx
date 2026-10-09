@@ -6,7 +6,7 @@ import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 /*
- * Once one tooltip has opened, its neighbours open at once while the pointer
+ * Once one tooltip has opened, its neighbors open at once while the pointer
  * moves along a toolbar. The shared delay lives here.
  */
 function TooltipProvider({

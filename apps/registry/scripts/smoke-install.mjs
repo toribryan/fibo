@@ -1,7 +1,7 @@
 // Installs every registry item into a fresh `shadcn init` app and proves it
 // renders as designed there. A component that uses a token the app lacks still
 // installs and typechecks, because Tailwind silently drops utilities for
-// unknown colours, so this checks the compiled CSS for each token instead.
+// unknown colors, so this checks the compiled CSS for each token instead.
 //
 // Builds the registry against a local server, so the registry dependency URLs
 // resolve to this checkout, then rebuilds it for production at the end.
@@ -188,7 +188,7 @@ try {
           if (property.startsWith("--") && !css.includes(`${property}:`)) {
             failures.push(`${item.name}: ${property} is missing`)
           }
-          // A literal colour only the theme sets proves its value landed.
+          // A literal color only the theme sets proves its value landed.
           if (/^#[0-9a-f]{6}$/.test(value) && !css.includes(value)) {
             failures.push(`${item.name}: ${property} ${value} is missing`)
           }

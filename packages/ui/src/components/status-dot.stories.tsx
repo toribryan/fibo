@@ -55,7 +55,7 @@ export const Statuses: Story = {
 }
 
 export const Mono: Story = {
-  name: "Without colour",
+  name: "Without color",
   args: { variant: "mono" },
   render: (args) => (
     <div className="flex items-center gap-4">

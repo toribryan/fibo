@@ -2,7 +2,7 @@
  * Electrical (plans/012-electrical-theme.md): a flat, ledger-like theme. A
  * sage page, white cards, ink buttons and one yellow highlight, used the way
  * a highlighter is: on the selected thing, the active reaction, a link's
- * underline and selected text. Everything else stays green-grey.
+ * underline and selected text. Everything else stays green-gray.
  *
  * Scoped to `[data-theme="electrical"]` like every theme, and unlayered for
  * the same reason as mechanical.css: an unlayered rule beats Tailwind's
@@ -53,9 +53,9 @@
   --ring-subtle: color-mix(in oklch, #f5c518 60%, transparent);
 
   /*
-   * Icons stay monochrome, so the chart tokens are greys, as in fibo. They
+   * Icons stay monochrome, so the chart tokens are grays, as in fibo. They
    * are set here rather than inherited, or a region in this theme would pick
-   * up a surrounding theme's colours.
+   * up a surrounding theme's colors.
    */
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);
@@ -82,7 +82,7 @@
     "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
 
-  /* A scoped region inherits its page's font and colours, so it sets its own. */
+  /* A scoped region inherits its page's font and colors, so it sets its own. */
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
