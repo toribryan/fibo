@@ -11,7 +11,7 @@ has the same history with links into the docs.
 ### Added
 
 - Floating nav's glass lens lifts off the bar while pressed and as it moves
-  to a new item, magnifying what's under it with a colour fringe at the rim.
+  to a new item, magnifying what's under it with a color fringe at the rim.
   The site's phone nav uses `variant="glass"`.
 - Floating nav `variant="glass"`: Apple's liquid glass, a clear bar that bends
   the page behind its edges in Chromium, with a glass lens on the current
@@ -29,10 +29,10 @@ has the same history with links into the docs.
   input with an icon, text or button beside it. `variant="ghost"` drops the
   border for a search at the top of a menu. Command menu, Filter menu and
   Data table draw their searches with it.
-- Separator: a rule across or down, and with children a labelled rule.
+- Separator: a rule across or down, and with children a labeled rule.
   Message list's day dividers and Data table's bulk actions use it.
 - Progress `type="circle"` with `size` `xs` to `lg`: a ring in the text
-  colour that fits in a button. With `value={null}` it turns. Toast's loading
+  color that fits in a button. With `value={null}` it turns. Toast's loading
   icon and Chat composer's sending button use it, and the Spinner codemod
   now writes it, at the Spinner's own size.
 - Field: `FieldLabel`, `FieldDescription` and `FieldError` wired to one form
@@ -64,13 +64,13 @@ has the same history with links into the docs.
 - An Open in Figma link at the top of each component's docs page, for the
   parts with a Figma page. Each part's page is its `figma` node in
   `components.meta.json`.
-- Map pin: a dot, icon or labelled pin for a point on a map, in five
-  status colours, with a preview card that springs open on click or tap.
+- Map pin: a dot, icon or labeled pin for a point on a map, in five
+  status colors, with a preview card that springs open on click or tap.
   Renders inside any map library's marker.
 - Floating nav text items: leave out an item's `icon` and it shows its label
   as text, always.
 - A Figma drift check: the `figma-drift` agent skill reads the Figma library
-  into `figma/snapshot.json`, and `pnpm figma:drift` reports where its colour
+  into `figma/snapshot.json`, and `pnpm figma:drift` reports where its color
   variables, radii and component variant properties differ from the code.
   CI runs it on every pull request.
 - Badge `success`, `warning` and `info` variants, tinted like `destructive`.
@@ -122,10 +122,10 @@ https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
   with. They share a `mergeRefs` helper in `lib/`, which the registry ships
   with each of them as a `registry:lib` file.
 - Reactions' particle shadow reads a new `--particle-shadow` token, the same
-  in both themes, instead of a raw colour in an inline style.
+  in both themes, instead of a raw color in an inline style.
 - Typing indicator: the dots no longer get clipped at the top of their bounce.
 - Registry parts now bring the tokens they use that a stock shadcn theme
-  lacks, such as `--primary-hover`, `--ring-subtle` and the status colours.
+  lacks, such as `--primary-hover`, `--ring-subtle` and the status colors.
   Before, they installed without them, and hover, focus ring and destructive
   styles silently disappeared.
 - Registry parts depend on shadcn's `utils`, so `cn` is installed in a project
@@ -143,7 +143,7 @@ https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
   Checkbox's look for their own controls, so focus rings, hover and sizes
   match the rest of fibo. Reactions' inline trigger is 32px, on the size
   scale, rather than 28. Jump bar draws Mark as read only when `onMarkRead`
-  is given. Checkbox exports `CheckboxMark`, its look without its behaviour,
+  is given. Checkbox exports `CheckboxMark`, its look without its behavior,
   for rows that are already the control.
 - Data table keeps selected rows that a search or filter hides, and the
   toolbar, announcement and `DataTableSelectionCount` add “, 2 hidden by

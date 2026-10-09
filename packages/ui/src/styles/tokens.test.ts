@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest"
 /*
  * Every status token, in both themes, against every surface it is meant to
  * sit on. Text needs 4.5:1 (WCAG 1.4.3), icons and borders 3:1 (1.4.11).
- * Colours are read from the real utility classes, so this also checks that
+ * Colors are read from the real utility classes, so this also checks that
  * each class resolves to its property token.
  */
 
@@ -73,14 +73,14 @@ function read(
   return value
 }
 
-// The browser's own colour conversion: paint the layers onto a canvas and
+// The browser's own color conversion: paint the layers onto a canvas and
 // read back the sRGB pixel the screen would show.
 function paint(...layers: string[]) {
   const canvas = document.createElement("canvas")
   canvas.width = canvas.height = 1
   const ctx = canvas.getContext("2d", { willReadFrequently: true })!
-  for (const colour of layers) {
-    ctx.fillStyle = colour
+  for (const color of layers) {
+    ctx.fillStyle = color
     ctx.fillRect(0, 0, 1, 1)
   }
   const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data

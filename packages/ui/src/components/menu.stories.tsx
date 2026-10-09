@@ -283,12 +283,12 @@ export const Submenu: Story = {
 }
 
 /*
- * An icon keeps a colour you give it, so a nav-like menu can tell its
+ * An icon keeps a color you give it, so a nav-like menu can tell its
  * destinations apart. Icons without one stay muted. The chart tokens are
- * greys in fibo's own theme and saturated in Mechanical.
+ * grays in fibo's own theme and saturated in Mechanical.
  */
-export const ColouredIcons: Story = {
-  name: "Coloured icons",
+export const ColoredIcons: Story = {
+  name: "Colored icons",
   render: (_args, context) => (
     <Menu {...shownInDocs(context)}>
       <MenuTrigger render={<Button variant="outline" />}>Products</MenuTrigger>
@@ -325,11 +325,11 @@ export const ColouredIcons: Story = {
     const page = within(canvasElement.ownerDocument.body)
     await userEvent.click(canvas.getByRole("button", { name: "Products" }))
     await page.findByRole("menu")
-    const colour = (name: string) =>
+    const color = (name: string) =>
       getComputedStyle(
         page.getByRole("menuitem", { name }).querySelector("svg")!
       ).color
-    await expect(colour("Product analytics")).not.toBe(colour("Settings"))
-    await expect(colour("Product analytics")).not.toBe(colour("Web analytics"))
+    await expect(color("Product analytics")).not.toBe(color("Settings"))
+    await expect(color("Product analytics")).not.toBe(color("Web analytics"))
   },
 }

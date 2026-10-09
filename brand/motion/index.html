@@ -5,7 +5,7 @@
   href="https://fonts.googleapis.com/css2?family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap"
 />
 <style>
-  /* Layout: one stage where the rabbit lives, then a sheet of each behaviour looping on its own, with the snail's original beside it. */
+  /* Layout: one stage where the rabbit lives, then a sheet of each behavior looping on its own, with the snail's original beside it. */
   :root {
     --bg: #f3f3f1;
     --ink: #0a0a0a;
@@ -274,7 +274,7 @@
   </section>
 
   <section style="display: flex; flex-direction: column; gap: 13px">
-    <h2>Each behaviour</h2>
+    <h2>Each behavior</h2>
     <div class="sheet" id="sheet"></div>
   </section>
 
@@ -474,7 +474,7 @@
     getComputedStyle(document.documentElement).getPropertyValue(n).trim()
   const isDark = () => css("--bg").toLowerCase() === "#0a0a0a"
 
-  // Draws him with his feet on groundY, centred on cx. `build` is the
+  // Draws him with his feet on groundY, centered on cx. `build` is the
   // build-up: coarse blocks, then finer, then whole.
   function paint(ctx, rows, cx, groundY, s, build) {
     const dark = isDark(),
@@ -518,7 +518,7 @@
     return n - Math.floor(n)
   }
 
-  // ---------- Sound: synthesised, only after the first click ----------
+  // ---------- Sound: synthesized, only after the first click ----------
   let audio = null,
     soundOn = true
   const unlock = () => {
@@ -955,7 +955,7 @@
   }
   requestAnimationFrame(frame)
 
-  // ---------- The sheet: each behaviour looping on its own ----------
+  // ---------- The sheet: each behavior looping on its own ----------
   const SHEET = [
     {
       name: "Build-up",

@@ -64,7 +64,7 @@ const floatingNavItemVariants = cva(
       variant: {
         default: "",
         // Glass has no fill to read against, so every label is in the text
-        // colour and the lens marks the current one.
+        // color and the lens marks the current one.
         glass:
           "text-foreground data-[current]:text-foreground data-[current]:hover:text-foreground",
       },
@@ -127,7 +127,7 @@ const REFRACTION = 14
 const REFRACTION_EDGE = 12
 
 /*
- * A displacement map for one axis: neutral grey through the middle, and
+ * A displacement map for one axis: neutral gray through the middle, and
  * along each edge a ramp that pulls the page in from further inside, so
  * content bends toward the rim the way it does through a lens.
  */
@@ -232,7 +232,7 @@ const LIFT = { scaleX: 1.06, scaleY: 1.22 }
 // Lifting and settling are quicker than the trip between items.
 const LIFT_SPRING = { type: "spring", stiffness: 900, damping: 40 } as const
 const MAGNIFY = 0.2
-// Red bends most and blue least, which splits colour into fringes at the rim.
+// Red bends most and blue least, which splits color into fringes at the rim.
 const DISPERSION = { R: 1, G: 0.95, B: 0.9 }
 // How long the lens stays lifted after a press, so it can travel lifted.
 const SETTLE_AFTER = 200
@@ -263,7 +263,7 @@ function lensMap(axis: "x" | "y", width: number, height: number) {
  * The glass lens on the current item. At rest it's a tinted pill under the
  * icon and label. Lifted, while pressed and while it travels to a new item,
  * it grows past the bar, clears, and moves over the item, magnifying it with
- * a fringe of colour at the rim, the way iOS lifts its tab bar's selection.
+ * a fringe of color at the rim, the way iOS lifts its tab bar's selection.
  * The magnifying runs on url() in backdrop-filter, so only in Chromium;
  * elsewhere the lens still lifts and clears.
  */
@@ -439,9 +439,9 @@ function useLabelWidths(key: string, enabled: boolean) {
 
   React.useLayoutEffect(() => {
     if (!enabled) return
-    let cancelled = false
+    let canceled = false
     const measure = () => {
-      if (cancelled) return
+      if (canceled) return
       // A pixel over, since scrollWidth rounds and would clip the last letter.
       setWidths(
         labels.current.map((label) => (label ? label.scrollWidth + 1 : 0))
@@ -450,7 +450,7 @@ function useLabelWidths(key: string, enabled: boolean) {
     measure()
     document.fonts?.ready.then(measure)
     return () => {
-      cancelled = true
+      canceled = true
     }
   }, [key, enabled])
 

@@ -115,7 +115,7 @@ describe("tabsListVariants", () => {
     )
   })
 
-  it("never uses an opacity modifier on a token colour", () => {
+  it("never uses an opacity modifier on a token color", () => {
     for (const variant of ["default", "line"] as const) {
       for (const size of ["sm", "default"] as const) {
         expect(tabsListVariants({ variant, size })).not.toMatch(

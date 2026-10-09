@@ -1296,7 +1296,7 @@ function DataTableAnnouncer() {
 }
 
 /*
- * One row for every action. A labelled group, not role="toolbar": that
+ * One row for every action. A labeled group, not role="toolbar": that
  * promises arrow keys between controls, and its search field needs them.
  * Idle, it holds filters and create actions;
  * while rows are selected it swaps, in place, to the selection and bulk

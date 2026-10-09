@@ -19,9 +19,9 @@ avatar, a sticker avatar or a badge; the part it sits in places it.
 ## Features
 
 - Told apart by shape, a dot, a crescent and a ring, so status reads without
-  colour, and coloured with fibo's `success`, `warning` and
+  color, and colored with fibo's `success`, `warning` and
   `muted-foreground` tokens.
-- A page-coloured disc behind the mark keeps a clear edge on a photo or a
+- A page-colored disc behind the mark keeps a clear edge on a photo or a
   sticker.
 - Says its status to screen readers, in words you can translate, and joins
   the name of a sticker avatar it sits in.
@@ -50,10 +50,10 @@ Present is a dot, away a crescent, offline a ring.
 
 <Canvas of={Stories.Statuses} />
 
-### Without colour
+### Without color
 
-`variant="mono"` draws the marks in the text colour, for places where
-colour would compete, such as a dense list.
+`variant="mono"` draws the marks in the text color, for places where
+color would compete, such as a dense list.
 
 <Canvas of={Stories.Mono} />
 
@@ -106,7 +106,7 @@ Let the dot say the status, or the text beside it, never both: pass
     "Use it for presence: whether someone is here, away or gone. For a state of a thing, such as Paid or Failed, use a Badge.",
     "Pass label to translate the status, or to say it the way your product does, such as Online or Here.",
     "Keep it on the avatar or in the badge it belongs to, not floating beside a name on its own.",
-    "Use mono where colour would compete; the shapes still tell the states apart.",
+    "Use mono where color would compete; the shapes still tell the states apart.",
   ]}
 />
 
@@ -179,7 +179,7 @@ Let the dot say the status, or the text beside it, never both: pass
   guidelines={[
     "The status is in a visually hidden span, read after whatever comes before it: the photo's alt in an Avatar, the name in a Sticker avatar.",
     "A Sticker avatar is one image to screen readers, so the dot's label joins its name through aria-labelledby: Ana Ruiz, Away.",
-    "Shape carries the status as well as colour, so it holds for colour blindness and in mono.",
+    "Shape carries the status as well as color, so it holds for color blindness and in mono.",
   ]}
 />
 

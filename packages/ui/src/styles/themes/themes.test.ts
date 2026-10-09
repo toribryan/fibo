@@ -26,14 +26,14 @@ function read(className: string, property: "color" | "backgroundColor") {
   return value
 }
 
-// The browser's own colour conversion: paint the layers onto a canvas and
+// The browser's own color conversion: paint the layers onto a canvas and
 // read back the sRGB pixel the screen would show.
 function paint(...layers: string[]) {
   const canvas = document.createElement("canvas")
   canvas.width = canvas.height = 1
   const ctx = canvas.getContext("2d", { willReadFrequently: true })!
-  for (const colour of layers) {
-    ctx.fillStyle = colour
+  for (const color of layers) {
+    ctx.fillStyle = color
     ctx.fillRect(0, 0, 1, 1)
   }
   const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
@@ -55,17 +55,17 @@ function contrast(fore: string, back: string) {
   return Math.round(((hi! + 0.05) / (lo! + 0.05)) * 100) / 100
 }
 
-// Only themes that colour their chart tokens promise coloured icons.
+// Only themes that color their chart tokens promise colored icons.
 const THEMES = [
-  { theme: "mechanical", colourIcons: true },
-  { theme: "electrical", colourIcons: false },
+  { theme: "mechanical", colorIcons: true },
+  { theme: "electrical", colorIcons: false },
 ]
 
 const CASES = THEMES.flatMap((entry) =>
   (["light", "dark"] as const).map((mode) => ({ ...entry, mode }))
 )
 
-describe.each(CASES)("$theme, $mode", ({ theme, colourIcons, mode }) => {
+describe.each(CASES)("$theme, $mode", ({ theme, colorIcons, mode }) => {
   const setTheme = () => {
     document.documentElement.dataset.theme = theme
     document.documentElement.classList.toggle("dark", mode === "dark")
@@ -114,8 +114,8 @@ describe.each(CASES)("$theme, $mode", ({ theme, colourIcons, mode }) => {
     }
   })
 
-  it.runIf(colourIcons)(
-    "chart colours clear 3:1 as icons on menus and the page",
+  it.runIf(colorIcons)(
+    "chart colors clear 3:1 as icons on menus and the page",
     () => {
       setTheme()
       for (const chart of [1, 2, 3, 4, 5]) {

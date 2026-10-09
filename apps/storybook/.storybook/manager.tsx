@@ -36,7 +36,7 @@ let designTheme = readDesignTheme()
  * The manager's chrome takes both choices: the sidebar switches with the
  * docs, so it never sits in one theme around a page in another. fibo's
  * parts in the sidebar read `.dark` and `data-theme` like the preview
- * does, and manager-head.html's own rules read the --fibo-* colours.
+ * does, and manager-head.html's own rules read the --fibo-* colors.
  */
 function paintChrome(mode: Theme, design: DesignTheme) {
   const root = document.documentElement

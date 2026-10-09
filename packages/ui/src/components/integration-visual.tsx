@@ -39,7 +39,7 @@ const H = 260
 const CX = W / 2
 const CY = H / 2
 /*
- * The plate's lattice, centred on the hub. Corner and pipeline positions,
+ * The plate's lattice, centered on the hub. Corner and pipeline positions,
  * route legs and turns are all multiples of it, so routes run along grid
  * lines and tiles sit on dots instead of landing beside them.
  */
@@ -100,7 +100,7 @@ function sideSlots(items: IntegrationItem[]): Slot[] {
     columns[column].push(i)
   })
   const slots: Slot[] = new Array(items.length)
-  // Rows are six pitches apart and centred on the hub, so both odd and even
+  // Rows are six pitches apart and centered on the hub, so both odd and even
   // counts land on the lattice.
   const place = (indices: number[], dir: -1 | 1) => {
     const x = CX + dir * 11 * PITCH

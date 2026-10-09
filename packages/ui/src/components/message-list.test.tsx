@@ -232,7 +232,7 @@ describe("MessageList", () => {
       .toHaveAttribute("tabindex", "-1")
   })
 
-  it("moves focus to a neighbour when the focused message is removed", async () => {
+  it("moves focus to a neighbor when the focused message is removed", async () => {
     const screen = await render(<MessageList messages={thread} />)
     const middle = screen.getByRole("article", { name: /^Ana, 9:01/ })
     ;(middle.element() as HTMLElement).focus()
@@ -261,7 +261,7 @@ describe("MessageList", () => {
       .toBeInTheDocument()
   })
 
-  it("marks where unread messages begin, in words as well as colour", async () => {
+  it("marks where unread messages begin, in words as well as color", async () => {
     const screen = await render(
       <MessageList messages={thread} unreadFrom="a2" />
     )

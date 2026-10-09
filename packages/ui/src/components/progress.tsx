@@ -9,7 +9,7 @@ const progressVariants = cva("", {
   variants: {
     type: {
       bar: "flex w-full flex-wrap gap-3",
-      // A ring in the current text colour, so it takes the colour of the
+      // A ring in the current text color, so it takes the color of the
       // button or row it sits in.
       circle: "inline-flex shrink-0 align-middle",
     },
@@ -146,7 +146,7 @@ function ProgressIndicator({
       className={cn(
         // With no value Base UI sets no width, so an indeterminate bar
         // would look empty. It gets a sweeping segment instead, or under
-        // reduced motion a full bar in the muted text colour.
+        // reduced motion a full bar in the muted text color.
         "h-full rounded-full bg-primary transition-all data-indeterminate:w-1/3 data-indeterminate:animate-progress-indeterminate motion-reduce:transition-none motion-reduce:data-indeterminate:w-full motion-reduce:data-indeterminate:animate-none motion-reduce:data-indeterminate:bg-muted-foreground",
         className
       )}

@@ -134,7 +134,7 @@ function ElevationLevels() {
 const DURATIONS = [
   { ms: 100, use: "Tooltips, menus and selects opening and closing." },
   { ms: 150, use: "Small state changes: hover fills, a reaction's pop." },
-  { ms: 200, use: "Colour and size settling, such as a nav's lens." },
+  { ms: 200, use: "Color and size settling, such as a nav's lens." },
   {
     ms: 300,
     use: "Something crossing a distance: a progress bar, a pin's card.",

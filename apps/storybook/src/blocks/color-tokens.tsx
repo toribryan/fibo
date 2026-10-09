@@ -37,7 +37,7 @@ const DARK = block("\\.dark")
 
 /*
  * What a value is, in Tailwind's words: `var(--color-neutral-900)` is
- * neutral-900, a colour mixed with transparent is that colour at an alpha,
+ * neutral-900, a color mixed with transparent is that color at an alpha,
  * and a literal white at an alpha is written as such.
  */
 function primitive(value: string | undefined) {
@@ -401,7 +401,7 @@ const FAMILIES: Record<string, Family> = {
   charts: {
     title: "Charts",
     description:
-      "Five neutral steps for data series, light to dark. A chart that needs to say good or bad uses the status colours instead.",
+      "Five neutral steps for data series, light to dark. A chart that needs to say good or bad uses the status colors instead.",
     tokens: [1, 2, 3, 4, 5].map((i) => ({
       name: `chart-${i}`,
       utility: `bg-chart-${i}`,
@@ -445,7 +445,7 @@ const HUES: [string, string, string][] = [
   ["blue", "bg-blue-700", "bg-blue-400"],
 ]
 
-// The Tailwind steps fibo actually draws from: one grey ramp, and two steps
+// The Tailwind steps fibo actually draws from: one gray ramp, and two steps
 // of four hues.
 function Primitives() {
   return (

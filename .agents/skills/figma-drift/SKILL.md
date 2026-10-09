@@ -1,6 +1,6 @@
 ---
 name: figma-drift
-description: Check the fibo Figma library against the code for drift in colour variables, radii and component variant properties, then triage what it finds. Reads Figma through the Figma MCP server into figma/snapshot.json and runs `pnpm figma:drift`. Use when asked whether Figma and code match, before a release, after changing tokens or a component's variants, or when a designer says something looks different in Figma.
+description: Check the fibo Figma library against the code for drift in color variables, radii and component variant properties, then triage what it finds. Reads Figma through the Figma MCP server into figma/snapshot.json and runs `pnpm figma:drift`. Use when asked whether Figma and code match, before a release, after changing tokens or a component's variants, or when a designer says something looks different in Figma.
 ---
 
 # Figma drift check
@@ -50,7 +50,7 @@ pnpm figma:drift --json   # the same findings for further processing
 
 What it compares, and how:
 
-- **Colour.** Each Color variable, per mode, against the `:root` (Light) and
+- **Color.** Each Color variable, per mode, against the `:root` (Light) and
   `.dark` (Dark) blocks of `globals.css`. Both sides are reduced to the
   primitive they point at, so `alpha/red-700/8` matches
   `color-mix(in oklch, var(--color-red-700) 8%, transparent)` and

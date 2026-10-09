@@ -169,7 +169,7 @@ describe("FloatingNav", () => {
       .toHaveAttribute("aria-current", "true")
   })
 
-  it("keeps a colour set on an item's icon", async () => {
+  it("keeps a color set on an item's icon", async () => {
     const screen = await render(
       <FloatingNav
         position="static"
@@ -185,14 +185,14 @@ describe("FloatingNav", () => {
         ]}
       />
     )
-    const colour = (id: string) =>
+    const color = (id: string) =>
       getComputedStyle(screen.getByTestId(id).element()).color
     const probe = document.createElement("span")
     probe.className = "text-info"
     document.body.append(probe)
     const info = getComputedStyle(probe).color
     probe.remove()
-    expect(colour("saved")).toBe(info)
-    expect(colour("inbox")).not.toBe(info)
+    expect(color("saved")).toBe(info)
+    expect(color("inbox")).not.toBe(info)
   })
 })

@@ -395,7 +395,7 @@ items.push({
   type: "registry:theme",
   title: "Theme",
   description:
-    "fibo's full token set, light and dark: the achromatic roles, status colours and named -subtle, -hover and -ring roles.",
+    "fibo's full token set, light and dark: the achromatic roles, status colors and named -subtle, -hover and -ring roles.",
   author: "Tori Bryan",
   docs: `Token reference: ${homepage}/?path=/docs/foundations-colors--docs`,
   meta: { docs: `${homepage}/?path=/docs/foundations-colors--docs` },

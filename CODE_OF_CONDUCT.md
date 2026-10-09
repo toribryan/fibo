@@ -8,7 +8,7 @@ welcome in issues, pull requests, discussions or any other project space.
 
 ## Reporting
 
-If someone's behaviour concerns you, contact the maintainer privately through
+If someone's behavior concerns you, contact the maintainer privately through
 [GitHub](https://github.com/toribryan). Reports are kept confidential, and the
 maintainer may remove, edit or reject comments, commits and issues that break
 this code, or block a contributor from the project.

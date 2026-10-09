@@ -171,7 +171,7 @@ type ChapterScrubberProps = Omit<React.ComponentProps<"div">, "onSelect"> & {
    * viewport.
    */
   side?: Side
-  /** Ticks grow from the rail's edge, or out from its centre line. */
+  /** Ticks grow from the rail's edge, or out from its center line. */
   align?: "edge" | "center"
   /** What shows beside the crest. */
   preview?: "card" | "label"
@@ -229,7 +229,7 @@ function ChapterScrubber({
 }: ChapterScrubberProps) {
   const vertical = orientation === "vertical"
   const preset = SIZES[variant][size]
-  // One object across renders, so the memoised marks skip a re-render.
+  // One object across renders, so the memoized marks skip a re-render.
   const metrics = React.useMemo<Metrics>(
     () => ({
       rowSize: rowSize ?? preset.rowSize,

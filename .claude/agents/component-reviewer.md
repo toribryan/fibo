@@ -23,8 +23,8 @@ Check each item and report only the ones that fail, with file and line:
    may import `@tanstack/react-table` and `@tanstack/react-store`, and Rich
    text editor `@tiptap/react`, `@tiptap/starter-kit` and
    `@tiptap/extensions`.
-2. **Tokens.** Only semantic colour classes. No primitive ramps
-   (`neutral-*`, `red-*`), no opacity modifiers on colours (`/10`), no hex or
+2. **Tokens.** Only semantic color classes. No primitive ramps
+   (`neutral-*`, `red-*`), no opacity modifiers on colors (`/10`), no hex or
    rgb values in class names.
 3. **Structure.** Root has `data-slot`. Imports use `@workspace/ui/*`, never
    relative paths. Variants exported as `<name>Variants`. Every prop has a

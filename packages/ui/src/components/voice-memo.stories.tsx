@@ -141,7 +141,7 @@ export const Wordmark: Story = {
 
 /*
  * Text from your own service, such as a speech-to-text API streaming over a
- * socket. Passing `transcript` turns the browser's recogniser off.
+ * socket. Passing `transcript` turns the browser's recognizer off.
  */
 function OwnServiceDemo() {
   const [recording, setRecording] = useState(false)

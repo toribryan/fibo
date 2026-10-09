@@ -123,7 +123,7 @@ const lines = [
   ["ben", "Ten minutes."],
   ["ana", "Pushed the divider styles."],
   ["ben", "The New label is a nice touch."],
-  ["ana", "Colour alone wasn't enough."],
+  ["ana", "Color alone wasn't enough."],
   ["ben", "Checked it in dark mode too."],
   ["ana", "Merging after the review."],
   ["ben", "Ship it."],

@@ -38,8 +38,8 @@ photographs are skipped until the photos are in `brand/photos/`.
 
 ## Rules
 
-- There is no brand hue. Colour only comes from photographs.
-- The rabbit is one colour, crisp pixels, scaled by whole numbers. On dark
+- There is no brand hue. Color only comes from photographs.
+- The rabbit is one color, crisp pixels, scaled by whole numbers. On dark
   grounds he turns solid with his inner lines cut in.
 - Type is Geist, Geist Mono for small labels and commands. No other faces.
 - Sizes on cards follow the Fibonacci sequence, and layouts cut on 0.618.
