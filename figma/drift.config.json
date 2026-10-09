@@ -3,27 +3,13 @@
   "ignoredProps": ["state"],
   "figmaOnlyTokens": {},
   "codeOnlyTokens": {
-    "destructive-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "destructive-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "destructive-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "success-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "success-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "success-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "warning-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "warning-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "warning-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "info-text": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "info-border": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
-    "info-icon": "Property token from plans/003-property-tokens.md. Figma gets it with variable scopes in a later plan; until then it aliases its status color.",
     "sticker-shadow": "Sticker avatar's lift shadow, the same in both themes. Figma's Sticker avatar draws it as a fixed drop shadow; add the variable when effects bind to it.",
     "particle-shadow": "Reactions' flying emoji shadow, the same in both themes. Particles only exist in motion, so Figma has nothing to bind it to.",
     "edge-depth": "Pressed-key edge depth from plans/011-mechanical-theme.md. Zero in fibo, so the library has nothing to draw; Figma gets it with the Mechanical theme's variables.",
     "primary-edge": "Pressed-key edge color from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
     "secondary-edge": "Pressed-key edge color from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
     "outline-edge": "Pressed-key edge color from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
-    "destructive-edge": "Pressed-key edge color from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
-    "surface": "Surface layer from plans/013-surfaces.md. Figma gets the variable when the library's frames are rebuilt on surfaces.",
-    "surface-foreground": "Surface layer from plans/013-surfaces.md. Figma gets the variable when the library's frames are rebuilt on surfaces."
+    "destructive-edge": "Pressed-key edge color from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it."
   },
   "figmaOnlyProps": {
     "Avatar.type": "Code picks image or initials from whether src loads; designers pick it by hand.",
