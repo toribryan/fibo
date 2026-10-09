@@ -660,8 +660,6 @@
       "mediaSwap": "INSTANCE_SWAP",
       "showDescription": "BOOLEAN",
       "showActions": "BOOLEAN",
-      "Media": "SLOT",
-      "Media2": "SLOT",
       "size": ["sm", "default"]
     },
     "Field": {
