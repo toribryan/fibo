@@ -177,7 +177,7 @@ function bakeSticker(src: string, options: BakeOptions): Promise<Baked> {
     const artCtx = art.getContext("2d")!
     artCtx.imageSmoothingEnabled = !options.pixelated
     if (shape === "cutout") {
-      // Trimmed and centred, so every subject fills its sticker the same way
+      // Trimmed and centered, so every subject fills its sticker the same way
       // however much empty space its file has round it.
       const box = drawnBounds(data, w, h) ?? { x: 0, y: 0, w, h }
       const fit = px / Math.max(box.w, box.h)
@@ -218,7 +218,7 @@ function bakeSticker(src: string, options: BakeOptions): Promise<Baked> {
       silhouetteCtx.drawImage(art, 0, 0)
       silhouetteCtx.globalCompositeOperation = "source-in"
       silhouetteCtx.fillStyle = "#ffffff"
-      // Ignored if the browser can't parse the colour, leaving white paper.
+      // Ignored if the browser can't parse the color, leaving white paper.
       silhouetteCtx.fillStyle = options.color
       silhouetteCtx.fillRect(0, 0, px, px)
       const steps = Math.max(24, Math.ceil(edge * 10))

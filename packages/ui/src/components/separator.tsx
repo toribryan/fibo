@@ -6,7 +6,7 @@ import { Separator as SeparatorPrimitive } from "@base-ui/react/separator"
 import { cn } from "@workspace/ui/lib/utils"
 
 /**
- * A rule between groups of content. Give it children for a labelled rule,
+ * A rule between groups of content. Give it children for a labeled rule,
  * such as a date in a conversation: a line, the label, and a line.
  */
 function Separator({

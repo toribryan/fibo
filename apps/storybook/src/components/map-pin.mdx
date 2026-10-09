@@ -12,7 +12,7 @@ import { Install } from "../blocks/install"
 
 # Map pin
 
-A pin for a point on a map, as a dot, an icon or a labelled pill, with a preview
+A pin for a point on a map, as a dot, an icon or a labeled pill, with a preview
 card that opens on click or tap. It brings no map of its own: your map library
 places it and moves it as the map pans and zooms.
 
@@ -21,7 +21,7 @@ places it and moves it as the map pans and zooms.
 ## Features
 
 - A dot, an icon or a pill with a short label such as a price, in two sizes.
-- Five colours from fibo's status roles, for when colour means something:
+- Five colors from fibo's status roles, for when color means something:
   open or closed, available or full.
 - A preview card with an image, meta line, title and description, plus any
   content of your own, such as directions or a save button.
@@ -57,17 +57,17 @@ place matters. Without an `icon`, it shows a map-pin icon.
 
 <Canvas of={Stories.IconPins} />
 
-### Colours
+### Colors
 
-`variant` takes fibo's status colours. Here they say whether each place is
+`variant` takes fibo's status colors. Here they say whether each place is
 open. The status is in each pin's `label` and meta too, so it doesn't rest
-on colour alone.
+on color alone.
 
-<Canvas of={Stories.Colours} />
+<Canvas of={Stories.Colors} />
 
 ### Labels with icons
 
-A label pin can lead with an icon, and colours its text to match the
+A label pin can lead with an icon, and colors its text to match the
 `variant`. The open one fills in.
 
 <Canvas of={Stories.LabelsWithIcons} />
@@ -177,7 +177,7 @@ Every part the component renders, with the `data-slot` it carries.
 <UsageGuidelines
   guidelines={[
     "Use dots for places, icons when the kind of place matters, and labels when a value matters at a glance, such as prices or times. Keep labels to a few characters.",
-    "Keep pins default unless colour means something, such as open or closed. Put the meaning in a legend and in each pin's label too.",
+    "Keep pins default unless color means something, such as open or closed. Put the meaning in a legend and in each pin's label too.",
     "Give every pin a label, the place's name. It's what screen readers announce and what the preview is named by.",
     "Keep the card short: an image, a title, a line of description. Put the full page behind a link in the content.",
     "Control which preview is open when a list sits beside the map, so picking a row opens its pin and the two never disagree.",
@@ -324,7 +324,7 @@ a portal on the body, so style it with `previewClassName`.
     "Enter or Space opens the preview and moves focus into it. Escape closes it and returns focus to the pin.",
     "The preview is a dialog named by the pin's label, so screen readers announce which place they're in.",
     "A dot is 16px to look at but takes presses across 32px, above the 24px minimum target.",
-    "Colour never stands alone: put the status a colour stands for in the pin's label, which screen readers announce, and in the preview.",
+    "Color never stands alone: put the status a color stands for in the pin's label, which screen readers announce, and in the preview.",
     "With reduced motion, the pin changes without animating and the card fades in place.",
   ]}
 />
@@ -337,4 +337,4 @@ a portal on the body, so style it with `previewClassName`.
 
 - [Base UI Popover](https://base-ui.com/react/components/popover), for the preview
 - [react-map-gl `Marker`](https://visgl.github.io/react-map-gl/docs/api-reference/maplibre/marker) and [MapLibre GL JS `Marker`](https://maplibre.org/maplibre-gl-js/docs/API/classes/Marker/), for placing it on a map
-- [WAI-ARIA dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/), for the preview's focus behaviour
+- [WAI-ARIA dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/), for the preview's focus behavior

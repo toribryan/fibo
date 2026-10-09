@@ -28,7 +28,7 @@ describe("sticker-status-to-child", () => {
     )
   })
 
-  it("carries the label, and mono when colour was off", () => {
+  it("carries the label, and mono when color was off", () => {
     const output =
       run(`${IMPORT}const a = <StickerAvatar name="Mei" status="present" statusLabel="Here" statusColor={false} />
 `)
@@ -47,7 +47,7 @@ describe("sticker-status-to-child", () => {
     )
   })
 
-  it("turns an expression colour into a variant", () => {
+  it("turns an expression color into a variant", () => {
     const output =
       run(`${IMPORT}const a = <StickerAvatar name="A" status="away" statusColor={tinted} />
 `)

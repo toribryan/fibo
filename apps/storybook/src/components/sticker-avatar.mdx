@@ -52,8 +52,8 @@ The edge grows with the sticker: 2px up to 32, 3px at 40, 4px at 64, 6px at 96.
 ### With a status
 
 Put a `<StatusDot>` in the sticker. Present, away and offline are a dot, a
-crescent and a ring, coloured with the success, warning and muted tokens, so
-each still reads without colour.
+crescent and a ring, colored with the success, warning and muted tokens, so
+each still reads without color.
 
 <Canvas of={Stories.Statuses} />
 
@@ -214,7 +214,7 @@ the edge to be cut; without them the sticker falls back to round.
     {
       attribute: "--sticker-edge",
       element: "Any ancestor, or the root",
-      when: "Overrides the paper colour. Read when the edge is drawn.",
+      when: "Overrides the paper color. Read when the edge is drawn.",
     },
   ]}
 />
@@ -222,17 +222,17 @@ the edge to be cut; without them the sticker falls back to round.
 ### Tokens
 
 `--sticker-edge` is white and `--sticker-ink` is near-black in both themes.
-That is deliberate: a sticker is paper, and paper doesn't change colour when
+That is deliberate: a sticker is paper, and paper doesn't change color when
 the room gets dark. A hairline and a shadow keep the white edge visible on a
 light page; the shadow is `--sticker-shadow`, the same in both themes for the
 same reason.
 
-A StatusDot is the exception. Its disc is the page colour, not paper,
-because it is coloured with fibo's semantic tokens: `success` for present,
+A StatusDot is the exception. Its disc is the page color, not paper,
+because it is colored with fibo's semantic tokens: `success` for present,
 `warning` for away and `muted-foreground` for offline. Those tokens are tuned
-for the page in each theme, so on the page colour they clear the 3:1 that
+for the page in each theme, so on the page color they clear the 3:1 that
 non-text marks need. On white paper the dark-theme ones would not. Give the
-dot `variant="mono"` to draw the marks in the foreground colour instead.
+dot `variant="mono"` to draw the marks in the foreground color instead.
 
 `status`, `statusLabel` and `statusColor` on the sticker still work and draw
 the same StatusDot, but are deprecated: put the dot in as a child.
@@ -250,7 +250,7 @@ the same StatusDot, but are deprecated: put the dot in as a child.
       Inside a row or button that already says the name, set{" "}
       <code>aria-hidden</code> on the sticker so the name isn't read twice.
     </>,
-    "Status never relies on colour alone. Each state has its own shape, and its label is in the accessible name.",
+    "Status never relies on color alone. Each state has its own shape, and its label is in the accessible name.",
     "The hit area and layout are the square box, not the cut, so an odd shape is no harder to click.",
     "With reduced motion the sticker keeps its tilt and shadow but doesn't lift.",
   ]}

@@ -2,7 +2,7 @@
 
 ## What is changing
 
-A layer of colour tokens scoped to the property they paint: text, background,
+A layer of color tokens scoped to the property they paint: text, background,
 border and icon. `text-success` would read a token made for text,
 `bg-success-subtle` one made for backgrounds, and `fill-success` one made for
 icons and marks. Today all three read the same `--success`.
@@ -16,10 +16,10 @@ Two things surfaced while building Sticker avatar.
   text needs neither, it just needs to stay quiet. `--success` serves all of
   them with one value per theme, so it is either darker than an icon needs or
   too light for small text, depending on the theme. Its status dot had to move
-  onto the page colour to stay above 3:1.
+  onto the page color to stay above 3:1.
 - **Figma scopes variables by property.** A Figma variable can be limited to
   text fill, shape fill, frame fill or stroke, so a designer only sees text
-  colours when they colour text. fibo's tokens can't be scoped that way while
+  colors when they color text. fibo's tokens can't be scoped that way while
   one token paints everything. Property tokens map onto scoped variables one to
   one, the same way the `-subtle`, `-hover` and `-ring` roles did for opacity.
 
@@ -39,8 +39,8 @@ remember.
 each property can take its own value. The existing `--color-*` tokens stay as
 the fallback, so shadcn parts and stock themes keep working.
 
-The catch: `text-success` and `bg-success` can be different colours. That is
-the point, but it has to be documented on the Colours page, or someone will be
+The catch: `text-success` and `bg-success` can be different colors. That is
+the point, but it has to be documented on the Colors page, or someone will be
 surprised.
 
 **C. Prefixed roles in the shared namespace.** `--color-fg-success`,
@@ -62,7 +62,7 @@ Status roles are the same for success, warning, destructive and info.
 | Icon       | `foreground`, `muted-foreground`, `{status}`                            | 3:1 on background                          |
 
 Most of these start as aliases of today's values. The ones that differ are
-the status colours for text and icons in each theme, which get checked
+the status colors for text and icons in each theme, which get checked
 against their target instead of sharing one step.
 
 ## Work
@@ -71,7 +71,7 @@ against their target instead of sharing one step.
 2. Teach `build-registry.mjs` to read and ship them, and extend the smoke test.
 3. Tune the status text and icon values and add contrast checks to the unit
    tests, so a theme change can't silently drop under the bar.
-4. Update the Colours page. Figma variable scopes follow in a later plan. The
+4. Update the Colors page. Figma variable scopes follow in a later plan. The
    Theme creator was archived before this landed, so its generator doesn't
    write these tokens; see `archive/theme-creator/README.md`.
 5. Move components across one at a time. Nothing breaks in between, since the
@@ -81,7 +81,7 @@ against their target instead of sharing one step.
 
 - **Naming:** option B. Class names don't change; Tailwind's property
   namespaces carry the new tokens.
-- **Scope:** status colours first: destructive, success, warning and info,
+- **Scope:** status colors first: destructive, success, warning and info,
   each with a text, background, border and icon token. Neutral roles stay on
   one token each until a later pass needs them.
 - **Figma:** variable scopes come in a later plan. Until then the new tokens

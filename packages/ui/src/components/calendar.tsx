@@ -66,7 +66,7 @@ function useToday(): Date | null {
 }
 
 // A year either side covers most bookings and reports without a scroll
-// position that runs for metres.
+// position that runs for meters.
 const SCROLL_SPAN = 12
 
 type CalendarType = "paged" | "scroll" | "month"
@@ -721,8 +721,8 @@ function CalendarMonth({
           ))}
         </div>
         {weeks.map((week, row) => {
-          // One bar per week row, from the centre of the first day in range
-          // to the centre of the last. Where the range runs on past the row,
+          // One bar per week row, from the center of the first day in range
+          // to the center of the last. Where the range runs on past the row,
           // the bar runs to the row's edge so it reads as one band.
           const cols = week.flatMap((day, i) => (day && inShown(day) ? i : []))
           const first = cols[0]

@@ -192,7 +192,7 @@ function useOpenState(
 }
 
 /*
- * A trigger in a fibo Field is labelled by its FieldLabel, as Input is. Base
+ * A trigger in a fibo Field is labeled by its FieldLabel, as Input is. Base
  * UI keeps the label's wiring private, so the trigger finds the label in the
  * DOM: it's named by the label followed by the value, and a click on the
  * label focuses it without opening the panel, as it would an input.

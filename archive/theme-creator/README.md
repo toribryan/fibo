@@ -1,6 +1,6 @@
 # Theme creator
 
-The Foundations page that built a theme from a few choices: grey tint,
+The Foundations page that built a theme from a few choices: gray tint,
 radius, an accent, status hues and fonts, with a live contrast report and
 CSS, Figma and link exports. Plan 001 records how it was designed and why it
 was archived.

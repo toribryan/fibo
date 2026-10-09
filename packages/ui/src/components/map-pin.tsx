@@ -15,7 +15,7 @@ type MapPinProps = Omit<
   label: string
   /** `dot` is a small point, `icon` a round pin with an icon, `label` a pill with text such as a price. */
   type?: "dot" | "icon" | "label"
-  /** What the colour says: `default` for plain places, or a status such as `success` for open or `destructive` for closed. */
+  /** What the color says: `default` for plain places, or a status such as `success` for open or `destructive` for closed. */
   variant?: "default" | "success" | "warning" | "info" | "destructive"
   /** The icon for an `icon` pin, or a leading icon in a `label` pin. An `icon` pin falls back to a map-pin icon. */
   icon?: React.ReactNode
@@ -47,7 +47,7 @@ type MapPinProps = Omit<
 
 type Variant = NonNullable<MapPinProps["variant"]>
 
-// Filled pins, dots and icons, take the colour as their fill and grow a
+// Filled pins, dots and icons, take the color as their fill and grow a
 // halo of it when open.
 const FILL: Record<Variant, string> = {
   default:
@@ -61,7 +61,7 @@ const FILL: Record<Variant, string> = {
     "bg-destructive text-destructive-foreground data-[popup-open]:shadow-[0_0_0_6px_var(--color-destructive-subtle)]",
 }
 
-// A label stays light on the map with its text in the colour, and fills in
+// A label stays light on the map with its text in the color, and fills in
 // when open, so the selected one stands out among the rest.
 const OUTLINE: Record<Variant, string> = {
   default:

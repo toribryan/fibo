@@ -1033,7 +1033,7 @@ export const Directory: Story = {
       canvas.getByRole("group", { name: "Bulk actions" })
     ).toHaveTextContent("All 5 members selected")
 
-    // By keyboard: focus landed on Clear when its neighbour went away, and
+    // By keyboard: focus landed on Clear when its neighbor went away, and
     // Enter clears and hands focus to select all.
     const clear = canvas.getByRole("button", { name: "Clear selection" })
     await expect(clear).toHaveFocus()

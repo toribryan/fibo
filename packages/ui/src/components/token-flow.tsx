@@ -148,7 +148,7 @@ function ScrambleText({
 }
 
 /**
- * A hairline with a pulse travelling along it. Fills whatever cell it is
+ * A hairline with a pulse traveling along it. Fills whatever cell it is
  * in; `vertical` runs it top to bottom for the stacked layout. The pulse is
  * a Web Animation on the stroke offset, so it needs no keyframes in the
  * consumer's CSS.
@@ -253,7 +253,7 @@ type TokenFlowProps = Omit<React.ComponentProps<"div">, "children"> & {
 /**
  * How a color travels through the token tiers: a raw value, the primitive
  * that names it, and the semantic role that uses it. One row per color,
- * wired left to right across a dotted plate, with a pulse travelling along
+ * wired left to right across a dotted plate, with a pulse traveling along
  * each wire. Rows that carry a `dark` value swap to it when the theme
  * changes, scrambling for a moment on the way.
  */

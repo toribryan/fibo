@@ -91,7 +91,7 @@ describe("RichTextEditor", () => {
     await expect.poll(live).toBe("1 character left")
   })
 
-  it("puts id, labelling and invalid state on the writing area", async () => {
+  it("puts id, labeling and invalid state on the writing area", async () => {
     const screen = await render(
       <div>
         <Label id="note-label">Note</Label>

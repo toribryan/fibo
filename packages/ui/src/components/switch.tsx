@@ -24,8 +24,8 @@ function Switch({
       )}
       {...props}
     >
-      {/* The page colour would vanish on a dark track, so in dark mode the
-          resting thumb takes the text colour instead. */}
+      {/* The page color would vanish on a dark track, so in dark mode the
+          resting thumb takes the text color instead. */}
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
         className="pointer-events-none block rounded-full shadow-sm ring-0 transition-transform group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 motion-reduce:transition-none data-checked:translate-x-[calc(100%-2px)] data-checked:bg-primary-foreground data-unchecked:translate-x-0 data-unchecked:bg-background dark:data-unchecked:bg-foreground"

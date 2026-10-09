@@ -89,7 +89,7 @@ function StatusDotHostProvider({
 
 type StatusDotProps = Omit<React.ComponentProps<"span">, "children"> &
   VariantProps<typeof statusDotVariants> & {
-    /** Present, away or offline: a dot, a crescent or a ring, so status reads without colour. */
+    /** Present, away or offline: a dot, a crescent or a ring, so status reads without color. */
     status: StatusDotStatus
     /** The spoken status, for translation. Defaults to Present, Away or Offline; `null` makes the dot decorative when the text beside it already says it. */
     label?: string | null
@@ -119,7 +119,7 @@ function StatusDot({
       className={cn(statusDotVariants({ variant, size }), className)}
       {...props}
     >
-      {/* The disc is the page colour, so the dot keeps a clear edge on a
+      {/* The disc is the page color, so the dot keeps a clear edge on a
           photo or a sticker, and fibo's status tokens keep their contrast,
           which they are tuned for against the page in each theme. */}
       <svg

@@ -95,7 +95,7 @@ type RichTextEditorProps = Omit<
   "aria-labelledby"?: string
   /** Ids of elements that describe the writing area, such as a hint or an error. */
   "aria-describedby"?: string
-  /** Marks the writing area invalid and draws the frame in the destructive colour. */
+  /** Marks the writing area invalid and draws the frame in the destructive color. */
   "aria-invalid"?: boolean | "true" | "false"
 }
 

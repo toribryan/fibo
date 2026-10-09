@@ -63,7 +63,7 @@
   --ring: #a1998c;
   --ring-subtle: color-mix(in oklch, #c2baaa 55%, transparent);
 
-  /* Saturated, so a nav item's icon can carry its own colour. */
+  /* Saturated, so a nav item's icon can carry its own color. */
   --chart-1: #2f7bf5;
   --chart-2: #23883f;
   --chart-3: #9a3fe0;
@@ -93,7 +93,7 @@
     "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  /* A scoped region inherits its page's font and colours, so it sets its own. */
+  /* A scoped region inherits its page's font and colors, so it sets its own. */
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
@@ -296,7 +296,7 @@
   border-color: var(--outline-edge);
 }
 
-/* Segmented tabs: a grey track with the active tab as a raised key. */
+/* Segmented tabs: a gray track with the active tab as a raised key. */
 [data-theme="mechanical"]
   [data-slot="tabs-list"][data-variant="default"]:not(
     [data-theme="mechanical"] [data-theme]:not([data-theme="mechanical"]) *

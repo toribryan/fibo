@@ -7,7 +7,7 @@
 
 /*
  * fibo is deliberately achromatic: there is no brand hue, so `primary` is a
- * neutral and colour only ever carries meaning (destructive, success, warning,
+ * neutral and color only ever carries meaning (destructive, success, warning,
  * info). Semantic roles below alias Tailwind's built-in ramps directly —
  * retheming means editing this file's `:root` and `.dark` blocks and nothing
  * else. Names match the Figma "Color" collection one to one.
@@ -157,7 +157,7 @@
 
 /*
  * Status tones sit on the 700 step rather than 600: at 600, white text on a
- * solid success or warning fill measures 3.3:1, and coloured text on its own
+ * solid success or warning fill measures 3.3:1, and colored text on its own
  * subtle tint measures under 3:1. At 700, success text on an 8% tint is still
  * 4.43:1 at badge size, so success, warning and info tint at 6%; destructive's
  * red is dark enough to keep 8%. Dark mode stays on 400, which clears it.
@@ -274,7 +274,7 @@
   /*
    * The pressed-key edge a theme can draw under raised controls
    * (plans/011-mechanical-theme.md). fibo's controls are flat, so the edge
-   * has no depth and no colour in either mode; a theme turns it on.
+   * has no depth and no color in either mode; a theme turns it on.
    */
   --edge-depth: 0px;
   --primary-edge: transparent;

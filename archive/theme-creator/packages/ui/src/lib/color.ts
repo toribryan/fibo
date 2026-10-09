@@ -1,13 +1,13 @@
 /*
- * Colour maths for the theme creator: OKLCH to sRGB, fitting a colour into
+ * Color math for the theme creator: OKLCH to sRGB, fitting a color into
  * the sRGB gamut, compositing alpha over a surface, and WCAG contrast. The
  * matrices are Björn Ottosson's OKLab reference values.
  */
 
-/** A colour in OKLCH: lightness 0–1, chroma, hue in degrees. */
+/** A color in OKLCH: lightness 0–1, chroma, hue in degrees. */
 type Oklch = { l: number; c: number; h: number }
 
-/** A colour in sRGB, each channel 0–1, with an optional alpha. */
+/** A color in sRGB, each channel 0–1, with an optional alpha. */
 type Rgb = { r: number; g: number; b: number; a?: number }
 
 function linearFromOklch({ l, c, h }: Oklch): [number, number, number] {
@@ -40,7 +40,7 @@ function inGamut(color: Oklch) {
 }
 
 /**
- * Pulls chroma in until the colour fits sRGB, keeping its lightness and
+ * Pulls chroma in until the color fits sRGB, keeping its lightness and
  * hue, so a vivid hue at a fixed lightness still renders as itself.
  */
 function fitGamut(color: Oklch): Oklch {
@@ -62,7 +62,7 @@ function toRgb(color: Oklch): Rgb {
   return { r, g, b }
 }
 
-/** Lays a translucent colour over an opaque one, as the browser paints it. */
+/** Lays a translucent color over an opaque one, as the browser paints it. */
 function composite(top: Rgb, under: Rgb): Rgb {
   const a = top.a ?? 1
   return {
@@ -76,13 +76,13 @@ function luminance({ r, g, b }: Rgb) {
   return 0.2126 * decode(r) + 0.7152 * decode(g) + 0.0722 * decode(b)
 }
 
-/** The WCAG 2 contrast ratio between two opaque colours, 1 to 21. */
+/** The WCAG 2 contrast ratio between two opaque colors, 1 to 21. */
 function contrast(one: Rgb, two: Rgb) {
   const [light, dark] = [luminance(one), luminance(two)].sort((x, y) => y - x)
   return (light! + 0.05) / (dark! + 0.05)
 }
 
-/** `#rrggbb`, or `#rrggbbaa` when the colour has alpha. */
+/** `#rrggbb`, or `#rrggbbaa` when the color has alpha. */
 function toHex({ r, g, b, a }: Rgb) {
   const byte = (x: number) =>
     Math.round(Math.min(1, Math.max(0, x)) * 255)

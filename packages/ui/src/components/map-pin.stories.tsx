@@ -43,7 +43,7 @@ const PLACES: Place[] = [
     x: 61,
     y: 30,
     meta: "Bookshop · 7 min walk",
-    description: "Design, maths and a shelf of pixel art zines.",
+    description: "Design, math and a shelf of pixel art zines.",
     price: "$18",
   },
   {
@@ -157,7 +157,7 @@ function StandInMap({ children }: { children?: ReactNode }) {
         </g>
 
         {/* The park covers the streets inside it, with paths of its own. The
-            tints are translucent, so each sits on a land-coloured base. */}
+            tints are translucent, so each sits on a land-colored base. */}
         <path d={PARK} className="fill-muted dark:fill-card" />
         <path
           d={PARK}
@@ -401,7 +401,7 @@ export const IconPins: Story = {
   ),
 }
 
-// Colour only carries meaning: here, whether each place is open right now.
+// Color only carries meaning: here, whether each place is open right now.
 const STATUS: Record<
   string,
   {
@@ -415,7 +415,7 @@ const STATUS: Record<
   studio: { variant: "destructive", status: "Closed today" },
 }
 
-export const Colours: Story = {
+export const Colors: Story = {
   render: () => (
     <StandInMap>
       {PLACES.map((place) => (

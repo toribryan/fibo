@@ -10,7 +10,7 @@ type CountProps = Omit<React.ComponentProps<"span">, "children"> &
   FormatCountOptions & {
     /** The number. */
     value: number
-    /** What screen readers hear, such as `(n) => \`${n} unread\``. Defaults to the exact number when the shown one is capped or shortened. `null` hides the count when its neighbour already says it. */
+    /** What screen readers hear, such as `(n) => \`${n} unread\``. Defaults to the exact number when the shown one is capped or shortened. `null` hides the count when its neighbor already says it. */
     label?: string | ((value: number) => string) | null
   }
 

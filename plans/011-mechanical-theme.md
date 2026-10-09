@@ -6,7 +6,7 @@ fibo gets its first experimental theme, Mechanical: a warm, tactile look
 where raised controls sit on a solid bottom edge and press down onto it, like
 keys. It has a beige page, cream cards, near-white fields, near-black text,
 sand hairlines, small radii, semibold labels and a terracotta primary, in
-light and dark. Icons in nav-like lists can carry their own colour.
+light and dark. Icons in nav-like lists can carry their own color.
 
 It ships three ways:
 
@@ -32,7 +32,7 @@ and gives experimental projects a second look to start from.
 
 **How far a theme reaches.**
 
-- _Tokens only._ Colours, radius and font. Cheap, and it proves the token
+- _Tokens only._ Colors, radius and font. Cheap, and it proves the token
   layer, but it can't draw the edge or change a label's weight, and the edge
   is what makes the look.
 - _Tokens plus edges._ Token overrides, plus a small set of rules that change
@@ -86,17 +86,17 @@ The switch is a plain React 18 control in the manager, like light and dark,
 so the separate manager-ui bundle isn't involved. The manager's own chrome
 stays in fibo's look.
 
-**Colour icons.** Menu already muted only icons without a `text-` class.
-Command menu, Filter menu and Floating nav set the muted colour on a wrapper,
-and a colour class on the icon itself wins over that, so all four already
-keep a caller's colour. Stories and tests now pin that down. The chart
-tokens are greys in fibo; Mechanical saturates them (blue, green, purple,
-amber, red) so `text-chart-1` to `text-chart-5` read as icon colours, each
+**Color icons.** Menu already muted only icons without a `text-` class.
+Command menu, Filter menu and Floating nav set the muted color on a wrapper,
+and a color class on the icon itself wins over that, so all four already
+keep a caller's color. Stories and tests now pin that down. The chart
+tokens are grays in fibo; Mechanical saturates them (blue, green, purple,
+amber, red) so `text-chart-1` to `text-chart-5` read as icon colors, each
 at 3:1 or better on the page, menus and their highlight.
 
 ## Values
 
-Literal colours rather than Tailwind's ramps: none of the ramps has this beige
+Literal colors rather than Tailwind's ramps: none of the ramps has this beige
 or terracotta, and the registry ships the file to apps that may not have them.
 
 | Token                       | Light                  | Dark                   |

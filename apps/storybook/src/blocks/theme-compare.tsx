@@ -29,11 +29,11 @@ const ROLES = [
 ]
 
 const PRODUCTS = [
-  { label: "Product analytics", Icon: ChartColumnIcon, colour: "text-chart-1" },
-  { label: "Web analytics", Icon: GlobeIcon, colour: "text-chart-2" },
-  { label: "Assistant", Icon: SparklesIcon, colour: "text-chart-3" },
-  { label: "Session replay", Icon: CirclePlayIcon, colour: "text-chart-4" },
-  { label: "Error tracking", Icon: BugIcon, colour: "text-chart-5" },
+  { label: "Product analytics", Icon: ChartColumnIcon, color: "text-chart-1" },
+  { label: "Web analytics", Icon: GlobeIcon, color: "text-chart-2" },
+  { label: "Assistant", Icon: SparklesIcon, color: "text-chart-3" },
+  { label: "Session replay", Icon: CirclePlayIcon, color: "text-chart-4" },
+  { label: "Error tracking", Icon: BugIcon, color: "text-chart-5" },
 ]
 
 // The same few parts in one theme. A column sets nothing but data-theme, so
@@ -90,9 +90,9 @@ function Scene({
         </Field>
       </FieldGroup>
       <ul className="m-0 flex list-none flex-col gap-2 p-0 text-sm">
-        {PRODUCTS.map(({ label, Icon, colour }) => (
+        {PRODUCTS.map(({ label, Icon, color }) => (
           <li key={label} className="m-0 flex items-center gap-2">
-            <Icon aria-hidden="true" className={cn("size-4", colour)} />
+            <Icon aria-hidden="true" className={cn("size-4", color)} />
             {label}
           </li>
         ))}

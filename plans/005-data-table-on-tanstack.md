@@ -96,9 +96,9 @@ over the filtered rows, and the page checkbox becomes
 Locked rows stay out through `enableRowSelection`, which `useDataTable` sets
 from a `lockedReason` option. Shift ranges go through
 `row.getToggleSelectedHandler()`, which only extends a range when
-`isRowRangeSelectionEvent` recognises the event, so the hook passes one that
+`isRowRangeSelectionEvent` recognizes the event, so the hook passes one that
 reads `shiftKey`. The announcements, Escape to clear, Shift+click ranges and
-focus return keep their current behaviour and tests.
+focus return keep their current behavior and tests.
 
 **Rows a filter hides.** Pruning the selection to the filtered rows, or
 keeping hidden rows selected. Chosen, by the owner: they stay selected. The
@@ -112,7 +112,7 @@ it. The page checkbox reflects the page only. Select all matching adds the
 filtered rows and keeps the hidden ones, since `toggleAllRowsSelected`
 spreads the old selection; Clear and Escape clear everything. Bulk actions
 act on every selected row, hidden ones included, so the bulk actions group
-is labelled with the count, and Delete's description repeats it with how
+is labeled with the count, and Delete's description repeats it with how
 many are hidden. Someone filtering to find more rows to add shouldn't lose
 the ones they already picked, and saying the hidden count keeps a bulk
 delete from reaching rows nobody mentioned.

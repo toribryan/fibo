@@ -172,7 +172,7 @@ describe("open state", () => {
   })
 })
 
-describe("labelling", () => {
+describe("labeling", () => {
   it("takes its name from a FieldLabel, followed by the value", async () => {
     const screen = await render(
       <Field>
