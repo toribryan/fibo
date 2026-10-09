@@ -65,8 +65,12 @@ const canonical = (base, percent) =>
     ? base
     : `${base}@${Number(percent)}`
 
-function fromCode(value) {
-  let m = value.match(/^var\(--color-([\w-]+)\)$/)
+// A role that points at another role, such as `--success-icon:
+// var(--success)`, reads as the role it points at, in the same mode.
+function fromCode(value, mode) {
+  let m = value.match(/^var\(--(?!color-)([\w-]+)\)$/)
+  if (m && modes[mode][m[1]]) return fromCode(modes[mode][m[1]], mode)
+  m = value.match(/^var\(--color-([\w-]+)\)$/)
   if (m) return canonical(m[1])
   m = value.match(
     /^color-mix\(in oklch,\s*var\(--color-([\w-]+)\)\s+([\d.]+)%,\s*transparent\s*\)$/
@@ -79,7 +83,8 @@ function fromCode(value) {
   return value
 }
 
-function fromFigma(alias) {
+function fromFigma(alias, mode) {
+  if (figmaColor[alias]) return fromFigma(figmaColor[alias][mode], mode)
   let m = alias.match(/^base\/(\w+)$/)
   if (m) return canonical(m[1])
   m = alias.match(/^alpha\/([\w-]+)\/(\d+)$/)
@@ -111,8 +116,8 @@ for (const [name, values] of Object.entries(figmaColor)) {
   }
   for (const [mode, alias] of Object.entries(values)) {
     const code = modes[mode][name] ?? modes.Light[name]
-    const figma = fromFigma(alias)
-    const ours = fromCode(code)
+    const figma = fromFigma(alias, mode)
+    const ours = fromCode(code, modes[mode][name] ? mode : "Light")
     if (figma !== ours) {
       add(
         "error",

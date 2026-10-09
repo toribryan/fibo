@@ -4,7 +4,7 @@
     "key": "LJZ5Tt4Ba7NPPi8Xnq8i0e",
     "name": "Fibo-DS"
   },
-  "readAt": "2026-10-06",
+  "readAt": "2026-10-09",
   "variables": {
     "Color": {
       "background": {
@@ -234,6 +234,62 @@
       "sticker-ink": {
         "Light": "neutral/900",
         "Dark": "neutral/900"
+      },
+      "surface": {
+        "Light": "base/white",
+        "Dark": "neutral/900"
+      },
+      "surface-foreground": {
+        "Light": "neutral/950",
+        "Dark": "neutral/50"
+      },
+      "destructive-text": {
+        "Light": "destructive",
+        "Dark": "destructive"
+      },
+      "destructive-border": {
+        "Light": "destructive",
+        "Dark": "destructive"
+      },
+      "destructive-icon": {
+        "Light": "destructive",
+        "Dark": "destructive"
+      },
+      "success-text": {
+        "Light": "green/800",
+        "Dark": "success"
+      },
+      "success-border": {
+        "Light": "success",
+        "Dark": "success"
+      },
+      "success-icon": {
+        "Light": "success",
+        "Dark": "success"
+      },
+      "warning-text": {
+        "Light": "amber/800",
+        "Dark": "warning"
+      },
+      "warning-border": {
+        "Light": "warning",
+        "Dark": "warning"
+      },
+      "warning-icon": {
+        "Light": "warning",
+        "Dark": "warning"
+      },
+      "info-text": {
+        "Light": "info",
+        "Dark": "info"
+      },
+      "info-border": {
+        "Light": "info",
+        "Dark": "info"
+      },
+      "info-icon": {
+        "Light": "info",
+        "Dark": "info"
       }
     },
     "Border": {
@@ -570,7 +626,7 @@
       "showHeader": "BOOLEAN",
       "label": "TEXT",
       "value": "TEXT",
-      "type": ["bar", "circle"],
+      "type": ["circle", "bar"],
       "size": ["xs", "sm", "default", "lg"],
       "state": ["default", "indeterminate"]
     },
