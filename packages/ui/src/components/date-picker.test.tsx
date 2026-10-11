@@ -1,3 +1,4 @@
+import * as React from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { page } from "vitest/browser"
 import { render } from "vitest-browser-react"
@@ -185,6 +186,20 @@ describe("labeling", () => {
     await screen.getByText("Check-in").click()
     await expect.element(trigger).toHaveFocus()
     await expect.element(page.getByRole("dialog")).not.toBeInTheDocument()
+  })
+
+  it("hands a caller's ref the trigger and keeps its FieldLabel", async () => {
+    const ref = React.createRef<HTMLButtonElement>()
+    const screen = await render(
+      <Field>
+        <FieldLabel>Check-in</FieldLabel>
+        <DatePicker ref={ref} type="popover" defaultValue={today} />
+      </Field>
+    )
+    const trigger = screen.getByRole("button", { name: "Check-in Oct 5, 2026" })
+    expect(ref.current).toBe(trigger.element())
+    await screen.getByText("Check-in").click()
+    await expect.element(trigger).toHaveFocus()
   })
 
   it("uses aria-labelledby over its own label", async () => {

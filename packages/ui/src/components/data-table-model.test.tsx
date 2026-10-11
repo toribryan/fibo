@@ -73,12 +73,14 @@ function Example({
   children,
   bulk,
   onRender,
+  rootRef,
   ...options
 }: Partial<DataTableOptions<Member>> & {
   members?: Member[]
   children?: React.ReactNode
   bulk?: React.ReactNode
   onRender?: () => void
+  rootRef?: React.Ref<HTMLDivElement>
 }) {
   onRender?.()
   const table = useDataTable({
@@ -89,7 +91,7 @@ function Example({
   })
   return (
     <div style={{ width: 800 }}>
-      <DataTable table={table} aria-label="Members" noun={NOUN}>
+      <DataTable ref={rootRef} table={table} aria-label="Members" noun={NOUN}>
         <DataTableToolbar>
           <DataTableFilters
             search={<DataTableSearch aria-label="Search members" />}
@@ -228,6 +230,18 @@ describe("DataTable on useDataTable", () => {
     expect(bodyNames()).toHaveLength(25)
   })
 
+  it("shows no range in the pagination when every row is on one page", async () => {
+    const screen = await render(
+      <Example>
+        <DataTableFooter>
+          <DataTablePagination />
+        </DataTableFooter>
+      </Example>
+    )
+    await expect.element(screen.getByText("Page 1 of 1")).toBeInTheDocument()
+    expect(screen.container.textContent).not.toContain("NaN")
+  })
+
   it("hides a column from the Columns menu", async () => {
     const screen = await render(<Example />)
     await screen.getByRole("button", { name: "Columns" }).click()
@@ -336,6 +350,25 @@ describe("DataTable on useDataTable", () => {
     await expect
       .element(screen.getByRole("checkbox", { name: /Select all/ }))
       .toHaveAttribute("aria-checked", "false")
+  })
+
+  it("hands a caller's ref its root and still clears on Escape", async () => {
+    const ref = React.createRef<HTMLDivElement>()
+    const screen = await render(
+      <Example
+        rootRef={ref}
+        initialState={{ rowSelection: { maya: true, sam: true } }}
+      />
+    )
+    expect(ref.current?.getAttribute("data-slot")).toBe("data-table")
+    screen
+      .getByRole("checkbox", { name: "Select Maya Okafor" })
+      .element()
+      .focus()
+    await userEvent.keyboard("{Escape}")
+    await expect
+      .element(screen.getByText("Selection cleared"))
+      .toBeInTheDocument()
   })
 
   it("re-renders only the row a selection changes", async () => {

@@ -11,6 +11,7 @@ import {
   type MotionValue,
 } from "motion/react"
 
+import { mergeRefs } from "@workspace/ui/lib/merge-refs"
 import { cn } from "@workspace/ui/lib/utils"
 
 type Chapter = {
@@ -225,6 +226,7 @@ function ChapterScrubber({
   previewClassName,
   className,
   style,
+  ref,
   ...props
 }: ChapterScrubberProps) {
   const vertical = orientation === "vertical"
@@ -243,6 +245,8 @@ function ChapterScrubber({
 
   const reduceMotion = useReducedMotion()
   const rootRef = React.useRef<HTMLDivElement>(null)
+  // A caller's ref would otherwise replace the one the rail is measured by.
+  const mergedRootRef = React.useMemo(() => mergeRefs(rootRef, ref), [ref])
   const railRef = React.useRef<HTMLDivElement>(null)
   const previewRef = React.useRef<HTMLDivElement>(null)
   const optionsRef = React.useRef<Array<HTMLButtonElement | null>>([])
@@ -515,7 +519,7 @@ function ChapterScrubber({
 
   return (
     <div
-      ref={rootRef}
+      ref={mergedRootRef}
       data-slot="chapter-scrubber"
       data-orientation={orientation}
       data-variant={variant}

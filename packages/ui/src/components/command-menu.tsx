@@ -297,6 +297,9 @@ function CommandMenu({
   React.useEffect(() => {
     if (!hotkey) return
     const onKeyDown = (event: KeyboardEvent) => {
+      // Something nearer the key already took it, such as Rich text editor's
+      // Mod+K for a link.
+      if (event.defaultPrevented) return
       if (
         event.key.toLowerCase() === hotkey.toLowerCase() &&
         (event.metaKey || event.ctrlKey) &&

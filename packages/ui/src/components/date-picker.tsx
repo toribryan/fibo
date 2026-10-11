@@ -31,6 +31,8 @@ import {
   type WeekStart,
 } from "@workspace/ui/lib/dates"
 import { useFieldSize, type FieldSize } from "@workspace/ui/lib/field-size"
+import { mergeRefs } from "@workspace/ui/lib/merge-refs"
+import { useMediaQuery } from "@workspace/ui/lib/use-media-query"
 import { cn } from "@workspace/ui/lib/utils"
 
 /** A shortcut in the rail or chip row, worked out from today when it opens. */
@@ -105,22 +107,6 @@ const defaultDatePresets: DatePreset[] = [
 // popover has room for one month beside the presets, not two.
 const PHONE_QUERY = "(max-width: 639.98px)"
 const NARROW_QUERY = "(max-width: 767.98px)"
-
-function useMediaQuery(query: string) {
-  const subscribe = React.useCallback(
-    (onChange: () => void) => {
-      const list = window.matchMedia(query)
-      list.addEventListener("change", onChange)
-      return () => list.removeEventListener("change", onChange)
-    },
-    [query]
-  )
-  return React.useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(query).matches,
-    () => false
-  )
-}
 
 function usePickerLayout(type: DatePickerType): "popover" | "drawer" {
   const phone = useMediaQuery(PHONE_QUERY)
@@ -244,7 +230,7 @@ function PickerShell({
   text,
   empty,
   size,
-  triggerProps: { className, ...triggerProps },
+  triggerProps: { className, ref, ...triggerProps },
   popover,
   drawer,
 }: PickerShellProps) {
@@ -253,11 +239,15 @@ function PickerShell({
   // A non-modal panel never pulls focus: focusing would scroll the page to it.
   const initialFocus = () => modal && focusSelectedDay(popupRef.current)
   const [fieldLabelId, fieldRef] = useFieldLabel()
+  const triggerRef = React.useMemo(
+    () => mergeRefs(fieldRef, ref),
+    [fieldRef, ref]
+  )
 
   const labelledBy = triggerProps["aria-labelledby"] ?? fieldLabelId
   const trigger = {
     ...triggerProps,
-    ref: fieldRef,
+    ref: triggerRef,
     type: "button" as const,
     "data-slot": slot,
     "data-size": size,
@@ -320,7 +310,11 @@ function PickerShell({
   }
 
   return (
-    <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>
+    <PopoverPrimitive.Root
+      open={open}
+      onOpenChange={onOpenChange}
+      modal={modal}
+    >
       <PopoverPrimitive.Trigger {...trigger} />
       <PopoverPrimitive.Portal container={container}>
         <PopoverPrimitive.Positioner

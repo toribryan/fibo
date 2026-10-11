@@ -30,6 +30,23 @@ describe("CommandMenu", () => {
     }
   })
 
+  it("leaves its hotkey to a field that already handled it", async () => {
+    const screen = await render(
+      <>
+        <input
+          aria-label="Editor"
+          onKeyDown={(event) => event.preventDefault()}
+        />
+        <CommandMenu groups={groups} />
+      </>
+    )
+    screen.getByRole("textbox", { name: "Editor" }).element().focus()
+    await userEvent.keyboard("{Control>}k{/Control}")
+    await expect.element(page.getByRole("dialog")).not.toBeInTheDocument()
+    await userEvent.keyboard("{Meta>}k{/Meta}")
+    await expect.element(page.getByRole("dialog")).not.toBeInTheDocument()
+  })
+
   it("restores recents from storage once mounted", async () => {
     window.localStorage.setItem(
       "command-menu-test",
