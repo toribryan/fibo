@@ -476,6 +476,22 @@ describe("Calendar month type on a server", () => {
   })
 })
 
+describe("Calendar scroll type on a server", () => {
+  it("scrolls to today once it arrives after hydration", async () => {
+    const tree = <Calendar type="scroll" style={{ height: 400 }} />
+    const host = document.createElement("div")
+    host.innerHTML = renderToString(tree)
+    document.body.append(host)
+    const root = hydrateRoot(host, tree)
+    const scroller = host.querySelector<HTMLElement>(
+      '[data-slot="calendar-scroll"]'
+    )!
+    await expect.poll(() => scroller.scrollTop).toBeGreaterThan(0)
+    root.unmount()
+    host.remove()
+  })
+})
+
 describe("time formatting", () => {
   it("writes times with plain spaces, so server and client markup match", () => {
     const start = new Date(2026, 9, 5, 9, 30)
