@@ -1,6 +1,6 @@
 import * as React from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { page } from "vitest/browser"
+import { page, userEvent } from "vitest/browser"
 import { render } from "vitest-browser-react"
 
 import { Field, FieldLabel } from "./field.js"
@@ -143,6 +143,30 @@ describe("DateRangePicker", () => {
 })
 
 describe("open state", () => {
+  it("keeps Tab inside the modal popover and returns focus on Escape", async () => {
+    const screen = await render(
+      <>
+        <button type="button">Before</button>
+        <DatePicker type="popover" />
+        <button type="button">After</button>
+      </>
+    )
+    const trigger = screen.getByRole("button", { name: /^Date/ })
+    await trigger.click()
+    const popup = page.getByRole("dialog", { name: "Date" })
+    await expect.element(popup).toBeInTheDocument()
+    const keys = ["{Tab}", "{Shift>}{Tab}{/Shift}"].flatMap((key) =>
+      Array(4).fill(key)
+    )
+    for (const key of keys) {
+      await userEvent.keyboard(key)
+      expect(popup.element().contains(document.activeElement)).toBe(true)
+    }
+    await userEvent.keyboard("{Escape}")
+    await expect.element(popup).not.toBeInTheDocument()
+    await expect.element(trigger).toHaveFocus()
+  })
+
   it("opens inline in a container without taking focus when not modal", async () => {
     const host = document.createElement("div")
     document.body.append(host)

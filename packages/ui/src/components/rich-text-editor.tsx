@@ -308,6 +308,8 @@ function RichTextEditor({
   const linkRowId = React.useId()
   const [linkOpen, setLinkOpen] = React.useState(false)
   const [linkHref, setLinkHref] = React.useState("https://")
+  const [linkRejected, setLinkRejected] = React.useState(false)
+  const linkErrorId = React.useId()
   const linkInput = React.useRef<HTMLInputElement>(null)
 
   // Made once, so a prop change never rebuilds the editor and loses the
@@ -416,6 +418,7 @@ function RichTextEditor({
       return
     }
     setLinkHref("https://")
+    setLinkRejected(false)
     setLinkOpen(true)
   }, [])
 
@@ -449,11 +452,24 @@ function RichTextEditor({
   function applyLink() {
     if (!editor) return
     const href = linkHref.trim()
-    setLinkOpen(false)
     if (!href || href === "https://") {
+      setLinkOpen(false)
       editor.chain().focus().extendMarkRange("link").unsetLink().run()
       return
     }
+    // setLink runs Link's isAllowedUri, which inserting the text below would
+    // skip, so a javascript: address never enters the document. A spot that
+    // takes no link, such as a code block, refuses any address, so the
+    // address is only to blame when a plain one would pass.
+    if (!editor.can().setLink({ href })) {
+      if (editor.can().setLink({ href: "https://example.com" })) {
+        setLinkRejected(true)
+        return
+      }
+      closeLink(true)
+      return
+    }
+    setLinkOpen(false)
     if (editor.state.selection.empty && !editor.isActive("link")) {
       // With nothing selected, the address becomes the link text.
       editor
@@ -614,7 +630,7 @@ function RichTextEditor({
           // Native URL checks would block a relative link, and the bare
           // https:// that removes one.
           noValidate
-          className="flex items-center gap-2 border-b border-border p-2"
+          className="flex flex-wrap items-center gap-2 border-b border-border p-2"
           onSubmit={(event) => {
             event.preventDefault()
             applyLink()
@@ -631,8 +647,13 @@ function RichTextEditor({
             type="url"
             size="sm"
             aria-label="Link address"
+            aria-invalid={linkRejected || undefined}
+            aria-describedby={linkRejected ? linkErrorId : undefined}
             value={linkHref}
-            onChange={(event) => setLinkHref(event.target.value)}
+            onChange={(event) => {
+              setLinkHref(event.target.value)
+              setLinkRejected(false)
+            }}
             className="flex-1"
           />
           <Button type="submit" size="sm">
@@ -646,6 +667,16 @@ function RichTextEditor({
           >
             Cancel
           </Button>
+          {linkRejected ? (
+            <p
+              id={linkErrorId}
+              role="alert"
+              data-slot="rich-text-editor-link-error"
+              className="w-full text-sm text-destructive"
+            >
+              Enter a valid address, such as https://example.com
+            </p>
+          ) : null}
         </form>
       ) : null}
 
