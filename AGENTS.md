@@ -210,6 +210,11 @@ After changing a published component, re-run it and publish the update.
 - Edit `apps/registry/registry`, `apps/registry/registry.json`,
   `apps/registry/public`, `apps/registry/21st` or `dist`. They are generated
   and gitignored.
+- Commit as anyone but Tori Bryan
+  (`130193729+toribryan@users.noreply.github.com`), or add `Co-Authored-By`,
+  `Claude-Session` or "Generated with" lines to commits, squash merges or pull
+  requests. Set `git config user.name` and `user.email` before the first
+  commit; `.husky/commit-msg` rejects the rest.
 - Skip the husky pre-commit hook. If Prettier rejects a commit, fix the file.
 - Add a dependency to a Components-shelf part beyond the three listed above,
   except `@tanstack/react-table` and `@tanstack/react-store` in Data table,

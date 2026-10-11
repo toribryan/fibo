@@ -1,0 +1,9 @@
+# Commits are Tori's own: no AI author, co-author or session lines.
+if git var GIT_AUTHOR_IDENT | grep -qi "anthropic\|^claude "; then
+  echo "commit-msg: the author is set to Claude; run git config user.name and user.email first" >&2
+  exit 1
+fi
+if grep -qiE "^(co-authored-by:.*(claude|anthropic)|claude-session:)" "$1"; then
+  echo "commit-msg: remove the Claude co-author or session line" >&2
+  exit 1
+fi
