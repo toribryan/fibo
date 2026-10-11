@@ -13,6 +13,7 @@
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
 
+import { mergeImports } from "./merge-imports.mjs"
 import { docsUrl, packageName } from "./shared.mjs"
 
 const registryDir = path.resolve(import.meta.dirname, "..")
@@ -150,20 +151,6 @@ function checkNames(file, imports, bodies) {
   }
 }
 
-function mergeImports(statements) {
-  const bySpec = new Map()
-  for (const { text, spec } of statements) {
-    const existing = bySpec.get(spec)
-    if (existing && existing !== text) {
-      throw new Error(
-        `Two different imports from ${spec} would be merged. Combine them by hand in the source.`
-      )
-    }
-    bySpec.set(spec, text)
-  }
-  return [...bySpec.values()]
-}
-
 function dependenciesOf(...sources) {
   const deps = {}
   for (const source of sources) {
@@ -201,6 +188,19 @@ async function assemble(source, file, own) {
   const kept = []
   const inlined = []
   let usesCn = false
+  const inlinedSpecs = new Set()
+  // A component's own helpers (Count's formatCount, Input group's
+  // useFieldSize) come along with it, each once, ahead of the code using them.
+  async function inline(spec) {
+    if (inlinedSpecs.has(spec)) return
+    inlinedSpecs.add(spec)
+    const dep = await inlineComponent(spec)
+    for (const { spec: nested } of dep.imports) {
+      if (nested === "@workspace/ui/lib/utils") usesCn = true
+      else if (nested.startsWith("@workspace/ui/lib/")) await inline(nested)
+    }
+    inlined.push(dep)
+  }
   for (const statement of imports) {
     if (statement.spec === "@workspace/ui/lib/utils") {
       usesCn = true
@@ -220,9 +220,7 @@ async function assemble(source, file, own) {
       statement.spec.startsWith("@workspace/ui/components/") ||
       statement.spec.startsWith("@workspace/ui/lib/")
     ) {
-      const dep = await inlineComponent(statement.spec)
-      usesCn ||= dep.imports.some((i) => i.spec === "@workspace/ui/lib/utils")
-      inlined.push(dep)
+      await inline(statement.spec)
     } else if (statement.spec.startsWith("@workspace/")) {
       throw new Error(
         `${file} imports ${statement.spec}, which is not inlined.`
