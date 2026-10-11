@@ -32,6 +32,7 @@ import {
 } from "@workspace/ui/lib/dates"
 import { useFieldSize, type FieldSize } from "@workspace/ui/lib/field-size"
 import { mergeRefs } from "@workspace/ui/lib/merge-refs"
+import { useMediaQuery } from "@workspace/ui/lib/use-media-query"
 import { cn } from "@workspace/ui/lib/utils"
 
 /** A shortcut in the rail or chip row, worked out from today when it opens. */
@@ -106,22 +107,6 @@ const defaultDatePresets: DatePreset[] = [
 // popover has room for one month beside the presets, not two.
 const PHONE_QUERY = "(max-width: 639.98px)"
 const NARROW_QUERY = "(max-width: 767.98px)"
-
-function useMediaQuery(query: string) {
-  const subscribe = React.useCallback(
-    (onChange: () => void) => {
-      const list = window.matchMedia(query)
-      list.addEventListener("change", onChange)
-      return () => list.removeEventListener("change", onChange)
-    },
-    [query]
-  )
-  return React.useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(query).matches,
-    () => false
-  )
-}
 
 function usePickerLayout(type: DatePickerType): "popover" | "drawer" {
   const phone = useMediaQuery(PHONE_QUERY)
