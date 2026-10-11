@@ -5,9 +5,10 @@
 // descriptions come from packages/ui/components.meta.json, which also writes
 // public/llms.txt so agents can see the complete list.
 import { execSync } from "node:child_process"
-import process from "node:process"
 import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
+
+import { docsUrl, homepage, packageName } from "./shared.mjs"
 
 const registryDir = path.resolve(import.meta.dirname, "..")
 const root = path.resolve(registryDir, "../..")
@@ -18,23 +19,12 @@ const meta = JSON.parse(
 const transformedDir = path.join(registryDir, "registry/ui")
 const libDir = path.join(root, "packages/ui/src/lib")
 const transformedLibDir = path.join(registryDir, "registry/lib")
-const homepage = process.env.FIBO_SITE_URL || "https://fibo.toribryan.com"
 
 const rewrites = [
   [/@workspace\/ui\/lib\//g, "@/lib/"],
   [/@workspace\/ui\/components\//g, "@/components/ui/"],
   [/@workspace\/ui\/hooks\//g, "@/hooks/"],
 ]
-
-const packageName = (spec) =>
-  spec.startsWith("@")
-    ? spec.split("/").slice(0, 2).join("/")
-    : spec.split("/")[0]
-
-// Storybook is the site, so a component's docs page is a path off the root.
-// Base parts sit in a group in Storybook's sidebar; special parts don't.
-const docsUrl = (name, info) =>
-  `${homepage}/?path=/docs/${info.tier}-${info.tier === "base-components" ? `${info.group.toLowerCase()}-` : ""}${name}--docs`
 
 const codemodsDir = path.join(registryDir, "codemods")
 const codemodUrl = (name) => `${homepage}/codemods/${name}.js`
