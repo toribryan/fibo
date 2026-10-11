@@ -325,7 +325,11 @@ function PickerShell({
   }
 
   return (
-    <PopoverPrimitive.Root open={open} onOpenChange={onOpenChange}>
+    <PopoverPrimitive.Root
+      open={open}
+      onOpenChange={onOpenChange}
+      modal={modal}
+    >
       <PopoverPrimitive.Trigger {...trigger} />
       <PopoverPrimitive.Portal container={container}>
         <PopoverPrimitive.Positioner
