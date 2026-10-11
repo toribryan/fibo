@@ -7,6 +7,7 @@ import { motion, useReducedMotion, type Variants } from "motion/react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Count } from "@workspace/ui/components/count"
+import { mergeRefs } from "@workspace/ui/lib/merge-refs"
 import { cn } from "@workspace/ui/lib/utils"
 
 type Reaction = {
@@ -343,9 +344,12 @@ function Reactions({
   panelLabel = "Pick a reaction",
   locale = "en",
   "aria-label": ariaLabel = "Reactions",
+  ref,
   ...props
 }: ReactionsProps) {
   const rootRef = React.useRef<HTMLDivElement>(null)
+  // A caller's ref would otherwise replace the one the pills are found by.
+  const mergedRootRef = React.useMemo(() => mergeRefs(rootRef, ref), [ref])
   const panelRef = React.useRef<HTMLDivElement>(null)
   const triggerRef = React.useRef<HTMLButtonElement>(null)
   const badgeRef = React.useRef<HTMLSpanElement>(null)
@@ -502,7 +506,7 @@ function Reactions({
 
   return (
     <div
-      ref={rootRef}
+      ref={mergedRootRef}
       data-slot="reactions"
       data-type={type}
       role="group"

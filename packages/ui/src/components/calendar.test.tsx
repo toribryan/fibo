@@ -1,3 +1,4 @@
+import * as React from "react"
 import { describe, expect, it, vi } from "vitest"
 import { page, userEvent } from "vitest/browser"
 import { render } from "vitest-browser-react"
@@ -134,6 +135,28 @@ describe("Calendar", () => {
     await expect
       .element(screen.getByRole("button", { name: "Next month" }))
       .toBeDisabled()
+  })
+
+  it("hands a caller's ref its root and still moves focus by keyboard", async () => {
+    const ref = React.createRef<HTMLDivElement>()
+    const screen = await render(
+      <Calendar
+        ref={ref}
+        defaultMonth={october}
+        defaultValue={new Date(2026, 9, 6)}
+      />
+    )
+    expect(ref.current?.getAttribute("data-slot")).toBe("calendar")
+    screen
+      .getByRole("button", { name: "Tuesday, October 6, 2026" })
+      .element()
+      .focus()
+    await userEvent.keyboard("{ArrowRight}")
+    await expect
+      .element(
+        screen.getByRole("button", { name: "Wednesday, October 7, 2026" })
+      )
+      .toHaveFocus()
   })
 
   it("ignores a disabled day", async () => {

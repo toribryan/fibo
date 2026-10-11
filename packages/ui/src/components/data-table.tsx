@@ -117,6 +117,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@workspace/ui/components/sheet"
+import { mergeRefs } from "@workspace/ui/lib/merge-refs"
 import { cn } from "@workspace/ui/lib/utils"
 
 /**
@@ -1053,6 +1054,7 @@ function DataTableRoot({
   empty,
   loading = false,
   children,
+  ref,
   ...props
 }: RootProps &
   Pick<
@@ -1065,6 +1067,8 @@ function DataTableRoot({
     | "hasSelection"
   >) {
   const rootRef = React.useRef<HTMLDivElement>(null)
+  // A caller's ref would otherwise replace the one Escape and the layout use.
+  const mergedRootRef = React.useMemo(() => mergeRefs(rootRef, ref), [ref])
   // Keyed on the words, so a noun written inline keeps the context below
   // stable from one render to the next.
   const { one, other } = nounProp
@@ -1232,7 +1236,7 @@ function DataTableRoot({
       {/* The context is typed for any feature set; this one is Data table's. */}
       <dataTableContexts.tableContext.Provider value={table as never}>
         <div
-          ref={rootRef}
+          ref={mergedRootRef}
           data-slot="data-table"
           data-narrow={narrow || undefined}
           data-layout={cards ? "cards" : "table"}
@@ -1392,6 +1396,7 @@ function DataTableFilters({
   className,
   search,
   children,
+  ref,
   ...props
 }: React.ComponentProps<"div"> & {
   /** The search field, such as DataTableSearch. It stays in the toolbar at every width. */
@@ -1401,6 +1406,10 @@ function DataTableFilters({
   const { count } = useSelectionSummary()
   const [open, setOpen] = React.useState(false)
   const filtersRef = React.useRef<HTMLDivElement>(null)
+  const mergedFiltersRef = React.useMemo(
+    () => mergeRefs(filtersRef, ref),
+    [ref]
+  )
   const wasOpen = React.useRef(false)
 
   // Widening past 32rem takes the sheet away while it's open. Focus was in
@@ -1428,7 +1437,7 @@ function DataTableFilters({
         className
       )}
       data-narrow={narrow || undefined}
-      ref={filtersRef}
+      ref={mergedFiltersRef}
       {...props}
     >
       {search ? (
@@ -1888,10 +1897,12 @@ function DataTableBulkAction({
 function DataTableContent({
   className,
   children,
+  ref,
   ...props
 }: React.ComponentProps<typeof Table>) {
   const { cards, narrowLayout, loading } = useDataTableRoot()
   const tableRef = React.useRef<HTMLTableElement>(null)
+  const mergedTableRef = React.useMemo(() => mergeRefs(tableRef, ref), [ref])
 
   // Scroll shadows: mark the edges a pinned column covers while there's more
   // table under them. It lives here so a table that mounts late still gets it.
@@ -1925,7 +1936,7 @@ function DataTableContent({
 
   return (
     <Table
-      ref={tableRef}
+      ref={mergedTableRef}
       data-slot="data-table-content"
       aria-busy={loading || undefined}
       className={cn(
@@ -2253,6 +2264,7 @@ function RowFrame({
   label,
   lockedReason,
   children,
+  ref,
   ...props
 }: RowFrameProps) {
   const { table, registerLocked } = useDataTableRoot()
@@ -2271,6 +2283,7 @@ function RowFrame({
   // when there's none. Only one element can carry the id, so the row hands
   // it out after render.
   const rowRef = React.useRef<HTMLTableRowElement>(null)
+  const mergedRowRef = React.useMemo(() => mergeRefs(rowRef, ref), [ref])
   const fallbackRef = React.useRef<HTMLSpanElement>(null)
   React.useLayoutEffect(() => {
     const cell = rowRef.current?.querySelector("[data-row-name]")
@@ -2287,7 +2300,7 @@ function RowFrame({
   return (
     <DataTableRowContext.Provider value={row}>
       <TableRow
-        ref={rowRef}
+        ref={mergedRowRef}
         data-slot="data-table-row"
         data-row-id={id}
         data-selected={selected || undefined}

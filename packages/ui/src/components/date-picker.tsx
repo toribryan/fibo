@@ -31,6 +31,7 @@ import {
   type WeekStart,
 } from "@workspace/ui/lib/dates"
 import { useFieldSize, type FieldSize } from "@workspace/ui/lib/field-size"
+import { mergeRefs } from "@workspace/ui/lib/merge-refs"
 import { cn } from "@workspace/ui/lib/utils"
 
 /** A shortcut in the rail or chip row, worked out from today when it opens. */
@@ -244,7 +245,7 @@ function PickerShell({
   text,
   empty,
   size,
-  triggerProps: { className, ...triggerProps },
+  triggerProps: { className, ref, ...triggerProps },
   popover,
   drawer,
 }: PickerShellProps) {
@@ -253,11 +254,15 @@ function PickerShell({
   // A non-modal panel never pulls focus: focusing would scroll the page to it.
   const initialFocus = () => modal && focusSelectedDay(popupRef.current)
   const [fieldLabelId, fieldRef] = useFieldLabel()
+  const triggerRef = React.useMemo(
+    () => mergeRefs(fieldRef, ref),
+    [fieldRef, ref]
+  )
 
   const labelledBy = triggerProps["aria-labelledby"] ?? fieldLabelId
   const trigger = {
     ...triggerProps,
-    ref: fieldRef,
+    ref: triggerRef,
     type: "button" as const,
     "data-slot": slot,
     "data-size": size,

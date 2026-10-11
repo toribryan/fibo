@@ -28,6 +28,7 @@ import {
   type DraftRange,
   type WeekStart,
 } from "@workspace/ui/lib/dates"
+import { mergeRefs } from "@workspace/ui/lib/merge-refs"
 import { cn } from "@workspace/ui/lib/utils"
 
 /*
@@ -207,6 +208,7 @@ function Calendar(props: CalendarProps) {
     labels,
     className,
     style,
+    ref,
     ...rest
   } = props
   const range = mode === "range"
@@ -224,7 +226,9 @@ function Calendar(props: CalendarProps) {
     )
   }, [rangeMonth])
   const today = useToday()
-  const rootRef = React.useRef<HTMLDivElement>(null)
+  const root = React.useRef<HTMLDivElement>(null)
+  // A caller's ref would otherwise replace the one keyboard focus moves by.
+  const rootRef = React.useMemo(() => mergeRefs(root, ref), [ref])
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const focusPending = React.useRef(false)
 
@@ -378,7 +382,7 @@ function Calendar(props: CalendarProps) {
   React.useEffect(() => {
     if (!focusPending.current) return
     focusPending.current = false
-    rootRef.current
+    root.current
       ?.querySelector<HTMLElement>(
         `[data-slot="calendar-day"][data-date="${focusedKey}"]:not([data-outside])`
       )

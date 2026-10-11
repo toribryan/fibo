@@ -162,13 +162,14 @@ function TabsList({
   ...props
 }: TabsListProps) {
   const listRef = React.useRef<HTMLDivElement>(null)
+  const mergedListRef = React.useMemo(() => mergeRefs(listRef, ref), [ref])
   useActiveTabInView(listRef)
   const context = React.useMemo(() => ({ variant, size }), [variant, size])
 
   return (
     <TabsListContext.Provider value={context}>
       <TabsPrimitive.List
-        ref={mergeRefs(listRef, ref)}
+        ref={mergedListRef}
         data-slot="tabs-list"
         data-variant={variant}
         data-size={size}

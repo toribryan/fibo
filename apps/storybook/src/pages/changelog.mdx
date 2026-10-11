@@ -8,6 +8,11 @@ Notable changes, newest first.
 
 ## October 2026
 
+- A `ref` passed to **Calendar**, **Chapter scrubber**, **Data table** (and
+  its filters, content and rows), **Message list** or **Reactions**, or to
+  **Date picker**'s trigger, now reaches its element without replacing the
+  ref the part uses itself, so Escape, keyboard focus and measuring keep
+  working.
 - New **surface** token: the layer panels and content columns sit on, a step
   off the page. fibo's light page is now a light gray tint under white
   surfaces. Mark a panel with `data-surface` and the parts inside match it.
