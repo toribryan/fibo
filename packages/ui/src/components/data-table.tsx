@@ -2896,7 +2896,8 @@ function DataTablePagination(
       page={pageIndex + 1}
       pageCount={Math.max(1, table.getPageCount())}
       onPageChange={(page) => table.setPageIndex(page - 1)}
-      pageSize={pageSize}
+      // Every row on one page has no range to show, only NaN.
+      pageSize={Number.isFinite(pageSize) ? pageSize : undefined}
       totalCount={table.getRowCount()}
       noun={noun}
       {...props}

@@ -230,6 +230,18 @@ describe("DataTable on useDataTable", () => {
     expect(bodyNames()).toHaveLength(25)
   })
 
+  it("shows no range in the pagination when every row is on one page", async () => {
+    const screen = await render(
+      <Example>
+        <DataTableFooter>
+          <DataTablePagination />
+        </DataTableFooter>
+      </Example>
+    )
+    await expect.element(screen.getByText("Page 1 of 1")).toBeInTheDocument()
+    expect(screen.container.textContent).not.toContain("NaN")
+  })
+
   it("hides a column from the Columns menu", async () => {
     const screen = await render(<Example />)
     await screen.getByRole("button", { name: "Columns" }).click()
