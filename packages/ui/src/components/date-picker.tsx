@@ -332,6 +332,12 @@ function PickerShell({
             className={popupClassName}
           >
             {popover}
+            {/* Base UI traps focus in a modal popover only once it holds a
+                Close. Escape closes it from the keyboard, so this one is for
+                screen readers on touch and stays out of the tab order. */}
+            <PopoverPrimitive.Close tabIndex={-1} className="sr-only">
+              Close
+            </PopoverPrimitive.Close>
           </PopoverPrimitive.Popup>
         </PopoverPrimitive.Positioner>
       </PopoverPrimitive.Portal>
