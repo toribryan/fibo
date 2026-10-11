@@ -161,4 +161,29 @@ describe("RichTextEditor", () => {
       .toBeNull()
     expect(area.element().querySelectorAll("a")).toHaveLength(1)
   })
+  it.each([
+    ["with a selection", "{Shift>}{Home}{/Shift}"],
+    ["with nothing selected", "{End}"],
+  ])(
+    "refuses a javascript: link %s and marks the address invalid",
+    async (_, select) => {
+      const onChange = vi.fn()
+      const screen = await render(<RichTextEditor onChange={onChange} />)
+      await screen.getByRole("textbox", { name: "Editor" }).click()
+      await userEvent.keyboard("Click")
+      await userEvent.keyboard(select)
+      await screen.getByRole("button", { name: "Add link" }).click()
+      const address = screen.getByRole("textbox", { name: "Link address" })
+      await address.fill("javascript:alert(1)")
+      await userEvent.keyboard("{Enter}")
+
+      const editor = onChange.mock.lastCall?.[1]
+      expect(JSON.stringify(editor.getJSON())).not.toContain("javascript:")
+      await expect.element(address).toHaveAttribute("aria-invalid", "true")
+      await expect.element(address).toHaveAccessibleDescription(/valid address/)
+
+      await address.fill("https://fibo.toribryan.com")
+      await expect.element(address).not.toHaveAttribute("aria-invalid")
+    }
+  )
 })
