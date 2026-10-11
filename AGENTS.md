@@ -105,6 +105,18 @@ properties with cva variants and props. Intended differences live in
 `figma/drift.config.json`, each with a reason. Run it after changing a token
 or a component's variants.
 
+## Ponytail
+
+The `ponytail` skills come from
+[DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (MIT,
+copied at `9b58c1f`; the license sits beside `ponytail/SKILL.md`). `ponytail`
+keeps a change to the least new code, `ponytail-review` reviews a diff,
+`ponytail-audit` reviews the whole repo and `ponytail-debt` lists the
+`shortcut:` comments it leaves. They never override the definition of done:
+a component change still needs its stories, `play` function and docs page,
+not just the one small test Ponytail asks for. To update them, copy the
+files again from upstream and bump the commit here.
+
 ## Conventions
 
 - **Two shelves.** Standard parts are titled `Base components/<Group>/<Name>`
