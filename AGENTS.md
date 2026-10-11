@@ -117,6 +117,18 @@ a component change still needs its stories, `play` function and docs page,
 not just the one small test Ponytail asks for. To update them, copy the
 files again from upstream and bump the commit here.
 
+## Taste
+
+`design-taste-frontend` (`.claude/skills/`, from
+[Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill), MIT,
+installed with `npx skills add Leonxlnx/taste-skill -s design-taste-frontend
+-a claude-code`; `skills-lock.json` pins it, and `npx skills update` refreshes
+it) is written for landing pages and portfolios. Use it for the Storybook
+pages and the brand kit, and for its motion guidance (motivated motion,
+`transform` and `opacity` only, reduced motion). Where it disagrees with this
+file, this file wins: parts use `lucide-react`, semantic tokens and the size
+scale above, and a component's story replaces its picsum and image rules.
+
 ## Conventions
 
 - **Two shelves.** Standard parts are titled `Base components/<Group>/<Name>`
