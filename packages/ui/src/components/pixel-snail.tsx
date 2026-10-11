@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { mergeRefs } from "@workspace/ui/lib/merge-refs"
+import { useMediaQuery } from "@workspace/ui/lib/use-media-query"
 import { cn } from "@workspace/ui/lib/utils"
 
 type Pixel = [x: number, y: number]
@@ -220,18 +221,6 @@ function groundPixels(distance: number): Pixel[] {
     { length: Math.ceil(COLS / GROUND_PITCH) + 1 },
     (_, i): Pixel => [MIN_X + i * GROUND_PITCH - offset, GROUND_ROW]
   ).filter(([x]) => x >= MIN_X)
-}
-
-function useReducedMotion() {
-  return React.useSyncExternalStore(
-    (onChange) => {
-      const list = window.matchMedia("(prefers-reduced-motion: reduce)")
-      list.addEventListener("change", onChange)
-      return () => list.removeEventListener("change", onChange)
-    },
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    () => false
-  )
 }
 
 // Parts overlap where they meet, such as a ducked head sinking into the
@@ -473,7 +462,7 @@ function PixelSnailSprite({
   ref,
   ...props
 }: PixelSnailSpriteProps) {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)")
   const sprite = React.useRef<SVGGElement>(null)
   // A caller's ref would otherwise replace the one that pauses it off screen.
   const spriteRef = React.useMemo(() => mergeRefs(sprite, ref), [ref])
@@ -547,7 +536,7 @@ function PixelSnail({
   ref,
   ...props
 }: PixelSnailProps) {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)")
   const root = React.useRef<HTMLDivElement>(null)
   // A caller's ref would otherwise replace the one that pauses it off screen.
   const rootRef = React.useMemo(() => mergeRefs(root, ref), [ref])

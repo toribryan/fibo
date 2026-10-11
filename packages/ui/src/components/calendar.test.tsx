@@ -1,3 +1,4 @@
+import * as React from "react"
 import { describe, expect, it, vi } from "vitest"
 import { page, userEvent } from "vitest/browser"
 import { render } from "vitest-browser-react"
@@ -134,6 +135,28 @@ describe("Calendar", () => {
     await expect
       .element(screen.getByRole("button", { name: "Next month" }))
       .toBeDisabled()
+  })
+
+  it("hands a caller's ref its root and still moves focus by keyboard", async () => {
+    const ref = React.createRef<HTMLDivElement>()
+    const screen = await render(
+      <Calendar
+        ref={ref}
+        defaultMonth={october}
+        defaultValue={new Date(2026, 9, 6)}
+      />
+    )
+    expect(ref.current?.getAttribute("data-slot")).toBe("calendar")
+    screen
+      .getByRole("button", { name: "Tuesday, October 6, 2026" })
+      .element()
+      .focus()
+    await userEvent.keyboard("{ArrowRight}")
+    await expect
+      .element(
+        screen.getByRole("button", { name: "Wednesday, October 7, 2026" })
+      )
+      .toHaveFocus()
   })
 
   it("ignores a disabled day", async () => {
@@ -448,6 +471,22 @@ describe("Calendar month type on a server", () => {
       )
       .toBe(false)
     expect(errors).toEqual([])
+    root.unmount()
+    host.remove()
+  })
+})
+
+describe("Calendar scroll type on a server", () => {
+  it("scrolls to today once it arrives after hydration", async () => {
+    const tree = <Calendar type="scroll" style={{ height: 400 }} />
+    const host = document.createElement("div")
+    host.innerHTML = renderToString(tree)
+    document.body.append(host)
+    const root = hydrateRoot(host, tree)
+    const scroller = host.querySelector<HTMLElement>(
+      '[data-slot="calendar-scroll"]'
+    )!
+    await expect.poll(() => scroller.scrollTop).toBeGreaterThan(0)
     root.unmount()
     host.remove()
   })

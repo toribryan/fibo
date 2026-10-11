@@ -10,9 +10,10 @@
 // may import only the component it shows, since 21st.dev's quality guidelines
 // keep logic in the component file and the demo to props and content. Publish
 // with the commands this prints; each opens a review page in the browser.
-import process from "node:process"
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
+
+import { docsUrl, packageName } from "./shared.mjs"
 
 const registryDir = path.resolve(import.meta.dirname, "..")
 const root = path.resolve(registryDir, "../..")
@@ -20,7 +21,6 @@ const uiDir = path.join(root, "packages/ui")
 const componentsDir = path.join(uiDir, "src/components")
 const demosDir = path.join(uiDir, "src/21st")
 const outDir = path.join(registryDir, "21st")
-const homepage = process.env.FIBO_SITE_URL || "https://fibo.toribryan.com"
 
 const meta = JSON.parse(
   await readFile(path.join(uiDir, "components.meta.json"), "utf8")
@@ -55,15 +55,6 @@ const fiboOnly = new RegExp(
 )
 
 const importPattern = /^import\s[\s\S]*?\sfrom\s+["']([^"']+)["'];?\n/gm
-
-const packageName = (spec) =>
-  spec.startsWith("@")
-    ? spec.split("/").slice(0, 2).join("/")
-    : spec.split("/")[0]
-
-// Base parts sit in a group in Storybook's sidebar; special parts don't.
-const docsUrl = (name, info) =>
-  `${homepage}/?path=/docs/${info.tier}-${info.tier === "base-components" ? `${info.group.toLowerCase()}-` : ""}${name}--docs`
 
 function mapRoles(code, file) {
   const literal = literals.reduce(

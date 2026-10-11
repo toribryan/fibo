@@ -13,6 +13,7 @@ import {
   EmptyStateTitle,
 } from "@workspace/ui/components/empty-state"
 import { Separator } from "@workspace/ui/components/separator"
+import { mergeRefs } from "@workspace/ui/lib/merge-refs"
 import { cn } from "@workspace/ui/lib/utils"
 
 type ChatAuthor = {
@@ -296,6 +297,7 @@ function MessageList({
   onKeyDown,
   onFocus,
   onBlur,
+  ref,
   ...props
 }: MessageListProps) {
   const strings = { ...defaultStrings, ...stringOverrides }
@@ -323,6 +325,8 @@ function MessageList({
   )
 
   const listRef = React.useRef<HTMLDivElement>(null)
+  // A caller's ref would otherwise replace the one arrow keys move by.
+  const mergedListRef = React.useMemo(() => mergeRefs(listRef, ref), [ref])
   // The index is kept so a removed message's neighbor can take its place.
   const [active, setActive] = React.useState<{
     id: string
@@ -422,7 +426,7 @@ function MessageList({
 
   return (
     <div
-      ref={listRef}
+      ref={mergedListRef}
       role="log"
       aria-label={strings.list}
       data-slot="message-list"

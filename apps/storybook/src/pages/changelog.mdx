@@ -8,6 +8,20 @@ Notable changes, newest first.
 
 ## October 2026
 
+- **Date picker**'s popover takes `modal` as its drawer does, so by
+  default it blocks the page while it's open.
+- **Data table**'s pagination leaves out the range, rather than showing
+  NaN, when every row is on one page.
+- A scroll **Calendar** rendered on a server opens on today's month once
+  the page hydrates, rather than on the oldest month a year back.
+- **Command menu**'s hotkey leaves alone a key that something else already
+  handled, so Mod+K in **Rich text editor** adds a link without also opening
+  the menu.
+- A `ref` passed to **Calendar**, **Chapter scrubber**, **Data table** (and
+  its filters, content and rows), **Message list** or **Reactions**, or to
+  **Date picker**'s trigger, now reaches its element without replacing the
+  ref the part uses itself, so Escape, keyboard focus and measuring keep
+  working.
 - New **surface** token: the layer panels and content columns sit on, a step
   off the page. fibo's light page is now a light gray tint under white
   surfaces. Mark a panel with `data-surface` and the parts inside match it.

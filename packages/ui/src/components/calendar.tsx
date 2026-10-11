@@ -28,6 +28,7 @@ import {
   type DraftRange,
   type WeekStart,
 } from "@workspace/ui/lib/dates"
+import { mergeRefs } from "@workspace/ui/lib/merge-refs"
 import { cn } from "@workspace/ui/lib/utils"
 
 /*
@@ -207,6 +208,7 @@ function Calendar(props: CalendarProps) {
     labels,
     className,
     style,
+    ref,
     ...rest
   } = props
   const range = mode === "range"
@@ -224,7 +226,9 @@ function Calendar(props: CalendarProps) {
     )
   }, [rangeMonth])
   const today = useToday()
-  const rootRef = React.useRef<HTMLDivElement>(null)
+  const root = React.useRef<HTMLDivElement>(null)
+  // A caller's ref would otherwise replace the one keyboard focus moves by.
+  const rootRef = React.useMemo(() => mergeRefs(root, ref), [ref])
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const focusPending = React.useRef(false)
 
@@ -378,7 +382,7 @@ function Calendar(props: CalendarProps) {
   React.useEffect(() => {
     if (!focusPending.current) return
     focusPending.current = false
-    rootRef.current
+    root.current
       ?.querySelector<HTMLElement>(
         `[data-slot="calendar-day"][data-date="${focusedKey}"]:not([data-outside])`
       )
@@ -388,7 +392,10 @@ function Calendar(props: CalendarProps) {
   // A scroll calendar opens on the month holding the focused day, not on
   // the oldest month a year back. A hidden scroller, such as one in a closed
   // tab, has no layout and loses its position, so it scrolls again each time
-  // it's shown.
+  // it's shown. Today is only known after hydration, so with no month to
+  // open on it scrolls once more when the months arrive, and never again
+  // while someone is scrolling.
+  const hasMonth = !!month
   React.useLayoutEffect(() => {
     const scroller = scrollRef.current
     if (!scroller) return
@@ -407,7 +414,7 @@ function Calendar(props: CalendarProps) {
     })
     observer.observe(scroller)
     return () => observer.disconnect()
-  }, [])
+  }, [hasMonth])
 
   const formats = React.useMemo(
     () => ({
