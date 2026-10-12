@@ -1,14 +1,6 @@
 import { useEffect, useState, type MouseEvent, type ReactNode } from "react"
 import { createRoot } from "react-dom/client"
 
-import {
-  Sheet,
-  SheetBody,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@workspace/ui/components/sheet"
-
 import type {
   FiboManagerBridge,
   IndexEntry,
@@ -16,6 +8,7 @@ import type {
 import { iconFor } from "../.storybook/sidebar-icons.js"
 import { MOBILE_QUERY } from "../.storybook/site-nav-sync.js"
 import { SearchTrigger } from "./command-search.js"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./drawer.js"
 import { ModeToggle } from "./mode-toggle.js"
 import { ThemeMenu } from "./theme-menu.js"
 
@@ -154,10 +147,10 @@ function MobileNav({ bridge }: { bridge: FiboManagerBridge }) {
   }
 
   return (
-    <Sheet side="left" open={open} onOpenChange={setOpen}>
-      <SheetContent className="fibo-mobile-nav w-[85%] gap-0">
-        <SheetHeader className="gap-3">
-          <SheetTitle>fibo</SheetTitle>
+    <Drawer open={open} onOpenChange={setOpen} showSwipeHandle>
+      <DrawerContent className="fibo-mobile-nav">
+        <DrawerHeader className="gap-3 text-left">
+          <DrawerTitle>fibo</DrawerTitle>
           <div className="flex items-center gap-2">
             <div className="min-w-0 flex-1">
               <SearchTrigger onBeforeOpen={() => setOpen(false)} />
@@ -165,10 +158,13 @@ function MobileNav({ bridge }: { bridge: FiboManagerBridge }) {
             <ThemeMenu bridge={bridge} />
             <ModeToggle bridge={bridge} />
           </div>
-        </SheetHeader>
+        </DrawerHeader>
         {/* Storybook's own reset zeroes headings' padding outside any layer,
             so theirs is marked important to win over it. */}
-        <SheetBody render={<nav aria-label="Pages" />} className="px-2 pb-4">
+        <nav
+          aria-label="Pages"
+          className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-4"
+        >
           {sectionsFrom(Object.values(entries)).map((section) => (
             <section key={section.heading ?? ""} className="mt-4 first:mt-0">
               {section.heading ? (
@@ -201,9 +197,9 @@ function MobileNav({ bridge }: { bridge: FiboManagerBridge }) {
               })}
             </section>
           ))}
-        </SheetBody>
-      </SheetContent>
-    </Sheet>
+        </nav>
+      </DrawerContent>
+    </Drawer>
   )
 }
 
