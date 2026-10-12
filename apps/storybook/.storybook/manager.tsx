@@ -140,51 +140,33 @@ function syncView() {
 
 syncView()
 
+/*
+ * On a phone the page list is fibo's own drawer (manager-ui/mobile-nav.tsx)
+ * in place of Storybook's sheet. It opens from the docs pages' floating nav,
+ * and from Storybook's bottom bar on a story's canvas, whose button would
+ * otherwise open Storybook's sheet.
+ */
+const menuListeners = new Set<() => void>()
+const openMenu = () => menuListeners.forEach((listener) => listener())
+
 addons.register("fibo/site-nav", (api) => {
   api.on(STORY_CHANGED, syncView)
-  // On a phone the menu lists a component without its own rows, so a tap on
-  // it opens the component's docs and closes the menu, instead of expanding
-  // rows that are hidden.
+  api.on(OPEN_MENU, openMenu)
   const phone = window.matchMedia(MOBILE_QUERY)
   document.addEventListener(
     "click",
     (event) => {
-      if (!phone.matches || !event.isTrusted) return
-      const row = (event.target as Element | null)?.closest?.<HTMLElement>(
-        '#storybook-explorer-menu [data-nodetype="component"]'
+      if (!phone.matches || !menuListeners.size) return
+      const bar = (event.target as Element | null)?.closest?.(
+        'button[aria-label="Open navigation menu"]'
       )
-      const id = row?.dataset.itemId
-      if (!id) return
+      if (!bar) return
       event.preventDefault()
       event.stopPropagation()
-      api.selectStory(id)
-      document
-        .querySelector<HTMLButtonElement>('button[aria-label="Close menu"]')
-        ?.click()
+      openMenu()
     },
     true
   )
-  // Storybook keeps the mobile menu's state to itself, so the nav's Menu
-  // item presses the hidden bar's own button.
-  api.on(OPEN_MENU, () => {
-    document
-      .querySelector<HTMLButtonElement>(
-        'button[aria-label="Open navigation menu"]'
-      )
-      ?.click()
-    // On a phone the menu hides a component's own rows, so Storybook can't
-    // scroll to the open page; bring its component (or the page) into view.
-    requestAnimationFrame(() => {
-      const selected = document.querySelector<HTMLElement>(
-        '#storybook-explorer-menu [data-selected="true"]'
-      )
-      // Hidden rows have no offset parent; step back to the nearest shown one.
-      let row: Element | null = selected
-      while (row instanceof HTMLElement && row.offsetParent === null)
-        row = row.previousElementSibling
-      row?.scrollIntoView({ block: "center" })
-    })
-  })
 })
 
 /*
@@ -228,6 +210,10 @@ addons.register("fibo/manager-bridge", (api) => {
     },
     navigate: (path) => api.navigate(path),
     ...themeBridge(api),
+    onOpenMenu: (listener) => {
+      menuListeners.add(listener)
+      return () => void menuListeners.delete(listener)
+    },
   }
   window.dispatchEvent(new Event(BRIDGE_READY))
 })
