@@ -74,9 +74,7 @@ function loadPaths() {
     if (!response.ok) throw new Error(`GitHub answered ${response.status}`)
     const { tree } = (await response.json()) as GitTree
     const paths = tree
-      .filter(
-        (item) => item.type === "blob"
-      )
+      .filter((item) => item.type === "blob")
       .map((item) => item.path)
     try {
       sessionStorage.setItem(CACHE_KEY, JSON.stringify(paths))
