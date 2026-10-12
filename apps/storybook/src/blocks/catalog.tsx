@@ -52,6 +52,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import componentsMeta from "@workspace/ui/components.meta.json" with { type: "json" }
 
+import { iconFor } from "../../.storybook/sidebar-icons.js"
 import { DocLink } from "./doc-link.js"
 
 type Tier = "base-components" | "special-components"
@@ -60,6 +61,8 @@ type Status = "new" | "beta" | "deprecated"
 type Entry = {
   name: string
   id: string
+  /** The icon of the part's group, as the sidebar shows it. */
+  icon: ReactNode
   tier: Tier
   group: string
   status?: Status
@@ -702,6 +705,17 @@ const META = Object.entries(componentsMeta as Record<string, unknown>).filter(
   (entry): entry is [string, Meta] => entry[0] !== "$comment"
 )
 
+function groupIcon(group: string) {
+  const Icon = iconFor({ id: "", name: group, type: "group" })
+  return Icon ? (
+    <Icon
+      aria-hidden="true"
+      strokeWidth={1.5}
+      className="size-4 shrink-0 text-muted-foreground"
+    />
+  ) : null
+}
+
 const ENTRIES: Entry[] = META.map(([key, info]) => ({
   name: info.title,
   // Base parts sit in a group in the sidebar; special parts sit straight
@@ -710,6 +724,7 @@ const ENTRIES: Entry[] = META.map(([key, info]) => ({
     info.tier === "base-components"
       ? `${info.tier}-${info.group.toLowerCase()}-${key}--docs`
       : `${info.tier}-${key}--docs`,
+  icon: groupIcon(info.group),
   tier: info.tier,
   group: info.group,
   status: info.status,
@@ -741,6 +756,7 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
       </div>
       <div className="flex flex-1 flex-col border-t border-border px-4 py-3">
         <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          {entry.icon}
           {entry.name}
           {/* Deprecated still warns; a part being new isn't worth the room. */}
           {entry.status && entry.status !== "new" ? (
