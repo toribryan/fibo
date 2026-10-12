@@ -2,6 +2,7 @@ import "virtual:fibo-manager.css"
 
 import { BRIDGE_READY } from "../.storybook/manager-bridge.js"
 import { mountCommandSearch } from "./command-search.js"
+import { mountMobileNav } from "./mobile-nav.js"
 import { mountModeToggle } from "./mode-toggle.js"
 import { mountThemeMenu } from "./theme-menu.js"
 
@@ -13,6 +14,7 @@ function start() {
   mountCommandSearch(bridge)
   mountThemeMenu(bridge)
   mountModeToggle(bridge)
+  mountMobileNav(bridge)
   return true
 }
 

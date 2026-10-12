@@ -61,4 +61,4 @@ function mountModeToggle(bridge: FiboManagerBridge) {
   sync()
 }
 
-export { mountModeToggle }
+export { ModeToggle, mountModeToggle }

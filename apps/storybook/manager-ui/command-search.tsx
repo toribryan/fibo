@@ -97,19 +97,19 @@ function CommandSearch({ bridge }: { bridge: FiboManagerBridge }) {
 const isMac =
   typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform)
 
-function SearchTrigger() {
+function SearchTrigger({
+  onBeforeOpen,
+}: {
+  /** Closes a modal the trigger sits in, which would hold focus over the menu. */
+  onBeforeOpen?: () => void
+}) {
   return (
     <Button
       variant="outline"
       className="w-full justify-start text-muted-foreground has-data-[slot=kbd-group]:pr-1.5"
       onClick={() => {
-        // On a phone the sidebar is Storybook's own modal sheet, which would
-        // sit over the menu and hold focus, so it closes first.
-        const close = document.querySelector<HTMLButtonElement>(
-          'button[aria-label="Close menu"]'
-        )
-        if (!close) return setMenuOpen(true)
-        close.click()
+        if (!onBeforeOpen) return setMenuOpen(true)
+        onBeforeOpen()
         requestAnimationFrame(() => setMenuOpen(true))
       }}
     >
@@ -161,4 +161,4 @@ function mountCommandSearch(bridge: FiboManagerBridge) {
   sync()
 }
 
-export { mountCommandSearch }
+export { mountCommandSearch, SearchTrigger }

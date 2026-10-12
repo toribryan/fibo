@@ -120,4 +120,4 @@ function mountThemeMenu(bridge: FiboManagerBridge) {
   sync()
 }
 
-export { mountThemeMenu }
+export { mountThemeMenu, ThemeMenu }
