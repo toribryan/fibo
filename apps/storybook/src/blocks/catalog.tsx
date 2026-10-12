@@ -732,10 +732,14 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
         inert
         className={cn(
           "flex items-center justify-center bg-card",
-          compact ? "h-32" : "h-40"
+          compact ? "h-32" : "h-28 sm:h-40"
         )}
       >
-        <div className="scale-90">{entry.preview}</div>
+        {/* Two to a row on a phone, so the preview and its text shrink to
+            fit the narrower card. */}
+        <div className={cn("scale-90", !compact && "max-sm:scale-[0.6]")}>
+          {entry.preview}
+        </div>
       </div>
       <div className="flex flex-1 flex-col gap-1 border-t border-border p-4">
         <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
@@ -754,7 +758,12 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
           ) : null}
           <ArrowUpRightIcon className="ml-auto size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
         </span>
-        <span className="text-sm leading-5 text-muted-foreground">
+        <span
+          className={cn(
+            "text-sm leading-5 text-muted-foreground",
+            !compact && "max-sm:line-clamp-3"
+          )}
+        >
           {entry.description}
         </span>
       </div>
@@ -784,7 +793,7 @@ function Catalog({ tier }: { tier: Tier }) {
                 {entries.length}
               </span>
             </h3>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
               {entries.map((entry) => (
                 <Card key={entry.id} entry={entry} />
               ))}

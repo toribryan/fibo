@@ -690,6 +690,8 @@ function Pitch({ width, className }: { width: number; className?: string }) {
           that anyone can use.
         </p>
       </div>
+      {/* On a phone Figma and GitHub shrink to their icons, so the three
+          buttons keep to one row. */}
       <div
         className="fibo-tile flex flex-wrap gap-2"
         style={{ animationDelay: "0.3s" }}
@@ -697,31 +699,33 @@ function Pitch({ width, className }: { width: number; className?: string }) {
         <Button
           size="lg"
           nativeButton={false}
-          render={<DocLink to="getting-started--docs" />}
+          render={<DocLink to="catalog--docs" />}
           className="h-[round(up,1.5rem,var(--u))] w-[round(up,8rem,var(--u))]"
         >
-          Get started
+          Components
           <ArrowRightIcon data-icon="inline-end" />
         </Button>
         <Button
           size="lg"
           variant="outline"
           nativeButton={false}
-          className="h-[round(up,1.5rem,var(--u))] w-[round(up,6rem,var(--u))] bg-background hover:bg-accent"
+          aria-label="Figma"
+          className="h-[round(up,1.5rem,var(--u))] w-[round(up,1.5rem,var(--u))] bg-background hover:bg-accent @max-sm:px-0! @sm:w-[round(up,6rem,var(--u))]"
           render={<a href={LINKS.figma} target="_blank" rel="noreferrer" />}
         >
           <FigmaIcon data-icon="inline-start" />
-          Figma
+          <span className="hidden @sm:inline">Figma</span>
         </Button>
         <Button
           size="lg"
           variant="outline"
           nativeButton={false}
-          className="h-[round(up,1.5rem,var(--u))] w-[round(up,6rem,var(--u))] bg-background hover:bg-accent"
+          aria-label="GitHub"
+          className="h-[round(up,1.5rem,var(--u))] w-[round(up,1.5rem,var(--u))] bg-background hover:bg-accent @max-sm:px-0! @sm:w-[round(up,6rem,var(--u))]"
           render={<a href={LINKS.github} target="_blank" rel="noreferrer" />}
         >
           <GithubIcon data-icon="inline-start" />
-          GitHub
+          <span className="hidden @sm:inline">GitHub</span>
         </Button>
       </div>
       {/* On a phone the pitch has no room for the stack under its buttons,
@@ -860,7 +864,14 @@ function Hero() {
             area={area}
             className="aspect-[1/1.618] grid-cols-[1.618fr_minmax(0,1fr)] grid-rows-[1.618fr_1fr]"
           >
-            <Pitch width={210} className="col-[1/span_2] row-1" />
+            {/* The pitch sits lower than in the wide frame, closing the gap
+                to the rabbit below and leaving room under the page's top
+                edge. Eighteen cells, plus the buttons' two, still fit the
+                row's twenty-one on a 320px phone. */}
+            <Pitch
+              width={210}
+              className="col-[1/span_2] row-1 grid-rows-[calc(var(--u)*18)_auto_auto]"
+            />
           </Frame>
         </div>
       </div>
