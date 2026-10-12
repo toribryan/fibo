@@ -97,6 +97,12 @@
   --color-sticker-ink: var(--sticker-ink);
   --color-sticker-shadow: var(--sticker-shadow);
   --color-particle-shadow: var(--particle-shadow);
+  /* The one ramp Tailwind lacks: a muted wine for Voice memo's finish. */
+  --color-burgundy-700: oklch(0.44 0.05 12);
+  --color-burgundy-950: oklch(0.21 0.035 12);
+  --color-finish-burgundy: var(--finish-burgundy);
+  --color-finish-burgundy-highlight: var(--finish-burgundy-highlight);
+  --color-finish-burgundy-shadow: var(--finish-burgundy-shadow);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -297,6 +303,15 @@
    */
   --particle-shadow: color-mix(in oklch, var(--color-black) 18%, transparent);
 
+  /*
+   * Voice memo's burgundy finish, after the anodized aluminum of a phone
+   * in that color. A metal's color doesn't change with the page, so these
+   * keep their values in .dark on purpose.
+   */
+  --finish-burgundy: var(--color-burgundy-950);
+  --finish-burgundy-highlight: var(--color-burgundy-700);
+  --finish-burgundy-shadow: var(--color-black);
+
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);
   --chart-3: var(--color-neutral-600);
@@ -420,6 +435,10 @@
   --sticker-shadow: color-mix(in oklch, var(--color-black) 30%, transparent);
 
   --particle-shadow: color-mix(in oklch, var(--color-black) 18%, transparent);
+
+  --finish-burgundy: var(--color-burgundy-950);
+  --finish-burgundy-highlight: var(--color-burgundy-700);
+  --finish-burgundy-shadow: var(--color-black);
 
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);

@@ -61,6 +61,8 @@ type VoiceMemoProps = Omit<
   side?: "right" | "bottom"
   /** `sm` for a toolbar or sidebar, `default` on its own. */
   size?: "sm" | "default"
+  /** The device's finish: aluminum that takes the theme, or burgundy in both. */
+  variant?: "default" | "burgundy"
 }
 
 const voiceMemoVariants = cva(
@@ -71,8 +73,17 @@ const voiceMemoVariants = cva(
         sm: "w-40",
         default: "w-56",
       },
+      // The metal, the light it catches, the shade it falls into and how
+      // bright its chamfer shows, which the drawing reads in place of fixed
+      // roles.
+      variant: {
+        default:
+          "[--metal-chamfer:0.8] [--metal-edge:var(--color-border)] [--metal-highlight:var(--color-background)] [--metal-shadow:var(--color-foreground)] [--metal:var(--color-muted)]",
+        burgundy:
+          "[--metal-chamfer:0.25] [--metal-edge:var(--color-finish-burgundy-shadow)] [--metal-highlight:var(--color-finish-burgundy-highlight)] [--metal-shadow:var(--color-finish-burgundy-shadow)] [--metal:var(--color-finish-burgundy)]",
+      },
     },
-    defaultVariants: { size: "default" },
+    defaultVariants: { size: "default", variant: "default" },
   }
 )
 
@@ -234,6 +245,7 @@ function VoiceMemo({
   wordmark = "fibo",
   side = "right",
   size = "default",
+  variant = "default",
   className,
   ...props
 }: VoiceMemoProps) {
@@ -483,6 +495,7 @@ function VoiceMemo({
       data-recording={recording ? "" : undefined}
       data-side={side}
       data-size={size}
+      data-variant={variant}
       className={cn(
         "relative inline-flex",
         side === "bottom" && "flex-col items-start",
@@ -498,9 +511,13 @@ function VoiceMemo({
         aria-controls={open ? transcriptId : undefined}
         data-slot="voice-memo-device"
         onClick={() => setRecording(!recording)}
-        className={voiceMemoVariants({ size })}
+        className={voiceMemoVariants({ size, variant })}
       >
-        <Device wordmark={wordmark} recording={recording} />
+        <Device
+          wordmark={wordmark}
+          recording={recording}
+          tinted={variant === "default"}
+        />
       </button>
 
       {open ? (
@@ -639,15 +656,17 @@ function VoiceMemo({
 
 /*
  * The aluminum face, drawn rather than photographed so it takes the theme:
- * silver in light, space gray in dark. Hover lifts it and slides the
- * reflection along; pressing pushes it in.
+ * silver in light, space gray in dark, or burgundy in both. Hover lifts it
+ * and slides the reflection along; pressing pushes it in.
  */
 function Device({
   wordmark,
   recording,
+  tinted,
 }: {
   wordmark: string
   recording: boolean
+  tinted: boolean
 }) {
   const id = React.useId()
   const ids = {
@@ -719,16 +738,16 @@ function Device({
           >
             <stop
               offset="0"
-              style={{ stopColor: "var(--color-background)", stopOpacity: 0.6 }}
+              style={{ stopColor: "var(--metal-highlight)", stopOpacity: 0.6 }}
             />
             <stop
               offset="0.45"
-              style={{ stopColor: "var(--color-background)", stopOpacity: 0 }}
+              style={{ stopColor: "var(--metal-highlight)", stopOpacity: 0 }}
             />
             <stop
               offset="1"
               style={{
-                stopColor: "var(--color-foreground)",
+                stopColor: "var(--metal-shadow)",
                 stopOpacity: 0.13,
               }}
             />
@@ -736,18 +755,18 @@ function Device({
           <linearGradient id={ids.sheen} x1="0" y1="0" x2="1" y2="0">
             <stop
               offset="0"
-              style={{ stopColor: "var(--color-background)", stopOpacity: 0 }}
+              style={{ stopColor: "var(--metal-highlight)", stopOpacity: 0 }}
             />
             <stop
               offset="0.5"
               style={{
-                stopColor: "var(--color-background)",
+                stopColor: "var(--metal-highlight)",
                 stopOpacity: 0.55,
               }}
             />
             <stop
               offset="1"
-              style={{ stopColor: "var(--color-background)", stopOpacity: 0 }}
+              style={{ stopColor: "var(--metal-highlight)", stopOpacity: 0 }}
             />
           </linearGradient>
           {/* The rim of raised lettering lit from the top left: a bright
@@ -777,14 +796,14 @@ function Device({
             />
             <feFlood
               style={{
-                floodColor: "var(--color-background)",
+                floodColor: "var(--metal-highlight)",
                 floodOpacity: 0.85,
               }}
             />
             <feComposite in2="top" operator="in" result="lit" />
             <feFlood
               style={{
-                floodColor: "var(--color-foreground)",
+                floodColor: "var(--metal-shadow)",
                 floodOpacity: 0.3,
               }}
             />
@@ -798,7 +817,7 @@ function Device({
             />
             <feFlood
               style={{
-                floodColor: "var(--color-foreground)",
+                floodColor: "var(--metal-shadow)",
                 floodOpacity: 0.12,
               }}
             />
@@ -822,14 +841,14 @@ function Device({
           height={3}
           rx={1.25}
           strokeWidth={0.75}
-          className="fill-muted stroke-border transition-transform duration-100 group-active/device:-translate-y-[1.5px]"
+          className="fill-(--metal) stroke-(--metal-edge) transition-transform duration-100 group-active/device:-translate-y-[1.5px]"
         />
 
         <rect
           width={width}
           height={height}
           rx={radius}
-          className="fill-muted"
+          className="fill-(--metal)"
         />
         <rect
           width={width}
@@ -839,25 +858,27 @@ function Device({
         />
         {/* Anodized aluminum is a mid gray; the muted role alone is near
             white in the light theme. */}
-        <rect
-          width={width}
-          height={height}
-          rx={radius}
-          className="fill-foreground opacity-[0.12] dark:opacity-0"
-        />
+        {tinted ? (
+          <rect
+            width={width}
+            height={height}
+            rx={radius}
+            className="fill-foreground opacity-[0.12] dark:opacity-0"
+          />
+        ) : null}
         <rect
           width={width}
           height={height}
           rx={radius}
           filter={`url(#${ids.pits})`}
-          className="fill-foreground opacity-20"
+          className="fill-(--metal-shadow) opacity-20"
         />
         <rect
           width={width}
           height={height}
           rx={radius}
           filter={`url(#${ids.glints})`}
-          className="fill-background opacity-35"
+          className="fill-(--metal-highlight) opacity-35"
         />
 
         {/* Raised lettering, over the grain so speckle can't break up its
@@ -898,7 +919,7 @@ function Device({
           rx={radius - 0.9}
           fill="none"
           strokeWidth={1.2}
-          className="stroke-background opacity-80"
+          className="stroke-(--metal-highlight) opacity-(--metal-chamfer)"
         />
         <rect
           width={width}
@@ -906,7 +927,7 @@ function Device({
           rx={radius}
           fill="none"
           strokeWidth={0.75}
-          className="stroke-foreground opacity-15"
+          className="stroke-(--metal-shadow) opacity-15"
         />
 
         {/* The microphone pinhole, which glows while it listens. */}
@@ -914,7 +935,7 @@ function Device({
           cx={width - 16}
           cy={16}
           r={1.8}
-          className="fill-foreground opacity-50"
+          className="fill-(--metal-shadow) opacity-50"
         />
         {recording ? (
           <g

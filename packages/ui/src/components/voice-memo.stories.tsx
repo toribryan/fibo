@@ -26,6 +26,7 @@ const meta: Meta<typeof VoiceMemo> = {
   argTypes: {
     side: { control: "inline-radio", options: ["right", "bottom"] },
     size: { control: "inline-radio", options: ["sm", "default"] },
+    variant: { control: "inline-radio", options: ["default", "burgundy"] },
     title: { control: "text" },
     wordmark: { control: "text" },
     lang: { control: "text" },
@@ -41,6 +42,7 @@ const meta: Meta<typeof VoiceMemo> = {
   args: {
     side: "right",
     size: "default",
+    variant: "default",
     wordmark: "fibo",
     lang: "en-US",
     title: "Voice memo",
@@ -127,6 +129,11 @@ export const Below: Story = {
 
 export const Small: Story = {
   args: { size: "sm", defaultRecording: true, simulate: script },
+}
+
+// The same metal in either theme, after a phone in that color.
+export const Burgundy: Story = {
+  args: { variant: "burgundy", simulate: script },
 }
 
 export const Wordmark: Story = {
