@@ -33,7 +33,8 @@ stays, ready to copy or download as a Markdown file.
 - Tidies what the browser hears: fillers and doubled words dropped, "I" and
   each sentence capitalized, a period or question mark at the end.
 - Aluminum drawn in fibo's tokens, silver in the light theme and space
-  gray in the dark, that lifts on hover and presses in on a click.
+  gray in the dark, or burgundy in both, that lifts on hover and presses in
+  on a click.
 
 ## Installation
 
@@ -52,7 +53,7 @@ stays, ready to copy or download as a Markdown file.
 />
 
 It installs fibo's Button for the copy and close actions, `lucide-react`
-for their icons and `class-variance-authority` for the sizes.
+for their icons and `class-variance-authority` for the sizes and finishes.
 
 ## Examples
 
@@ -73,6 +74,14 @@ While listening, the pinhole glows, the clock runs and the words fill in.
 `size="sm"` fits a toolbar or a sidebar.
 
 <Canvas of={Stories.Small} />
+
+### Burgundy
+
+`variant="burgundy"` anodizes the device a deep wine red, to match a phone
+in that color. Metal keeps its color whatever the page does, so it looks
+the same in both themes.
+
+<Canvas of={Stories.Burgundy} />
 
 ### Wordmark
 
@@ -175,7 +184,7 @@ Every part the component renders, with the `data-slot` it carries.
   root={{
     name: "VoiceMemo",
     slot: "voice-memo",
-    note: "Carries data-recording while listening, data-side and data-size.",
+    note: "Carries data-recording while listening, data-side, data-size and data-variant.",
     children: [
       {
         name: "device",
@@ -300,6 +309,15 @@ Style the device by state, for example with
       when: (
         <>
           Always. <code>sm</code> or <code>default</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-variant",
+      element: "The root",
+      when: (
+        <>
+          Always. <code>default</code> or <code>burgundy</code>.
         </>
       ),
     },

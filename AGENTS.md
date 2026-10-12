@@ -134,7 +134,8 @@ files again from upstream and bump the commit here.
   straight under their heading.
 - **Tokens.** Semantic tokens only in components (`bg-primary`,
   `text-muted-foreground`). Primitive ramps (`neutral-*`, `red-*`, `green-*`,
-  `amber-*`, `blue-*`) belong in `globals.css`. There is no brand hue:
+  `amber-*`, `blue-*`, and fibo's own `burgundy-*` for Voice memo's finish)
+  belong in `globals.css`. There is no brand hue:
   `primary` is a neutral, and color only carries meaning.
 - **No opacity modifiers** on token colors (`bg-destructive/10`). Figma
   cannot bind opacity to a variable, so those are named roles instead:

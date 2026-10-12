@@ -153,6 +153,13 @@ const extensionTokens = Object.keys(light).filter(
 for (const name of extensionTokens) {
   if (!(name in dark)) throw new Error(`--${name} has no .dark value`)
 }
+// Primitives fibo adds beside Tailwind's ramps, such as the burgundy finish.
+// A stock app lacks them, so a component ships the ones its tokens point at.
+const primitives = Object.fromEntries(
+  Object.entries(themeVars).filter(
+    ([name, value]) => name.startsWith("color-") && !value.startsWith("var(")
+  )
+)
 const animations = Object.keys(themeVars)
   .filter((name) => name.startsWith("animate-"))
   .map((name) => name.slice("animate-".length))
@@ -203,6 +210,17 @@ function tokensFor(source) {
   if (!tokens.length && !properties.length && !animationsUsed.length) return {}
   const pick = (values) =>
     Object.fromEntries(tokens.map((name) => [name, values[name]]))
+  const primitivesUsed = [
+    ...new Set(
+      tokens.flatMap((name) =>
+        [light[name], dark[name]].flatMap((value) =>
+          [...(value ?? "").matchAll(/var\(--(color-[\w-]+)\)/g)]
+            .map((match) => match[1])
+            .filter((ref) => ref in primitives)
+        )
+      )
+    ),
+  ]
   const css = Object.fromEntries(
     animationsUsed.map((name) => {
       const frames = themeVars[`animate-${name}`].split(" ")[0]
@@ -212,6 +230,7 @@ function tokensFor(source) {
   return {
     cssVars: {
       theme: Object.fromEntries([
+        ...primitivesUsed.map((name) => [name, primitives[name]]),
         ...colorTokens.map((name) => [`color-${name}`, `var(--${name})`]),
         ...properties.map(({ name, value }) => [name, value]),
         ...animationsUsed.map((name) => [

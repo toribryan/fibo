@@ -290,6 +290,18 @@
       "info-icon": {
         "Light": "info",
         "Dark": "info"
+      },
+      "finish-burgundy": {
+        "Light": "burgundy/950",
+        "Dark": "burgundy/950"
+      },
+      "finish-burgundy-highlight": {
+        "Light": "burgundy/700",
+        "Dark": "burgundy/700"
+      },
+      "finish-burgundy-shadow": {
+        "Light": "base/black",
+        "Dark": "base/black"
       }
     },
     "Border": {
@@ -540,7 +552,8 @@
     "Voice memo device": {
       "wordmark": "TEXT",
       "size": ["sm", "default"],
-      "recording": ["false", "true"]
+      "recording": ["false", "true"],
+      "variant": ["default", "burgundy"]
     },
     "Voice memo transcript": {
       "transcript": "TEXT",
