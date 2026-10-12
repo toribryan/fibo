@@ -101,6 +101,34 @@ describe("transcriptToMarkdown", () => {
 })
 
 describe("VoiceMemo", () => {
+  it("wakes on the first press and listens on the second", async () => {
+    const onRecordingChange = vi.fn()
+    const screen = await render(
+      <VoiceMemo transcript="" onRecordingChange={onRecordingChange} />
+    )
+    const root = screen.container.querySelector('[data-slot="voice-memo"]')!
+    const light = () =>
+      root
+        .querySelector('[data-slot="voice-memo-light"]')
+        ?.getAttribute("data-state")
+    expect(light()).toBeUndefined()
+
+    await screen.getByRole("button", { name: "Wake" }).click()
+    expect(onRecordingChange).not.toHaveBeenCalled()
+    expect(root).toHaveAttribute("data-awake")
+    expect(light()).toBe("ready")
+
+    await screen.getByRole("button", { name: "Transcribe" }).click()
+    expect(onRecordingChange).toHaveBeenLastCalledWith(true)
+  })
+
+  it("starts awake with defaultAwake", async () => {
+    const screen = await render(<VoiceMemo defaultAwake transcript="" />)
+    await expect
+      .element(screen.getByRole("button", { name: "Transcribe" }))
+      .toBeVisible()
+  })
+
   it("follows a controlled recording and only asks to change it", async () => {
     const onRecordingChange = vi.fn()
     const screen = await render(

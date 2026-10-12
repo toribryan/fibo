@@ -144,6 +144,47 @@
     }
   }
 
+  /*
+   * Voice memo waking: it comes toward you as it swings one edge then the
+   * other at you, like a dog shaking off water, and settles as the shake
+   * dies away.
+   */
+  --animate-voice-memo-wake: voice-memo-wake 0.6s linear;
+
+  @keyframes voice-memo-wake {
+    0% {
+      transform: perspective(600px) scale(1) rotateY(0deg);
+      animation-timing-function: ease-out;
+    }
+    14% {
+      transform: perspective(600px) scale(1.035) rotateY(-18deg);
+      animation-timing-function: ease-in-out;
+    }
+    28% {
+      transform: perspective(600px) scale(1.06) rotateY(18deg);
+      animation-timing-function: ease-in-out;
+    }
+    42% {
+      transform: perspective(600px) scale(1.06) rotateY(-15deg);
+      animation-timing-function: ease-in-out;
+    }
+    56% {
+      transform: perspective(600px) scale(1.05) rotateY(12deg);
+      animation-timing-function: ease-in-out;
+    }
+    70% {
+      transform: perspective(600px) scale(1.03) rotateY(-7.5deg);
+      animation-timing-function: ease-in-out;
+    }
+    84% {
+      transform: perspective(600px) scale(1.012) rotateY(3deg);
+      animation-timing-function: ease-out;
+    }
+    100% {
+      transform: perspective(600px) scale(1) rotateY(0deg);
+    }
+  }
+
   /* Typing indicator: each dot rises and brightens in turn. */
   --animate-typing-dot: typing-dot 1.2s ease-in-out infinite;
 

@@ -13,16 +13,18 @@ import { Install } from "../blocks/install"
 # Voice memo
 
 An aluminum recorder, after the clip-on memo devices that hold to the
-back of a phone, that writes down what you say. Press it and a transcript
-opens beside it, filling in as you talk; press it again and the transcript
+back of a phone, that writes down what you say. It starts asleep: press it
+and it hops awake, its light turning green. Press again and a transcript
+opens beside it, filling in as you talk; press once more and the transcript
 stays, ready to copy or download as a Markdown file.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- One button. The device itself starts and stops listening, and its
-  pinhole glows red while it does.
+- One button. The first press wakes the device with a hop and a shake, and
+  its pinhole glows green, ready. After that it starts and stops listening,
+  the pinhole pulsing red while it does. `defaultAwake` skips the nap.
 - A live transcript beside the device: settled words in full, the words
   still being worked out fainter after them. It follows the newest words
   unless you scroll up to reread.
@@ -184,17 +186,17 @@ Every part the component renders, with the `data-slot` it carries.
   root={{
     name: "VoiceMemo",
     slot: "voice-memo",
-    note: "Carries data-recording while listening, data-side, data-size and data-variant.",
+    note: "Carries data-awake once woken, data-recording while listening, data-side, data-size and data-variant.",
     children: [
       {
         name: "device",
         slot: "voice-memo-device",
-        note: "The aluminum recorder, a toggle button named Transcribe.",
+        note: "The aluminum recorder, a button named Wake while asleep and a toggle named Transcribe once awake.",
         children: [
           {
             name: "light",
             slot: "voice-memo-light",
-            note: "While listening.",
+            note: "Once awake. data-state is ready or recording.",
           },
         ],
       },
@@ -290,6 +292,11 @@ Style the device by state, for example with
       when: "Always.",
     },
     {
+      attribute: "data-awake",
+      element: "The root",
+      when: "Once woken, or while listening.",
+    },
+    {
       attribute: "data-recording",
       element: "The root",
       when: "While listening.",
@@ -334,7 +341,12 @@ Style the device by state, for example with
     {
       attribute: 'data-slot="voice-memo-light"',
       element: "The device's microphone light",
-      when: "While listening.",
+      when: (
+        <>
+          Once awake, with <code>data-state</code> <code>ready</code> or{" "}
+          <code>recording</code>.
+        </>
+      ),
     },
     {
       attribute: 'data-slot="voice-memo-header"',
@@ -378,12 +390,13 @@ Style the device by state, for example with
 
 <UsageGuidelines
   guidelines={[
-    "The device is a toggle button named Transcribe, pressed while listening. Enter or Space starts and stops it, and focus stays on it.",
+    "Asleep, the device is a button named Wake; Enter or Space wakes it and Ready is announced. Awake, it's a toggle button named Transcribe, pressed while listening. Enter or Space starts and stops it, and focus stays on it.",
+    "The light's color isn't the only sign of its state: the button's name and pressed state say whether it's asleep, ready or listening.",
     "Starting and stopping are announced once in a status region, with the word count when it stops. The words themselves aren't read out as they arrive, which would talk over the speaker.",
     "The transcript is a region the device points to with aria-controls. Its text is a log that takes focus, so it can be scrolled and read by keyboard.",
     "Once stopped, Tab moves from the device to copy, download and close.",
     "Failures, such as a blocked microphone or a browser without recognition, show in the transcript and are announced.",
-    "With reduced motion, the device doesn't lift or press in, the light holds still, and the transcript fades in without growing.",
+    "With reduced motion, the device doesn't hop or shake as it wakes, lift or press in, the light holds still, and the transcript fades in without growing.",
   ]}
 />
 
