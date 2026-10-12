@@ -965,9 +965,9 @@ function Device({
           r={1.8}
           className="fill-(--metal-shadow) opacity-50"
         />
-        {/* An LED behind the pinhole: a halo on the metal, then a lens
-            hottest at its center, a dark bezel and a glint, all in the
-            light's own hue so ready and listening share one drawing. */}
+        {/* An LED behind the pinhole, seen flat: a disc of its hue, a
+            touch brighter at the middle, with a halo on the metal.
+            Both states share it, in the light's own hue. */}
         {light !== "off" ? (
           <g
             data-slot="voice-memo-light"
@@ -992,38 +992,18 @@ function Device({
                 style={{ stopColor: "var(--led)", stopOpacity: 0 }}
               />
             </radialGradient>
-            <radialGradient id={ids.lens} cx="0.42" cy="0.4" r="0.65">
+            <radialGradient id={ids.lens}>
               <stop
                 offset="0"
                 style={{
-                  stopColor: "oklch(from var(--led) 0.97 calc(c * 0.35) h)",
+                  stopColor: "oklch(from var(--led) calc(l + 0.12) c h)",
                 }}
               />
-              <stop
-                offset="0.45"
-                style={{
-                  stopColor: "oklch(from var(--led) calc(l + 0.15) c h)",
-                }}
-              />
+              <stop offset="0.6" style={{ stopColor: "var(--led)" }} />
               <stop offset="1" style={{ stopColor: "var(--led)" }} />
             </radialGradient>
             <circle cx={width - 16} cy={16} r={7} fill={`url(#${ids.halo})`} />
-            <circle
-              cx={width - 16}
-              cy={16}
-              r={2.1}
-              fill={`url(#${ids.lens})`}
-              strokeWidth={0.4}
-              strokeOpacity={0.4}
-              className="stroke-(--metal-shadow)"
-            />
-            <circle
-              cx={width - 16.6}
-              cy={15.4}
-              r={0.45}
-              style={{ fill: "oklch(from var(--led) 0.99 0.01 h)" }}
-              className="opacity-90"
-            />
+            <circle cx={width - 16} cy={16} r={2} fill={`url(#${ids.lens})`} />
           </g>
         ) : null}
       </svg>
