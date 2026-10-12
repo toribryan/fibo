@@ -112,7 +112,7 @@ function CatalogNav() {
               href={`#${tab.sections[0]}`}
               aria-current={tab.label === current ? "location" : undefined}
               onClick={(event) => go(event, tab.sections[0]!)}
-              className="flex h-9 items-center rounded-lg px-3 text-sm font-medium whitespace-nowrap text-muted-foreground no-underline transition-colors outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle aria-[current]:bg-muted aria-[current]:text-foreground"
+              className="flex h-9 items-center rounded-full px-3 text-sm font-medium whitespace-nowrap text-muted-foreground no-underline transition-colors outline-none not-aria-[current]:hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle aria-[current]:bg-primary aria-[current]:text-primary-foreground"
             >
               {tab.label}
             </a>
