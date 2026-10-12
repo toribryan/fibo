@@ -2,7 +2,6 @@ import type { ReactNode } from "react"
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  ArrowUpRightIcon,
   AtSignIcon,
   BoldIcon,
   CalendarIcon,
@@ -767,7 +766,11 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
               {entry.status}
             </span>
           ) : null}
-          <ArrowUpRightIcon className="ml-auto size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+          {/* The group takes the right edge the hover arrow had; the card's
+              border still answers the pointer. */}
+          <span className="ml-auto shrink-0 text-xs font-normal text-muted-foreground">
+            {entry.group}
+          </span>
         </span>
       </div>
     </DocLink>
