@@ -777,6 +777,11 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
   )
 }
 
+// Where the Catalog page's tabs (catalog-nav.tsx) jump to.
+function sectionId(tier: Tier, group: string) {
+  return `${tier}-${group.toLowerCase()}`
+}
+
 function Catalog({ tier }: { tier: Tier }) {
   const groups = GROUPS[tier]
   return (
@@ -792,7 +797,11 @@ function Catalog({ tier }: { tier: Tier }) {
         )
         if (entries.length === 0) return null
         return (
-          <section key={group} className="flex flex-col gap-4">
+          <section
+            key={group}
+            id={sectionId(tier, group)}
+            className="flex scroll-mt-16 flex-col gap-4"
+          >
             <h3 className="m-0 flex items-baseline gap-2 text-sm font-semibold text-foreground">
               {group}
               <span className="font-mono text-xs font-normal text-muted-foreground">
@@ -824,4 +833,4 @@ function RelatedComponents({ names }: { names: string[] }) {
   )
 }
 
-export { Catalog, RelatedComponents, ENTRIES }
+export { Catalog, GROUPS, RelatedComponents, ENTRIES, sectionId }
