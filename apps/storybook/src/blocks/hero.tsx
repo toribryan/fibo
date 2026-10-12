@@ -864,7 +864,14 @@ function Hero() {
             area={area}
             className="aspect-[1/1.618] grid-cols-[1.618fr_minmax(0,1fr)] grid-rows-[1.618fr_1fr]"
           >
-            <Pitch width={210} className="col-[1/span_2] row-1" />
+            {/* The pitch sits lower than in the wide frame, closing the gap
+                to the rabbit below and leaving room under the page's top
+                edge. Eighteen cells, plus the buttons' two, still fit the
+                row's twenty-one on a 320px phone. */}
+            <Pitch
+              width={210}
+              className="col-[1/span_2] row-1 grid-rows-[calc(var(--u)*18)_auto_auto]"
+            />
           </Frame>
         </div>
       </div>
