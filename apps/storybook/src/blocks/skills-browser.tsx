@@ -34,7 +34,7 @@ import { mdxComponents } from "./typography.js"
  * page reads them from GitHub in the browser instead of copying them in. The
  * site stays static: one tree request per session, one raw request per file.
  */
-const REPO = "toribryan/toribryan"
+const REPO = "toribryan/design-skills"
 const BRANCH = "main"
 const ROOT = "design-skills"
 const TREE_URL = `https://api.github.com/repos/${REPO}/git/trees/${BRANCH}?recursive=1`
@@ -75,9 +75,9 @@ function loadPaths() {
     const { tree } = (await response.json()) as GitTree
     const paths = tree
       .filter(
-        (item) => item.type === "blob" && item.path.startsWith(`${ROOT}/`)
+        (item) => item.type === "blob"
       )
-      .map((item) => item.path.slice(ROOT.length + 1))
+      .map((item) => item.path)
     try {
       sessionStorage.setItem(CACHE_KEY, JSON.stringify(paths))
     } catch {
@@ -94,7 +94,7 @@ function loadPaths() {
 function loadFile(path: string) {
   let request = fileRequests.get(path)
   if (!request) {
-    request = fetch(`${RAW_URL}/${ROOT}/${path}`).then((response) => {
+    request = fetch(`${RAW_URL}/${path}`).then((response) => {
       if (!response.ok) throw new Error(`GitHub answered ${response.status}`)
       return response.text()
     })
@@ -571,7 +571,7 @@ function FileView({
     }
   }, [path])
 
-  const githubUrl = `https://github.com/${REPO}/blob/${BRANCH}/${ROOT}/${path}`
+  const githubUrl = `https://github.com/${REPO}/blob/${BRANCH}/${path}`
 
   // Links between files open in the viewer; anything outside the folder
   // opens on GitHub, and outside links open in a new tab.
@@ -595,7 +595,7 @@ function FileView({
       }
       return (
         <mdxComponents.a
-          href={`https://github.com/${REPO}/blob/${BRANCH}/${ROOT}/${target}`}
+          href={`https://github.com/${REPO}/blob/${BRANCH}/${target}`}
           target="_blank"
           rel="noreferrer"
           onClick={onClick}
