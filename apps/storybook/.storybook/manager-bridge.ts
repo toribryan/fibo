@@ -5,7 +5,7 @@ import type { DesignTheme, Theme } from "./theme-sync.js"
  * run on React 19 in a bundle of their own (manager-ui/), because the
  * manager runs Storybook's React 18. manager.tsx sets this on window so
  * they can reach Storybook: the index, its updates, navigation, light or
- * dark, and the design theme.
+ * dark, the design theme, and the phone menu.
  */
 type IndexEntry = {
   id: string
@@ -28,6 +28,8 @@ type FiboManagerBridge = {
   setDesignTheme: (theme: DesignTheme) => void
   /** Calls the listener whenever the design theme changes; returns the unsubscribe. */
   onDesignTheme: (listener: (theme: DesignTheme) => void) => () => void
+  /** Calls the listener whenever the phone menu is asked for; returns the unsubscribe. */
+  onOpenMenu: (listener: () => void) => () => void
 }
 
 const BRIDGE_READY = "fibo-manager-ready"
