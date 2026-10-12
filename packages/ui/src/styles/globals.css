@@ -144,30 +144,52 @@
     }
   }
 
-  /* Voice memo waking: a hop up, then a shake as it settles. */
-  --animate-voice-memo-wake: voice-memo-wake 0.7s ease-out;
+  /*
+   * Voice memo waking: a hop up, then a quick twist back and forth that
+   * dies away, like a dog shaking off water.
+   */
+  --animate-voice-memo-wake: voice-memo-wake 0.8s linear;
 
   @keyframes voice-memo-wake {
     0% {
       transform: none;
+      animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
     }
-    22% {
+    20% {
       transform: translateY(-10px);
+      animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4);
     }
-    40% {
-      transform: translateY(0);
+    36% {
+      transform: none;
+      animation-timing-function: ease-in-out;
     }
-    52% {
-      transform: translateX(-3px) rotate(-2deg);
+    43% {
+      transform: rotate(-6deg);
+      animation-timing-function: ease-in-out;
+    }
+    50% {
+      transform: rotate(6deg);
+      animation-timing-function: ease-in-out;
+    }
+    57% {
+      transform: rotate(-5deg);
+      animation-timing-function: ease-in-out;
     }
     64% {
-      transform: translateX(3px) rotate(2deg);
+      transform: rotate(4deg);
+      animation-timing-function: ease-in-out;
     }
-    76% {
-      transform: translateX(-2px) rotate(-1deg);
+    71% {
+      transform: rotate(-3deg);
+      animation-timing-function: ease-in-out;
     }
-    88% {
-      transform: translateX(1px) rotate(0.5deg);
+    78% {
+      transform: rotate(2deg);
+      animation-timing-function: ease-in-out;
+    }
+    86% {
+      transform: rotate(-1deg);
+      animation-timing-function: ease-out;
     }
     100% {
       transform: none;
