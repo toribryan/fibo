@@ -739,10 +739,11 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
           {entry.preview}
         </div>
       </div>
-      <div className="flex flex-1 flex-col border-t border-border p-4">
+      <div className="flex flex-1 flex-col border-t border-border px-4 py-3">
         <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
           {entry.name}
-          {entry.status ? (
+          {/* Deprecated still warns; a part being new isn't worth the room. */}
+          {entry.status && entry.status !== "new" ? (
             <span
               className={cn(
                 "rounded-full border px-1.5 py-0.5 font-mono text-[10px] leading-none uppercase",
