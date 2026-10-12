@@ -41,6 +41,8 @@ type VoiceMemoProps = Omit<
   recording?: boolean
   /** Whether an uncontrolled device starts listening. */
   defaultRecording?: boolean
+  /** Whether the device starts awake, so the first press listens rather than waking it. */
+  defaultAwake?: boolean
   /** Called when the device is pressed to start or stop, and with false when transcription fails. */
   onRecordingChange?: (recording: boolean) => void
   /** The finished text so far, when you transcribe with your own service. The browser's recognizer stays off. */
@@ -235,6 +237,7 @@ function VoiceMemo({
   title = "Voice memo",
   recording: recordingProp,
   defaultRecording = false,
+  defaultAwake = false,
   onRecordingChange,
   transcript: transcriptProp,
   interim: interimProp,
@@ -251,6 +254,10 @@ function VoiceMemo({
 }: VoiceMemoProps) {
   const [uncontrolled, setUncontrolled] = React.useState(defaultRecording)
   const recording = recordingProp ?? uncontrolled
+  // Asleep until pressed once; listening wakes it too.
+  const [woken, setWoken] = React.useState(defaultAwake)
+  const awake = woken || recording
+  const [waking, setWaking] = React.useState(false)
 
   const external = transcriptProp !== undefined
   const [heard, setHeard] = React.useState("")
@@ -302,6 +309,7 @@ function VoiceMemo({
     segments.current = []
     started.current = { at: performance.now(), date: new Date() }
     failed.current = false
+    setWoken(true)
     setMemo(null)
     said.current = ""
     setHeard("")
@@ -493,6 +501,7 @@ function VoiceMemo({
     <div
       data-slot="voice-memo"
       data-recording={recording ? "" : undefined}
+      data-awake={awake ? "" : undefined}
       data-side={side}
       data-size={size}
       data-variant={variant}
@@ -507,15 +516,22 @@ function VoiceMemo({
         ref={device}
         type="button"
         aria-pressed={recording}
-        aria-label="Transcribe"
+        aria-label={awake ? "Transcribe" : "Wake"}
         aria-controls={open ? transcriptId : undefined}
         data-slot="voice-memo-device"
-        onClick={() => setRecording(!recording)}
+        onClick={() => {
+          if (awake) return setRecording(!recording)
+          setWoken(true)
+          setWaking(true)
+          setAnnouncement("Ready")
+        }}
         className={voiceMemoVariants({ size, variant })}
       >
         <Device
+          light={recording ? "recording" : awake ? "ready" : "off"}
+          waking={waking}
+          onWoken={() => setWaking(false)}
           wordmark={wordmark}
-          recording={recording}
           tinted={variant === "default"}
         />
       </button>
@@ -657,15 +673,20 @@ function VoiceMemo({
 /*
  * The aluminum face, drawn rather than photographed so it takes the theme:
  * silver in light, space gray in dark, or burgundy in both. Hover lifts it
- * and slides the reflection along; pressing pushes it in.
+ * and slides the reflection along; pressing pushes it in. Waking, it hops
+ * and shakes once.
  */
 function Device({
   wordmark,
-  recording,
+  light,
+  waking,
+  onWoken,
   tinted,
 }: {
   wordmark: string
-  recording: boolean
+  light: "off" | "ready" | "recording"
+  waking: boolean
+  onWoken: () => void
   tinted: boolean
 }) {
   const id = React.useId()
@@ -682,7 +703,11 @@ function Device({
   return (
     <span
       aria-hidden
+      onAnimationEnd={(event) => {
+        if (event.animationName === "voice-memo-wake") onWoken()
+      }}
       className={cn(
+        waking && "motion-safe:animate-voice-memo-wake",
         "relative block aspect-[85/55] transition-[translate,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
         "motion-safe:group-hover/device:-translate-y-0.5 motion-safe:group-active/device:translate-y-px motion-safe:group-active/device:scale-[0.985] motion-safe:group-active/device:duration-100"
       )}
@@ -930,30 +955,26 @@ function Device({
           className="stroke-(--metal-shadow) opacity-15"
         />
 
-        {/* The microphone pinhole, which glows while it listens. */}
+        {/* The microphone pinhole: dark while it sleeps, green once it's
+            awake and ready, pulsing red while it listens. */}
         <circle
           cx={width - 16}
           cy={16}
           r={1.8}
           className="fill-(--metal-shadow) opacity-50"
         />
-        {recording ? (
+        {light !== "off" ? (
           <g
             data-slot="voice-memo-light"
-            className="animate-pulse motion-reduce:animate-none"
+            data-state={light}
+            className={cn(
+              light === "recording"
+                ? "animate-pulse fill-destructive motion-reduce:animate-none"
+                : "fill-success"
+            )}
           >
-            <circle
-              cx={width - 16}
-              cy={16}
-              r={5}
-              className="fill-destructive blur-[3px]"
-            />
-            <circle
-              cx={width - 16}
-              cy={16}
-              r={1.6}
-              className="fill-destructive"
-            />
+            <circle cx={width - 16} cy={16} r={5} className="blur-[3px]" />
+            <circle cx={width - 16} cy={16} r={1.6} />
           </g>
         ) : null}
       </svg>

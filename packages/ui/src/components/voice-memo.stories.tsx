@@ -32,6 +32,7 @@ const meta: Meta<typeof VoiceMemo> = {
     lang: { control: "text" },
     simulate: { control: "text" },
     defaultRecording: { control: "boolean" },
+    defaultAwake: { control: "boolean" },
     recording: { control: false },
     onRecordingChange: { control: false },
     transcript: { control: false },
@@ -47,6 +48,7 @@ const meta: Meta<typeof VoiceMemo> = {
     lang: "en-US",
     title: "Voice memo",
     defaultRecording: false,
+    defaultAwake: false,
     onRecordingChange: fn(),
     onTranscriptChange: fn(),
     onComplete: fn(),
@@ -63,13 +65,19 @@ const meta: Meta<typeof VoiceMemo> = {
 export default meta
 type Story = StoryObj<typeof VoiceMemo>
 
-// Listens to your microphone for real: press the device, talk, press it
-// again, then download the transcript as a .md file.
+// Listens to your microphone for real: press the device to wake it, press
+// again and talk, press once more, then download the transcript as a .md
+// file.
 export const Default: Story = {
   play: async ({ canvas, args, step, userEvent }) => {
-    const device = canvas.getByRole("button", { name: "Transcribe" })
+    const device = canvas.getByRole("button", { name: "Wake" })
 
     await step("Pointer", async () => {
+      await userEvent.click(device)
+      // Waking only readies it; nothing listens yet.
+      await expect(device).toHaveAccessibleName("Transcribe")
+      await expect(device).toHaveAttribute("aria-pressed", "false")
+      await expect(args.onRecordingChange).not.toHaveBeenCalled()
       await expect(canvas.queryByRole("region")).toBeNull()
       await userEvent.click(device)
       await expect(device).toHaveAttribute("aria-pressed", "true")
@@ -102,7 +110,7 @@ export const Default: Story = {
 // A script typed out in place of a microphone, so the download has
 // something in it without speaking.
 export const Scripted: Story = {
-  args: { simulate: script },
+  args: { simulate: script, defaultAwake: true },
   play: async ({ canvas, userEvent }) => {
     await userEvent.click(canvas.getByRole("button", { name: "Transcribe" }))
     const text = canvas.getByRole("log")
