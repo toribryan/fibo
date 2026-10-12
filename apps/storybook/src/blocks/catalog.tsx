@@ -60,7 +60,6 @@ type Status = "new" | "beta" | "deprecated"
 type Entry = {
   name: string
   id: string
-  description: string
   tier: Tier
   group: string
   status?: Status
@@ -711,7 +710,6 @@ const ENTRIES: Entry[] = META.map(([key, info]) => ({
     info.tier === "base-components"
       ? `${info.tier}-${info.group.toLowerCase()}-${key}--docs`
       : `${info.tier}-${key}--docs`,
-  description: info.description,
   tier: info.tier,
   group: info.group,
   status: info.status,
@@ -735,13 +733,13 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
           compact ? "h-32" : "h-28 sm:h-40"
         )}
       >
-        {/* Two to a row on a phone, so the preview and its text shrink to
-            fit the narrower card. */}
+        {/* Two to a row on a phone, so the preview shrinks to fit the
+            narrower card. */}
         <div className={cn("scale-90", !compact && "max-sm:scale-[0.6]")}>
           {entry.preview}
         </div>
       </div>
-      <div className="flex flex-1 flex-col gap-1 border-t border-border p-4">
+      <div className="flex flex-1 flex-col border-t border-border p-4">
         <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
           {entry.name}
           {entry.status ? (
@@ -757,14 +755,6 @@ function Card({ entry, compact }: { entry: Entry; compact?: boolean }) {
             </span>
           ) : null}
           <ArrowUpRightIcon className="ml-auto size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-        </span>
-        <span
-          className={cn(
-            "text-sm leading-5 text-muted-foreground",
-            !compact && "max-sm:line-clamp-3"
-          )}
-        >
-          {entry.description}
         </span>
       </div>
     </DocLink>
