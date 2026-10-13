@@ -50,6 +50,12 @@ function useHotkey(hotkey: string | null, onPress: () => void) {
   }, [hotkey])
 }
 
+function keyShortcuts(hotkey: string | null, mac: boolean) {
+  return hotkey
+    ? `${mac ? "Meta" : "Control"}+${hotkey.toUpperCase()}`
+    : undefined
+}
+
 function Shortcut({ hotkey, mac }: { hotkey: string; mac: boolean }) {
   return (
     // aria-keyshortcuts on the control already announces it.
@@ -60,54 +66,29 @@ function Shortcut({ hotkey, mac }: { hotkey: string; mac: boolean }) {
   )
 }
 
-type SearchInputSharedProps = {
-  /** Key that, with Cmd or Ctrl, focuses the field or presses the button. Null turns it off. */
-  hotkey?: string | null
-  /** Height, matching an Input or Button of the same size. */
+type SearchInputProps = Omit<
+  React.ComponentProps<"input">,
+  "type" | "size" | "value" | "defaultValue"
+> & {
+  /** `ghost` drops the border and fill, for a search at the top of a menu or dialog. */
+  variant?: "default" | "ghost"
+  /** Height of the field. Defaults to the size of the Field or FieldGroup around it. */
   size?: FieldSize
-  /** Accessible name. The button shows no text, so this is all a screen reader hears. */
-  label?: string
+  /** Key that, with Cmd or Ctrl, focuses the field. `null` turns it off. */
+  hotkey?: string | null
+  /** The query, when controlled. */
+  value?: string
+  /** The query to start with, when uncontrolled. */
+  defaultValue?: string
+  /** Called with the new query on every change, including a clear. */
+  onValueChange?: (value: string) => void
 }
 
-type SearchInputFieldProps = SearchInputSharedProps &
-  Omit<
-    React.ComponentProps<"input">,
-    "type" | "size" | "value" | "defaultValue"
-  > & {
-    /** `field` is a search box; `button` is a compact trigger for a search that opens elsewhere, such as Command menu. */
-    type?: "field"
-    /** The query, when controlled. */
-    value?: string
-    /** The query to start with, when uncontrolled. */
-    defaultValue?: string
-    /** Called with the new query on every change, including a clear. */
-    onValueChange?: (value: string) => void
-  }
-
-type SearchInputButtonProps = SearchInputSharedProps &
-  Omit<React.ComponentProps<typeof Button>, "type" | "size" | "variant"> & {
-    /** `field` is a search box; `button` is a compact trigger for a search that opens elsewhere, such as Command menu. */
-    type: "button"
-  }
-
-type SearchInputProps = SearchInputFieldProps | SearchInputButtonProps
-
-/**
- * A search box with a Cmd+K hint, or the same search folded into a small
- * button for a header, that opens a Command menu or dialog.
- */
-function SearchInput(props: SearchInputProps) {
-  return props.type === "button" ? (
-    <SearchButton {...props} />
-  ) : (
-    <SearchField {...props} />
-  )
-}
-
-function SearchField({
-  hotkey = "k",
+/** A search box with a Cmd+K shortcut and a clear button. */
+function SearchInput({
+  variant = "default",
   size,
-  label = "Search",
+  hotkey = "k",
   placeholder = "Search…",
   value: valueProp,
   defaultValue = "",
@@ -118,7 +99,7 @@ function SearchField({
   className,
   ref,
   ...props
-}: SearchInputFieldProps) {
+}: SearchInputProps) {
   const [uncontrolled, setUncontrolled] = React.useState(defaultValue)
   const value = valueProp ?? uncontrolled
   const inputRef = React.useRef<HTMLInputElement>(null)
@@ -140,77 +121,85 @@ function SearchField({
   })
 
   return (
-    <div
+    <InputGroup
+      variant={variant}
+      size={size}
       data-slot="search-input"
-      data-type="field"
-      className={cn("w-full", className)}
+      className={className}
     >
-      <InputGroup size={size}>
-        <InputGroupAddon>
-          <SearchIcon aria-hidden="true" />
+      <InputGroupAddon>
+        <SearchIcon aria-hidden="true" />
+      </InputGroupAddon>
+      <InputGroupInput
+        ref={mergeRefs(inputRef, ref)}
+        aria-label="Search"
+        aria-keyshortcuts={disabled ? undefined : keyShortcuts(hotkey, mac)}
+        placeholder={placeholder}
+        value={value}
+        disabled={disabled}
+        onChange={(event) => {
+          onChange?.(event)
+          setValue(event.target.value)
+        }}
+        onKeyDown={(event) => {
+          onKeyDown?.(event)
+          if (event.defaultPrevented || event.key !== "Escape") return
+          // Escape clears first, then leaves the field. Stopping it keeps
+          // a dialog around the field open while it only clears.
+          if (value) {
+            event.preventDefault()
+            event.stopPropagation()
+            setValue("")
+          } else event.currentTarget.blur()
+        }}
+        // The clear button below replaces the browser's own.
+        className="[&::-webkit-search-cancel-button]:appearance-none"
+        {...props}
+        type="search"
+      />
+      {value ? (
+        <InputGroupAddon align="inline-end">
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            aria-label="Clear search"
+            data-slot="search-input-clear"
+            onClick={clear}
+          >
+            <XIcon aria-hidden="true" />
+          </Button>
         </InputGroupAddon>
-        <InputGroupInput
-          ref={mergeRefs(inputRef, ref)}
-          aria-label={label}
-          aria-keyshortcuts={
-            hotkey
-              ? `${mac ? "Meta" : "Control"}+${hotkey.toUpperCase()}`
-              : undefined
-          }
-          placeholder={placeholder}
-          value={value}
-          disabled={disabled}
-          onChange={(event) => {
-            onChange?.(event)
-            setValue(event.target.value)
-          }}
-          onKeyDown={(event) => {
-            onKeyDown?.(event)
-            if (event.defaultPrevented || event.key !== "Escape") return
-            // Escape clears first, then leaves the field. Stopping it keeps
-            // a dialog around the field open while it only clears.
-            if (value) {
-              event.preventDefault()
-              event.stopPropagation()
-              setValue("")
-            } else event.currentTarget.blur()
-          }}
-          // The clear button below replaces the browser's own.
-          className="[&::-webkit-search-cancel-button]:appearance-none"
-          {...props}
-          type="search"
-        />
-        {value ? (
-          <InputGroupAddon align="inline-end">
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              aria-label="Clear search"
-              data-slot="search-input-clear"
-              onClick={clear}
-            >
-              <XIcon aria-hidden="true" />
-            </Button>
-          </InputGroupAddon>
-        ) : hotkey ? (
-          <InputGroupAddon align="inline-end">
-            <Shortcut hotkey={hotkey} mac={mac} />
-          </InputGroupAddon>
-        ) : null}
-      </InputGroup>
-    </div>
+      ) : hotkey && !disabled ? (
+        <InputGroupAddon align="inline-end">
+          <Shortcut hotkey={hotkey} mac={mac} />
+        </InputGroupAddon>
+      ) : null}
+    </InputGroup>
   )
 }
 
-function SearchButton({
-  hotkey = "k",
+type SearchTriggerProps = Omit<
+  React.ComponentProps<typeof Button>,
+  "size" | "variant"
+> & {
+  /** Height, matching a Button of the same size. Defaults to the size of the Field or FieldGroup around it. */
+  size?: FieldSize
+  /** Key that, with Cmd or Ctrl, presses the button. `null` turns it off. */
+  hotkey?: string | null
+}
+
+/**
+ * A compact button with a search icon and its shortcut, for a header whose
+ * search opens elsewhere, such as in a Command menu.
+ */
+function SearchTrigger({
   size: sizeProp,
-  label = "Search",
+  hotkey = "k",
   disabled,
   className,
   ref,
   ...props
-}: SearchInputButtonProps) {
+}: SearchTriggerProps) {
   const size = useFieldSize(sizeProp)
   const buttonRef = React.useRef<HTMLButtonElement>(null)
   const mac = useIsMac()
@@ -223,18 +212,13 @@ function SearchButton({
       variant="ghost"
       size={size}
       disabled={disabled}
-      aria-label={label}
-      aria-keyshortcuts={
-        hotkey
-          ? `${mac ? "Meta" : "Control"}+${hotkey.toUpperCase()}`
-          : undefined
-      }
+      aria-label="Search"
+      aria-keyshortcuts={disabled ? undefined : keyShortcuts(hotkey, mac)}
       className={cn("gap-2 px-2 text-muted-foreground", className)}
       {...props}
       // After the spread, so a Command menu that renders it as its trigger
       // doesn't swap in its own slot.
-      data-slot="search-input"
-      data-type="button"
+      data-slot="search-trigger"
       type="button"
     >
       <SearchIcon aria-hidden="true" />
@@ -243,5 +227,5 @@ function SearchButton({
   )
 }
 
-export { SearchInput }
-export type { SearchInputProps }
+export { SearchInput, SearchTrigger }
+export type { SearchInputProps, SearchTriggerProps }

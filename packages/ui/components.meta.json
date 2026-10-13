@@ -218,7 +218,7 @@
   },
   "search-input": {
     "title": "Search input",
-    "description": "A search box with a Cmd+K shortcut and a clear button, or the same search folded into a small header button that opens a command menu.",
+    "description": "A search box with a Cmd+K shortcut and a clear button, and a compact trigger for a header whose search opens in a command menu.",
     "tier": "base-components",
     "group": "Forms",
     "status": "new"

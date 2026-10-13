@@ -5,9 +5,9 @@ import { render } from "vitest-browser-react"
 import { FieldSizeContext } from "@workspace/ui/lib/field-size"
 
 import { CommandMenu } from "./command-menu.js"
-import { SearchInput } from "./search-input.js"
+import { SearchInput, SearchTrigger } from "./search-input.js"
 
-describe("SearchInput", () => {
+describe("SearchInput and SearchTrigger", () => {
   it("keeps its own query when given an onChange", async () => {
     const onChange = vi.fn()
     const onValueChange = vi.fn()
@@ -70,25 +70,44 @@ describe("SearchInput", () => {
 
   it("keeps its slot as a Command menu's trigger", async () => {
     const screen = await render(
-      <CommandMenu
-        groups={[]}
-        hotkey={null}
-        trigger={<SearchInput type="button" />}
-      />
+      <CommandMenu groups={[]} hotkey={null} trigger={<SearchTrigger />} />
     )
     await expect
       .element(screen.getByRole("button", { name: "Search" }))
-      .toHaveAttribute("data-slot", "search-input")
+      .toHaveAttribute("data-slot", "search-trigger")
   })
 
   it("takes the size of the field group around the button", async () => {
     const screen = await render(
       <FieldSizeContext value="sm">
-        <SearchInput type="button" />
+        <SearchTrigger />
       </FieldSizeContext>
     )
     await expect
       .element(screen.getByRole("button", { name: "Search" }))
       .toHaveAttribute("data-size", "sm")
+  })
+  it("puts className on the element that draws the field", async () => {
+    const screen = await render(<SearchInput className="h-11" />)
+    const root = screen.container.querySelector("[data-slot=search-input]")
+    expect(root).toHaveAttribute("role", "group")
+    expect(root).toHaveClass("h-11")
+  })
+
+  it("takes its name from aria-label over the default", async () => {
+    const screen = await render(<SearchInput aria-label="Search docs" />)
+    await expect
+      .element(screen.getByRole("searchbox"))
+      .toHaveAccessibleName("Search docs")
+  })
+
+  it("focuses the input when its icon is pressed", async () => {
+    const screen = await render(<SearchInput hotkey={null} />)
+    await userEvent.click(
+      screen.container.querySelector("[data-slot=input-group-addon]")!
+    )
+    await expect
+      .element(screen.getByRole("searchbox", { name: "Search" }))
+      .toHaveFocus()
   })
 })

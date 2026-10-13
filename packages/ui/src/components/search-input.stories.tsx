@@ -4,31 +4,32 @@ import * as React from "react"
 import { expect, fn, waitFor } from "storybook/test"
 
 import { CommandMenu, type CommandMenuGroup } from "./command-menu.js"
-import { SearchInput } from "./search-input.js"
+import { Field, FieldDescription, FieldLabel } from "./field.js"
+import { SearchInput, SearchTrigger } from "./search-input.js"
 
 const meta: Meta<typeof SearchInput> = {
   title: "Base components/Forms/Search input",
   component: SearchInput,
   tags: ["new"],
   argTypes: {
-    type: { control: "inline-radio", options: ["field", "button"] },
+    variant: { control: "inline-radio", options: ["default", "ghost"] },
     size: { control: "inline-radio", options: ["sm", "default"] },
     hotkey: { control: "text" },
-    label: { control: "text" },
     placeholder: { control: "text" },
+    disabled: { control: "boolean" },
     onValueChange: { control: false },
-    onClick: { control: false },
   },
   args: {
-    type: "field",
+    variant: "default",
     size: "default",
     hotkey: "k",
-    label: "Search",
     placeholder: "Search…",
+    disabled: false,
+    onValueChange: fn(),
   },
-  parameters: { controls: { exclude: ["onValueChange", "onClick"] } },
+  parameters: { controls: { exclude: ["onValueChange"] } },
   render: (args) => (
-    <div className="flex w-72 justify-center">
+    <div className="w-72">
       <SearchInput {...args} />
     </div>
   ),
@@ -37,11 +38,8 @@ const meta: Meta<typeof SearchInput> = {
 export default meta
 type Story = StoryObj<typeof SearchInput>
 
-const onValueChange = fn()
-
 export const Default: Story = {
-  args: { onValueChange },
-  play: async ({ canvas, userEvent }) => {
+  play: async ({ args, canvas, userEvent }) => {
     const input = canvas.getByRole("searchbox", { name: "Search" })
 
     await userEvent.keyboard("{Control>}k{/Control}")
@@ -49,7 +47,7 @@ export const Default: Story = {
 
     await userEvent.keyboard("tabs")
     await expect(input).toHaveValue("tabs")
-    await expect(onValueChange).toHaveBeenLastCalledWith("tabs")
+    await expect(args.onValueChange).toHaveBeenLastCalledWith("tabs")
 
     await userEvent.click(canvas.getByRole("button", { name: "Clear search" }))
     await expect(input).toHaveValue("")
@@ -63,18 +61,6 @@ export const Default: Story = {
   },
 }
 
-export const Button: Story = {
-  name: "As a button",
-  args: { type: "button", onClick: fn() },
-  play: async ({ args, canvas, userEvent }) => {
-    const button = canvas.getByRole("button", { name: "Search" })
-    await userEvent.click(button)
-    await expect(args.onClick).toHaveBeenCalledTimes(1)
-    await userEvent.keyboard("{Control>}k{/Control}")
-    await expect(args.onClick).toHaveBeenCalledTimes(2)
-  },
-}
-
 export const Small: Story = {
   args: { size: "sm" },
 }
@@ -82,6 +68,41 @@ export const Small: Story = {
 export const NoShortcut: Story = {
   name: "Without a shortcut",
   args: { hotkey: null },
+}
+
+export const Ghost: Story = {
+  name: "Ghost, in a menu",
+  render: (args) => (
+    <div className="w-72 overflow-hidden rounded-xl border border-border bg-popover shadow-lg">
+      <SearchInput
+        {...args}
+        variant="ghost"
+        hotkey={null}
+        aria-label="Search commands"
+        placeholder="Search commands…"
+        className="h-11 border-b border-border"
+      />
+      <p className="px-3 py-6 text-center text-sm text-muted-foreground">
+        Recent commands show here.
+      </p>
+    </div>
+  ),
+}
+
+export const InAField: Story = {
+  name: "In a field",
+  render: () => (
+    <Field className="w-72" invalid>
+      <FieldLabel>Find a teammate</FieldLabel>
+      <SearchInput hotkey={null} defaultValue="zz" />
+      <FieldDescription>No one by that name.</FieldDescription>
+    </Field>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByRole("searchbox", { name: "Find a teammate" })
+    await expect(input).toHaveAccessibleDescription(/No one by that name/)
+    await expect(input).toHaveAttribute("aria-invalid", "true")
+  },
 }
 
 const PEOPLE = [
@@ -99,7 +120,7 @@ function FilteredList() {
   return (
     <div className="flex w-72 flex-col gap-3">
       <SearchInput
-        label="Filter people"
+        aria-label="Filter people"
         placeholder="Filter people…"
         hotkey={null}
         value={query}
@@ -132,6 +153,20 @@ export const FilterAList: Story = {
   },
 }
 
+const onTriggerClick = fn()
+
+export const Trigger: Story = {
+  name: "Search trigger",
+  render: () => <SearchTrigger onClick={onTriggerClick} />,
+  play: async ({ canvas, userEvent }) => {
+    onTriggerClick.mockClear()
+    await userEvent.click(canvas.getByRole("button", { name: "Search" }))
+    await expect(onTriggerClick).toHaveBeenCalledTimes(1)
+    await userEvent.keyboard("{Control>}k{/Control}")
+    await expect(onTriggerClick).toHaveBeenCalledTimes(2)
+  },
+}
+
 const GROUPS: CommandMenuGroup[] = [
   {
     label: "Pages",
@@ -152,7 +187,7 @@ export const InAHeader: Story = {
         groups={GROUPS}
         hotkey={null}
         label="Search the site"
-        trigger={<SearchInput type="button" aria-haspopup="dialog" />}
+        trigger={<SearchTrigger aria-haspopup="dialog" />}
       />
     </header>
   ),
