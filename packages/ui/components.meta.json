@@ -216,6 +216,13 @@
     "group": "Forms",
     "figma": "761-2"
   },
+  "search-input": {
+    "title": "Search input",
+    "description": "A search box with a Cmd+K shortcut and a clear button, or the same search folded into a small header button that opens a command menu.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new"
+  },
   "select": {
     "title": "Select",
     "description": "Picks one option from a list that opens on demand.",
@@ -344,8 +351,7 @@
     "title": "Dialog",
     "description": "A window over the page for a short task, such as editing a few fields, that keeps focus until it's done or dismissed.",
     "tier": "base-components",
-    "group": "Overlays",
-    "status": "new"
+    "group": "Overlays"
   },
   "alert-dialog": {
     "title": "Alert dialog",

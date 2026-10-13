@@ -36,7 +36,6 @@ const meta: Meta<PlaygroundArgs> = {
     DialogFooter,
     DialogClose,
   } as Record<string, React.ComponentType<unknown>>,
-  tags: ["new"],
   argTypes: {
     size: { control: "inline-radio", options: ["sm", "default", "lg"] },
     showCloseButton: { control: "boolean" },

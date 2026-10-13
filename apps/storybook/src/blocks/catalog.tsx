@@ -251,6 +251,20 @@ const PREVIEWS: Record<string, ReactNode> = {
       <InputGroupInput placeholder="Search" aria-label="Search" />
     </InputGroup>
   ),
+  "search-input": (
+    <InputGroup className="w-48">
+      <InputGroupAddon>
+        <SearchIcon aria-hidden="true" />
+      </InputGroupAddon>
+      <InputGroupInput placeholder="Search…" aria-label="Search" />
+      <InputGroupAddon align="inline-end">
+        <KbdGroup aria-hidden="true">
+          <Kbd>⌘</Kbd>
+          <Kbd>K</Kbd>
+        </KbdGroup>
+      </InputGroupAddon>
+    </InputGroup>
+  ),
   label: (
     <div className="flex w-48 flex-col gap-1.5">
       <Label>Email</Label>
