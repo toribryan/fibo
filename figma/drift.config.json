@@ -41,7 +41,8 @@
   },
   "codeOnlyProps": {
     "input-group.align": "InputGroupAddon's align, inline-start or inline-end; Figma turns each side on with startAddon and endAddon instead.",
-    "reactions.position": "Which viewport corner the floating bar pins to; Figma shows the bar on its own."
+    "reactions.position": "Which viewport corner the floating bar pins to; Figma shows the bar on its own.",
+    "annotated-text.tone": "Figma keeps tone out of the variant set so it stays at ten marks rather than sixty; designers bind the mark's stroke to the tone token (foreground, muted-foreground or a status icon token) instead."
   },
   "componentFiles": {
     "Chapter preview": "chapter-scrubber",
@@ -77,7 +78,8 @@
     "Date picker drawer": "date-picker",
     "Date range drawer": "date-picker",
     "Rich text editor link row": "rich-text-editor",
-    "Tabs trigger": "tabs"
+    "Tabs trigger": "tabs",
+    "Annotated text chip": "annotated-text"
   },
   "codeOnlyComponents": {
     "spinner": "Deprecated, and removed at the next minor release, so it gets no Figma component.",

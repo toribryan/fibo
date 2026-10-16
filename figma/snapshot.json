@@ -302,6 +302,14 @@
       "finish-burgundy-shadow": {
         "Light": "base/black",
         "Dark": "base/black"
+      },
+      "highlight": {
+        "Light": "neutral/200",
+        "Dark": "neutral/700"
+      },
+      "chip": {
+        "Light": "neutral/200",
+        "Dark": "neutral/800"
       }
     },
     "Border": {
@@ -732,6 +740,26 @@
       "variant": ["default", "line"],
       "size": ["sm", "default"],
       "orientation": ["horizontal", "vertical"]
+    },
+    "Annotated text": {
+      "text": "TEXT",
+      "variant": [
+        "underline",
+        "wavy",
+        "double",
+        "highlight",
+        "circle",
+        "box",
+        "bracket",
+        "strike",
+        "cross",
+        "arrow"
+      ]
+    },
+    "Annotated text chip": {
+      "label": "TEXT",
+      "showIcon": "BOOLEAN",
+      "icon": "INSTANCE_SWAP"
     }
   }
 }
