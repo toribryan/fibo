@@ -14,7 +14,6 @@ import {
 const meta: Meta<typeof DatePicker> = {
   title: "Base components/Forms/Date picker",
   component: DatePicker,
-  tags: ["new"],
   argTypes: {
     type: {
       control: "inline-radio",

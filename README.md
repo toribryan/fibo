@@ -110,6 +110,12 @@ notes.
 | Feedback   | [Pixel snail][pixel-snail], [Reactions][reactions]                                                                           |
 | Diagrams   | [Integration visual][integration-visual], [Token flow][token-flow]                                                           |
 
+**1 block.** Whole screens composed from the parts above. A block installs once into `components/blocks/<name>/` and is then yours to edit.
+
+| Group  | Parts                  |
+| ------ | ---------------------- |
+| Shells | [App shell][app-shell] |
+
 **3 themes.** [Theme][theme] (`@fibo/theme`), [Mechanical theme][theme-mechanical] (`@fibo/theme-mechanical`), [Electrical theme][theme-electrical] (`@fibo/theme-electrical`).
 
 [avatar]: https://fibo.toribryan.com/?path=/docs/base-components-display-avatar--docs
@@ -159,6 +165,7 @@ notes.
 [sticker-avatar]: https://fibo.toribryan.com/?path=/docs/special-components-sticker-avatar--docs
 [token-flow]: https://fibo.toribryan.com/?path=/docs/special-components-token-flow--docs
 [voice-memo]: https://fibo.toribryan.com/?path=/docs/special-components-voice-memo--docs
+[app-shell]: https://fibo.toribryan.com/?path=/docs/blocks-app-shell--docs
 [theme]: https://fibo.toribryan.com/?path=/docs/foundations-colors--docs
 [theme-mechanical]: https://fibo.toribryan.com/?path=/docs/foundations-themes--docs
 [theme-electrical]: https://fibo.toribryan.com/?path=/docs/foundations-themes--docs
