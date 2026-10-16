@@ -16,7 +16,7 @@ as models are read from the commit that deprecated it, for example
 
 1. **Metadata.** In `packages/ui/components.meta.json`, set
    `"status": "deprecated"` and add a `deprecated` object: `since` (the next
-   release), `removal` (the minor after it), `replacement` (a key in the same
+   release), `removal` (the next major), `replacement` (a key in the same
    file), `reason` (one or two sentences a designer would accept), and
    `codemod` (the transform's file name) if there is one. The registry build
    fails on an unknown replacement.
