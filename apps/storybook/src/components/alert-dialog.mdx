@@ -1,0 +1,262 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/alert-dialog.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Alert dialog
+
+Alert dialog stops someone before a step that can't be undone, such as
+deleting a project, and asks them to choose: go ahead, or cancel.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- An `alertdialog`: screen readers announce it as a question that needs an
+  answer.
+- Cancel takes focus when it opens, so Enter on its own never confirms.
+- No close button and no click-outside dismiss. Leaving takes Cancel or
+  Escape.
+- Shares Dialog's look and motion, and is small by default.
+
+## Installation
+
+<Install
+  name="alert-dialog"
+  exports={[
+    "AlertDialog",
+    "AlertDialogTrigger",
+    "AlertDialogContent",
+    "AlertDialogHeader",
+    "AlertDialogTitle",
+    "AlertDialogDescription",
+    "AlertDialogFooter",
+    "AlertDialogCancel",
+    "AlertDialogAction",
+  ]}
+/>
+
+It installs Dialog, for the shared styles, and Button.
+
+## Examples
+
+### Not destructive
+
+A confirmation that loses nothing, such as publishing, keeps the default
+button.
+
+<Canvas of={Stories.NonDestructive} />
+
+## Usage
+
+```tsx
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+
+export function DeleteProject({ onDelete }: { onDelete: () => void }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger render={<Button variant="outline" />}>
+        Delete project
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete Atlas redesign?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Its files and comments are deleted for everyone. This can't be
+            undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={onDelete}>
+            Delete project
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
+```
+
+Keep Cancel before the action in the footer: it's what takes focus. Both
+close the dialog; for an action that has to finish first, control `open` and
+close it when the work is done.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "AlertDialog",
+    children: [
+      { name: "AlertDialogTrigger", slot: "alert-dialog-trigger" },
+      {
+        name: "AlertDialogContent",
+        slot: "alert-dialog-content",
+        note: "Renders its own backdrop, alert-dialog-overlay.",
+        children: [
+          {
+            name: "AlertDialogHeader",
+            slot: "alert-dialog-header",
+            children: [
+              { name: "AlertDialogTitle", slot: "alert-dialog-title" },
+              {
+                name: "AlertDialogDescription",
+                slot: "alert-dialog-description",
+              },
+            ],
+          },
+          {
+            name: "AlertDialogFooter",
+            slot: "alert-dialog-footer",
+            children: [
+              { name: "AlertDialogCancel", slot: "alert-dialog-cancel" },
+              { name: "AlertDialogAction", slot: "alert-dialog-action" },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Only ask when the step can't be undone, or undoing it is costly. If it can be undone, do it and offer Undo in a Toast.",
+    "Ask a question in the title that names the thing: Delete Atlas redesign?, not Are you sure?",
+    "Say what's lost in the description, in a sentence or two.",
+    "Label the action with the verb from the title, and use the destructive variant when something is deleted.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 flex-col gap-2 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <span className="font-semibold">Delete Atlas redesign?</span>
+            <span className="text-xs text-muted-foreground">
+              Its files are deleted for everyone.
+            </span>
+            <span className="flex justify-end gap-2">
+              <span className="rounded-md border border-border px-2 py-1 text-xs">
+                Cancel
+              </span>
+              <span className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground">
+                Delete project
+              </span>
+            </span>
+          </div>
+        ),
+        description: "Name the thing in the title and the verb on the button.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 flex-col gap-2 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <span className="font-semibold">Are you sure?</span>
+            <span className="text-xs text-muted-foreground">
+              This action is permanent.
+            </span>
+            <span className="flex justify-end gap-2">
+              <span className="rounded-md border border-border px-2 py-1 text-xs">
+                No
+              </span>
+              <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground">
+                Yes
+              </span>
+            </span>
+          </div>
+        ),
+        description:
+          "Don't ask a vague question with Yes and No. People click through it.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+AlertDialog takes Base UI's Alert Dialog Root props, such as `open`,
+`defaultOpen` and `onOpenChange`. AlertDialogContent takes the Popup's props
+plus `size` and `container`. AlertDialogAction and AlertDialogCancel take
+Button's `variant` and `size`.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="alert-dialog-trigger"',
+      element: "Trigger",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="alert-dialog-overlay"',
+      element: "Backdrop",
+      when: "While it's open.",
+    },
+    {
+      attribute: 'data-slot="alert-dialog-content"',
+      element: "Window",
+      when: "While it's open.",
+    },
+    {
+      attribute: "data-size",
+      element: "Window",
+      when: "Always: sm or default.",
+    },
+    {
+      attribute: "data-open, data-closed",
+      element: "Window, backdrop",
+      when: "Opening and open, or closing, for the fade.",
+    },
+    {
+      attribute: 'data-slot="alert-dialog-cancel", "alert-dialog-action"',
+      element: "Buttons",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "It has the alertdialog role, named by AlertDialogTitle and described by AlertDialogDescription, so the question is read out when it opens.",
+    "Cancel takes focus when it opens. Focus stays inside, and returns to the trigger when it closes.",
+    "Escape cancels. A click outside does nothing, so a stray click can't dismiss the question.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Dialog", "Toast", "Button"]} />
+
+## References
+
+- [Base UI Alert Dialog](https://base-ui.com/react/components/alert-dialog),
+  which it wraps
+- [WAI-ARIA alert dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/)

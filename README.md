@@ -89,7 +89,7 @@ notes.
 
 <!-- parts:start: written by pnpm registry:build -->
 
-**35 base components.** The standard set. They depend on nothing beyond Base UI, `class-variance-authority` and `lucide-react`, except Data table (TanStack Table) and Rich text editor (Tiptap).
+**37 base components.** The standard set. They depend on nothing beyond Base UI, `class-variance-authority` and `lucide-react`, except Data table (TanStack Table) and Rich text editor (Tiptap).
 
 | Group      | Parts                                                                                                                                                                                                                                                                                                                            |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -97,7 +97,7 @@ notes.
 | Forms      | [Calendar][calendar], [Chat composer][chat-composer], [Checkbox][checkbox], [Date picker][date-picker], [Field][field], [Input][input], [Input group][input-group], [Label][label], [Radio group][radio-group], [Rich text editor][rich-text-editor], [Select][select], [Slider][slider], [Switch][switch], [Textarea][textarea] |
 | Display    | [Avatar][avatar], [Badge][badge], [Count][count], [Data table][data-table], [Kbd][kbd], [Message list][message-list], [Separator][separator], [Status dot][status-dot], [Table][table]                                                                                                                                           |
 | Navigation | [Pagination][pagination], [Tabs][tabs]                                                                                                                                                                                                                                                                                           |
-| Overlays   | [Menu][menu], [Sheet][sheet], [Tooltip][tooltip]                                                                                                                                                                                                                                                                                 |
+| Overlays   | [Alert dialog][alert-dialog], [Dialog][dialog], [Menu][menu], [Sheet][sheet], [Tooltip][tooltip]                                                                                                                                                                                                                                 |
 | Feedback   | [Empty state][empty-state], [Progress][progress], [Skeleton][skeleton], [Toast][toast], [Typing indicator][typing-indicator]                                                                                                                                                                                                     |
 
 **12 special components.** Playful parts built for one kind of moment. They may bring `motion` with them.
@@ -119,6 +119,7 @@ notes.
 
 **3 themes.** [Theme][theme] (`@fibo/theme`), [Mechanical theme][theme-mechanical] (`@fibo/theme-mechanical`), [Electrical theme][theme-electrical] (`@fibo/theme-electrical`).
 
+[alert-dialog]: https://fibo.toribryan.com/?path=/docs/base-components-overlays-alert-dialog--docs
 [avatar]: https://fibo.toribryan.com/?path=/docs/base-components-display-avatar--docs
 [badge]: https://fibo.toribryan.com/?path=/docs/base-components-display-badge--docs
 [button]: https://fibo.toribryan.com/?path=/docs/base-components-actions-button--docs
@@ -128,6 +129,7 @@ notes.
 [count]: https://fibo.toribryan.com/?path=/docs/base-components-display-count--docs
 [data-table]: https://fibo.toribryan.com/?path=/docs/base-components-display-data-table--docs
 [date-picker]: https://fibo.toribryan.com/?path=/docs/base-components-forms-date-picker--docs
+[dialog]: https://fibo.toribryan.com/?path=/docs/base-components-overlays-dialog--docs
 [empty-state]: https://fibo.toribryan.com/?path=/docs/base-components-feedback-empty-state--docs
 [field]: https://fibo.toribryan.com/?path=/docs/base-components-forms-field--docs
 [input]: https://fibo.toribryan.com/?path=/docs/base-components-forms-input--docs

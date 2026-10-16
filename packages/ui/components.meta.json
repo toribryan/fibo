@@ -332,8 +332,7 @@
     "title": "App shell",
     "description": "A workspace app's frame: a header with Command menu on Cmd+K, pages for home, projects and an inbox, and Floating nav to move between them.",
     "tier": "blocks",
-    "group": "Shells",
-    "status": "new"
+    "group": "Shells"
   },
   "sitemap": {
     "title": "Sitemap",
@@ -345,6 +344,13 @@
   "dialog": {
     "title": "Dialog",
     "description": "A window over the page for a short task, such as editing a few fields, that keeps focus until it's done or dismissed.",
+    "tier": "base-components",
+    "group": "Overlays",
+    "status": "new"
+  },
+  "alert-dialog": {
+    "title": "Alert dialog",
+    "description": "Asks for a decision before something that can't be undone, with Cancel focused and no click-outside dismiss.",
     "tier": "base-components",
     "group": "Overlays",
     "status": "new"

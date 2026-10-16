@@ -6,7 +6,6 @@ import { AppShell } from "./app-shell.js"
 const meta: Meta<typeof AppShell> = {
   title: "Blocks/App shell",
   component: AppShell,
-  tags: ["new"],
   parameters: { layout: "fullscreen" },
 }
 
