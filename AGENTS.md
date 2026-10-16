@@ -13,6 +13,7 @@ Node 24 (pinned in `.nvmrc`).
 | Path                               | Holds                                                                |
 | ---------------------------------- | -------------------------------------------------------------------- |
 | `packages/ui/src/components/`      | The components. One `.tsx` plus one `.stories.tsx` each              |
+| `packages/ui/src/blocks/`          | Blocks: one folder of files plus stories per block, see below        |
 | `packages/ui/components.meta.json` | Title, description, shelf and group for every component              |
 | `packages/ui/src/styles/`          | `globals.css`: semantic tokens over Tailwind's ramps, light and dark |
 | `packages/ui/src/lib/`             | `cn` and other helpers                                               |
@@ -120,7 +121,7 @@ files again from upstream and bump the commit here.
 
 ## Conventions
 
-- **Two shelves.** Standard parts are titled `Base components/<Group>/<Name>`
+- **Shelves.** Standard parts are titled `Base components/<Group>/<Name>`
   and depend on nothing beyond Base UI, `class-variance-authority` and
   `lucide-react`. Two named exceptions: Data table also depends on
   `@tanstack/react-table` and the `@tanstack/react-store` it brings, for its
@@ -133,6 +134,15 @@ files again from upstream and bump the commit here.
   heading, base parts in their groups as folders, in the order `storySort`
   sets in `preview.tsx`, which matches the Catalog page. Special parts sit
   straight under their heading.
+- **Blocks.** Whole screens are titled `Blocks/<Name>`, with tier `blocks`,
+  and live in `packages/ui/src/blocks/<name>/`: the block in `<name>.tsx`,
+  its own parts beside it, placeholder content in a typed `data.ts`, and
+  `<name>.stories.tsx` with a `play` function on `Default` that walks the
+  main path. They import fibo parts through the workspace alias and their
+  own files by relative path with `.js`. A block may use any part but adds
+  no package of its own, keeps its state local, never fetches, and lays out
+  with container queries on its root. Its docs page opens on `BlockPreview`.
+  Reasons in `plans/015-blocks.md`.
 - **Tokens.** Semantic tokens only in components (`bg-primary`,
   `text-muted-foreground`). Primitive ramps (`neutral-*`, `red-*`, `green-*`,
   `amber-*`, `blue-*`, and fibo's own `burgundy-*` for Voice memo's finish)
@@ -172,6 +182,9 @@ workspace imports rewritten to `@/lib/utils` and `@/components/ui/*`, writes
 each component's imports. Tokens are read from `globals.css`: each component
 ships the ones its classes use that a stock `shadcn init` lacks (the
 `STOCK_TOKENS` list in the build script), and `@fibo/theme` ships all of them.
+Each folder in `packages/ui/src/blocks/` becomes one `registry:block` whose
+files install to `components/blocks/<name>/`, with relative imports kept and
+their `.js` dropped.
 A helper in `packages/ui/src/lib/` other than `utils` (such as `mergeRefs`)
 ships as a `registry:lib` file with each part that imports it, and may
 import only React; `pnpm 21st:export` inlines it like `cn`.

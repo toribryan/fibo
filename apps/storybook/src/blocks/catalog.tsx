@@ -57,7 +57,7 @@ import componentsMeta from "@workspace/ui/components.meta.json" with { type: "js
 import { iconFor } from "../../.storybook/sidebar-icons.js"
 import { DocLink } from "./doc-link.js"
 
-type Tier = "base-components" | "special-components"
+type Tier = "base-components" | "special-components" | "blocks"
 type Status = "new" | "beta" | "deprecated"
 
 type Entry = {
@@ -88,6 +88,7 @@ const GROUPS: Record<Tier, string[]> = {
     "Display",
     "Feedback",
   ],
+  blocks: ["Shells", "Pages"],
 }
 
 // The wave a Chapter scrubber makes under the pointer, frozen for a preview.
@@ -725,8 +726,8 @@ function groupIcon(group: string) {
 
 const ENTRIES: Entry[] = META.map(([key, info]) => ({
   name: info.title,
-  // Base parts sit in a group in the sidebar; special parts sit straight
-  // under their shelf.
+  // Base parts sit in a group in the sidebar; special parts and blocks sit
+  // straight under their shelf.
   id:
     info.tier === "base-components"
       ? `${info.tier}-${info.group.toLowerCase()}-${key}--docs`

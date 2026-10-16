@@ -22,6 +22,10 @@ const meta = JSON.parse(
 const transformedDir = path.join(registryDir, "registry/ui")
 const libDir = path.join(root, "packages/ui/src/lib")
 const transformedLibDir = path.join(registryDir, "registry/lib")
+const blocksDir = path.join(root, "packages/ui/src/blocks")
+const transformedBlocksDir = path.join(registryDir, "registry/blocks")
+const pascalCase = (name) =>
+  name.replace(/(^|-)(\w)/g, (_, __, letter) => letter.toUpperCase())
 
 const rewrites = [
   [/@workspace\/ui\/lib\//g, "@/lib/"],
@@ -300,7 +304,8 @@ async function shipLib(name) {
 }
 
 // The dependency rule from AGENTS.md. A base part may also take the packages
-// its plan names; a special part may add motion.
+// its plan names; a special part may add motion. A block adds nothing of its
+// own: whatever its parts need comes with them.
 const BASE_DEPENDENCIES = [
   "@base-ui/react",
   "class-variance-authority",
@@ -323,22 +328,14 @@ function checkDependencies(name, tier, dependencies) {
   const extra = [...dependencies].filter((pkg) => !allowed.has(pkg))
   if (extra.length) {
     throw new Error(
-      `${name} imports ${extra.join(", ")}, which a ${tier} part may not depend on. See "Two shelves" in AGENTS.md.`
+      `${name} imports ${extra.join(", ")}, which a ${tier} item may not depend on. See "Shelves" in AGENTS.md.`
     )
   }
 }
 
-const items = []
-for (const file of files) {
-  const name = file.replace(/\.tsx$/, "")
-  const info = meta[name]
-  if (!info) {
-    throw new Error(
-      `${name} has no entry in packages/ui/components.meta.json. Add a title, description, tier and group.`
-    )
-  }
-  const source = await readFile(path.join(componentsDir, file), "utf8")
-
+// What a source file needs: npm packages, the fibo parts it imports as
+// registry dependencies, and the helpers that travel with it.
+async function scanImports(source) {
   const dependencies = new Set()
   const registryDependencies = new Set()
   const libFiles = []
@@ -358,14 +355,31 @@ for (const file of files) {
       if (pkg !== "react" && pkg !== "react-dom") dependencies.add(pkg)
     }
   }
+  return { dependencies, registryDependencies, libFiles }
+}
 
-  checkDependencies(name, info.tier, dependencies)
-
-  const transformed = rewrites.reduce(
+const rewrite = (source) =>
+  rewrites.reduce(
     (code, [pattern, replacement]) => code.replace(pattern, replacement),
     source
   )
-  await writeFile(path.join(transformedDir, file), transformed)
+
+const items = []
+for (const file of files) {
+  const name = file.replace(/\.tsx$/, "")
+  const info = meta[name]
+  if (!info) {
+    throw new Error(
+      `${name} has no entry in packages/ui/components.meta.json. Add a title, description, tier and group.`
+    )
+  }
+  const source = await readFile(path.join(componentsDir, file), "utf8")
+  const { dependencies, registryDependencies, libFiles } =
+    await scanImports(source)
+
+  checkDependencies(name, info.tier, dependencies)
+
+  await writeFile(path.join(transformedDir, file), rewrite(source))
 
   items.push({
     name,
@@ -402,6 +416,91 @@ for (const file of files) {
 
 // Opt-in: every fibo token, for an app that wants the parts to look the way
 // they do in Storybook.
+// Each folder in packages/ui/src/blocks is one registry:block. Every file in
+// it but stories and tests ships, landing in components/blocks/<name>/ so the
+// relative imports between them keep working. See plans/015-blocks.md.
+await rm(transformedBlocksDir, { recursive: true, force: true })
+const blockNames = (
+  await readdir(blocksDir, { withFileTypes: true }).catch(() => [])
+)
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+for (const name of blockNames) {
+  const info = meta[name]
+  if (info?.tier !== "blocks") {
+    throw new Error(
+      `packages/ui/src/blocks/${name} needs an entry in packages/ui/components.meta.json with "tier": "blocks".`
+    )
+  }
+  const blockFiles = (await readdir(path.join(blocksDir, name)))
+    .filter((file) => /\.tsx?$/.test(file))
+    .filter((file) => !/\.(stories|test)\.tsx?$/.test(file))
+    .sort()
+  if (!blockFiles.includes(`${name}.tsx`)) {
+    throw new Error(
+      `packages/ui/src/blocks/${name} has no ${name}.tsx to export the block from.`
+    )
+  }
+  await mkdir(path.join(transformedBlocksDir, name), { recursive: true })
+
+  const dependencies = new Set()
+  const registryDependencies = new Set()
+  const libFiles = new Set()
+  let sources = ""
+  for (const file of blockFiles) {
+    const source = await readFile(path.join(blocksDir, name, file), "utf8")
+    for (const [, spec] of source.matchAll(/from\s+["']([^"']+)["']/g)) {
+      if (spec.startsWith("@workspace/ui/blocks/")) {
+        throw new Error(
+          `blocks/${name}/${file} imports ${spec}. Import the block's own files by relative path.`
+        )
+      }
+    }
+    const found = await scanImports(source)
+    found.dependencies.forEach((dep) => dependencies.add(dep))
+    found.registryDependencies.forEach((dep) => registryDependencies.add(dep))
+    found.libFiles.forEach((lib) => libFiles.add(lib))
+    // packages/ui resolves as nodenext, which wants `./data.js`; an app's
+    // bundler resolves `./data`, so the copy drops the extension.
+    await writeFile(
+      path.join(transformedBlocksDir, name, file),
+      rewrite(source).replace(/(from\s+["']\.{1,2}\/[^"']+)\.js(["'])/g, "$1$2")
+    )
+    sources += source
+  }
+  checkDependencies(name, info.tier, dependencies)
+
+  items.push({
+    name,
+    type: "registry:block",
+    title: info.title,
+    description: info.description,
+    categories: [info.tier, info.group.toLowerCase()],
+    author: "Tori Bryan",
+    docs: `Installed into components/blocks/${name}. Render <${pascalCase(name)} /> where the screen goes, then edit it: it's yours. Docs: ${docsUrl(name, info)}`,
+    meta: {
+      tier: info.tier,
+      group: info.group,
+      docs: docsUrl(name, info),
+      ...(info.status && { status: info.status }),
+    },
+    dependencies: [...dependencies],
+    registryDependencies: [...registryDependencies],
+    files: [
+      ...blockFiles.map((file) => ({
+        path: `registry/blocks/${name}/${file}`,
+        type: "registry:component",
+        target: `components/blocks/${name}/${file}`,
+      })),
+      ...[...libFiles].map((lib) => ({
+        path: `registry/lib/${lib}`,
+        type: "registry:lib",
+      })),
+    ],
+    ...tokensFor(sources),
+  })
+}
+
 items.push({
   name: "theme",
   type: "registry:theme",
@@ -536,6 +635,12 @@ ${section("base-components")}
 
 ${section("special-components")}
 
+## Blocks
+
+Whole screens composed from the parts above. A block installs once into \`components/blocks/<name>/\` and is then yours to edit; its parts come with it.
+
+${section("blocks")}
+
 ## Themes
 
 ${items
@@ -597,6 +702,10 @@ ${partsTable("base-components")}
 **${count("special-components")} special components.** Playful parts built for one kind of moment. They may bring \`motion\` with them.
 
 ${partsTable("special-components")}
+
+**${count("blocks")} ${count("blocks") === 1 ? "block" : "blocks"}.** Whole screens composed from the parts above. A block installs once into \`components/blocks/<name>/\` and is then yours to edit.
+
+${partsTable("blocks")}
 
 **${themes.length} themes.** ${themes.map((item) => `${link(item)} (\`@fibo/${item.name}\`)`).join(", ")}.
 
