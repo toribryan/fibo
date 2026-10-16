@@ -1,0 +1,271 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/dialog.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Dialog
+
+Dialog opens a window over the page for a short task, such as editing a few
+fields, and keeps focus there until it's done or dismissed.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- A modal dialog: focus moves in and stays in, the page behind can't scroll,
+  and focus returns to the trigger on close.
+- Closes on Escape, a click outside, the corner button or any DialogClose.
+- Three widths, and a DialogBody that scrolls when the content is taller
+  than the screen, so the footer stays in reach.
+- Fades and scales in from 95%, as Command menu does, and appears in place
+  with reduced motion.
+
+## Installation
+
+<Install
+  name="dialog"
+  exports={[
+    "Dialog",
+    "DialogTrigger",
+    "DialogContent",
+    "DialogHeader",
+    "DialogTitle",
+    "DialogDescription",
+    "DialogBody",
+    "DialogFooter",
+    "DialogClose",
+  ]}
+/>
+
+It installs Button for the close button, and the `--backdrop` token.
+
+## Examples
+
+### Small
+
+`size="sm"` for a dialog that holds a field or two.
+
+<Canvas of={Stories.Small} />
+
+### Large
+
+`size="lg"` for a form with more to fill in.
+
+<Canvas of={Stories.Large} />
+
+### Long content
+
+The body scrolls inside the dialog, so the title and the footer stay put.
+
+<Canvas of={Stories.LongContent} />
+
+## Usage
+
+```tsx
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+export function EditProfile() {
+  return (
+    <Dialog>
+      <DialogTrigger render={<Button variant="outline" />}>
+        Edit profile
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit profile</DialogTitle>
+          <DialogDescription>
+            Changes show on your profile once you save.
+          </DialogDescription>
+        </DialogHeader>
+        {/* Fields */}
+        <DialogFooter>
+          <DialogClose render={<Button variant="outline" />}>
+            Cancel
+          </DialogClose>
+          <DialogClose render={<Button />}>Save changes</DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+```
+
+Always give it a DialogTitle: it names the dialog for screen readers. For a
+question with no way back, use Alert dialog instead.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Dialog",
+    children: [
+      { name: "DialogTrigger", slot: "dialog-trigger" },
+      {
+        name: "DialogContent",
+        slot: "dialog-content",
+        note: "Renders its own backdrop, dialog-overlay, and the close button.",
+        children: [
+          {
+            name: "DialogHeader",
+            slot: "dialog-header",
+            children: [
+              { name: "DialogTitle", slot: "dialog-title" },
+              { name: "DialogDescription", slot: "dialog-description" },
+            ],
+          },
+          { name: "DialogBody", slot: "dialog-body" },
+          { name: "DialogFooter", slot: "dialog-footer" },
+          { name: "DialogClose", slot: "dialog-close" },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a dialog for a short task that belongs to the page behind it. If it needs steps or room to browse, it's a page or a Sheet.",
+    "Name it for the task in the title, and say what happens on save in the description.",
+    "Put the main action last in the footer, where the eye ends up. On a phone it stacks on top, nearest the thumb.",
+    "Don't open a dialog from a dialog. Finish or close the first one.",
+    "Don't use one to show a message that needs no answer. A Toast does that without taking focus.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 flex-col gap-3 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <span className="font-semibold">Rename file</span>
+            <span className="h-8 rounded-sm border border-input bg-input-subtle" />
+            <span className="flex justify-end gap-2">
+              <span className="rounded-md border border-border px-2 py-1 text-xs">
+                Cancel
+              </span>
+              <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground">
+                Rename
+              </span>
+            </span>
+          </div>
+        ),
+        description: "Name the action after what it does: Rename, not OK.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 flex-col gap-3 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <span className="font-semibold">Saved</span>
+            <span className="text-muted-foreground">
+              Your changes were saved.
+            </span>
+            <span className="flex justify-end">
+              <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground">
+                OK
+              </span>
+            </span>
+          </div>
+        ),
+        description:
+          "Don't stop someone to say something worked. Show a Toast instead.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+Dialog takes Base UI's Dialog Root props, such as `open`, `defaultOpen` and
+`onOpenChange`. DialogContent takes the Popup's props plus `size`,
+`showCloseButton` and `container`, and the other parts take the props of the
+Base UI part or element they wrap.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="dialog-trigger"',
+      element: "Trigger",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="dialog-overlay"',
+      element: "Backdrop",
+      when: "While it's open.",
+    },
+    {
+      attribute: 'data-slot="dialog-content"',
+      element: "Window",
+      when: "While it's open.",
+    },
+    {
+      attribute: "data-size",
+      element: "Window",
+      when: "Always: sm, default or lg.",
+    },
+    {
+      attribute: "data-open, data-closed",
+      element: "Window, backdrop",
+      when: "Opening and open, or closing, for the fade.",
+    },
+    {
+      attribute: 'data-slot="dialog-header", "dialog-body", "dialog-footer"',
+      element: "Layout parts",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="dialog-title", "dialog-description"',
+      element: "Title, description",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="dialog-close"',
+      element: "Close buttons",
+      when: "Always.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "It's a modal dialog named by DialogTitle and described by DialogDescription.",
+    "Focus moves to the first control inside when it opens, stays inside while it's open, and returns to the trigger when it closes.",
+    "Escape closes it from anywhere inside. The page behind is inert and doesn't scroll.",
+    "The corner button is named Close for screen readers.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Alert dialog", "Sheet", "Toast"]} />
+
+## References
+
+- [Base UI Dialog](https://base-ui.com/react/components/dialog), which it
+  wraps
+- [WAI-ARIA dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)

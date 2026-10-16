@@ -445,6 +445,18 @@ const PREVIEWS: Record<string, ReactNode> = {
       ))}
     </div>
   ),
+  dialog: (
+    <div className="relative flex h-28 w-44 items-center justify-center overflow-hidden rounded-md border border-border bg-muted">
+      <div className="flex w-28 flex-col gap-1.5 rounded-lg border border-border bg-popover p-2 shadow-md">
+        <span className="h-2 w-14 rounded-full bg-foreground" />
+        <span className="h-4 rounded-sm border border-input bg-input-subtle" />
+        <span className="flex justify-end gap-1">
+          <span className="h-3.5 w-8 rounded-sm border border-border" />
+          <span className="h-3.5 w-8 rounded-sm bg-primary" />
+        </span>
+      </div>
+    </div>
+  ),
   sheet: (
     <div className="relative h-28 w-44 overflow-hidden rounded-md border border-border bg-muted">
       <div className="absolute inset-y-0 right-0 flex w-24 flex-col gap-1.5 border-l border-border bg-background p-2">

@@ -5,7 +5,6 @@
     "description": "Hand-drawn marks on a word or phrase, from underlines and circles to a highlighter, plus sticker chips that can cycle through words.",
     "tier": "special-components",
     "group": "Display",
-    "status": "new",
     "figma": "875-2"
   },
   "avatar": {
@@ -341,6 +340,13 @@
     "description": "A human-readable sitemap: a location search, popular picks, and every destination grouped by job, in columns that fold to cards on a phone.",
     "tier": "blocks",
     "group": "Pages",
+    "status": "new"
+  },
+  "dialog": {
+    "title": "Dialog",
+    "description": "A window over the page for a short task, such as editing a few fields, that keeps focus until it's done or dismissed.",
+    "tier": "base-components",
+    "group": "Overlays",
     "status": "new"
   }
 }
