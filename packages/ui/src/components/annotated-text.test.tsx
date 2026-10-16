@@ -68,9 +68,12 @@ describe("AnnotatedTextCycle", () => {
     const screen = await render(
       <AnnotatedTextCycle items={items} interval={60} />
     )
-    const root = screen.container.querySelector(
+    const root = screen.container.querySelector<HTMLElement>(
       '[data-slot="annotated-text-cycle"]'
     )!
+    // The browser's pointer stays wherever another test left it, and resting
+    // on the cycle pauses it.
+    await userEvent.unhover(root)
     await expect.poll(() => root.getAttribute("data-index")).toBe("2")
     await new Promise((resolve) => setTimeout(resolve, 200))
     expect(root.getAttribute("data-index")).toBe("2")
