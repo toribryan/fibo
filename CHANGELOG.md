@@ -10,6 +10,10 @@ has the same history with links into the docs.
 
 ### Added
 
+- **Search input**: `SearchInput`, a search box with a Cmd+K shortcut that
+  focuses it, a clear button and Escape to clear then leave, plus a ghost
+  variant for the top of a menu; and `SearchTrigger`, a compact header
+  button that opens a Command menu.
 - **Settings page** block: profile, notifications and account in tabs, one
   form with a save bar that appears on change and saves with Cmd+S or
   Ctrl+S, a Toast on save, and a danger zone confirmed with Alert dialog.
@@ -27,6 +31,11 @@ has the same history with links into the docs.
   popular picks, and every destination grouped by job in columns that fold
   to cards on a phone. Groups such as a state and its cities can fold, and
   the search can stay pinned as the page scrolls.
+
+### Fixed
+
+- **Input group**: pressing an addon focuses the input again when the group
+  carries its own `data-slot`, as Data table's search does.
 
 ## [1.0.0] - 2026-10-16
 
