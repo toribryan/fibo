@@ -22,6 +22,10 @@ import {
   XIcon,
 } from "lucide-react"
 
+import {
+  AnnotatedText,
+  AnnotatedTextChip,
+} from "@workspace/ui/components/annotated-text"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -553,6 +557,12 @@ const PREVIEWS: Record<string, ReactNode> = {
         </div>
       ))}
     </div>
+  ),
+  "annotated-text": (
+    <span className="text-base font-medium">
+      Mark <AnnotatedText variant="circle">this</AnnotatedText> and{" "}
+      <AnnotatedTextChip>that</AnnotatedTextChip>
+    </span>
   ),
   "pixel-snail": (
     <svg

@@ -1,0 +1,303 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/annotated-text.stories"
+import {
+  AnnotatedText,
+  AnnotatedTextChip,
+  AnnotatedTextCycle,
+} from "../../../../packages/ui/src/components/annotated-text"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Annotated text
+
+Marks a word or phrase the way a pen would: underlined, circled, boxed,
+struck out or run over with a highlighter. A sticker chip sets a word apart
+in a pill, and can cycle through a few words in the same spot.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Ten hand-drawn marks, drawn as SVG in the text's own pixels, so they keep
+  their proportions from a caption to a display heading and never stretch.
+- A steady wobble seeded from the text: the same phrase looks the same on
+  every render and device, and two phrases don't wobble alike.
+- An optional draw-in the first time the text scrolls into view, with a
+  delay for staging several marks in order.
+- `AnnotatedTextChip` and `AnnotatedTextCycle` for a word in a pill with a
+  sticker beside it, still or cycling.
+
+## Installation
+
+<Install
+  name="annotated-text"
+  exports={[
+    "AnnotatedText",
+    "AnnotatedTextChip",
+    "AnnotatedTextCycle",
+    "type AnnotatedTextVariant",
+    "type AnnotatedTextTone",
+    "type AnnotatedTextCycleItem",
+  ]}
+/>
+
+Installs `motion`, which the cycling chip uses to slide words and resize the
+pill. The marks themselves are CSS transitions.
+
+## Examples
+
+### Variants
+
+Each `variant` is one kind of mark. `highlight` sits behind the text; every
+other mark is drawn over or around it.
+
+<Canvas of={Stories.Variants} />
+
+### Tones
+
+`tone` colors a mark when the mark means something: a struck-out price in
+destructive, a fixed figure in success. A highlight takes the quiet tint of
+its tone.
+
+<Canvas of={Stories.Tones} />
+
+### Sizes
+
+Every offset and stroke is a share of the text's height, so the mark grows
+with the type.
+
+<Canvas of={Stories.Sizes} />
+
+### Draw in
+
+With `animate`, a mark draws itself in once it's mostly in view. `delay`
+stages several marks so they read in order.
+
+<Canvas of={Stories.DrawIn} />
+
+### Sticker chips
+
+`AnnotatedTextChip` sets a word in a pill with a sticker at its start. The
+sticker takes a small tilt from the word. An emoji or an `<img>` is die-cut
+with a white paper edge round its outline. A line icon is printed in ink on
+a small paper tile, since an edge round every stroke would read as an
+outline rather than a sticker.
+
+<Canvas of={Stories.Chip} />
+
+### Cycling chips
+
+`AnnotatedTextCycle` swaps the word and sticker in one pill, and the pill
+springs to fit. It pauses under the pointer, and by default runs through its
+items once and settles on the last.
+
+<Canvas of={Stories.Cycle} />
+
+### In prose
+
+At body size, a mark or two a paragraph is enough.
+
+<Canvas of={Stories.InProse} />
+
+## Usage
+
+```tsx
+import {
+  AnnotatedText,
+  AnnotatedTextChip,
+  AnnotatedTextCycle,
+} from "@/components/ui/annotated-text"
+
+export function Hero() {
+  return (
+    <h1>
+      Design <AnnotatedText variant="circle">systems</AnnotatedText> that ship
+      with{" "}
+      <AnnotatedTextCycle
+        items={[
+          { label: "agents", icon: <BotIcon /> },
+          { label: "anything", icon: <SparklesIcon /> },
+        ]}
+      />
+    </h1>
+  )
+}
+```
+
+```ts
+type AnnotatedTextCycleItem = { label: string; icon?: React.ReactNode }
+```
+
+Keep an annotated phrase short. It never wraps, because a mark is drawn
+round one line of text.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "AnnotatedText",
+    slot: "annotated-text",
+    note: "An inline-block span round the text. Carries data-variant, data-tone and data-drawn.",
+    children: [
+      {
+        name: "mark",
+        slot: "annotated-text-mark",
+        note: "An SVG the size of the text, hidden from assistive technology, with one path per stroke.",
+      },
+    ],
+  }}
+/>
+
+`AnnotatedTextChip` is a span with `data-slot="annotated-text-chip"`, holding
+the sticker (`annotated-text-chip-icon`) and the text.
+`AnnotatedTextCycle` is a span with `data-slot="annotated-text-cycle"` and
+`data-index`, holding a visually hidden label and the animated pill.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use marks for emphasis in display type and editorial copy: a hero line, a pull quote, a callout in a guide.",
+    "One or two marks per paragraph. More, and nothing stands out.",
+    <>
+      Leave <code>tone</code> at default unless the mark carries meaning. Color
+      only carries meaning in fibo.
+    </>,
+    <>
+      Stage draw-ins with <code>delay</code> in reading order, and keep the
+      whole sequence under two seconds.
+    </>,
+    "Use chips for a few key nouns in a headline, each with a sticker that says the same thing as the word.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <p className="m-0 text-lg">
+            Name what a color{" "}
+            <AnnotatedText variant="circle">does</AnnotatedText>.
+          </p>
+        ),
+        description: "Mark the one word the sentence turns on.",
+      },
+      negative: {
+        component: (
+          <p className="m-0 text-lg">
+            <AnnotatedText variant="wavy">Name</AnnotatedText> what a{" "}
+            <AnnotatedText variant="box">color</AnnotatedText>{" "}
+            <AnnotatedText variant="circle">does</AnnotatedText>.
+          </p>
+        ),
+        description:
+          "Don't mark every word. The marks compete and the line gets hard to read.",
+      },
+    },
+    {
+      positive: {
+        component: (
+          <p className="m-0 text-lg">
+            Save <AnnotatedTextChip>time</AnnotatedTextChip> on every build.
+          </p>
+        ),
+        description: "Use a chip in display copy, for a short noun.",
+      },
+      negative: {
+        component: (
+          <p className="m-0 text-sm">
+            Read the <AnnotatedTextChip>documentation</AnnotatedTextChip> for
+            the full list of options before you start.
+          </p>
+        ),
+        description:
+          "Don't use a chip as a link or a tag in body text. Use a link or a Badge.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+### AnnotatedText
+
+<ArgTypes of={Stories.Default} />
+
+### AnnotatedTextChip
+
+<ArgTypes of={AnnotatedTextChip} />
+
+### AnnotatedTextCycle
+
+<ArgTypes of={AnnotatedTextCycle} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="annotated-text"',
+      element: "The root",
+      when: "Always.",
+    },
+    {
+      attribute: "data-variant, data-tone",
+      element: "The root",
+      when: "Always, with the mark and tone.",
+    },
+    {
+      attribute: "data-drawn",
+      element: "The root",
+      when: (
+        <>
+          The mark is showing: always without <code>animate</code>, and once it
+          has scrolled into view with it.
+        </>
+      ),
+    },
+    {
+      attribute: "data-index",
+      element: "The cycle's root",
+      when: "Always, with the index of the item showing.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "Marks and stickers are hidden from assistive technology, so the text reads as plain text. If the mark carries meaning, like a struck-out price, say so in the text too.",
+    <>
+      <code>AnnotatedTextCycle</code> gives screen readers one fixed word:{" "}
+      <code>label</code>, or the first item. The moving pill is hidden from
+      them.
+    </>,
+    <>
+      By default the cycle runs through once and stops. A looping cycle moves
+      for more than five seconds, so pair <code>loop</code> with a control that
+      sets <code>paused</code> (WCAG 2.2.2). It also pauses under the pointer.
+    </>,
+    "Under prefers-reduced-motion marks appear whole without drawing in, and a cycle holds on its first item.",
+    "Check that text over a highlight keeps its contrast in both themes.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Badge", "Kbd"]} />
+
+## References
+
+- [WCAG 2.2.2 Pause, stop, hide](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide)
+- [SVG stroke-dashoffset](https://developer.mozilla.org/docs/Web/SVG/Attribute/stroke-dashoffset)
+- Inspired by [Annotated text](https://opensourceui.in/components/annotated-text) on Open Source UI and Graphical's hero copy.

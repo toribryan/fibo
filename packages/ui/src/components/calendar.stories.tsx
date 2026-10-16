@@ -51,7 +51,6 @@ const monthArgs = {
 const meta: Meta<typeof Calendar> = {
   title: "Base components/Forms/Calendar",
   component: Calendar,
-  tags: ["new"],
   argTypes: {
     mode: { control: "inline-radio", options: ["single", "range"] },
     type: { control: "inline-radio", options: ["paged", "scroll", "month"] },
