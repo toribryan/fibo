@@ -1,30 +1,26 @@
 import { PlusIcon } from "lucide-react"
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import { page } from "vitest/browser"
 import { render } from "vitest-browser-react"
 
 import { Button } from "./button.js"
 import {
+  createDataTableColumnHelper,
   DataTable,
   DataTableAction,
   DataTableActions,
-  DataTableBody,
   DataTableBulkActions,
-  DataTableCard,
-  DataTableCardField,
   DataTableCards,
-  DataTableCell,
   DataTableContent,
   DataTableFilters,
-  DataTableHead,
-  DataTableHeader,
-  DataTableRow,
   DataTableToolbar,
+  useDataTable,
   type DataTableNarrowLayout,
-  type DataTableSelection,
 } from "./data-table.js"
 
-const MEMBERS = [
+type Member = { id: string; name: string; team: string; lock?: string }
+
+const MEMBERS: Member[] = [
   { id: "maya", name: "Maya Okafor", team: "Design" },
   { id: "priya", name: "Priya Raman", team: "Engineering" },
   {
@@ -35,23 +31,31 @@ const MEMBERS = [
   },
 ]
 
+const member = createDataTableColumnHelper<Member>()
+const COLUMNS = member.columns([
+  member.accessor("name", { header: "Member", meta: { type: "primary" } }),
+  member.accessor("team", { header: "Team" }),
+])
+
 function Example({
   width,
   narrowLayout,
-  onValueChange,
 }: {
   width: number
   narrowLayout?: DataTableNarrowLayout
-  onValueChange?: (value: DataTableSelection) => void
 }) {
+  const table = useDataTable({
+    data: MEMBERS,
+    columns: COLUMNS,
+    lockedReason: (row) => row.lock,
+  })
   return (
     <div style={{ width }}>
       <DataTable
         aria-label="Members"
-        rowIds={MEMBERS.map((member) => member.id)}
+        table={table}
         noun={{ one: "member", other: "members" }}
         narrowLayout={narrowLayout}
-        onValueChange={onValueChange}
       >
         <DataTableToolbar>
           <DataTableFilters search={<input aria-label="Search members" />}>
@@ -62,36 +66,8 @@ function Example({
           </DataTableActions>
           <DataTableBulkActions onDelete={() => {}} />
         </DataTableToolbar>
-        <DataTableContent>
-          <DataTableHeader>
-            <DataTableHead type="primary">Member</DataTableHead>
-          </DataTableHeader>
-          <DataTableBody>
-            {MEMBERS.map((member) => (
-              <DataTableRow
-                key={member.id}
-                id={member.id}
-                lockedReason={member.lock}
-              >
-                <DataTableCell type="primary">{member.name}</DataTableCell>
-              </DataTableRow>
-            ))}
-          </DataTableBody>
-        </DataTableContent>
-        <DataTableCards>
-          {MEMBERS.map((member) => (
-            <DataTableCard
-              key={member.id}
-              id={member.id}
-              title={member.name}
-              lockedReason={member.lock}
-            >
-              <DataTableCardField label="Team">
-                {member.team}
-              </DataTableCardField>
-            </DataTableCard>
-          ))}
-        </DataTableCards>
+        <DataTableContent />
+        <DataTableCards />
       </DataTable>
     </div>
   )
@@ -144,10 +120,7 @@ describe("DataTable at narrow widths", () => {
   })
 
   it("swaps rows for cards, with select all in the toolbar", async () => {
-    const onValueChange = vi.fn()
-    const screen = await render(
-      <Example width={360} narrowLayout="cards" onValueChange={onValueChange} />
-    )
+    const screen = await render(<Example width={360} narrowLayout="cards" />)
     await expect.element(screen.getByRole("table")).not.toBeInTheDocument()
     await expect.element(screen.getByRole("list")).toBeInTheDocument()
     await expect
@@ -157,10 +130,15 @@ describe("DataTable at narrow widths", () => {
     await screen
       .getByRole("checkbox", { name: "Select all members on this page" })
       .click()
-    expect(onValueChange).toHaveBeenLastCalledWith(new Set(["maya", "priya"]))
     await expect
       .element(screen.getByRole("checkbox", { name: "Select Maya Okafor" }))
       .toBeChecked()
+    await expect
+      .element(screen.getByRole("checkbox", { name: "Select Priya Raman" }))
+      .toBeChecked()
+    await expect
+      .element(screen.getByRole("checkbox", { name: "Select Elena Marsh" }))
+      .not.toBeChecked()
   })
 
   it("follows a focused row to its card when the table narrows", async () => {

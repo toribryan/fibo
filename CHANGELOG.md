@@ -93,16 +93,6 @@ has the same history with links into the docs.
 - A `brand/` folder with the brand kit's source: the rabbit, the logo,
   the social card and poster generators, and the motion prototype.
 
-### Deprecated
-
-- Data table's `rowIds`, `totalCount`, `value`, `defaultValue` and
-  `onValueChange` props, `useDataTableSelection`, and hand-written
-  `DataTableRow`, `DataTableCell` and `DataTableHead`. Use `useDataTable`
-  and `<DataTable table={table}>`; the old API runs on the same table until
-  it's removed in 0.3.0. The part itself isn't deprecated. List each use
-  with `pnpm dlx jscodeshift --parser tsx --dry -t
-https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
-
 ### Removed
 
 - **Breaking:** Integration visual's `size` prop. Tiles and the hub keep the
@@ -116,6 +106,12 @@ https://fibo.toribryan.com/codemods/spinner-to-progress.js src`.
   props. Put a `<StatusDot>` in the sticker, with `label` and `variant`; move
   them with `pnpm dlx jscodeshift --parser tsx -t
 https://fibo.toribryan.com/codemods/sticker-status-to-child.js src`.
+- **Breaking:** Data table's `rowIds`, `totalCount`, `value`, `defaultValue`
+  and `onValueChange` props, `useDataTableSelection`, `DataTableSelection`,
+  and hand-written `DataTableRow`, `DataTableCell` and `DataTableHead`.
+  `table` is now required: use `useDataTable` and `<DataTable table={table}>`.
+  List each use with `pnpm dlx jscodeshift --parser tsx --dry -t
+https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
 
 ### Fixed
 

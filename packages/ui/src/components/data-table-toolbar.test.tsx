@@ -5,23 +5,21 @@ import { render } from "vitest-browser-react"
 
 import { Button } from "./button.js"
 import {
+  createDataTableColumnHelper,
   DataTable,
   DataTableActions,
-  DataTableBody,
   DataTableBulkAction,
   DataTableBulkActions,
-  DataTableCell,
   DataTableContent,
   DataTableFilters,
-  DataTableHead,
-  DataTableHeader,
-  DataTableRow,
   DataTableToolbar,
-  type DataTableSelection,
+  useDataTable,
 } from "./data-table.js"
 import { MenuItem } from "./menu.js"
 
-const MEMBERS = [
+type Member = { id: string; name: string; lock?: string }
+
+const MEMBERS: Member[] = [
   { id: "maya", name: "Maya Okafor" },
   { id: "priya", name: "Priya Raman" },
   {
@@ -31,32 +29,43 @@ const MEMBERS = [
   },
 ]
 
+const member = createDataTableColumnHelper<Member>()
+const COLUMNS = member.columns([
+  member.accessor("name", { header: "Member", meta: { type: "primary" } }),
+])
+
 function Example({
+  members = MEMBERS,
+  pageSize,
   onDelete = () => {},
-  onValueChange,
   onShowSelectedOnlyChange,
   showSelectedOnly,
-  totalCount,
   bulk,
   bulkActions,
 }: {
+  members?: Member[]
+  pageSize?: number
   onDelete?: () => void
-  onValueChange?: (value: DataTableSelection) => void
   onShowSelectedOnlyChange?: (value: boolean) => void
   showSelectedOnly?: boolean
-  totalCount?: number
   bulk?: React.ReactNode
   bulkActions?: React.ReactNode
 }) {
+  const table = useDataTable({
+    data: members,
+    columns: COLUMNS,
+    lockedReason: (row) => row.lock,
+    initialState: pageSize
+      ? { pagination: { pageIndex: 0, pageSize } }
+      : undefined,
+  })
   // Wide enough that the toolbar isn't in its narrow layout.
   return (
     <div style={{ width: 800 }}>
       <DataTable
         aria-label="Members"
-        rowIds={MEMBERS.map((member) => member.id)}
+        table={table}
         noun={{ one: "member", other: "members" }}
-        totalCount={totalCount}
-        onValueChange={onValueChange}
         showSelectedOnly={showSelectedOnly}
         onShowSelectedOnlyChange={onShowSelectedOnlyChange}
       >
@@ -73,22 +82,7 @@ function Example({
             </DataTableBulkActions>
           )}
         </DataTableToolbar>
-        <DataTableContent>
-          <DataTableHeader>
-            <DataTableHead type="primary">Member</DataTableHead>
-          </DataTableHeader>
-          <DataTableBody>
-            {MEMBERS.map((member) => (
-              <DataTableRow
-                key={member.id}
-                id={member.id}
-                lockedReason={member.lock}
-              >
-                <DataTableCell type="primary">{member.name}</DataTableCell>
-              </DataTableRow>
-            ))}
-          </DataTableBody>
-        </DataTableContent>
+        <DataTableContent />
       </DataTable>
     </div>
   )
@@ -117,32 +111,37 @@ describe("DataTableToolbar", () => {
   })
 
   it("clears and hands focus to select all", async () => {
-    const onValueChange = vi.fn()
-    const screen = await render(<Example onValueChange={onValueChange} />)
-    await screen.getByRole("checkbox", { name: "Select Priya Raman" }).click()
+    const screen = await render(<Example />)
+    const priya = screen.getByRole("checkbox", { name: "Select Priya Raman" })
+    await priya.click()
     await screen.getByRole("button", { name: "Clear selection" }).click()
-    expect(onValueChange).toHaveBeenLastCalledWith(new Set())
+    await expect.element(priya).not.toBeChecked()
     await expect
       .element(screen.getByRole("checkbox", { name: /Select all/ }))
       .toHaveFocus()
   })
 
   it("offers every matching row once the page is selected", async () => {
-    const onValueChange = vi.fn()
     const screen = await render(
-      <Example totalCount={248} onValueChange={onValueChange} />
+      <Example
+        members={[
+          ...MEMBERS,
+          { id: "sam", name: "Sam Whitfield" },
+          { id: "kofi", name: "Kofi Mensah" },
+        ]}
+        pageSize={2}
+      />
     )
     await screen.getByRole("checkbox", { name: /Select all/ }).click()
     await expect
       .element(screen.getByRole("group", { name: "Bulk actions" }))
       .toMatchTextContent("2 members selected")
-    await screen.getByRole("button", { name: "Select all 247 members" }).click()
-    expect(onValueChange).toHaveBeenLastCalledWith("all")
+    await screen.getByRole("button", { name: "Select all 4 members" }).click()
     await expect
       .element(screen.getByRole("group", { name: "Bulk actions" }))
-      .toMatchTextContent("All 247 members selected")
+      .toMatchTextContent("All 4 members selected")
     await expect
-      .element(screen.getByRole("button", { name: /Select all 247/ }))
+      .element(screen.getByRole("button", { name: /Select all 4/ }))
       .not.toBeInTheDocument()
     // Its button is gone, so focus moves to Clear rather than the page.
     await expect

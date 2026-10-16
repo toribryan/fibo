@@ -9,19 +9,14 @@ import {
   createDataTableColumnHelper,
   DataTable,
   DataTableActions,
-  DataTableBody,
   DataTableBulkActions,
-  DataTableCell,
   DataTableColumns,
   DataTableContent,
   dataTableCodecs,
   DataTableFacetFilter,
   DataTableFilters,
   DataTableFooter,
-  DataTableHead,
-  DataTableHeader,
   DataTablePagination,
-  DataTableRow,
   DataTableSearch,
   DataTableSelectionCount,
   DataTableToolbar,
@@ -30,7 +25,6 @@ import {
   useDataTableFacets,
   useSearchParamsAtom,
   type DataTableOptions,
-  type DataTableSelection,
 } from "./data-table.js"
 
 type Member = {
@@ -881,101 +875,4 @@ describe("useSearchParamsAtom", () => {
     expect(dataTableCodecs.pagination(0).parse("2").pageSize).toBe(Infinity)
     expect(dataTableCodecs.pagination(NaN).parse("2").pageSize).toBe(Infinity)
   })
-})
-
-describe("the deprecated props, on the same table", () => {
-  // The same clicks through rowIds and value, and through useDataTable, end
-  // in the same selection and the same words.
-  async function legacyRun() {
-    const onValueChange = vi.fn()
-    const screen = await render(
-      <div style={{ width: 800 }}>
-        <DataTable
-          aria-label="Members"
-          rowIds={MEMBERS.map((row) => row.id)}
-          noun={NOUN}
-          onValueChange={onValueChange}
-        >
-          <DataTableToolbar />
-          <DataTableContent>
-            <DataTableHeader>
-              <DataTableHead type="primary">Member</DataTableHead>
-            </DataTableHeader>
-            <DataTableBody>
-              {MEMBERS.map((row) => (
-                <DataTableRow key={row.id} id={row.id} lockedReason={row.lock}>
-                  <DataTableCell type="primary">{row.name}</DataTableCell>
-                </DataTableRow>
-              ))}
-            </DataTableBody>
-          </DataTableContent>
-        </DataTable>
-      </div>
-    )
-    return { screen, selected: () => onValueChange.mock.lastCall?.[0] }
-  }
-
-  async function modelRun() {
-    let last: DataTableSelection | undefined
-    function Controlled() {
-      const [rowSelection, setRowSelection] = React.useState({})
-      const table = useDataTable({
-        data: MEMBERS,
-        columns: COLUMNS,
-        lockedReason: (row) => row.lock,
-        state: { rowSelection },
-        onRowSelectionChange: (updater) =>
-          setRowSelection((old) => {
-            const next = typeof updater === "function" ? updater(old) : updater
-            last = new Set(Object.keys(next))
-            return next
-          }),
-      })
-      return (
-        <div style={{ width: 800 }}>
-          <DataTable table={table} aria-label="Members" noun={NOUN}>
-            <DataTableToolbar />
-            <DataTableContent />
-          </DataTable>
-        </div>
-      )
-    }
-    const screen = await render(<Controlled />)
-    return { screen, selected: () => last }
-  }
-
-  for (const [name, run] of [
-    ["rowIds and value", legacyRun],
-    ["useDataTable", modelRun],
-  ] as const) {
-    it(`selects, ranges and clears the same way through ${name}`, async () => {
-      const { screen, selected } = await run()
-      const status = screen.getByRole("status")
-
-      await screen.getByRole("checkbox", { name: "Select Priya Raman" }).click()
-      expect(selected()).toEqual(new Set(["priya"]))
-      await expect.element(status).toHaveTextContent("1 member selected")
-
-      await userEvent.keyboard("{Shift>}")
-      await screen
-        .getByRole("checkbox", { name: "Select Sam Whitfield" })
-        .click()
-      await userEvent.keyboard("{/Shift}")
-      expect(selected()).toEqual(new Set(["priya", "jordan", "sam"]))
-      await expect.element(status).toHaveTextContent("3 members selected")
-
-      await screen.getByRole("checkbox", { name: /Select all/ }).click()
-      expect(selected()).toEqual(new Set(["maya", "priya", "jordan", "sam"]))
-      await expect
-        .element(screen.getByRole("checkbox", { name: /Select all/ }))
-        .toHaveAttribute("aria-checked", "true")
-
-      await screen.getByRole("button", { name: "Clear selection" }).click()
-      expect(selected()).toEqual(new Set())
-      await expect.element(status).toHaveTextContent("Selection cleared")
-      await expect
-        .element(screen.getByRole("checkbox", { name: /Select all/ }))
-        .toHaveFocus()
-    })
-  }
 })

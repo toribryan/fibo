@@ -19,7 +19,7 @@
     "Typing indicator.indicator": "Code shows a person's indicator from data when they're the only one typing; designers pick it by hand.",
     "Message.type": "Code picks first, continuation, system or deleted from grouping rules and message data, not a prop.",
     "Message divider.unread": "Code draws the unread divider above the message named by unreadFrom.",
-    "Data table.selection": "In code the selection is state, from value or defaultValue; Figma shows each state as a variant.",
+    "Data table.selection": "In code the selection is the table's rowSelection state, from useDataTable; Figma shows each state as a variant.",
     "Data table.width": "Code reads the container's width and switches at 32rem; Figma picks narrow by hand.",
     "Floating nav item.type": "Code makes an item text-only when it has no icon; designers pick it by hand.",
     "Sticker avatar.shape": "Code picks the shape from the image: a cut-out when its border is clear, round for a photo, initials with no image. Designers pick it by hand.",

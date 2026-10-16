@@ -11,7 +11,7 @@ import {
   XIcon,
 } from "lucide-react"
 import { useCreateAtom, useSelector } from "@tanstack/react-store"
-import { expect, fn, waitFor, within } from "storybook/test"
+import { expect, waitFor, within } from "storybook/test"
 
 import { Badge } from "./badge.js"
 import { Button } from "./button.js"
@@ -26,23 +26,19 @@ import {
   DataTableCard,
   DataTableCardField,
   DataTableCards,
-  DataTableCell,
   DataTableColumns,
   DataTableContent,
   dataTableCodecs,
   DataTableFacetFilter,
   DataTableFilters,
   DataTableFooter,
-  DataTableHead,
   DataTableHeader,
   DataTablePagination,
-  DataTableRow,
   DataTableSearch,
   DataTableSelectionCount,
   DataTableToolbar,
   useDataTable,
   useSearchParamsAtom,
-  type DataTableNarrowLayout,
   type DataTableOptions,
 } from "./data-table.js"
 import {
@@ -353,11 +349,6 @@ const meta: Meta<typeof DataTable> = {
     showSelectedOnly: { control: false },
     onShowSelectedOnlyChange: { control: false },
     narrowLayout: { control: "inline-radio", options: ["scroll", "cards"] },
-    rowIds: { control: false },
-    totalCount: { control: false },
-    value: { control: false },
-    defaultValue: { control: false },
-    onValueChange: { control: false },
   },
   parameters: {
     controls: {
@@ -367,11 +358,6 @@ const meta: Meta<typeof DataTable> = {
         "children",
         "showSelectedOnly",
         "onShowSelectedOnlyChange",
-        "rowIds",
-        "totalCount",
-        "value",
-        "defaultValue",
-        "onValueChange",
       ],
     },
   },
@@ -1106,104 +1092,5 @@ export const NarrowCards: Story = {
     ).toBeVisible()
     await userEvent.keyboard("{Escape}")
     await waitFor(() => expect(body.queryByRole("dialog")).toBeNull())
-  },
-}
-
-/*
- * The props and hand-written rows Data table had before useDataTable. They
- * keep working until 0.3.0, on the same table underneath.
- */
-function LegacyMembersTable(
-  props: Partial<React.ComponentProps<typeof DataTable>> & {
-    narrowLayout?: DataTableNarrowLayout
-  }
-) {
-  return (
-    <DataTable
-      aria-label="Members"
-      rowIds={MEMBERS.map((row) => row.id)}
-      noun={MEMBER_NOUN}
-      {...props}
-    >
-      <DataTableToolbar>
-        <DataTableFilters>
-          <Button variant="ghost" size="sm">
-            <PlusIcon data-icon="inline-start" />
-            Add filter
-          </Button>
-        </DataTableFilters>
-        <DataTableBulkActions onDelete={() => {}} />
-      </DataTableToolbar>
-      <DataTableContent>
-        <DataTableHeader>
-          <DataTableHead type="person" pinned="start" className="w-56">
-            Member
-          </DataTableHead>
-          <DataTableHead className="w-44">Team</DataTableHead>
-          <DataTableHead type="status">Status</DataTableHead>
-          <DataTableHead type="actions" pinned="end">
-            <span className="sr-only">Actions</span>
-          </DataTableHead>
-        </DataTableHeader>
-        <DataTableBody>
-          {MEMBERS.map((row) => (
-            <DataTableRow key={row.id} id={row.id} lockedReason={row.lock}>
-              <DataTableCell
-                type="person"
-                pinned="start"
-                avatar={{ fallback: row.initials }}
-              >
-                {row.name}
-              </DataTableCell>
-              <DataTableCell>{row.team}</DataTableCell>
-              <DataTableCell type="status">
-                <Badge variant={STATUS[row.status]}>{row.status}</Badge>
-              </DataTableCell>
-              <DataTableCell type="actions" pinned="end">
-                <RowActions name={row.name} />
-              </DataTableCell>
-            </DataTableRow>
-          ))}
-        </DataTableBody>
-      </DataTableContent>
-      <DataTableCards>
-        {MEMBERS.map((row) => (
-          <DataTableCard
-            key={row.id}
-            id={row.id}
-            title={row.name}
-            avatar={{ fallback: row.initials }}
-            lockedReason={row.lock}
-          >
-            <DataTableCardField label="Team">{row.team}</DataTableCardField>
-          </DataTableCard>
-        ))}
-      </DataTableCards>
-      <DataTableFooter>
-        <DataTableSelectionCount />
-      </DataTableFooter>
-    </DataTable>
-  )
-}
-
-export const LegacyApi: Story = {
-  name: "Legacy API",
-  args: { onValueChange: fn(), totalCount: 248 },
-  render: (args) => <LegacyMembersTable {...args} />,
-  play: async ({ args, canvas, userEvent }) => {
-    await userEvent.click(
-      canvas.getByRole("checkbox", { name: "Select Priya Raman" })
-    )
-    await expect(args.onValueChange).toHaveBeenLastCalledWith(
-      new Set(["priya"])
-    )
-    await userEvent.click(
-      canvas.getByRole("checkbox", { name: "Select all members on this page" })
-    )
-    await userEvent.click(
-      canvas.getByRole("button", { name: "Select all 247 members" })
-    )
-    await expect(args.onValueChange).toHaveBeenLastCalledWith("all")
-    await expect(canvas.getByText("247 of 248 members selected")).toBeVisible()
   },
 }

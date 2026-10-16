@@ -24,6 +24,10 @@ Notable changes, newest first.
   props. Put a **Status dot** in the sticker instead;
   `pnpm dlx jscodeshift --parser tsx -t https://fibo.toribryan.com/codemods/sticker-status-to-child.js src`
   moves them for you.
+- **Data table** drops its `rowIds` and `value` props and hand-written rows,
+  cells and heads: every table is built with `useDataTable` now.
+  `pnpm dlx jscodeshift --parser tsx --dry -t https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`
+  lists what's left to move.
 - **Voice memo** starts asleep. The first press wakes it with a hop and a
   shake and turns its light green; the next starts listening.
   `defaultAwake` starts it ready, as before.
