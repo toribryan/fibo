@@ -59,6 +59,38 @@ Keep each pull request to one change. Describe what changed and why, and add
 a line to the changelog in `apps/storybook/src/pages/changelog.mdx` for
 anything a user would notice.
 
+## Versioning
+
+fibo follows [semantic versioning](https://semver.org/). A registry copies
+source into someone's project instead of shipping a package they upgrade, so a
+version describes what happens when they run `shadcn add` again over a part
+they already have.
+
+| Release | When                                                                                                                                                                                 |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Major   | Their code breaks or does something else: a part, prop, export, token or data attribute removed or renamed, or a prop's default changed.                                             |
+| Minor   | Something new: a part, prop, variant, token or theme. Deprecations and visual refinements, such as a new radius or shadow on a part, go out in a minor and are listed under Changed. |
+| Patch   | A fix that keeps the API: a bug, an accessibility failure, a contrast or layout fix.                                                                                                 |
+
+A fix for an accessibility or security failure can change behavior in a minor
+or patch when keeping the old behavior would keep the failure; the changelog
+says so.
+
+**Deprecating.** Nothing is removed without a deprecation first. The
+deprecated part or prop keeps working and keeps getting fixes until the next
+major release, and ships with a codemod in `apps/registry/codemods/` when the
+move can be automated. The `retire-component` skill covers the steps.
+Codemods stay published after the code they migrate off is gone.
+
+## Releasing
+
+1. Move the `[Unreleased]` entries in `CHANGELOG.md` under a new version
+   heading with the date, and add its link at the bottom.
+2. Set `version` in the root `package.json` and `apps/registry/package.json`.
+3. Merge, then tag the merge commit `v<version>` and push the tag. The
+   release workflow checks the tag against `package.json` and publishes a
+   GitHub release with that version's changelog section.
+
 ## Conduct
 
 Everyone taking part is expected to follow the

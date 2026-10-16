@@ -8,8 +8,23 @@ has the same history with links into the docs.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-16
+
+The first stable release. From here fibo follows semantic versioning as set
+out under Versioning in [CONTRIBUTING.md](./CONTRIBUTING.md): nothing is
+removed without a deprecation first, and removals wait for a major release.
+
+Upgrading from 0.1.0, the parts and props deprecated since then are gone. Each
+removal below names the codemod that moves a project off it.
+
 ### Added
 
+- Annotated text: hand-drawn underlines, waves, circles, boxes, brackets,
+  strikes, crosses, arrows and a highlighter on a word or phrase, drawn in
+  the text's own pixels so they scale with the type, and optionally drawn in
+  as they scroll into view. `AnnotatedTextChip` sets a word in a pill with a
+  sticker, and `AnnotatedTextCycle` swaps the word in that pill. New
+  `highlight` and `chip` tokens.
 - Floating nav's glass lens lifts off the bar while pressed and as it moves
   to a new item, magnifying what's under it with a color fringe at the rim.
   The site's phone nav uses `variant="glass"`.
@@ -183,4 +198,6 @@ The first public release.
   named `-subtle`, `-hover` and `-ring` roles instead of opacity modifiers.
 - An `add-component` agent skill and a `component-reviewer` subagent.
 
+[Unreleased]: https://github.com/toribryan/fibo/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/toribryan/fibo/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/toribryan/fibo/releases/tag/v0.1.0

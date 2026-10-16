@@ -1,6 +1,6 @@
 {
   "name": "fibo",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "An achromatic design system built on shadcn/ui and Base UI, documented in Storybook and installed from a shadcn registry.",
   "homepage": "https://fibo.toribryan.com",

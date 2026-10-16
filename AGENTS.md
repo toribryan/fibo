@@ -92,8 +92,9 @@ Use the `retire-component` skill (`.agents/skills/retire-component/SKILL.md`).
 A part is deprecated through a `deprecated` entry in `components.meta.json`,
 which the docs banner, catalog, sidebar, registry and `llms.txt` all read,
 plus a codemod in `apps/registry/codemods/` when the move can be automated.
-It stays installable until the next minor release. The policy is in
-`plans/002-retiring-a-component.md`.
+It stays installable until the next major release. The reasons are in
+`plans/002-retiring-a-component.md`, and the versioning rules in
+`CONTRIBUTING.md`.
 
 ## Figma drift
 
