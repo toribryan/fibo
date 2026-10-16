@@ -1,5 +1,5 @@
 {
-  "$comment": "One entry per file in src/components. The registry build, the Storybook catalog and llms.txt all read this; the build fails if a component is missing.",
+  "$comment": "One entry per file in src/components and per folder in src/blocks. The registry build, the Storybook catalog and llms.txt all read this; the build fails if a component is missing.",
   "annotated-text": {
     "title": "Annotated text",
     "description": "Hand-drawn marks on a word or phrase, from underlines and circles to a highlighter, plus sticker chips that can cycle through words.",
@@ -82,7 +82,6 @@
     "description": "A field that opens a calendar to pick a day, or a range with presets and Apply; a popover on desktop, a drawer on phones.",
     "tier": "base-components",
     "group": "Forms",
-    "status": "new",
     "figma": "759-2"
   },
   "empty-state": {
@@ -330,5 +329,12 @@
     "tier": "special-components",
     "group": "Forms",
     "figma": "621-7"
+  },
+  "app-shell": {
+    "title": "App shell",
+    "description": "A workspace app's frame: a header with Command menu on Cmd+K, pages for home, projects and an inbox, and Floating nav to move between them.",
+    "tier": "blocks",
+    "group": "Shells",
+    "status": "new"
   }
 }

@@ -86,10 +86,13 @@ const utilities =
 // Independent of what the registry chose to ship: every fibo token a class in
 // an installed file names must be read by some generated utility.
 async function checkInstalledClasses(css, tokens) {
-  const uiDir = path.join(appDir, "components/ui")
+  const componentsDir = path.join(appDir, "components")
   const failures = []
-  for (const file of await readdir(uiDir)) {
-    const source = await readFile(path.join(uiDir, file), "utf8")
+  const files = (await readdir(componentsDir, { recursive: true })).filter(
+    (file) => /\.tsx?$/.test(file)
+  )
+  for (const file of files) {
+    const source = await readFile(path.join(componentsDir, file), "utf8")
     for (const token of tokens) {
       const pattern = new RegExp(`\\b(?:${utilities})-${token}(?![\\w-])`)
       const match = source.match(pattern)

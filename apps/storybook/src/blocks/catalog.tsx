@@ -57,7 +57,7 @@ import componentsMeta from "@workspace/ui/components.meta.json" with { type: "js
 import { iconFor } from "../../.storybook/sidebar-icons.js"
 import { DocLink } from "./doc-link.js"
 
-type Tier = "base-components" | "special-components"
+type Tier = "base-components" | "special-components" | "blocks"
 type Status = "new" | "beta" | "deprecated"
 
 type Entry = {
@@ -88,6 +88,7 @@ const GROUPS: Record<Tier, string[]> = {
     "Display",
     "Feedback",
   ],
+  blocks: ["Shells", "Pages"],
 }
 
 // The wave a Chapter scrubber makes under the pointer, frozen for a preview.
@@ -107,6 +108,32 @@ const MESSAGE_PREVIEW = [
 // take focus or swallow the click. Everything else about an entry comes from
 // packages/ui/components.meta.json, the same file the registry build reads.
 const PREVIEWS: Record<string, ReactNode> = {
+  // A sketch of the screen rather than the block itself, which needs the
+  // full width to read.
+  "app-shell": (
+    <div className="flex h-32 w-56 flex-col overflow-hidden rounded-lg border border-border bg-background">
+      <div className="flex h-6 shrink-0 items-center gap-1.5 border-b border-border px-2">
+        <span className="size-3 rounded-sm bg-primary" />
+        <span className="h-1.5 w-10 rounded-full bg-border" />
+        <span className="ml-auto h-3 w-14 rounded-sm border border-border" />
+      </div>
+      <div className="flex flex-1 flex-col gap-1.5 p-2">
+        <span className="h-2 w-20 rounded-full bg-foreground" />
+        <div className="grid grid-cols-3 gap-1">
+          <span className="h-6 rounded-sm border border-border" />
+          <span className="h-6 rounded-sm border border-border" />
+          <span className="h-6 rounded-sm border border-border" />
+        </div>
+      </div>
+      <div className="flex justify-center pb-1.5">
+        <span className="flex gap-1 rounded-full border border-border px-1.5 py-1 shadow-sm">
+          <span className="h-2 w-5 rounded-full bg-primary" />
+          <span className="size-2 rounded-full bg-border" />
+          <span className="size-2 rounded-full bg-border" />
+        </span>
+      </div>
+    </div>
+  ),
   button: (
     <div className="flex gap-2">
       <Button size="sm">Save</Button>
@@ -725,8 +752,8 @@ function groupIcon(group: string) {
 
 const ENTRIES: Entry[] = META.map(([key, info]) => ({
   name: info.title,
-  // Base parts sit in a group in the sidebar; special parts sit straight
-  // under their shelf.
+  // Base parts sit in a group in the sidebar; special parts and blocks sit
+  // straight under their shelf.
   id:
     info.tier === "base-components"
       ? `${info.tier}-${info.group.toLowerCase()}-${key}--docs`

@@ -59,6 +59,8 @@ const preview: Preview = {
       toc: {
         title: "On this page",
         headingSelector: "h2",
+        // Headings inside a block's preview belong to the block, not the page.
+        ignoreSelector: ".docs-story *, .skip-toc, [data-slot=block-preview] *",
         disable: false,
       },
       canvas: {
@@ -78,10 +80,11 @@ const preview: Preview = {
           ["Colors", "Typography", "Spacing", "Elevation", "Motion", "Themes"],
           // Base groups in the order the Catalog page shows them. Parts keep
           // the stories' import order, which is alphabetical by file, and
-          // special parts sit straight under their shelf.
+          // special parts and blocks sit straight under their shelf.
           "Base components",
           ["Actions", "Forms", "Display", "Navigation", "Overlays", "Feedback"],
           "Special components",
+          "Blocks",
         ],
       },
     },

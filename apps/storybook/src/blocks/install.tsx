@@ -48,10 +48,13 @@ function CommandLine({ label, value }: { label: string; value: string }) {
 function Install({
   name,
   exports,
+  block,
   className,
 }: {
   name: string
   exports: string[]
+  /** A block imports from the folder it installs into, not components/ui. */
+  block?: boolean
   className?: string
 }) {
   return (
@@ -67,7 +70,7 @@ function Install({
       />
       <CommandLine
         label="Import"
-        value={`import { ${exports.join(", ")} } from "@/components/ui/${name}"`}
+        value={`import { ${exports.join(", ")} } from "@/components/${block ? `blocks/${name}/${name}` : `ui/${name}`}"`}
       />
     </div>
   )

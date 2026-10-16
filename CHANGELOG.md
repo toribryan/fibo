@@ -8,6 +8,15 @@ has the same history with links into the docs.
 
 ## [Unreleased]
 
+### Added
+
+- A **Blocks** shelf: whole screens published as `registry:block` items that
+  install once into `components/blocks/<name>/` and are then yours to edit.
+  The Catalog, sidebar, `llms.txt` and README list them, and the install
+  smoke test covers their files. See `plans/015-blocks.md`.
+- **App shell**, the first block: a header with Command menu on Cmd+K, pages
+  for home, projects and an inbox, and Floating nav between them.
+
 ## [1.0.0] - 2026-10-16
 
 The first stable release. From here fibo follows semantic versioning as set

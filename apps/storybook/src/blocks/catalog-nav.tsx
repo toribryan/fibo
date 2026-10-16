@@ -4,8 +4,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { GROUPS, sectionId } from "./catalog.js"
 
-// One tab per base group, then one for the special shelf, which opens at
-// its first group.
+// One tab per base group, then one each for the special shelf and blocks,
+// which open at their first group.
 const TABS = [
   ...GROUPS["base-components"].map((group) => ({
     label: group,
@@ -16,6 +16,10 @@ const TABS = [
     sections: GROUPS["special-components"].map((group) =>
       sectionId("special-components", group)
     ),
+  },
+  {
+    label: "Blocks",
+    sections: GROUPS.blocks.map((group) => sectionId("blocks", group)),
   },
 ]
 

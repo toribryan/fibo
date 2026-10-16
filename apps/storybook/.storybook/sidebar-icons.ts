@@ -9,7 +9,9 @@ import {
   HashIcon,
   LayersIcon,
   LayoutGridIcon,
+  LayoutTemplateIcon,
   MousePointerClickIcon,
+  PanelsTopLeftIcon,
   RabbitIcon,
   RulerIcon,
   SplineIcon,
@@ -45,6 +47,8 @@ const ICON_BY_GROUP: Record<string, LucideIcon> = {
   Overlays: LayersIcon,
   Feedback: BellIcon,
   Diagrams: WorkflowIcon,
+  Shells: PanelsTopLeftIcon,
+  Pages: LayoutTemplateIcon,
 }
 
 const ICON_BY_TYPE: Record<string, LucideIcon> = {
