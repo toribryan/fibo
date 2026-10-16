@@ -1,5 +1,13 @@
 {
   "$comment": "One entry per file in src/components. The registry build, the Storybook catalog and llms.txt all read this; the build fails if a component is missing.",
+  "annotated-text": {
+    "title": "Annotated text",
+    "description": "Hand-drawn marks on a word or phrase, from underlines and circles to a highlighter, plus sticker chips that can cycle through words.",
+    "tier": "special-components",
+    "group": "Display",
+    "status": "new",
+    "figma": "875-2"
+  },
   "avatar": {
     "title": "Avatar",
     "description": "A person's photo, or their initials when there's no photo.",
@@ -26,7 +34,6 @@
     "description": "A month grid for picking a day or a range, with full keyboard use; pages side by side, scrolls on phones, or fills a page with a month of events.",
     "tier": "base-components",
     "group": "Forms",
-    "status": "new",
     "figma": "756-11821"
   },
   "chapter-scrubber": {
