@@ -95,11 +95,6 @@ has the same history with links into the docs.
 
 ### Deprecated
 
-- Sticker avatar's `status`, `statusLabel` and `statusColor` props. Put a
-  `<StatusDot>` in the sticker instead, with `label` and `variant`; the props
-  draw the same dot until they're removed in 0.3.0. Move them with
-  `pnpm dlx jscodeshift --parser tsx -t
-https://fibo.toribryan.com/codemods/sticker-status-to-child.js src`.
 - Data table's `rowIds`, `totalCount`, `value`, `defaultValue` and
   `onValueChange` props, `useDataTableSelection`, and hand-written
   `DataTableRow`, `DataTableCell` and `DataTableHead`. Use `useDataTable`
@@ -117,6 +112,10 @@ https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
 - **Breaking:** Spinner. Use an indeterminate Progress; move a project to it
   with `pnpm dlx jscodeshift --parser tsx -t
 https://fibo.toribryan.com/codemods/spinner-to-progress.js src`.
+- **Breaking:** Sticker avatar's `status`, `statusLabel` and `statusColor`
+  props. Put a `<StatusDot>` in the sticker, with `label` and `variant`; move
+  them with `pnpm dlx jscodeshift --parser tsx -t
+https://fibo.toribryan.com/codemods/sticker-status-to-child.js src`.
 
 ### Fixed
 

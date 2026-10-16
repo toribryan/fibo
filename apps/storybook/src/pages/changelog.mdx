@@ -20,6 +20,10 @@ Notable changes, newest first.
   indeterminate **Progress**;
   `pnpm dlx jscodeshift --parser tsx -t https://fibo.toribryan.com/codemods/spinner-to-progress.js src`
   moves a project to it.
+- **Sticker avatar** drops its `status`, `statusLabel` and `statusColor`
+  props. Put a **Status dot** in the sticker instead;
+  `pnpm dlx jscodeshift --parser tsx -t https://fibo.toribryan.com/codemods/sticker-status-to-child.js src`
+  moves them for you.
 - **Voice memo** starts asleep. The first press wakes it with a hop and a
   shake and turns its light green; the next starts listening.
   `defaultAwake` starts it ready, as before.
