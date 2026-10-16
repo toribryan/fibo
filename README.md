@@ -100,12 +100,12 @@ notes.
 | Overlays   | [Menu][menu], [Sheet][sheet], [Tooltip][tooltip]                                                                                                                                                                                                                                                                                 |
 | Feedback   | [Empty state][empty-state], [Progress][progress], [Skeleton][skeleton], [Spinner][spinner] (deprecated), [Toast][toast], [Typing indicator][typing-indicator]                                                                                                                                                                    |
 
-**11 special components.** Playful parts built for one kind of moment. They may bring `motion` with them.
+**12 special components.** Playful parts built for one kind of moment. They may bring `motion` with them.
 
 | Group      | Parts                                                                                                                        |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Forms      | [Voice memo][voice-memo]                                                                                                     |
-| Display    | [Map pin][map-pin], [Sticker avatar][sticker-avatar]                                                                         |
+| Display    | [Annotated text][annotated-text], [Map pin][map-pin], [Sticker avatar][sticker-avatar]                                       |
 | Navigation | [Chapter scrubber][chapter-scrubber], [Command menu][command-menu], [Filter menu][filter-menu], [Floating nav][floating-nav] |
 | Feedback   | [Pixel snail][pixel-snail], [Reactions][reactions]                                                                           |
 | Diagrams   | [Integration visual][integration-visual], [Token flow][token-flow]                                                           |
@@ -148,6 +148,7 @@ notes.
 [toast]: https://fibo.toribryan.com/?path=/docs/base-components-feedback-toast--docs
 [tooltip]: https://fibo.toribryan.com/?path=/docs/base-components-overlays-tooltip--docs
 [typing-indicator]: https://fibo.toribryan.com/?path=/docs/base-components-feedback-typing-indicator--docs
+[annotated-text]: https://fibo.toribryan.com/?path=/docs/special-components-annotated-text--docs
 [chapter-scrubber]: https://fibo.toribryan.com/?path=/docs/special-components-chapter-scrubber--docs
 [command-menu]: https://fibo.toribryan.com/?path=/docs/special-components-command-menu--docs
 [filter-menu]: https://fibo.toribryan.com/?path=/docs/special-components-filter-menu--docs
