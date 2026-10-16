@@ -10,6 +10,10 @@ has the same history with links into the docs.
 
 ### Added
 
+- **Dialog**: a modal window for a short task, in three widths, with a
+  scrolling body and a close button.
+- **Alert dialog**: asks before a step that can't be undone, with Cancel
+  focused, no close button and no click-outside dismiss.
 - A **Blocks** shelf: whole screens published as `registry:block` items that
   install once into `components/blocks/<name>/` and are then yours to edit.
   The Catalog, sidebar, `llms.txt` and README list them, and the install

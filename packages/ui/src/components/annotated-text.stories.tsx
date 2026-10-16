@@ -45,7 +45,6 @@ const ROBOT = "\u{1F916}"
 const meta: Meta<typeof AnnotatedText> = {
   title: "Special components/Annotated text",
   component: AnnotatedText,
-  tags: ["new"],
   argTypes: {
     variant: { control: "select", options: VARIANTS },
     tone: { control: "inline-radio", options: TONES },
