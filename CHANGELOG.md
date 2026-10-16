@@ -10,6 +10,9 @@ has the same history with links into the docs.
 
 ### Added
 
+- **Settings page** block: profile, notifications and account in tabs, one
+  form with a save bar that appears on change and saves with Cmd+S or
+  Ctrl+S, a Toast on save, and a danger zone confirmed with Alert dialog.
 - **Dialog**: a modal window for a short task, in three widths, with a
   scrolling body and a close button.
 - **Alert dialog**: asks before a step that can't be undone, with Cancel

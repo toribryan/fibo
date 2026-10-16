@@ -16,7 +16,6 @@ import { Sitemap } from "./sitemap.js"
 const meta: Meta<typeof Sitemap> = {
   title: "Blocks/Sitemap",
   component: Sitemap,
-  tags: ["new"],
   parameters: {
     layout: "fullscreen",
     controls: { exclude: ["content", "onSearch", "searchAction"] },

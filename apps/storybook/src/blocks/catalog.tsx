@@ -132,6 +132,25 @@ const PREVIEWS: Record<string, ReactNode> = {
       </span>
     </div>
   ),
+  "settings-page": (
+    <div className="flex h-32 w-56 flex-col gap-2 overflow-hidden rounded-lg border border-border bg-background p-2.5">
+      <span className="h-2 w-14 rounded-full bg-foreground" />
+      <span className="flex gap-2 border-b border-border pb-1">
+        <span className="h-1.5 w-8 rounded-full bg-foreground" />
+        <span className="h-1.5 w-10 rounded-full bg-border" />
+        <span className="h-1.5 w-8 rounded-full bg-border" />
+      </span>
+      <span className="h-4 rounded-sm border border-input bg-input-subtle" />
+      <span className="flex items-center justify-between">
+        <span className="h-1.5 w-16 rounded-full bg-border" />
+        <span className="h-3 w-5 rounded-full bg-primary" />
+      </span>
+      <span className="mt-auto flex justify-end gap-1 rounded-md border border-border p-1 shadow-sm">
+        <span className="h-3 w-8 rounded-sm border border-border" />
+        <span className="h-3 w-8 rounded-sm bg-primary" />
+      </span>
+    </div>
+  ),
   // A sketch of the screen rather than the block itself, which needs the
   // full width to read.
   "app-shell": (
