@@ -82,7 +82,7 @@ function ComponentRules({
   rules: { positive: Rule; negative: Rule }[]
 }) {
   return (
-    <div className="my-8 flex flex-col gap-14">
+    <div data-slot="component-rules" className="my-8 flex flex-col gap-14">
       {rules.map((rule, index) => (
         <div key={index} className="grid gap-6 sm:grid-cols-2">
           <RuleCard rule={rule.positive} tone="do" />

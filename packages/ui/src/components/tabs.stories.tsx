@@ -55,7 +55,6 @@ const meta: Meta<Args> = {
   title: "Base components/Navigation/Tabs",
   component: Tabs,
   subcomponents: { TabsList, TabsTrigger, TabsContent },
-  tags: ["new"],
   argTypes: {
     variant: { control: "inline-radio", options: ["default", "line"] },
     size: { control: "inline-radio", options: ["sm", "default"] },

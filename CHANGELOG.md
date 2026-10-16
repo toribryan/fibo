@@ -16,6 +16,10 @@ has the same history with links into the docs.
   smoke test covers their files. See `plans/015-blocks.md`.
 - **App shell**, the first block: a header with Command menu on Cmd+K, pages
   for home, projects and an inbox, and Floating nav between them.
+- **Sitemap** block: a human-readable sitemap with a location search,
+  popular picks, and every destination grouped by job in columns that fold
+  to cards on a phone. Groups such as a state and its cities can fold, and
+  the search can stay pinned as the page scrolls.
 
 ## [1.0.0] - 2026-10-16
 

@@ -285,7 +285,6 @@
     "description": "Switches between views of one subject in place, as a segmented control or a row of tabs with an underline; scrolls sideways when it runs out of room.",
     "tier": "base-components",
     "group": "Navigation",
-    "status": "new",
     "figma": "767-2"
   },
   "textarea": {
@@ -335,6 +334,13 @@
     "description": "A workspace app's frame: a header with Command menu on Cmd+K, pages for home, projects and an inbox, and Floating nav to move between them.",
     "tier": "blocks",
     "group": "Shells",
+    "status": "new"
+  },
+  "sitemap": {
+    "title": "Sitemap",
+    "description": "A human-readable sitemap: a location search, popular picks, and every destination grouped by job, in columns that fold to cards on a phone.",
+    "tier": "blocks",
+    "group": "Pages",
     "status": "new"
   }
 }

@@ -1,0 +1,325 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import {
+  SitemapLayout,
+  SitemapLink,
+  SitemapSection,
+  SitemapSections,
+} from "../../../../packages/ui/src/blocks/sitemap/parts"
+import { Sitemap } from "../../../../packages/ui/src/blocks/sitemap/sitemap"
+import * as Stories from "../../../../packages/ui/src/blocks/sitemap/sitemap.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { BlockPreview } from "../blocks/block-preview"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, Tip, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Sitemap
+
+A page that helps people find their way around a site. It opens with a
+search, then lists every destination in a few groups, so nobody has to
+read through one long list of URLs.
+
+<BlockPreview label="Sitemap">
+  {() => <Sitemap onSearch={() => {}} />}
+</BlockPreview>
+
+## Features
+
+- A search at the top, with popular picks under it. The search can stay
+  pinned below the site's header as the page scrolls.
+- Four columns on a wide screen, two on a tablet, and one card per group on
+  a phone. The layout follows the block's own width, so it looks the same
+  in a page, a canvas or a preview pane.
+- Groups nest one level deep, such as a state and its cities, and can fold
+  behind a toggle to keep long lists short.
+- Every link takes `render`, so a router's `Link` keeps the look.
+
+## Installation
+
+<Install name="sitemap" block exports={["Sitemap"]} />
+
+It also installs Button and Input group. Render it where the page goes, and
+give it `onSearch` or a `searchAction` route:
+
+```tsx
+import { Sitemap } from "@/components/blocks/sitemap/sitemap"
+
+export default function Page() {
+  return <Sitemap searchAction="/search" />
+}
+```
+
+A block is installed once and then belongs to your app. Running `shadcn add`
+again overwrites your edits, so change the files instead.
+
+## Files
+
+| File          | Holds                                                          |
+| ------------- | -------------------------------------------------------------- |
+| `sitemap.tsx` | The page, built from `data.ts`.                                |
+| `parts.tsx`   | The parts: layout, header, search, suggestions and directory.  |
+| `data.ts`     | The title, search hint, suggestions and every section's links. |
+
+## Make it yours
+
+1. Replace `data.ts` with the pages your site has. An entry with `links`
+   becomes a group, such as a state and its cities.
+2. Point the search at your results route with `searchAction`, or handle it
+   in the app with `onSearch`.
+3. Pass a router's `Link` to `SitemapLink` and `SitemapSuggestion` through
+   `render` in `sitemap.tsx`, so links route without a page load.
+
+## Examples
+
+### Every location open
+
+With `collapsible` off, each state lists its cities in full. This works
+when there are only a few states.
+
+<Canvas of={Stories.Expanded} />
+
+### Sticky search
+
+With `sticky`, the search stays pinned as the page scrolls. Set
+`--sitemap-sticky-top` to the height of the site's own header so the
+search sits right below it. On a phone it stays one row high.
+
+<Canvas of={Stories.StickySearch} />
+
+### On a phone
+
+Below about 670px, each group becomes a card and the search button drops
+under the field.
+
+<Canvas of={Stories.Phone} />
+
+### Directory only
+
+Leave out the search and suggestions when the site has no location search
+to point them at.
+
+<Canvas of={Stories.DirectoryOnly} />
+
+## Usage
+
+For a page shaped differently from the block, compose the parts in
+`parts.tsx` yourself. `SitemapLayout` is the frame that sets the width the
+rest lays out by.
+
+```tsx
+import {
+  SitemapGroup,
+  SitemapHeader,
+  SitemapLayout,
+  SitemapLink,
+  SitemapSearch,
+  SitemapSection,
+  SitemapSections,
+  SitemapTitle,
+} from "@/components/blocks/sitemap/parts"
+
+type Location = {
+  state: string
+  href: string
+  cities: { name: string; href: string }[]
+}
+
+export function SitemapPage({ locations }: { locations: Location[] }) {
+  return (
+    <SitemapLayout>
+      <SitemapHeader>
+        <SitemapTitle>Explore care homes</SitemapTitle>
+      </SitemapHeader>
+      <SitemapSearch action="/search" />
+      <SitemapSections>
+        <SitemapSection title="Browse locations">
+          {locations.map((location) => (
+            <SitemapGroup
+              key={location.state}
+              title={location.state}
+              href={location.href}
+              collapsible
+            >
+              {location.cities.map((city) => (
+                <SitemapLink key={city.name} href={city.href}>
+                  {city.name}
+                </SitemapLink>
+              ))}
+            </SitemapGroup>
+          ))}
+        </SitemapSection>
+      </SitemapSections>
+    </SitemapLayout>
+  )
+}
+```
+
+Build the location links from the places the site actually has pages for,
+not from a list someone keeps up by hand.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "SitemapLayout",
+    slot: "sitemap",
+    note: "The size container. Its children lay out by its width.",
+    children: [
+      {
+        name: "SitemapHeader",
+        slot: "sitemap-header",
+        children: [
+          { name: "SitemapTitle", slot: "sitemap-title", note: "The h1." },
+          { name: "SitemapDescription", slot: "sitemap-description" },
+        ],
+      },
+      {
+        name: "SitemapSearch",
+        slot: "sitemap-search",
+        note: "A search landmark: Input group and Button.",
+      },
+      {
+        name: "SitemapSuggestions",
+        slot: "sitemap-suggestions",
+        children: [{ name: "SitemapSuggestion", slot: "sitemap-suggestion" }],
+      },
+      {
+        name: "SitemapSections",
+        slot: "sitemap-sections",
+        note: "The navigation landmark and its grid.",
+        children: [
+          {
+            name: "SitemapSection",
+            slot: "sitemap-section",
+            note: "An h2 and a list.",
+            children: [
+              { name: "SitemapLink", slot: "sitemap-link" },
+              {
+                name: "SitemapGroup",
+                slot: "sitemap-group",
+                note: "A parent link with a nested list, and a toggle when collapsible.",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Keep it to three to five groups, named by what people came to do: find, browse, learn, contact.",
+    "Put the search first when most visitors arrive looking for a place. The directory backs it up; it doesn't replace it.",
+    "Fold long location lists with collapsible groups, and leave the first group open.",
+    "Show only destinations that exist. Drop a link before launch rather than point it at an empty page.",
+    "This page is for people. Keep the XML sitemap for search engines separate.",
+  ]}
+/>
+
+<Tip>
+  Pin the search only if the site's header is short. Two stacked sticky bars on
+  a phone leave little room for the page.
+</Tip>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <SitemapLayout className="w-56">
+            <SitemapSections>
+              <SitemapSection title="Care resources">
+                <SitemapLink href="#options">Care options</SitemapLink>
+                <SitemapLink href="#cost">Cost and affordability</SitemapLink>
+              </SitemapSection>
+            </SitemapSections>
+          </SitemapLayout>
+        ),
+        description: "Name links for the page they open.",
+      },
+      negative: {
+        component: (
+          <SitemapLayout className="w-56">
+            <SitemapSections>
+              <SitemapSection title="Pages">
+                <SitemapLink href="#options">/care-options</SitemapLink>
+                <SitemapLink href="#cost">Click here</SitemapLink>
+              </SitemapSection>
+            </SitemapSections>
+          </SitemapLayout>
+        ),
+        description:
+          "Don't list raw paths or vague labels. People scan for words, not URLs.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+The playground below drives the whole block. Each part also takes the
+props of the element it renders.
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="sitemap-…"',
+      element: "Each part",
+      when: "Always.",
+    },
+    {
+      attribute: "data-sticky",
+      element: "The search",
+      when: (
+        <>
+          <code>sticky</code> is set.
+        </>
+      ),
+    },
+    {
+      attribute: "data-panel-open",
+      element: "A group's toggle",
+      when: "Its group is open.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      The search is a <code>search</code> landmark and the directory a{" "}
+      <code>navigation</code> landmark named "Sitemap", so screen reader users
+      can jump between them.
+    </>,
+    "The title is the page's h1 and each group an h2 that names its list.",
+    <>
+      A group's toggle is a button with <code>aria-expanded</code>, separate
+      from the group's own link, so both stay reachable by keyboard.
+    </>,
+    "Links are at least 44px tall, for touch.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Input group", "Button", "Floating nav"]} />
+
+## References
+
+- [WAI-ARIA landmark regions](https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/)
+- [Base UI Collapsible](https://base-ui.com/react/components/collapsible)

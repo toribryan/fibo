@@ -108,6 +108,30 @@ const MESSAGE_PREVIEW = [
 // take focus or swallow the click. Everything else about an entry comes from
 // packages/ui/components.meta.json, the same file the registry build reads.
 const PREVIEWS: Record<string, ReactNode> = {
+  sitemap: (
+    <div className="flex w-64 flex-col gap-3">
+      <span className="flex h-7 items-center gap-1.5 rounded-sm border border-input bg-input-subtle px-2 text-[10px] text-muted-foreground">
+        <SearchIcon className="size-3" />
+        City, state or ZIP
+      </span>
+      <span className="grid grid-cols-3 gap-3 border-t border-border pt-3">
+        {[
+          ["Find a home", "All homes", "Available"],
+          ["Locations", "Arizona", "Colorado"],
+          ["About", "Contact", "Privacy"],
+        ].map(([title, ...links]) => (
+          <span key={title} className="flex flex-col gap-1.5 text-[10px]">
+            <span className="font-semibold text-foreground">{title}</span>
+            {links.map((link) => (
+              <span key={link} className="text-muted-foreground">
+                {link}
+              </span>
+            ))}
+          </span>
+        ))}
+      </span>
+    </div>
+  ),
   // A sketch of the screen rather than the block itself, which needs the
   // full width to read.
   "app-shell": (

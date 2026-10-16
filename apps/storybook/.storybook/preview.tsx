@@ -59,8 +59,10 @@ const preview: Preview = {
       toc: {
         title: "On this page",
         headingSelector: "h2",
-        // Headings inside a block's preview belong to the block, not the page.
-        ignoreSelector: ".docs-story *, .skip-toc, [data-slot=block-preview] *",
+        // Headings inside a preview or a do's and don'ts example belong to
+        // what they show, not the page.
+        ignoreSelector:
+          ".docs-story *, .skip-toc, [data-slot=block-preview] *, [data-slot=component-rules] *",
         disable: false,
       },
       canvas: {
