@@ -338,8 +338,7 @@
     "title": "Sitemap",
     "description": "A human-readable sitemap: a location search, popular picks, and every destination grouped by job, in columns that fold to cards on a phone.",
     "tier": "blocks",
-    "group": "Pages",
-    "status": "new"
+    "group": "Pages"
   },
   "dialog": {
     "title": "Dialog",
@@ -353,6 +352,13 @@
     "description": "Asks for a decision before something that can't be undone, with Cancel focused and no click-outside dismiss.",
     "tier": "base-components",
     "group": "Overlays",
+    "status": "new"
+  },
+  "settings-page": {
+    "title": "Settings page",
+    "description": "A settings screen in tabs for profile, notifications and account, with a save bar that appears on change and a confirmed danger zone.",
+    "tier": "blocks",
+    "group": "Pages",
     "status": "new"
   }
 }
