@@ -3,10 +3,13 @@
 // imports rewritten to the aliases a host project's components.json resolves,
 // then `shadcn build` produces one JSON file per component. Titles and
 // descriptions come from packages/ui/components.meta.json, which also writes
-// public/llms.txt so agents can see the complete list.
+// public/llms.txt so agents can see the complete list, and the parts list in
+// README.md.
 import { execSync } from "node:child_process"
 import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
+
+import * as prettier from "prettier"
 
 import { docsUrl, homepage, packageName } from "./shared.mjs"
 
@@ -551,6 +554,71 @@ ${items
 `
 await mkdir(path.join(registryDir, "public"), { recursive: true })
 await writeFile(path.join(registryDir, "public/llms.txt"), llms)
+
+// The parts list in README.md, written between its markers so it can't fall
+// behind the registry. CI fails if the committed README differs. Groups follow
+// the sidebar's order in preview.tsx; any group it doesn't name sorts last.
+const GROUPS = [
+  "Actions",
+  "Forms",
+  "Display",
+  "Navigation",
+  "Overlays",
+  "Feedback",
+]
+const groupRank = (group) =>
+  GROUPS.includes(group) ? GROUPS.indexOf(group) : GROUPS.length
+const links = []
+const link = (item) => {
+  links.push(`[${item.name}]: ${item.meta.docs}`)
+  return `[${item.title}][${item.name}]`
+}
+const partsTable = (tier) => {
+  const groups = new Map()
+  for (const item of items
+    .filter((item) => item.meta.tier === tier)
+    .sort((a, b) => a.title.localeCompare(b.title))) {
+    const entry = `${link(item)}${item.meta.deprecated ? " (deprecated)" : ""}`
+    groups.set(item.meta.group, [...(groups.get(item.meta.group) ?? []), entry])
+  }
+  const rows = [...groups]
+    .sort(([a], [b]) => groupRank(a) - groupRank(b) || a.localeCompare(b))
+    .map(([group, entries]) => `| ${group} | ${entries.join(", ")} |`)
+  return ["| Group | Parts |", "| --- | --- |", ...rows].join("\n")
+}
+const count = (tier) => items.filter((item) => item.meta.tier === tier).length
+const themes = items.filter((item) => item.name.startsWith("theme"))
+const parts = `<!-- parts:start: written by pnpm registry:build -->
+
+**${count("base-components")} base components.** The standard set. They depend on nothing beyond Base UI, \`class-variance-authority\` and \`lucide-react\`, except Data table (TanStack Table) and Rich text editor (Tiptap).
+
+${partsTable("base-components")}
+
+**${count("special-components")} special components.** Playful parts built for one kind of moment. They may bring \`motion\` with them.
+
+${partsTable("special-components")}
+
+**${themes.length} themes.** ${themes.map((item) => `${link(item)} (\`@fibo/${item.name}\`)`).join(", ")}.
+
+${links.join("\n")}
+
+<!-- parts:end -->`
+const readmePath = path.join(root, "README.md")
+const readme = await readFile(readmePath, "utf8")
+const updated = readme.replace(
+  /<!-- parts:start[\s\S]*?<!-- parts:end -->/,
+  parts
+)
+if (updated === readme && !readme.includes("<!-- parts:start")) {
+  throw new Error("README.md has no <!-- parts:start --> marker")
+}
+await writeFile(
+  readmePath,
+  await prettier.format(updated, {
+    ...(await prettier.resolveConfig(readmePath)),
+    filepath: readmePath,
+  })
+)
 
 // Codemods are served beside the registry so `jscodeshift -t <url>` works
 // without installing anything from fibo. They outlive the part they migrate

@@ -43,6 +43,10 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # The registry build rewrites README.md's parts list from the metadata.
+      - name: README parts list is current
+        run: git diff --exit-code README.md || (echo "Run pnpm registry:build and commit README.md" && exit 1)
+
       - name: Typecheck
         run: pnpm typecheck
 
