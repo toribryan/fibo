@@ -39,6 +39,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-highlight: var(--highlight);
+  --color-chip: var(--chip);
 
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
@@ -261,6 +262,8 @@
   --accent-foreground: var(--color-neutral-900);
   /* A marker stroke behind text, opaque so the text above stays crisp. */
   --highlight: var(--color-neutral-200);
+  /* A word set apart in a pill, a step off the page so it reads at a glance. */
+  --chip: var(--color-neutral-200);
 
   --destructive: var(--color-red-700);
   --destructive-foreground: var(--color-neutral-50);
@@ -414,6 +417,7 @@
   --accent: var(--color-neutral-800);
   --accent-foreground: var(--color-neutral-50);
   --highlight: var(--color-neutral-700);
+  --chip: var(--color-neutral-800);
 
   --destructive: var(--color-red-400);
   --destructive-foreground: var(--color-neutral-950);
