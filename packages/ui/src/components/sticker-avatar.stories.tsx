@@ -21,10 +21,7 @@ const SRC: Record<(typeof SUBJECTS)[number], string | undefined> = {
   initials: undefined,
 }
 
-type Args = Omit<
-  ComponentProps<typeof StickerAvatar>,
-  "status" | "statusLabel" | "statusColor"
-> & {
+type Args = ComponentProps<typeof StickerAvatar> & {
   subject: (typeof SUBJECTS)[number]
   status?: StatusDotStatus
   statusVariant: "color" | "mono"
@@ -35,7 +32,7 @@ const meta: Meta<Args> = {
   component: StickerAvatar,
   parameters: {
     layout: "centered",
-    controls: { exclude: ["src", "statusLabel", "statusColor", "children"] },
+    controls: { exclude: ["src", "children"] },
   },
   argTypes: {
     subject: {

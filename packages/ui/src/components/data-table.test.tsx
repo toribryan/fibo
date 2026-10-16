@@ -1,21 +1,18 @@
-import { describe, expect, it, vi } from "vitest"
-import { userEvent } from "vitest/browser"
+import { describe, expect, it } from "vitest"
 import { render } from "vitest-browser-react"
 
 import {
+  createDataTableColumnHelper,
   DataTable,
-  DataTableBody,
-  DataTableCell,
   DataTableContent,
   DataTableFooter,
-  DataTableHead,
-  DataTableHeader,
-  DataTableRow,
   DataTableSelectionCount,
-  type DataTableSelection,
+  useDataTable,
 } from "./data-table.js"
 
-const MEMBERS = [
+type Member = { id: string; name: string; lock?: string }
+
+const MEMBERS: Member[] = [
   { id: "maya", name: "Maya Okafor" },
   { id: "priya", name: "Priya Raman" },
   { id: "jordan", name: "Jordan Alvarez" },
@@ -27,37 +24,24 @@ const MEMBERS = [
   { id: "sam", name: "Sam Whitfield" },
 ]
 
-function Example(props: {
-  value?: DataTableSelection
-  defaultValue?: DataTableSelection
-  onValueChange?: (value: DataTableSelection) => void
-  totalCount?: number
-  members?: typeof MEMBERS
-}) {
-  const { members = MEMBERS, ...rest } = props
+const member = createDataTableColumnHelper<Member>()
+const COLUMNS = member.columns([
+  member.accessor("name", { header: "Member", meta: { type: "primary" } }),
+])
+
+function Example({ members = MEMBERS }: { members?: Member[] }) {
+  const table = useDataTable({
+    data: members,
+    columns: COLUMNS,
+    lockedReason: (row) => row.lock,
+  })
   return (
     <DataTable
       aria-label="Members"
-      rowIds={members.map((member) => member.id)}
+      table={table}
       noun={{ one: "member", other: "members" }}
-      {...rest}
     >
-      <DataTableContent>
-        <DataTableHeader>
-          <DataTableHead type="primary">Member</DataTableHead>
-        </DataTableHeader>
-        <DataTableBody>
-          {members.map((member) => (
-            <DataTableRow
-              key={member.id}
-              id={member.id}
-              lockedReason={member.lock}
-            >
-              <DataTableCell type="primary">{member.name}</DataTableCell>
-            </DataTableRow>
-          ))}
-        </DataTableBody>
-      </DataTableContent>
+      <DataTableContent />
       <DataTableFooter>
         <DataTableSelectionCount />
       </DataTableFooter>
@@ -81,10 +65,8 @@ describe("DataTable", () => {
   })
 
   it("marks the header mixed when some rows are selected", async () => {
-    const onValueChange = vi.fn()
-    const screen = await render(<Example onValueChange={onValueChange} />)
+    const screen = await render(<Example />)
     await screen.getByRole("checkbox", { name: "Select Priya Raman" }).click()
-    expect(onValueChange).toHaveBeenLastCalledWith(new Set(["priya"]))
     await expect
       .element(screen.getByRole("checkbox", { name: /Select all/ }))
       .toHaveAttribute("aria-checked", "mixed")
@@ -94,171 +76,52 @@ describe("DataTable", () => {
   })
 
   it("selects every row but the locked one from the header", async () => {
-    const onValueChange = vi.fn()
-    const screen = await render(<Example onValueChange={onValueChange} />)
+    const screen = await render(<Example />)
     const header = screen.getByRole("checkbox", { name: /Select all/ })
     await header.click()
-    expect(onValueChange).toHaveBeenLastCalledWith(
-      new Set(["maya", "priya", "jordan", "sam"])
-    )
     await expect.element(header).toHaveAttribute("aria-checked", "true")
+    await expect
+      .element(screen.getByText("4 of 5 members selected"))
+      .toBeInTheDocument()
+    await expect
+      .element(screen.getByRole("checkbox", { name: "Select Elena Marsh" }))
+      .not.toBeChecked()
 
     await header.click()
-    expect(onValueChange).toHaveBeenLastCalledWith(new Set())
-  })
-
-  it("explains a locked row and won't select it", async () => {
-    const screen = await render(<Example />)
-    const elena = screen.getByRole("checkbox", { name: "Select Elena Marsh" })
-    await expect.element(elena).toBeDisabled()
     await expect
-      .element(elena)
-      .toHaveAccessibleDescription("The workspace owner can't be removed")
-    await expect
-      .element(screen.getByRole("button", { name: "Locked" }))
-      .toHaveAccessibleDescription("The workspace owner can't be removed")
-  })
-
-  it("selects a range with Shift, skipping locked rows", async () => {
-    const onValueChange = vi.fn()
-    const screen = await render(<Example onValueChange={onValueChange} />)
-    await screen.getByRole("checkbox", { name: "Select Priya Raman" }).click()
-    await userEvent.keyboard("{Shift>}")
-    await screen.getByRole("checkbox", { name: "Select Sam Whitfield" }).click()
-    await userEvent.keyboard("{/Shift}")
-    expect(onValueChange).toHaveBeenLastCalledWith(
-      new Set(["priya", "jordan", "sam"])
-    )
-  })
-
-  it("clears the selection on Escape", async () => {
-    const onValueChange = vi.fn()
-    const screen = await render(
-      <Example
-        defaultValue={new Set(["maya", "sam"])}
-        onValueChange={onValueChange}
-      />
-    )
-    await screen.getByRole("checkbox", { name: "Select Maya Okafor" }).click()
-    await userEvent.keyboard("{Escape}")
-    expect(onValueChange).toHaveBeenLastCalledWith(new Set())
-    await expect
-      .element(screen.getByText("Selection cleared"))
-      .toBeInTheDocument()
-  })
-
-  it("treats all as every unlocked row, and drops to this page on a change", async () => {
-    const onValueChange = vi.fn()
-    const screen = await render(
-      <Example
-        defaultValue="all"
-        totalCount={248}
-        onValueChange={onValueChange}
-      />
-    )
-    await expect
-      .element(screen.getByText("247 of 248 members selected"))
-      .toBeInTheDocument()
-    await screen
-      .getByRole("checkbox", { name: "Select Jordan Alvarez" })
-      .click()
-    expect(onValueChange).toHaveBeenLastCalledWith(
-      new Set(["maya", "priya", "sam"])
-    )
-    await expect
-      .element(screen.getByRole("status"))
-      .toHaveTextContent("3 members selected, on this page only")
-  })
-
-  it("keeps a controlled selection until the parent changes it", async () => {
-    const onValueChange = vi.fn()
-    const screen = await render(
-      <Example value={new Set()} onValueChange={onValueChange} />
-    )
-    const maya = screen.getByRole("checkbox", { name: "Select Maya Okafor" })
-    await maya.click()
-    expect(onValueChange).toHaveBeenLastCalledWith(new Set(["maya"]))
-    await expect.element(maya).toHaveAttribute("aria-checked", "false")
-    // Nothing changed, so nothing is announced.
-    await expect.element(screen.getByRole("status")).toHaveTextContent("")
-  })
-
-  it("names a row's checkbox with label when no cell names it", async () => {
-    const screen = await render(
-      <DataTable aria-label="Reports" rowIds={["weekly", "monthly"]}>
-        <DataTableContent>
-          <DataTableHeader>
-            <DataTableHead>Updated</DataTableHead>
-          </DataTableHeader>
-          <DataTableBody>
-            <DataTableRow id="weekly" label="Weekly report">
-              <DataTableCell>Monday</DataTableCell>
-            </DataTableRow>
-            <DataTableRow id="monthly" label="Ignored">
-              <DataTableCell type="primary">Monthly report</DataTableCell>
-            </DataTableRow>
-          </DataTableBody>
-        </DataTableContent>
-      </DataTable>
-    )
-    await expect
-      .element(screen.getByRole("checkbox", { name: "Select Weekly report" }))
-      .toBeInTheDocument()
-    await expect
-      .element(screen.getByRole("checkbox", { name: "Select Monthly report" }))
-      .toBeInTheDocument()
+      .element(screen.getByRole("checkbox", { name: "Select Maya Okafor" }))
+      .not.toBeChecked()
   })
 
   it("disables select all when every row is locked", async () => {
-    const screen = await render(
-      <DataTable aria-label="Owners" rowIds={["elena"]}>
-        <DataTableContent>
-          <DataTableHeader>
-            <DataTableHead type="primary">Member</DataTableHead>
-          </DataTableHeader>
-          <DataTableBody>
-            <DataTableRow
-              id="elena"
-              lockedReason="The workspace owner can't be removed"
-            >
-              <DataTableCell type="primary">Elena Marsh</DataTableCell>
-            </DataTableRow>
-          </DataTableBody>
-        </DataTableContent>
-      </DataTable>
-    )
+    const screen = await render(<Example members={MEMBERS.slice(3, 4)} />)
     await expect
       .element(screen.getByRole("checkbox", { name: /Select all/ }))
       .toBeDisabled()
   })
 
-  it("leaves locked rows out of what it announces", async () => {
-    const screen = await render(<Example defaultValue={new Set(["elena"])} />)
-    await screen.getByRole("checkbox", { name: "Select Maya Okafor" }).click()
-    await expect
-      .element(screen.getByRole("status"))
-      .toHaveTextContent("1 member selected")
-  })
-
   it("names the checkbox from the first name cell only", async () => {
-    const screen = await render(
-      <DataTable aria-label="Tasks" rowIds={["task"]}>
-        <DataTableContent>
-          <DataTableHeader>
-            <DataTableHead type="primary">Task</DataTableHead>
-            <DataTableHead type="person">Owner</DataTableHead>
-          </DataTableHeader>
-          <DataTableBody>
-            <DataTableRow id="task">
-              <DataTableCell type="primary">Design review</DataTableCell>
-              <DataTableCell type="person" avatar={{ fallback: "MO" }}>
-                Maya Okafor
-              </DataTableCell>
-            </DataTableRow>
-          </DataTableBody>
-        </DataTableContent>
-      </DataTable>
-    )
+    type Task = { id: string; title: string; owner: string }
+    const task = createDataTableColumnHelper<Task>()
+    const columns = task.columns([
+      task.accessor("title", { header: "Task", meta: { type: "primary" } }),
+      task.accessor("owner", {
+        header: "Owner",
+        meta: { type: "person", avatar: () => ({ fallback: "MO" }) },
+      }),
+    ])
+    function Tasks() {
+      const table = useDataTable({
+        data: [{ id: "task", title: "Design review", owner: "Maya Okafor" }],
+        columns,
+      })
+      return (
+        <DataTable aria-label="Tasks" table={table}>
+          <DataTableContent />
+        </DataTable>
+      )
+    }
+    const screen = await render(<Tasks />)
     await expect
       .element(screen.getByRole("checkbox", { name: "Select Design review" }))
       .toBeInTheDocument()

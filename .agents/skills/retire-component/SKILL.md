@@ -8,7 +8,9 @@ description: Deprecate a fibo component and, later, remove it. Covers the metada
 Parts are copied into projects as source, so retiring one is about telling
 people where they will see it and making the move cheap. The policy and its
 reasons are in `plans/002-retiring-a-component.md`. Spinner is the worked
-example; copy its shape.
+example; copy its shape. It was removed in 1.0.0, so the files named below
+as models are read from the commit that deprecated it, for example
+`git show 5bd9525:packages/ui/src/components/spinner.stories.tsx`.
 
 ## 1. Deprecate
 

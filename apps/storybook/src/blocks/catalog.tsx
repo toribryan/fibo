@@ -43,7 +43,6 @@ import { Kbd, KbdGroup } from "@workspace/ui/components/kbd"
 import { Label } from "@workspace/ui/components/label"
 import { PixelSnailSprite } from "@workspace/ui/components/pixel-snail"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { Spinner } from "@workspace/ui/components/spinner"
 import {
   StickerAvatar,
   StickerAvatarCount,
@@ -182,7 +181,6 @@ const PREVIEWS: Record<string, ReactNode> = {
       <InputGroupInput placeholder="Search" aria-label="Search" />
     </InputGroup>
   ),
-  spinner: <Spinner size="lg" label="Spinner preview" />,
   label: (
     <div className="flex w-48 flex-col gap-1.5">
       <Label>Email</Label>

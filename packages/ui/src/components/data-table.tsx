@@ -50,7 +50,6 @@ import {
   type ReactTable,
   type Row,
   type RowData,
-  type RowSelectionState,
   type SortingState,
   type TableOptions,
   type TableState,
@@ -119,13 +118,6 @@ import {
 } from "@workspace/ui/components/sheet"
 import { mergeRefs } from "@workspace/ui/lib/merge-refs"
 import { cn } from "@workspace/ui/lib/utils"
-
-/**
- * Selected row ids, or "all" for every row that matches, across pages.
- * @deprecated Selection lives in the table from useDataTable: read
- * `table.getSelectedRowIds()`. Removed in 0.3.0.
- */
-type DataTableSelection = Set<string> | "all"
 
 type DataTableNoun = { one: string; other: string }
 
@@ -555,18 +547,8 @@ const dataTableCodecs = {
   },
 }
 
-type LegacySelection = {
-  value: DataTableSelection
-  offPage: number
-  total: number
-  locked: ReadonlySet<string>
-}
-
 type DataTableContextValue = {
   table: DataTableAnyTable
-  /** Set only for the deprecated rowIds and value props. */
-  legacy: LegacySelection | null
-  registerLocked?: (id: string, locked: boolean) => () => void
   noun: DataTableNoun
   clear: () => void
   selectAllMatching: () => void
@@ -655,10 +637,7 @@ function hiddenSuffix(hiddenCount: number) {
     : ""
 }
 
-function summarize(
-  table: DataTableAnyTable,
-  legacy: LegacySelection | null
-): SelectionSummary {
+function summarize(table: DataTableAnyTable): SelectionSummary {
   let selectableOnPage = 0
   let selectedOnPage = 0
   for (const row of table.getRowModel().rows) {
@@ -673,35 +652,20 @@ function summarize(
         ? "all"
         : "some"
 
-  let count: number
-  let hiddenCount = 0
-  let totalCount: number
-  let matchingCount: number
-  let isAll: boolean
-  if (legacy) {
-    totalCount = legacy.total
-    // Locked rows on other pages aren't known here; totalCount should leave
-    // them out if there are any.
-    matchingCount = Math.max(0, legacy.total - legacy.locked.size)
-    isAll = legacy.value === "all"
-    count = isAll ? matchingCount : selectedOnPage + legacy.offPage
-  } else {
-    totalCount = table.getRowCount()
-    // Loaded rows only: with manualPagination, the app selects across its
-    // other pages itself.
-    matchingCount = table
-      .getFilteredRowModel()
-      .flatRows.filter((row) => row.getCanSelect()).length
-    count = selectedRowIds(table).length
-    hiddenCount = hiddenSelectedCount(table)
-    // Out of the rows that match plus the selected ones the filters hide,
-    // so the count never runs past the total.
-    totalCount += hiddenCount
-    isAll =
-      matchingCount > selectableOnPage &&
-      count > 0 &&
-      table.getIsAllRowsSelected()
-  }
+  // Loaded rows only: with manualPagination, the app selects across its
+  // other pages itself.
+  const matchingCount = table
+    .getFilteredRowModel()
+    .flatRows.filter((row) => row.getCanSelect()).length
+  const count = selectedRowIds(table).length
+  const hiddenCount = hiddenSelectedCount(table)
+  // Out of the rows that match plus the selected ones the filters hide, so
+  // the count never runs past the total.
+  const totalCount = table.getRowCount() + hiddenCount
+  const isAll =
+    matchingCount > selectableOnPage &&
+    count > 0 &&
+    table.getIsAllRowsSelected()
   return {
     count,
     hiddenCount,
@@ -718,8 +682,8 @@ function summarize(
 // Counts for the toolbar, select all and the footer. Shallow-compared, so a
 // part re-renders only when a number it shows changes.
 function useSelectionSummary() {
-  const { table, legacy } = useDataTableRoot()
-  return useSelector(table.store, () => summarize(table, legacy), {
+  const { table } = useDataTableRoot()
+  return useSelector(table.store, () => summarize(table), {
     compare: shallow,
   })
 }
@@ -760,111 +724,35 @@ function labelOf(column: DataTableAnyColumn) {
   )
 }
 
-/**
- * Selection state for a Data table, for when the parent wants to read or
- * act on it without wiring value and onValueChange by hand.
- * @deprecated Selection lives in the table from useDataTable. Read
- * `table.getSelectedRowIds()` and clear with `table.resetRowSelection()`.
- * Removed in 0.3.0.
- */
-function useDataTableSelection(initial: DataTableSelection = new Set()) {
-  const [value, setValue] = React.useState<DataTableSelection>(initial)
-  const clear = React.useCallback(() => setValue(new Set()), [])
-  return { value, onValueChange: setValue, clear }
-}
-
-type DataTableProps<TData extends RowData = RowData> = Omit<
-  React.ComponentProps<"div">,
-  "defaultValue"
-> & {
-  /** The table from useDataTable: its rows, columns and state. */
-  table?: DataTableInstance<TData>
-  /** What a row is, for counts and labels: { one: "member", other: "members" }. */
-  noun?: DataTableNoun
-  /** Whether the app is showing only the selected rows. */
-  showSelectedOnly?: boolean
-  /** Shows “Show selected only” while rows are selected; the app filters its rows. */
-  onShowSelectedOnlyChange?: (showSelectedOnly: boolean) => void
-  /** Under 32rem: keep the table and scroll it, or show DataTableCards instead. */
-  narrowLayout?: DataTableNarrowLayout
-  /** Shown in place of the rows when there are none. Defaults to DataTableEmpty. */
-  empty?: React.ReactNode
-  /** Shows skeleton rows in place of the body while the data loads. */
-  loading?: boolean
-  /**
-   * The ids of the rows on this page, in the order they're shown.
-   * @deprecated Pass `table` from useDataTable; its data sets the rows.
-   * Removed in 0.3.0.
-   */
-  rowIds?: string[]
-  /**
-   * How many rows match across every page. Defaults to the rows shown.
-   * @deprecated Use useDataTable with `manualPagination` and `rowCount`.
-   * Removed in 0.3.0.
-   */
-  totalCount?: number
-  /**
-   * The selected rows. Pass it to control the selection.
-   * @deprecated Use useDataTable's `state.rowSelection` and
-   * `onRowSelectionChange`. Removed in 0.3.0.
-   */
-  value?: DataTableSelection
-  /**
-   * The rows selected at first when the selection isn't controlled.
-   * @deprecated Use useDataTable's `initialState.rowSelection`. Removed in 0.3.0.
-   */
-  defaultValue?: DataTableSelection
-  /**
-   * Called with the new selection whenever it changes.
-   * @deprecated Use useDataTable's `onRowSelectionChange`. Removed in 0.3.0.
-   */
-  onValueChange?: (value: DataTableSelection) => void
-}
+type DataTableProps<TData extends RowData = RowData> =
+  React.ComponentProps<"div"> & {
+    /** The table from useDataTable: its rows, columns and state. */
+    table: DataTableInstance<TData>
+    /** What a row is, for counts and labels: { one: "member", other: "members" }. */
+    noun?: DataTableNoun
+    /** Whether the app is showing only the selected rows. */
+    showSelectedOnly?: boolean
+    /** Shows “Show selected only” while rows are selected; the app filters its rows. */
+    onShowSelectedOnlyChange?: (showSelectedOnly: boolean) => void
+    /** Under 32rem: keep the table and scroll it, or show DataTableCards instead. */
+    narrowLayout?: DataTableNarrowLayout
+    /** Shown in place of the rows when there are none. Defaults to DataTableEmpty. */
+    empty?: React.ReactNode
+    /** Shows skeleton rows in place of the body while the data loads. */
+    loading?: boolean
+  }
 
 /**
  * The root. Give it `table` from useDataTable; it renders the rows, and its
  * parts read the table's state.
  */
 function DataTable<TData extends RowData>({
-  table,
-  rowIds,
-  totalCount,
-  value,
-  defaultValue,
-  onValueChange,
-  ...props
-}: DataTableProps<TData>) {
-  if (table) {
-    return (
-      <ModelDataTable
-        table={table as unknown as DataTableAnyTable}
-        {...props}
-      />
-    )
-  }
-  return (
-    <LegacyDataTable
-      rowIds={rowIds ?? []}
-      totalCount={totalCount}
-      value={value}
-      defaultValue={defaultValue}
-      onValueChange={onValueChange}
-      {...props}
-    />
-  )
-}
-
-type RootProps = Omit<
-  DataTableProps,
-  "table" | "rowIds" | "totalCount" | "value" | "defaultValue" | "onValueChange"
->
-
-function ModelDataTable({
-  table,
+  table: tableProp,
   showSelectedOnly = false,
   onShowSelectedOnlyChange,
   ...props
-}: RootProps & { table: DataTableAnyTable }) {
+}: DataTableProps<TData>) {
+  const table = tableProp as unknown as DataTableAnyTable
   const clear = React.useCallback(() => table.resetRowSelection(true), [table])
   const selectAllMatching = React.useCallback(
     () => table.toggleAllRowsSelected(true),
@@ -904,7 +792,6 @@ function ModelDataTable({
   return (
     <DataTableRoot
       table={table}
-      legacy={null}
       clear={clear}
       selectAllMatching={selectAllMatching}
       hasSelection={hasSelection}
@@ -915,134 +802,10 @@ function ModelDataTable({
   )
 }
 
-type LegacyRow = { id: string }
-
-const legacyColumns = createDataTableColumnHelper<LegacyRow>().columns([])
-
-// Ids can be any string, so they're joined on a character none can hold.
-const ID_SEPARATOR = "\u0000"
-
-/*
- * The deprecated rowIds and value props, on the same TanStack table as the
- * new API: a table of ids with selection only. Selection still comes in and
- * goes out as a Set or "all", and ids on other pages are kept.
- */
-function LegacyDataTable({
-  rowIds,
-  totalCount,
-  value: valueProp,
-  defaultValue,
-  onValueChange,
-  showSelectedOnly = false,
-  onShowSelectedOnlyChange,
-  ...props
-}: RootProps & {
-  rowIds: string[]
-  totalCount?: number
-  value?: DataTableSelection
-  defaultValue?: DataTableSelection
-  onValueChange?: (value: DataTableSelection) => void
-}) {
-  const [uncontrolled, setUncontrolled] = React.useState<DataTableSelection>(
-    () => defaultValue ?? new Set()
-  )
-  const value = valueProp ?? uncontrolled
-  const [locked, setLocked] = React.useState<ReadonlySet<string>>(new Set())
-
-  // Keyed on the ids, so a parent mapping its rows inline every render
-  // doesn't rebuild the rows.
-  const idsKey = rowIds.join(ID_SEPARATOR)
-  const data = React.useMemo<LegacyRow[]>(
-    () => (idsKey ? idsKey.split(ID_SEPARATOR) : []).map((id) => ({ id })),
-    [idsKey]
-  )
-  const onPage = React.useMemo(() => new Set(data.map((row) => row.id)), [data])
-  const offPage = React.useMemo(
-    () => (value === "all" ? [] : [...value].filter((id) => !onPage.has(id))),
-    [value, onPage]
-  )
-  const rowSelection = React.useMemo(() => {
-    const selection: RowSelectionState = {}
-    for (const { id } of data) {
-      if (locked.has(id)) continue
-      if (value === "all" || value.has(id)) selection[id] = true
-    }
-    return selection
-  }, [data, value, locked])
-
-  const commit = React.useCallback(
-    (next: DataTableSelection) => {
-      if (valueProp === undefined) setUncontrolled(next)
-      onValueChange?.(next)
-      if (next !== "all" && next.size === 0 && showSelectedOnly) {
-        onShowSelectedOnlyChange?.(false)
-      }
-    },
-    [valueProp, onValueChange, showSelectedOnly, onShowSelectedOnlyChange]
-  )
-
-  const table = useDataTable({
-    data,
-    columns: legacyColumns,
-    state: { rowSelection },
-    // Leaving "all" for a set keeps everything on this page but the change;
-    // rows on other pages can't be listed without their ids.
-    onRowSelectionChange: (updater) => {
-      const next = functionalUpdate(updater, rowSelection)
-      commit(new Set([...offPage, ...Object.keys(next)]))
-    },
-    enableRowSelection: (row) => !locked.has(row.id),
-    manualPagination: true,
-    manualSorting: true,
-    manualFiltering: true,
-  })
-
-  const registerLocked = React.useCallback((id: string, isLocked: boolean) => {
-    if (!isLocked) return () => {}
-    setLocked((current) => new Set(current).add(id))
-    return () =>
-      setLocked((current) => {
-        const next = new Set(current)
-        next.delete(id)
-        return next
-      })
-  }, [])
-
-  const legacy = React.useMemo<LegacySelection>(
-    () => ({
-      value,
-      offPage: offPage.length,
-      total: totalCount ?? rowIds.length,
-      locked,
-    }),
-    [value, offPage, totalCount, rowIds.length, locked]
-  )
-  const clear = React.useCallback(() => commit(new Set()), [commit])
-  const selectAllMatching = React.useCallback(() => commit("all"), [commit])
-  const hasSelection = React.useCallback(
-    () => value === "all" || value.size > 0,
-    [value]
-  )
-
-  return (
-    <DataTableRoot
-      table={table as unknown as DataTableAnyTable}
-      legacy={legacy}
-      registerLocked={registerLocked}
-      clear={clear}
-      selectAllMatching={selectAllMatching}
-      hasSelection={hasSelection}
-      showSelectedOnly={showSelectedOnly}
-      onShowSelectedOnlyChange={onShowSelectedOnlyChange}
-      {...props}
-    />
-  )
-}
+type RootProps = Omit<DataTableProps, "table">
 
 function DataTableRoot({
   table,
-  legacy,
-  registerLocked,
   clear,
   selectAllMatching,
   hasSelection,
@@ -1059,12 +822,7 @@ function DataTableRoot({
 }: RootProps &
   Pick<
     DataTableContextValue,
-    | "table"
-    | "legacy"
-    | "registerLocked"
-    | "clear"
-    | "selectAllMatching"
-    | "hasSelection"
+    "table" | "clear" | "selectAllMatching" | "hasSelection"
   >) {
   const rootRef = React.useRef<HTMLDivElement>(null)
   // A caller's ref would otherwise replace the one Escape and the layout use.
@@ -1080,7 +838,7 @@ function DataTableRoot({
   useSelector(
     table.store,
     () => {
-      const summary = summarize(table, legacy)
+      const summary = summarize(table)
       return {
         selecting: summary.count > 0,
         isAll: summary.isAll,
@@ -1199,8 +957,6 @@ function DataTableRoot({
   const context = React.useMemo<DataTableContextValue>(
     () => ({
       table,
-      legacy,
-      registerLocked,
       noun,
       clear,
       selectAllMatching,
@@ -1215,8 +971,6 @@ function DataTableRoot({
     }),
     [
       table,
-      legacy,
-      registerLocked,
       noun,
       clear,
       selectAllMatching,
@@ -1261,36 +1015,24 @@ function DataTableRoot({
  * a parent that turns a change down isn't contradicted.
  */
 function DataTableAnnouncer() {
-  const { table, legacy, noun } = useDataTableRoot()
+  const { table, noun } = useDataTableRoot()
   const summary = useSelectionSummary()
-  const rowSelection = useSelector(table.atoms.rowSelection)
-  const selection: unknown = legacy ? legacy.value : rowSelection
+  const selection = useSelector(table.atoms.rowSelection)
   const [announcement, setAnnouncement] = React.useState("")
-  const previous = React.useRef({ selection, isAll: summary.isAll })
+  const previous = React.useRef(selection)
 
-  const announce = React.useEffectEvent((wasAll: boolean) => {
-    if (summary.count === 0) {
-      setAnnouncement("Selection cleared")
-      return
-    }
-    // Leaving "all" keeps only this page's rows, which would otherwise go
-    // unsaid while the count drops from every match to a handful.
-    const narrowed =
-      legacy !== null &&
-      !summary.isAll &&
-      wasAll &&
-      summary.matchingCount > summary.selectableOnPage
+  const announce = React.useEffectEvent(() => {
     setAnnouncement(
-      `${selectionLabel(summary, noun)}${narrowed ? ", on this page only" : ""}`
+      summary.count === 0 ? "Selection cleared" : selectionLabel(summary, noun)
     )
   })
 
   React.useEffect(() => {
     const before = previous.current
-    previous.current = { selection, isAll: summary.isAll }
-    if (before.selection === selection) return
-    announce(before.isAll)
-  }, [selection, summary.isAll])
+    previous.current = selection
+    if (before === selection) return
+    announce()
+  }, [selection])
 
   return (
     <span role="status" className="sr-only">
@@ -2135,16 +1877,6 @@ function HeadCell({
   )
 }
 
-/**
- * A column header written by hand.
- * @deprecated Give useDataTable `columns`; DataTableHeader renders a head
- * for each, with `type` from the column's `meta` and `pinned` from
- * `columnPinning`. Removed in 0.3.0.
- */
-function DataTableHead(props: HeadCellProps) {
-  return <HeadCell {...props} />
-}
-
 /** The rows. With no children it renders the table's current page. */
 function DataTableBody({
   children,
@@ -2249,46 +1981,29 @@ const ModelRow = React.memo(function ModelRow({
   )
 })
 
-type RowFrameProps = Omit<React.ComponentProps<typeof TableRow>, "id"> & {
-  /** The row's id, the same one getRowId gives it. */
-  id: string
-  /** Names the row's checkbox when no primary or person cell does. */
-  label?: string
-  /** Why the row can't be selected. Setting it locks the row. */
-  lockedReason?: React.ReactNode
-}
-
 function RowFrame({
-  className,
   id,
-  label,
   lockedReason,
   children,
-  ref,
-  ...props
-}: RowFrameProps) {
-  const { table, registerLocked } = useDataTableRoot()
+}: {
+  /** The row's id, the same one getRowId gives it. */
+  id: string
+  /** Why the row can't be selected. Setting it locks the row. */
+  lockedReason?: React.ReactNode
+  children: React.ReactNode
+}) {
+  const { table } = useDataTableRoot()
   const labelId = React.useId()
   const selectId = React.useId()
   const reasonId = React.useId()
   const locked = hasReason(lockedReason)
   const selected = useRowSelected(id)
 
-  React.useLayoutEffect(
-    () => registerLocked?.(id, locked),
-    [id, locked, registerLocked]
-  )
-
-  // The first primary or person cell names the row's checkbox, or `label`
-  // when there's none. Only one element can carry the id, so the row hands
-  // it out after render.
+  // The first primary or person cell names the row's checkbox. Only one
+  // element can carry the id, so the row hands it out after render.
   const rowRef = React.useRef<HTMLTableRowElement>(null)
-  const mergedRowRef = React.useMemo(() => mergeRefs(rowRef, ref), [ref])
-  const fallbackRef = React.useRef<HTMLSpanElement>(null)
   React.useLayoutEffect(() => {
     const cell = rowRef.current?.querySelector("[data-row-name]")
-    const fallback = fallbackRef.current
-    if (fallback) fallback.id = cell ? "" : labelId
     if (cell && cell.id !== labelId) cell.id = labelId
   })
 
@@ -2300,13 +2015,12 @@ function RowFrame({
   return (
     <DataTableRowContext.Provider value={row}>
       <TableRow
-        ref={mergedRowRef}
+        ref={rowRef}
         data-slot="data-table-row"
         data-row-id={id}
         data-selected={selected || undefined}
         data-locked={locked || undefined}
-        className={cn("group/row", className)}
-        {...props}
+        className="group/row"
       >
         <TableCell
           data-slot="data-table-select"
@@ -2324,11 +2038,6 @@ function RowFrame({
           <span id={selectId} hidden>
             Select
           </span>
-          {label ? (
-            <span ref={fallbackRef} hidden>
-              {label}
-            </span>
-          ) : null}
           {locked ? (
             <span id={reasonId} hidden>
               {lockedReason}
@@ -2339,15 +2048,6 @@ function RowFrame({
       </TableRow>
     </DataTableRowContext.Provider>
   )
-}
-
-/**
- * A row written by hand.
- * @deprecated Give useDataTable `data` and `columns`; DataTableBody renders
- * the rows, and `lockedReason` on useDataTable locks them. Removed in 0.3.0.
- */
-function DataTableRow(props: RowFrameProps) {
-  return <RowFrame {...props} />
 }
 
 function DataTableLock() {
@@ -2368,7 +2068,7 @@ function DataTableLock() {
   )
 }
 
-type DataTableCellProps = React.ComponentProps<typeof TableCell> & {
+type BodyCellProps = React.ComponentProps<typeof TableCell> & {
   /** What the column holds. The same type as its header. */
   type?: DataTableCellType
   /** Which edge the column sticks to. The same pinned as its header. */
@@ -2390,7 +2090,7 @@ function BodyCell({
   avatar,
   children,
   ...props
-}: DataTableCellProps) {
+}: BodyCellProps) {
   const names = type === "primary" || type === "person"
 
   const value =
@@ -2458,16 +2158,6 @@ function BodyCell({
       </div>
     </TableCell>
   )
-}
-
-/**
- * A cell written by hand.
- * @deprecated Give the column `meta: { type }` and a `cell` renderer;
- * DataTableBody renders the cells. `secondary`, `icon` and `avatar` move to
- * `meta` too. Removed in 0.3.0.
- */
-function DataTableCell(props: DataTableCellProps) {
-  return <BodyCell {...props} />
 }
 
 /**
@@ -2576,17 +2266,12 @@ function DataTableCard({
   /** Why the row can't be selected. Setting it locks the card. */
   lockedReason?: React.ReactNode
 }) {
-  const { table, registerLocked } = useDataTableRoot()
+  const { table } = useDataTableRoot()
   const labelId = React.useId()
   const selectId = React.useId()
   const reasonId = React.useId()
   const locked = hasReason(lockedReason)
   const selected = useRowSelected(id)
-
-  React.useLayoutEffect(
-    () => registerLocked?.(id, locked),
-    [id, locked, registerLocked]
-  )
 
   const row = React.useMemo(
     () => ({ id, labelId, reasonId, lockedReason }),
@@ -2940,7 +2625,6 @@ export {
   DataTableCards,
   DataTableEmpty,
   DataTableSkeleton,
-  DataTableCell,
   DataTableColumns,
   DataTableContent,
   dataTableCodecs,
@@ -2948,17 +2632,14 @@ export {
   dataTableFeatures,
   DataTableFilters,
   DataTableFooter,
-  DataTableHead,
   DataTableHeader,
   DataTablePagination,
-  DataTableRow,
   DataTableSearch,
   DataTableSelectionCount,
   DataTableToolbar,
   useDataTable,
   useDataTableContext,
   useDataTableFacets,
-  useDataTableSelection,
   useSearchParamsAtom,
 }
 export type {
@@ -2973,6 +2654,5 @@ export type {
   DataTableOptions,
   DataTablePinned,
   DataTableProps,
-  DataTableSelection,
   SearchParamCodec,
 }

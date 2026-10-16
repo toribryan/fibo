@@ -93,21 +93,6 @@ describe("StickerAvatar", () => {
       .toBeInTheDocument()
   })
 
-  it("still names the status from the deprecated props", async () => {
-    const screen = await render(
-      <>
-        <StickerAvatar name="Ana" status="away" />
-        <StickerAvatar name="Mei" status="present" statusLabel="Here" />
-      </>
-    )
-    await expect
-      .element(screen.getByRole("img", { name: "Ana, Away" }))
-      .toBeInTheDocument()
-    await expect
-      .element(screen.getByRole("img", { name: "Mei, Here" }))
-      .toBeInTheDocument()
-  })
-
   it("keeps its layout box at its size whatever the edge", async () => {
     const screen = await render(
       <StickerAvatar

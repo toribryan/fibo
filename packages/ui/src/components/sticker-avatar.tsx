@@ -3,16 +3,11 @@
 import * as React from "react"
 
 import {
-  StatusDot,
   StatusDotHostProvider,
   useStatusDotHost,
-  type StatusDotStatus,
 } from "@workspace/ui/components/status-dot"
 import { Count, type CountProps } from "@workspace/ui/components/count"
 import { cn } from "@workspace/ui/lib/utils"
-
-/** @deprecated Use StatusDotStatus from status-dot. */
-type StickerAvatarStatus = StatusDotStatus
 
 /** How the sticker was cut: from the image's own shape, round, or from initials. */
 type StickerAvatarShape = "cutout" | "round" | "initials"
@@ -264,12 +259,6 @@ type StickerAvatarProps = React.ComponentProps<"span"> & {
   size?: number
   /** Paper edge in pixels. Defaults to one sixteenth of the size, never under 2px. */
   edge?: number
-  /** @deprecated Put a `<StatusDot status>` in the avatar instead. */
-  status?: StickerAvatarStatus
-  /** @deprecated Use the StatusDot's `label`. */
-  statusLabel?: string
-  /** @deprecated Use the StatusDot's `variant`, `color` or `mono`. */
-  statusColor?: boolean
   /** `true` tilts by a stable angle from the name, a number sets degrees, `false` keeps it straight. */
   tilt?: boolean | number
   /** Lifts on hover, and when hovering an ancestor with `group/sticker`. */
@@ -285,9 +274,6 @@ function StickerAvatar({
   src,
   size = 40,
   edge,
-  status,
-  statusLabel,
-  statusColor = true,
   tilt = true,
   lift = true,
   cutout = "auto",
@@ -426,16 +412,7 @@ function StickerAvatar({
             {initials(name)}
           </span>
         ) : null}
-        <StatusDotHostProvider host={host}>
-          {status ? (
-            <StatusDot
-              status={status}
-              label={statusLabel}
-              variant={statusColor ? "color" : "mono"}
-            />
-          ) : null}
-          {children}
-        </StatusDotHostProvider>
+        <StatusDotHostProvider host={host}>{children}</StatusDotHostProvider>
       </span>
     </>
   )
@@ -519,5 +496,4 @@ export {
   stickerTilt,
   type StickerAvatarProps,
   type StickerAvatarShape,
-  type StickerAvatarStatus,
 }

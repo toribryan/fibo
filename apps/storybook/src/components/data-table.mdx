@@ -188,13 +188,6 @@ matching and Show selected only aren't offered, as in the Figma library.
 
 <Canvas of={Stories.NarrowCards} />
 
-### Legacy API
-
-The `rowIds` and `value` props and hand-written rows, which still work until
-0.3.0. See [Migrating to the table API](#migrating-to-the-table-api).
-
-<Canvas of={Stories.LegacyApi} />
-
 ## Usage
 
 ```tsx
@@ -328,16 +321,13 @@ comparators), column and global filtering (`includesString`, `equals` and
 visibility and column pinning. Grouping, expanding, resizing, ordering and
 row pinning are left out.
 
-## Migrating to the table API
+## Migrating from 0.x
 
-The `rowIds`, `totalCount`, `value`, `defaultValue` and `onValueChange` props,
-`useDataTableSelection`, and hand-written `DataTableRow`, `DataTableCell` and
-`DataTableHead` are deprecated in 0.2.0 and removed in 0.3.0. Until then
-they run on the same TanStack table as the new API, built from `rowIds` with
-selection only, so they behave as they did.
-
-A codemod lists every use with its file and line. It changes nothing:
-writing column definitions needs a person.
+Before 1.0, Data table also took `rowIds`, `totalCount`, `value`,
+`defaultValue` and `onValueChange` props, `useDataTableSelection`, and
+hand-written `DataTableRow`, `DataTableCell` and `DataTableHead`. 1.0
+removes them. A codemod lists every use left in a project with its file and
+line. It changes nothing: writing column definitions needs a person.
 
 ```sh
 pnpm dlx jscodeshift --parser tsx --dry \
@@ -615,8 +605,7 @@ DataTable takes `table` from useDataTable, plus `noun`, `narrowLayout` and
 Show selected only. `useDataTable` takes TanStack Table's options for
 `dataTableFeatures`, `data` and `columns` among them, plus `lockedReason`;
 column `meta` is `DataTableColumnMeta` (see [Usage](#usage)). Every part also
-takes the props of the element it renders. The deprecated props are listed
-for the one release they remain.
+takes the props of the element it renders.
 
 <ArgTypes
   of={Stories.Default}
@@ -886,10 +875,9 @@ for the one release they remain.
     'Every head carries scope="col". A sortable head holds a button named by the column. Only the sorted head carries aria-sort, ascending or descending, so the order is announced once, where it applies.',
     "DataTableSearch is a search field; give it an aria-label when there's no visible label. Facet filter menus name each choice with its count, “Active 3”, and say how many are ticked on the button.",
     "Name it with aria-label or aria-labelledby on DataTable.",
-    "Each row checkbox is named from its primary or person cell, “Select Maya Okafor”, or from the row's label when it has neither. Select all says its scope, “Select all members on this page”.",
+    "Each row checkbox is named from its primary or person cell, “Select Maya Okafor”. Select all says its scope, “Select all members on this page”.",
     "A locked row's checkbox is disabled and described by the reason. The lock is focusable, so keyboard users can open its tooltip.",
     "Selection changes are announced through a status region once they take effect, so a change a controlled parent turns down isn't announced. Escape clears the selection.",
-    "With the deprecated value prop, changing one row while every match is selected keeps only this page's rows, and says so: “3 members selected, on this page only”. With useDataTable, only that row changes.",
     "The toolbar is a group named “Filters and actions” or “Bulk actions”, not a toolbar role, so its controls stay ordinary Tab stops and arrow keys stay with the search field.",
     "When the focused control goes away, such as Clear or Select all matching, focus moves to Clear, or to select all when nothing is selected, instead of the page.",
     "A single-row action that's dimmed stays focusable and is described by why: “Works on one member at a time”.",

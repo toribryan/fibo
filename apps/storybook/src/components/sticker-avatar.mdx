@@ -57,6 +57,13 @@ each still reads without color.
 
 <Canvas of={Stories.Statuses} />
 
+Before 1.0, the sticker took `status`, `statusLabel` and `statusColor` props
+instead. The `sticker-status-to-child` codemod moves them into a StatusDot:
+
+```sh
+pnpm dlx jscodeshift --parser tsx -t https://fibo.toribryan.com/codemods/sticker-status-to-child.js src
+```
+
 ### Cut-out, round and initials
 
 A transparent cut-out follows its shape. A photo with a background becomes
@@ -233,9 +240,6 @@ because it is colored with fibo's semantic tokens: `success` for present,
 for the page in each theme, so on the page color they clear the 3:1 that
 non-text marks need. On white paper the dark-theme ones would not. Give the
 dot `variant="mono"` to draw the marks in the foreground color instead.
-
-`status`, `statusLabel` and `statusColor` on the sticker still work and draw
-the same StatusDot, but are deprecated: put the dot in as a child.
 
 ## Accessibility
 
