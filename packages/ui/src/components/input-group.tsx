@@ -89,9 +89,12 @@ function InputGroupAddon({
       onMouseDown={(event) => {
         onMouseDown?.(event)
         if ((event.target as Element).closest("button, a, input")) return
-        const control = event.currentTarget
-          .closest("[data-slot=input-group]")
-          ?.querySelector<HTMLElement>("[data-slot=input-group-control]")
+        // The parent rather than a data-slot lookup, since parts such as
+        // Search input and Data table give the group their own slot.
+        const control =
+          event.currentTarget.parentElement?.querySelector<HTMLElement>(
+            "[data-slot=input-group-control]"
+          )
         if (!control) return
         // Keeps the caret where it was instead of letting the press blur it.
         event.preventDefault()

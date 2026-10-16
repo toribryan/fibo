@@ -1,0 +1,294 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+import { SearchIcon } from "lucide-react"
+
+import * as Stories from "../../../../packages/ui/src/components/search-input.stories"
+import {
+  SearchInput,
+  SearchTrigger,
+} from "../../../../packages/ui/src/components/search-input"
+import { Button } from "../../../../packages/ui/src/components/button"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Search input
+
+A search box with a Cmd+K shortcut and a clear button, and a compact
+trigger for a header whose search opens in a command menu.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Cmd+K on macOS, Ctrl+K elsewhere, focuses the field from anywhere on the
+  page. The key hint shows which, and hides on touch screens.
+- Once there's a query, the hint gives way to a clear button. Escape clears
+  first, then leaves the field.
+- `SearchTrigger` is a ghost button with the icon and the hint, for a header
+  where the search opens in a dialog. The shortcut presses it.
+- Controlled through `value` and `onValueChange`, or left to keep its own
+  query. Inside a Field, the FieldLabel names it.
+
+## Installation
+
+<Install name="search-input" exports={["SearchInput", "SearchTrigger"]} />
+
+It installs Input group, Kbd and Button with it.
+
+## Examples
+
+### Small
+
+`size="sm"` matches a small Button or Select, as in a toolbar. Inside a
+FieldGroup it takes the group's size.
+
+<Canvas of={Stories.Small} />
+
+### Without a shortcut
+
+`hotkey={null}` drops the shortcut and its hint, for a second search on a
+page that already has one on Cmd+K.
+
+<Canvas of={Stories.NoShortcut} />
+
+### Ghost, in a menu
+
+`variant="ghost"` drops the border and fill, so the popup around it is the
+field.
+
+<Canvas of={Stories.Ghost} />
+
+### In a field
+
+The FieldLabel names the search, and the Field's description and invalid
+state reach it.
+
+<Canvas of={Stories.InAField} />
+
+### Filtering a list
+
+Controlled, filtering a list as you type. The list announces its changes.
+
+<Canvas of={Stories.FilterAList} />
+
+### Search trigger
+
+For a search that opens elsewhere. It shows no text, so its name is
+`aria-label`, Search by default.
+
+<Canvas of={Stories.Trigger} />
+
+### In a header, opening a command menu
+
+`SearchTrigger` as Command menu's trigger. The menu's own hotkey is off so
+the trigger's handles Cmd+K.
+
+<Canvas of={Stories.InAHeader} />
+
+## Usage
+
+```tsx
+import { useState } from "react"
+
+import {
+  CommandMenu,
+  type CommandMenuGroup,
+} from "@/components/ui/command-menu"
+import { SearchInput, SearchTrigger } from "@/components/ui/search-input"
+
+export function DocsSearch() {
+  const [query, setQuery] = useState("")
+  return (
+    <SearchInput
+      aria-label="Search docs"
+      value={query}
+      onValueChange={setQuery}
+    />
+  )
+}
+
+export function HeaderSearch({ groups }: { groups: CommandMenuGroup[] }) {
+  return (
+    <CommandMenu
+      groups={groups}
+      hotkey={null}
+      trigger={<SearchTrigger aria-haspopup="dialog" />}
+    />
+  )
+}
+```
+
+Give each page one shortcut: when two searches share it, the first one
+mounted takes it.
+
+## Anatomy
+
+### SearchInput
+
+<Anatomy
+  root={{
+    name: "SearchInput",
+    slot: "search-input",
+    note: "An Input group: draws the field, its focus ring and invalid state.",
+    children: [
+      {
+        name: "InputGroupAddon",
+        slot: "input-group-addon",
+        note: "The search icon, at the start.",
+      },
+      {
+        name: "InputGroupInput",
+        slot: "input-group-control",
+        note: "The search box.",
+      },
+      {
+        name: "InputGroupAddon",
+        slot: "input-group-addon",
+        note: "At the end: the shortcut hint while the field is empty, or the clear button once there's a query.",
+        children: [
+          {
+            name: "KbdGroup",
+            slot: "kbd-group",
+            note: "The shortcut hint.",
+          },
+          {
+            name: "Button",
+            slot: "search-input-clear",
+            note: "Clears the query.",
+          },
+        ],
+      },
+    ],
+  }}
+/>
+
+### SearchTrigger
+
+<Anatomy
+  root={{
+    name: "SearchTrigger",
+    slot: "search-trigger",
+    note: "A ghost Button.",
+    children: [
+      {
+        name: "KbdGroup",
+        slot: "kbd-group",
+        note: "The shortcut hint, after the search icon.",
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use SearchInput where search is the page's main job, such as a docs index or a table of people.",
+    "Use SearchTrigger in a header or toolbar, where the search opens in a Command menu or dialog.",
+    "Keep the placeholder to what can be searched, such as Search projects…, not instructions.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: <SearchTrigger hotkey={null} />,
+        description: "Use SearchTrigger, so the header stays compact.",
+      },
+      negative: {
+        component: (
+          <Button variant="outline">
+            <SearchIcon aria-hidden="true" />
+            Search
+          </Button>
+        ),
+        description:
+          "Don't build a search button by hand; it loses the shortcut and its hint.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+### SearchInput
+
+Native input attributes, such as `aria-label`, `name` and `disabled`, reach
+the input; `className` reaches the field.
+
+<ArgTypes of={SearchInput} />
+
+### SearchTrigger
+
+Native button attributes and `className` reach the button.
+
+<ArgTypes of={SearchTrigger} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="search-input"',
+      element: "The field",
+      when: "Always.",
+    },
+    {
+      attribute: "data-variant",
+      element: "The field",
+      when: (
+        <>
+          Always. <code>default</code> or <code>ghost</code>.
+        </>
+      ),
+    },
+    {
+      attribute: "data-size",
+      element: "The field and the trigger",
+      when: (
+        <>
+          Always. <code>sm</code> or <code>default</code>.
+        </>
+      ),
+    },
+    {
+      attribute: 'data-slot="search-input-clear"',
+      element: "The clear button",
+      when: "While the field has a query.",
+    },
+    {
+      attribute: 'data-slot="search-trigger"',
+      element: "The trigger",
+      when: "Always, also as a Command menu's trigger.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The field is a searchbox and the trigger a button. Both are named Search unless given an aria-label; inside a Field, the FieldLabel names the field.",
+    "The shortcut is announced through aria-keyshortcuts; the visible hint is hidden from assistive technology.",
+    "Escape clears the query before it leaves the field, so a slip never loses focus, and doesn't close a dialog around it.",
+    "The clear button is named Clear search and returns focus to the field.",
+    "While disabled, neither binds the shortcut, so the browser keeps its own.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Input group", "Command menu", "Kbd"]} />
+
+## References
+
+- Adapted from the Kbd input group example on 21st.dev and the header
+  search on toribryan.com.
+- [WAI-ARIA: aria-keyshortcuts](https://www.w3.org/TR/wai-aria-1.2/#aria-keyshortcuts)
