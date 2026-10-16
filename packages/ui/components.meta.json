@@ -253,20 +253,6 @@
     "group": "Forms",
     "figma": "631-3"
   },
-  "spinner": {
-    "title": "Spinner",
-    "description": "A spinning ring that says something is loading.",
-    "tier": "base-components",
-    "group": "Feedback",
-    "status": "deprecated",
-    "deprecated": {
-      "since": "0.2.0",
-      "removal": "0.3.0",
-      "replacement": "progress",
-      "reason": "A spinner says nothing about how long a wait will be or what is happening. An indeterminate Progress takes a label, and turns determinate once the total is known.",
-      "codemod": "spinner-to-progress"
-    }
-  },
   "status-dot": {
     "title": "Status dot",
     "description": "A small mark for whether someone is present, away or offline, told apart by shape.",

@@ -16,6 +16,10 @@ Notable changes, newest first.
   `AnnotatedTextCycle` swaps the word in that pill. A new **highlight**
   token fills the highlighter, and turns yellow in
   Electrical. A new **chip** token fills the pills. **Calendar** is no longer marked new.
+- **Spinner** is removed, as promised when it was deprecated. Use an
+  indeterminate **Progress**;
+  `pnpm dlx jscodeshift --parser tsx -t https://fibo.toribryan.com/codemods/spinner-to-progress.js src`
+  moves a project to it.
 - **Voice memo** starts asleep. The first press wakes it with a hop and a
   shake and turns its light green; the next starts listening.
   `defaultAwake` starts it ready, as before.

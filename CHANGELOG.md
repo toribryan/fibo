@@ -114,6 +114,9 @@ https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
   former `default` size.
 - **Breaking:** Chapter scrubber's `preview="none"`. Every rail previews the
   chapter at the crest, as a `card` or a `label`.
+- **Breaking:** Spinner. Use an indeterminate Progress; move a project to it
+  with `pnpm dlx jscodeshift --parser tsx -t
+https://fibo.toribryan.com/codemods/spinner-to-progress.js src`.
 
 ### Fixed
 
@@ -130,12 +133,6 @@ https://fibo.toribryan.com/codemods/data-table-legacy-api.js src`.
   styles silently disappeared.
 - Registry parts depend on shadcn's `utils`, so `cn` is installed in a project
   that never ran `shadcn init`.
-
-### Deprecated
-
-- **Spinner**, added as the first part through the retirement path. Use an
-  indeterminate Progress; the `spinner-to-progress` codemod migrates a
-  project. Removed in 0.3.0.
 
 ### Changed
 

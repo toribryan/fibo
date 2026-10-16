@@ -89,7 +89,7 @@ notes.
 
 <!-- parts:start: written by pnpm registry:build -->
 
-**36 base components.** The standard set. They depend on nothing beyond Base UI, `class-variance-authority` and `lucide-react`, except Data table (TanStack Table) and Rich text editor (Tiptap).
+**35 base components.** The standard set. They depend on nothing beyond Base UI, `class-variance-authority` and `lucide-react`, except Data table (TanStack Table) and Rich text editor (Tiptap).
 
 | Group      | Parts                                                                                                                                                                                                                                                                                                                            |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -98,7 +98,7 @@ notes.
 | Display    | [Avatar][avatar], [Badge][badge], [Count][count], [Data table][data-table], [Kbd][kbd], [Message list][message-list], [Separator][separator], [Status dot][status-dot], [Table][table]                                                                                                                                           |
 | Navigation | [Pagination][pagination], [Tabs][tabs]                                                                                                                                                                                                                                                                                           |
 | Overlays   | [Menu][menu], [Sheet][sheet], [Tooltip][tooltip]                                                                                                                                                                                                                                                                                 |
-| Feedback   | [Empty state][empty-state], [Progress][progress], [Skeleton][skeleton], [Spinner][spinner] (deprecated), [Toast][toast], [Typing indicator][typing-indicator]                                                                                                                                                                    |
+| Feedback   | [Empty state][empty-state], [Progress][progress], [Skeleton][skeleton], [Toast][toast], [Typing indicator][typing-indicator]                                                                                                                                                                                                     |
 
 **12 special components.** Playful parts built for one kind of moment. They may bring `motion` with them.
 
@@ -139,7 +139,6 @@ notes.
 [sheet]: https://fibo.toribryan.com/?path=/docs/base-components-overlays-sheet--docs
 [skeleton]: https://fibo.toribryan.com/?path=/docs/base-components-feedback-skeleton--docs
 [slider]: https://fibo.toribryan.com/?path=/docs/base-components-forms-slider--docs
-[spinner]: https://fibo.toribryan.com/?path=/docs/base-components-feedback-spinner--docs
 [status-dot]: https://fibo.toribryan.com/?path=/docs/base-components-display-status-dot--docs
 [switch]: https://fibo.toribryan.com/?path=/docs/base-components-forms-switch--docs
 [table]: https://fibo.toribryan.com/?path=/docs/base-components-display-table--docs
