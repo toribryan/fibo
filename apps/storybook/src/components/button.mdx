@@ -12,8 +12,8 @@ import { Install } from "../blocks/install"
 
 # Button
 
-Buttons trigger an action with a single click: submitting a form, opening a
-dialog, confirming or canceling a step. The label says what will happen.
+Triggers an action: submitting a form, opening a dialog, confirming or
+canceling a step.
 
 <Canvas of={Stories.Default} />
 
@@ -33,8 +33,7 @@ dialog, confirming or canceling a step. The label says what will happen.
 
 ### Kinds
 
-Six variants, from most to least emphasis. `destructive` is a tinted fill,
-not a solid red, so it never outshouts the primary action.
+Six variants, from most to least emphasis.
 
 <Canvas of={Stories.AllVariants} />
 
@@ -46,7 +45,7 @@ Four text sizes, `xs` to `lg`, and four square `icon` sizes to match.
 
 ### With an icon
 
-Mark the icon with `data-icon` and the padding on that side tightens.
+`data-icon` on the icon tightens the padding on that side.
 
 <Canvas of={Stories.WithIcon} />
 
@@ -58,7 +57,7 @@ An `icon` size, named with `aria-label`.
 
 ### Disabled
 
-`disabled` dims the button and ignores the pointer.
+`disabled` dims the button and blocks the pointer.
 
 <Canvas of={Stories.Disabled} />
 
@@ -77,20 +76,19 @@ export function Actions() {
 }
 ```
 
-Use one default button per view, and give every other action a quieter
-variant.
+One default button per view. Every other action takes a quieter variant.
 
 ## Guidelines
 
 <UsageGuidelines
   guidelines={[
-    "Use one default (primary) button per view. Every other action gets a lower emphasis variant.",
+    "One default (primary) button per view. Every other action gets a lower emphasis variant.",
     "Keep labels to one to three words, in sentence case, starting with a verb.",
     <>
       Mark icons with <code>data-icon="inline-start"</code> or{" "}
       <code>"inline-end"</code> so the padding adjusts for them.
     </>,
-    "Let the label set the width. Stretch a button only on narrow layouts where it spans the container.",
+    "The label sets the width. Stretch a button only on narrow layouts where it spans the container.",
     "Keep 8px between buttons in a group.",
   ]}
 />
@@ -98,8 +96,7 @@ variant.
 <Tip>
   For navigation, render Button as a link with{" "}
   <code>{'render={<a href="/pricing" />}'}</code> and{" "}
-  <code>{"nativeButton={false}"}</code>. It keeps the look and gets link
-  semantics.
+  <code>{"nativeButton={false}"}</code> to keep the look with link semantics.
 </Tip>
 
 ## Do's and don'ts
@@ -124,7 +121,7 @@ variant.
           </div>
         ),
         description:
-          "Don't put two primary buttons side by side. Nothing tells people which one matters.",
+          "Don't put two primary buttons side by side. Neither reads as the main action.",
       },
     },
     {
@@ -202,7 +199,7 @@ rendering as a link.
       Icon-only buttons need an <code>aria-label</code>. The icon is decorative.
     </>,
     <>
-      Only disable a button when the reason is obvious nearby. Otherwise keep it
+      Disable a button only when the reason is obvious nearby. Otherwise keep it
       enabled and explain what's missing on submit.
     </>,
     <>

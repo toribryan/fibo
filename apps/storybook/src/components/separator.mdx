@@ -18,10 +18,10 @@ label in the middle.
 
 ## Features
 
-- Horizontal across its container, or vertical down the height of its row.
-- Children make a labeled rule: a line, the label, a line. A text label is
-  also its name for screen readers.
-- A `separator` role with its orientation, from Base UI.
+- Horizontal across its container, or vertical down its row's height.
+- Children make a labeled rule: line, label, line. A text label is also its
+  accessible name.
+- `separator` role with its orientation, from Base UI.
 
 ## Installation
 
@@ -31,8 +31,7 @@ label in the middle.
 
 ### Vertical
 
-Between items in a row, such as actions in a toolbar. It takes the row's
-height.
+Between items in a row, such as toolbar actions. Takes the row's height.
 
 <Canvas of={Stories.Vertical} />
 
@@ -56,8 +55,7 @@ export function Day({ date }: { date: string }) {
 }
 ```
 
-Use space before a rule: reach for a separator only when groups would run
-together without one.
+Prefer space. Add a rule only when groups would run together without one.
 
 ## Guidelines
 
@@ -135,8 +133,8 @@ together without one.
 
 <UsageGuidelines
   guidelines={[
-    "It has the separator role and aria-orientation, so screen readers announce a break.",
-    "A separator's children aren't read, so a text label becomes its aria-label. Pass aria-label yourself when the label isn't plain text.",
+    "The separator role and aria-orientation make screen readers announce a break.",
+    "A separator's children aren't read, so a text label becomes its aria-label. Pass aria-label when the label isn't plain text.",
   ]}
 />
 

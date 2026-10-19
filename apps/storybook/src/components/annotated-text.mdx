@@ -16,22 +16,21 @@ import { Install } from "../blocks/install"
 
 # Annotated text
 
-Marks a word or phrase the way a pen would: underlined, circled, boxed,
-struck out or run over with a highlighter. A sticker chip sets a word apart
-in a pill, and can cycle through a few words in the same spot.
+Hand-drawn marks on a word or phrase (underline, circle, box, strike,
+highlight), plus a sticker chip that sets a word in a pill and can cycle
+through several.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Ten hand-drawn marks, drawn as SVG in the text's own pixels, so they keep
-  their proportions from a caption to a display heading and never stretch.
-- A steady wobble seeded from the text: the same phrase looks the same on
-  every render and device, and two phrases don't wobble alike.
-- An optional draw-in the first time the text scrolls into view, with a
-  delay for staging several marks in order.
-- `AnnotatedTextChip` and `AnnotatedTextCycle` for a word in a pill with a
-  sticker beside it, still or cycling.
+- Ten marks, drawn as SVG in the text's own pixels, so they keep their
+  proportions at any type size and never stretch.
+- Wobble seeded from the text: a phrase looks the same on every render and
+  device, and two phrases differ.
+- Optional draw-in on first scroll into view, with a `delay` for staging.
+- `AnnotatedTextChip` and `AnnotatedTextCycle`: a word in a pill with a
+  sticker, still or cycling.
 
 ## Installation
 
@@ -47,21 +46,21 @@ in a pill, and can cycle through a few words in the same spot.
   ]}
 />
 
-Installs `motion`, which the cycling chip uses to slide words and resize the
-pill. The marks themselves are CSS transitions.
+Installs `motion`, for the cycling chip's slide and resize. The marks are
+CSS transitions.
 
 ## Examples
 
 ### Variants
 
-Each `variant` is one kind of mark. `highlight` sits behind the text; every
-other mark is drawn over or around it.
+`highlight` sits behind the text. Every other mark is drawn over or around
+it.
 
 <Canvas of={Stories.Variants} />
 
 ### Tones
 
-`tone` colors a mark when the mark means something: a struck-out price in
+`tone` colors a mark that carries meaning: a struck-out price in
 destructive, a fixed figure in success. A highlight takes the quiet tint of
 its tone.
 
@@ -69,39 +68,37 @@ its tone.
 
 ### Sizes
 
-Every offset and stroke is a share of the text's height, so the mark grows
-with the type.
+Offsets and strokes scale with the text's height.
 
 <Canvas of={Stories.Sizes} />
 
 ### Draw in
 
-With `animate`, a mark draws itself in once it's mostly in view. `delay`
-stages several marks so they read in order.
+`animate` draws the mark in once it's mostly in view. `delay` stages
+several marks in order.
 
 <Canvas of={Stories.DrawIn} />
 
 ### Sticker chips
 
-`AnnotatedTextChip` sets a word in a pill with a sticker at its start. The
-sticker takes a small tilt from the word. An emoji or an `<img>` is die-cut
-with a white paper edge round its outline. A line icon is printed in ink on
-a small paper tile, since an edge round every stroke would read as an
-outline rather than a sticker.
+`AnnotatedTextChip` puts a sticker at the pill's start, tilted by an amount
+derived from the word. An emoji or `<img>` gets a white die-cut edge round its
+outline. A line icon is printed in ink on a paper tile, since an edge round
+every stroke would read as an outline.
 
 <Canvas of={Stories.Chip} />
 
 ### Cycling chips
 
-`AnnotatedTextCycle` swaps the word and sticker in one pill, and the pill
-springs to fit. It pauses under the pointer, and by default runs through its
-items once and settles on the last.
+`AnnotatedTextCycle` swaps word and sticker in one pill, which springs to
+fit. It pauses under the pointer and, by default, runs through once and
+settles on the last item.
 
 <Canvas of={Stories.Cycle} />
 
 ### In prose
 
-At body size, a mark or two a paragraph is enough.
+At body size, one or two marks per paragraph.
 
 <Canvas of={Stories.InProse} />
 
@@ -134,8 +131,8 @@ export function Hero() {
 type AnnotatedTextCycleItem = { label: string; icon?: React.ReactNode }
 ```
 
-Keep an annotated phrase short. It never wraps, because a mark is drawn
-round one line of text.
+Keep annotated phrases short. They never wrap, since a mark is drawn round
+one line.
 
 ## Anatomy
 
@@ -164,16 +161,16 @@ the sticker (`annotated-text-chip-icon`) and the text.
 <UsageGuidelines
   guidelines={[
     "Use marks for emphasis in display type and editorial copy: a hero line, a pull quote, a callout in a guide.",
-    "One or two marks per paragraph. More, and nothing stands out.",
+    "One or two marks per paragraph, or nothing stands out.",
     <>
-      Leave <code>tone</code> at default unless the mark carries meaning. Color
-      only carries meaning in fibo.
+      Leave <code>tone</code> at default unless the mark carries meaning. In
+      fibo, color only carries meaning.
     </>,
     <>
       Stage draw-ins with <code>delay</code> in reading order, and keep the
       whole sequence under two seconds.
     </>,
-    "Use chips for a few key nouns in a headline, each with a sticker that says the same thing as the word.",
+    "Use chips for a few key nouns in a headline, each with a sticker that matches the word.",
   ]}
 />
 
@@ -276,7 +273,7 @@ the sticker (`annotated-text-chip-icon`) and the text.
 
 <UsageGuidelines
   guidelines={[
-    "Marks and stickers are hidden from assistive technology, so the text reads as plain text. If the mark carries meaning, like a struck-out price, say so in the text too.",
+    "Marks and stickers are hidden from assistive technology. If a mark carries meaning, like a struck-out price, say so in the text too.",
     <>
       <code>AnnotatedTextCycle</code> gives screen readers one fixed word:{" "}
       <code>label</code>, or the first item. The moving pill is hidden from

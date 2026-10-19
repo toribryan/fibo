@@ -65,7 +65,7 @@ const PRINCIPLES = [
   },
   {
     title: "Proportion, not preference",
-    body: "Size, spacing and radius come from one scale. The system sets the measure, so every screen shares a rhythm.",
+    body: "Size, spacing and radius come from one scale, so every screen shares a rhythm.",
   },
   {
     title: "Every state is designed",

@@ -12,48 +12,44 @@ import { TokenFlow } from "../../../../packages/ui/src/components/token-flow"
 
 # Token flow
 
-Token flow shows a color moving through the token tiers, from raw value to
-primitive to semantic role.
+Shows a color moving through the token tiers: raw value, primitive, semantic
+role.
 
 <Canvas of={Stories.WithUse} />
 
-Switch the theme in the toolbar: rows with a dark pair scramble to their dark
-values while the semantic name stays put.
-
 ## Features
 
-- One row per role: the raw value, the primitive and the semantic role, joined
-  by wires.
+- One row per role, its three tiers joined by wires.
 - A pulse runs along each wire while the plate is on screen.
-- Rows with a `dark` pair scramble to their dark values when the theme changes,
-  while the role's name stays put.
+- Rows with a `dark` pair scramble to their dark values when the theme changes;
+  the role's name stays put. Try the toolbar theme switch.
 - `showUse` prints what each role is for under its chip.
 
 ## Installation
 
 <Install name="token-flow" exports={["TokenFlow", "type TokenRow"]} />
 
-No animation library: the pulse and the scramble use the Web Animations API and
+No animation library; the pulse and scramble use the Web Animations API and
 `requestAnimationFrame`.
 
 ## Examples
 
 ### Without use
 
-The default: three chips per row, with no `use` line.
+The default: three chips per row, no `use` line.
 
 <Canvas of={Stories.Default} />
 
 ### Single row
 
-One role on its own, with `showUse` on.
+One role, with `showUse`.
 
 <Canvas of={Stories.SingleRow} />
 
 ### Vertical
 
-`orientation="vertical"` stacks the tiers top to bottom at every width, for a
-narrow column or a card. The default stacks this way only on narrow screens.
+`orientation="vertical"` stacks the tiers at every width, for a narrow column
+or card. The default stacks only on narrow screens.
 
 <Canvas of={Stories.Vertical} />
 
@@ -78,13 +74,9 @@ export function PrimaryToken() {
 }
 ```
 
-Name the role the way people write it in code, and add a `dark` pair when the
-role resolves differently in the dark theme.
+Name the role as it's written in code.
 
 ## Anatomy
-
-Every part the component renders, with the `data-slot` it carries. You pass
-`rows`; the component builds the rest.
 
 <Anatomy
   root={{
@@ -119,24 +111,22 @@ Every part the component renders, with the `data-slot` it carries. You pass
 
 <UsageGuidelines
   guidelines={[
-    "Use it in docs, case studies and onboarding, where the point is how a token is built, not what it looks like.",
-    "Keep it to three to five rows, one per role.",
+    "Use in docs, case studies and onboarding, where the point is how a token is built, not how it looks.",
+    "Three to five rows, one per role.",
     <>
-      Pick rows with a <code>dark</code> pair to show why semantic roles exist:
-      the name stays put while the value underneath changes.
+      Rows with a <code>dark</code> pair show why semantic roles exist: the name
+      stays put while the value changes.
     </>,
     <>
-      Turn on <code>showUse</code> when the reader doesn't know the role names
-      yet.
+      Turn on <code>showUse</code> when readers don't know the role names yet.
     </>,
   ]}
 />
 
 <Tip>
-  By default the plate follows the document's <code>dark</code> class. A host
-  that owns its own theme, such as a preview frame, can pin it with{" "}
-  <code>theme</code>, and scope a <code>dark</code> class to a wrapper so the
-  surfaces follow too.
+  The plate follows the document's <code>dark</code> class. A host with its own
+  theme, such as a preview frame, can pin it with <code>theme</code> and scope a{" "}
+  <code>dark</code> class to a wrapper so the surfaces follow.
 </Tip>
 
 ## Do's and don'ts
@@ -157,7 +147,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
             ]}
           />
         ),
-        description: "Name the semantic role the way people write it in code.",
+        description: "Name the semantic role as it's written in code.",
       },
       negative: {
         component: (
@@ -173,7 +163,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
           />
         ),
         description:
-          "Don't describe the color in the last column. That's what the swatch is for.",
+          "Don't describe the color in the last column; the swatch does that.",
       },
     },
   ]}
@@ -181,9 +171,8 @@ Every part the component renders, with the `data-slot` it carries. You pass
 
 ## API reference
 
-Each row takes a `base` value, a `primitive` name and a `semantic` role, plus
-an optional `use` and a `dark` pair for roles that resolve differently in the
-dark theme.
+Each row takes `base`, `primitive` and `semantic`, plus an optional `use` and a
+`dark` pair for roles that resolve differently in the dark theme.
 
 <ArgTypes of={Stories.Default} />
 
@@ -209,11 +198,11 @@ dark theme.
 <UsageGuidelines
   guidelines={[
     <>
-      Every chip carries its tier in screen-reader text, so it reads as
-      "Primitive neutral-900" rather than a bare value.
+      Each chip carries its tier in screen-reader text, so it reads as
+      "Primitive neutral-900", not a bare value.
     </>,
-    "The scrambled text is hidden from assistive tech. Only the settled value is announced.",
-    "The pulse only runs while the plate is on screen, and neither the pulse nor the scramble plays under prefers-reduced-motion.",
+    "Scrambled text is hidden from assistive tech; only the settled value is announced.",
+    "The pulse runs only while the plate is on screen. Neither pulse nor scramble plays under prefers-reduced-motion.",
   ]}
 />
 

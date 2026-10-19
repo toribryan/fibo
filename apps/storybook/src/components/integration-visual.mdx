@@ -18,8 +18,8 @@ import { Install } from "../blocks/install"
 
 # Integration visual
 
-A hub and the tools wired into it. Live routes pulse, idle ones dim, and the
-hub opens a preview on hover.
+A hub and the tools wired into it, with pulsing live routes and a preview on
+the hub.
 
 <Canvas of={Stories.Default} />
 
@@ -29,11 +29,11 @@ hub opens a preview on hover.
   `sides` for a pipeline with inputs on one side and outputs on the other.
 - Pulses run inward, outward, or through the hub from left to right along
   live routes. Idle tools keep their route and dim.
-- A preview opens over the hub on hover or focus. It takes any content, or an
-  image or looping video, and it's a Base UI tooltip: portalled so no card
+- A preview opens over the hub on hover or focus. It takes any content, an
+  image or a looping video. It is a Base UI tooltip: portalled so no card
   clips it, hoverable, and dismissed with Escape.
-- Respects reduced motion: the pulses, halo and springs stop, the preview
-  fades in, and a preview video waits on its first frame.
+- Under reduced motion the pulses, halo and springs stop, the preview fades
+  in, and a preview video holds its first frame.
 
 ## Installation
 
@@ -42,15 +42,15 @@ hub opens a preview on hover.
   exports={["IntegrationVisual", "type IntegrationItem"]}
 />
 
-It installs `motion` with it, for the pulses and the halo.
+Installs `motion`, for the pulses and the halo.
 
 ## Examples
 
 ### Media preview
 
-Pass `{ src, alt }` to `preview` for an image, an animated image, or a video
-that plays muted on a loop. Media is 16:9 unless you set `aspectRatio`. Hover
-or focus the snail.
+`preview={{ src, alt }}` shows an image, an animated image, or a muted,
+looping video. Media is 16:9 unless `aspectRatio` is set. Hover or focus the
+snail.
 
 <Canvas of={Stories.MediaPreview} />
 
@@ -62,27 +62,26 @@ Up to eight tools, evenly spaced on an ellipse with straight spokes.
 
 ### Sides
 
-A pipeline. Set `side` on each item to put it in the input or output column,
-and `pulse="through"` to run the pulses from inputs, through the hub, to
-outputs.
+A pipeline. `side` on each item puts it in the input or output column;
+`pulse="through"` runs the pulses from inputs, through the hub, to outputs.
 
 <Canvas of={Stories.Sides} />
 
 ### Idle items
 
-Every other tool is `idle`: its route stays, dimmed, and carries no pulse.
+Every other tool is `idle`: its route stays, dimmed, with no pulse.
 
 <Canvas of={Stories.IdleItems} />
 
 ### Plates
 
-The `background` prop sets the plate: `dots`, `grid` or `none`.
+`background` sets the plate: `dots`, `grid` or `none`.
 
 <Canvas of={Stories.Plates} />
 
 ### In a card
 
-A count in the hub and the claim in the card text below it.
+A count in the hub, with the claim in the card text below.
 
 <Canvas of={Stories.InACard} />
 
@@ -106,10 +105,8 @@ export function ConnectedTools() {
 }
 ```
 
-Items fill the layout's slots in order, and any past its limit are left out.
-Each `title` names its tile for screen readers.
-
-Each item takes:
+Items fill the layout's slots in order; any past its limit are dropped. Each
+`title` names its tile for screen readers.
 
 ```ts
 type IntegrationItem = {
@@ -122,8 +119,7 @@ type IntegrationItem = {
 
 ## Anatomy
 
-Every part the component renders, with the `data-slot` it carries. You pass
-`items`, `center` and `preview`; the component builds the rest.
+`items`, `center` and `preview` are passed in; the component builds the rest.
 
 <Anatomy
   root={{
@@ -172,8 +168,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
     </>,
     <>
       Mark tools that aren't connected yet as <code>idle</code> rather than
-      leaving them out. The diagram then shows what's possible as well as what's
-      live.
+      leaving them out, so the diagram shows what's possible as well as live.
     </>,
     <>
       Use <code>pulse="inward"</code> for sources feeding the hub,{" "}
@@ -189,8 +184,8 @@ Every part the component renders, with the `data-slot` it carries. You pass
 />
 
 <Tip>
-  The preview is for looking at: keyboard users can't reach anything inside it,
-  so link out from the card around the diagram instead.
+  Keyboard users can't reach anything inside the preview. Put links in the card
+  around the diagram instead.
 </Tip>
 
 ## Do's and don'ts
@@ -239,7 +234,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
 
 ### Data attributes
 
-Style parts by slot or state, for example with
+Style parts by slot or state, e.g.
 `[&_[data-slot=integration-visual-item]]:rounded-full`.
 
 <DataAttributes
@@ -308,8 +303,8 @@ Style parts by slot or state, for example with
     <>
       When there's a preview the hub is a button, named by{" "}
       <code>centerLabel</code> (or by <code>center</code> when that's text, or
-      by <code>label</code>). Focusing it shows the preview the same way
-      hovering does, the preview describes it, and Escape closes it.
+      by <code>label</code>). Focus shows the preview as hover does, the preview
+      describes the hub, and Escape closes it.
     </>,
   ]}
 />

@@ -6,16 +6,15 @@ import { ThemeCompare } from "../blocks/theme-compare"
 
 # Themes
 
-Every fibo part reads semantic tokens, so a theme is mostly a new set of
-token values. fibo ships its own achromatic look and two experimental themes,
-Mechanical and Electrical. Switch between them with the palette button beside
-the sidebar's search; light and dark switch from the top of the sidebar.
+A theme is mostly a new set of semantic token values. fibo ships its own
+achromatic look and two experimental themes, Mechanical and Electrical. The
+palette button beside the sidebar's search switches theme; light and dark
+switch from the top of the sidebar.
 
 <ThemeCompare />
 
-Each column sets `data-theme` on itself, so it keeps its theme whichever one
-the palette menu has picked for the page. `data-theme="fibo"` puts fibo's own
-look back on a region inside a themed page.
+Each column sets its own `data-theme`, independent of the page's theme.
+`data-theme="fibo"` puts fibo's own look back on a region inside a themed page.
 
 ## Mechanical
 
@@ -26,7 +25,7 @@ A warm, tactile theme for tools that want to feel like hardware.
   lighter cards.
 - **Primary.** Terracotta, with a white label, in both modes. Hover darkens it.
 - **The edge.** Buttons, select and date picker triggers, the selected tab
-  in a segmented control and keyboard keys sit on a solid bottom edge, and
+  in a segmented control and keyboard keys sit on a solid bottom edge and
   press down onto it like a key. Inputs stay flat and take a soft warm ring
   on focus.
 - **Shape and type.** 6px corners on controls and IBM Plex Sans, with labels,
@@ -56,18 +55,17 @@ A flat, ledger-like theme for tools that deal in numbers.
 ## Use it
 
 Set the attribute on `<html>` for the whole app, or on any element for one
-region of it. Dark mode follows the `dark` class as usual.
+region. Dark mode follows the `dark` class.
 
 ```tsx
 <html lang="en" data-theme="mechanical">
 ```
 
-A region in a different theme inside a themed page keeps its own look: each
-theme's rules stop at a nested `data-theme`.
+Each theme's rules stop at a nested `data-theme`, so a region in another theme
+keeps its own look.
 
-Install it from the registry. It adds the theme's tokens and edge rules to
-your global stylesheet, all scoped to the attribute, so nothing changes until
-you set it.
+The registry item adds the theme's tokens and edge rules to the global
+stylesheet, scoped to the attribute, so nothing changes until it is set.
 
 ```bash
 pnpm dlx shadcn@latest add @fibo/theme-mechanical
@@ -75,8 +73,8 @@ pnpm dlx shadcn@latest add @fibo/theme-electrical
 ```
 
 Each theme names its font but doesn't load it: IBM Plex Sans for Mechanical,
-Inter Tight for Electrical. Add it from Google Fonts, or set `--font-sans` to a
-font your app already loads:
+Inter Tight for Electrical. Load it from Google Fonts, or set `--font-sans` to a
+font the app already loads:
 
 ```html
 <link
@@ -87,8 +85,8 @@ font your app already loads:
 
 ## The edge tokens
 
-The edge is drawn from five tokens. fibo's own values give it no depth and no
-color, so the default look is flat; Mechanical turns it on.
+Five tokens draw the edge. fibo's own values give it no depth and no color, so
+the default look is flat; Mechanical turns it on.
 
 - **`--edge-depth`**: how far a key travels. `0px` in fibo; `3px` in
   Mechanical, and `2px` on xs and sm buttons.
@@ -103,15 +101,14 @@ color, so the default look is flat; Mechanical turns it on.
 
 All five are `transparent` or zero in fibo's own look, and in Electrical.
 
-The rules that draw it live in the theme's stylesheet and find parts by the
-data attributes they already carry: Button's `data-variant` and `data-size`,
-`data-slot` on select and date picker triggers, Tabs' `data-slot` and
-`data-variant`, and Kbd's `data-slot`. Ghost and link buttons stay flat.
+The theme's stylesheet targets parts by their existing data attributes:
+Button's `data-variant` and `data-size`, `data-slot` on select and date picker
+triggers, Tabs' `data-slot` and `data-variant`, and Kbd's `data-slot`. Ghost and link buttons stay flat.
 
 ## Make another theme
 
-Copy `packages/ui/src/styles/themes/mechanical.css`, rename the attribute,
-and change the values. Override only semantic tokens, keep the dark block in
+Copy `packages/ui/src/styles/themes/mechanical.css`, rename the attribute and
+change the values. Override only semantic tokens, keep the dark block in
 step with the light one, and add rules for shape only where a token can't say
-it, each ending in the nested-theme guard. Plans 011 and 012 in the
-repository have the reasoning.
+it, each ending in the nested-theme guard. Plans 011 and 012 have
+the reasoning.

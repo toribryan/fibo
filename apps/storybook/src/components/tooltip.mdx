@@ -17,8 +17,8 @@ import { Install } from "../blocks/install"
 
 # Tooltip
 
-Tooltip shows a short label when a control is hovered or focused, such as the
-name of an icon button or why something is locked.
+A short label shown on hover or focus, such as an icon button's name or why
+something is locked.
 
 <Canvas of={Stories.Default} />
 
@@ -41,21 +41,21 @@ name of an icon button or why something is locked.
 
 ### Sides
 
-The side it prefers. It flips to the other side when there isn't room.
+The preferred side. It flips when there isn't room.
 
 <Canvas of={Stories.Sides} />
 
 ### Icon buttons
 
-A formatting toolbar in one TooltipProvider. Each tooltip names its button
-and shows the shortcut.
+A formatting toolbar in one TooltipProvider. Each tooltip gives the button
+name and shortcut.
 
 <Canvas of={Stories.IconButtons} />
 
 ### Reason
 
-A lock that explains why a row can't be changed. The lock is a focusable
-trigger, so keyboard users can reach the reason too.
+A lock explaining why a row can't be changed. The lock is a focusable trigger,
+so keyboard users reach the reason too.
 
 <Canvas of={Stories.Reason} />
 
@@ -83,9 +83,8 @@ export function Save() {
 }
 ```
 
-`render` makes the Button itself the trigger, so there's one focusable
-element. The tooltip repeats the trigger's accessible name; it never holds
-anything the name doesn't.
+`render` makes the Button the trigger, so there's one focusable element. The
+tooltip repeats the trigger's accessible name and never adds to it.
 
 ## Anatomy
 
@@ -103,11 +102,11 @@ anything the name doesn't.
 
 <UsageGuidelines
   guidelines={[
-    "Keep it to a few words: a name, a shortcut, or a short reason.",
-    "Use it to name icon-only buttons and to explain a locked or disabled control.",
-    "Wrap a toolbar of icon buttons in one TooltipProvider, so moving along it doesn't wait on every button.",
-    "Don't put links, buttons or anything people need to click in a tooltip. Use a popover.",
-    "Don't use a tooltip for information people need to finish a task. Show it on the page.",
+    "A few words: a name, a shortcut or a short reason.",
+    "Use to name icon-only buttons and explain a locked or disabled control.",
+    "Wrap a toolbar of icon buttons in one TooltipProvider, so moving along it skips the delay.",
+    "No links, buttons or other clickable content. Use a popover.",
+    "Information needed to finish a task goes on the page, not in a tooltip.",
   ]}
 />
 
@@ -136,7 +135,7 @@ anything the name doesn't.
             <TooltipContent>Publish</TooltipContent>
           </Tooltip>
         ),
-        description: "Don't repeat a visible label. It adds noise and no help.",
+        description: "Don't repeat a visible label; it adds noise.",
       },
     },
   ]}
@@ -187,10 +186,10 @@ defaults to 600ms.
 
 <UsageGuidelines
   guidelines={[
-    "Screen readers don't read the tooltip. Put the same words on the trigger with aria-label, or in visible text it describes with aria-describedby.",
-    "The trigger has to take focus, so keyboard users can open it. A disabled button can't; use aria-disabled instead, or put the tooltip on a separate focusable icon.",
-    "Touch screens have no hover, so nothing should only exist in a tooltip.",
-    "It opens on focus and closes on Escape, and stays open while the pointer is over it, as WCAG 1.4.13 asks.",
+    "Screen readers don't read the tooltip. Put the same words on the trigger with aria-label, or in visible text linked with aria-describedby.",
+    "The trigger must be focusable so keyboard users can open it. A disabled button isn't; use aria-disabled, or put the tooltip on a separate focusable icon.",
+    "Touch screens have no hover, so nothing should exist only in a tooltip.",
+    "Opens on focus, closes on Escape, and stays open while the pointer is over it, per WCAG 1.4.13.",
   ]}
 />
 

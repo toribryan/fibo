@@ -11,19 +11,17 @@ import { Install } from "../blocks/install"
 
 # Alert dialog
 
-Alert dialog stops someone before a step that can't be undone, such as
-deleting a project, and asks them to choose: go ahead, or cancel.
+A modal question before a step that can't be undone, such as deleting a
+project: confirm or cancel.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- An `alertdialog`: screen readers announce it as a question that needs an
-  answer.
-- Cancel takes focus when it opens, so Enter on its own never confirms.
-- No close button and no click-outside dismiss. Leaving takes Cancel or
-  Escape.
-- Shares Dialog's look and motion, and is small by default.
+- `alertdialog` role, announced as a question that needs an answer.
+- Cancel takes focus on open, so Enter alone never confirms.
+- No close button and no click-outside dismiss. Only Cancel or Escape leaves.
+- Dialog's look and motion, `sm` by default.
 
 ## Installation
 
@@ -42,7 +40,7 @@ deleting a project, and asks them to choose: go ahead, or cancel.
   ]}
 />
 
-It installs Dialog, for the shared styles, and Button.
+Installs Dialog, for the shared styles, and Button.
 
 ## Examples
 
@@ -95,8 +93,8 @@ export function DeleteProject({ onDelete }: { onDelete: () => void }) {
 }
 ```
 
-Keep Cancel before the action in the footer: it's what takes focus. Both
-close the dialog; for an action that has to finish first, control `open` and
+Cancel goes before the action in the footer, since it takes focus. Both
+close the dialog. For an action that has to finish first, control `open` and
 close it when the work is done.
 
 ## Anatomy
@@ -140,9 +138,9 @@ close it when the work is done.
 
 <UsageGuidelines
   guidelines={[
-    "Only ask when the step can't be undone, or undoing it is costly. If it can be undone, do it and offer Undo in a Toast.",
+    "Ask only when the step can't be undone, or undoing it is costly. Otherwise do it and offer Undo in a Toast.",
     "Ask a question in the title that names the thing: Delete Atlas redesign?, not Are you sure?",
-    "Say what's lost in the description, in a sentence or two.",
+    "Say what's lost in the description, in one or two sentences.",
     "Label the action with the verb from the title, and use the destructive variant when something is deleted.",
   ]}
 />
@@ -245,8 +243,8 @@ Button's `variant` and `size`.
 
 <UsageGuidelines
   guidelines={[
-    "It has the alertdialog role, named by AlertDialogTitle and described by AlertDialogDescription, so the question is read out when it opens.",
-    "Cancel takes focus when it opens. Focus stays inside, and returns to the trigger when it closes.",
+    "Named by AlertDialogTitle and described by AlertDialogDescription, so the question is read out on open.",
+    "Focus is trapped inside and returns to the trigger on close.",
     "Escape cancels. A click outside does nothing, so a stray click can't dismiss the question.",
   ]}
 />

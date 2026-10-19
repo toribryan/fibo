@@ -23,7 +23,7 @@
   },
   "button": {
     "title": "Button",
-    "description": "Triggers an action or event with a single click.",
+    "description": "Triggers an action or event on click.",
     "tier": "base-components",
     "group": "Actions",
     "figma": "169-12"
@@ -106,7 +106,7 @@
   },
   "floating-nav": {
     "title": "Floating nav",
-    "description": "A pill of destinations that floats above the bottom of a phone screen and steps aside while you scroll.",
+    "description": "A pill of destinations floating above the bottom of a phone screen that steps aside on scroll.",
     "tier": "special-components",
     "group": "Navigation",
     "figma": "601-74"
@@ -204,7 +204,7 @@
   },
   "reactions": {
     "title": "Reactions",
-    "description": "Lets people respond to content with an emoji in one tap.",
+    "description": "Emoji responses to content, in one tap.",
     "tier": "special-components",
     "group": "Feedback",
     "figma": "169-18"
@@ -330,7 +330,7 @@
   },
   "voice-memo": {
     "title": "Voice memo",
-    "description": "An aluminum recorder that writes down what you say, with the transcript filling in beside it as you talk.",
+    "description": "An aluminum recorder with a live transcript beside it.",
     "tier": "special-components",
     "group": "Forms",
     "figma": "621-7"

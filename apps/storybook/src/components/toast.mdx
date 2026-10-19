@@ -11,25 +11,25 @@ import { Install } from "../blocks/install"
 
 # Toast
 
-A toast is a brief message in the corner of the screen about something that
-just happened, such as a save or a failed upload. It leaves on its own.
+A brief, self-dismissing corner message about something that just happened,
+such as a save or a failed upload.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Built on Base UI's Toast: queue a toast from anywhere, even outside React,
-  with `toast.add()`.
+- Built on Base UI's Toast. `toast.add()` queues a toast from anywhere, even
+  outside React.
 - Toasts stack in the bottom corner and fan out on hover or focus.
-- Success, info, warning and error types, each with its own icon, plus a
-  loading state that follows a promise.
+- Success, info, warning and error types, each with an icon, plus a loading
+  state that follows a promise.
 - An optional action, such as Undo, and swipe to dismiss.
 
 ## Installation
 
 <Install name="toast" exports={["Toaster", "toast"]} />
 
-Toast installs the Button component too, for its action and close buttons.
+Also installs Button, for the action and close buttons.
 
 ## Examples
 
@@ -41,20 +41,20 @@ Toast installs the Button component too, for its action and close buttons.
 
 ### With action
 
-`actionProps` adds a button. Here, Undo closes the toast with the id that
-`toast.add` returned.
+`actionProps` adds a button. Here Undo closes the toast by the id `toast.add`
+returned.
 
 <Canvas of={Stories.WithAction} />
 
 ### Promise
 
-A loading toast that becomes a success after two seconds.
+A loading toast that resolves to success after two seconds.
 
 <Canvas of={Stories.Pending} />
 
 ## Usage
 
-Mount the Toaster once, near the root of your app:
+Mount `Toaster` once near the app root:
 
 ```tsx
 import { Toaster } from "@/components/ui/toast"
@@ -64,7 +64,7 @@ export function App({ children }: { children: React.ReactNode }) {
 }
 ```
 
-Then add toasts from anywhere:
+Add toasts from anywhere:
 
 ```tsx
 import { toast } from "@/components/ui/toast"
@@ -75,7 +75,7 @@ toast.add({
 })
 ```
 
-`toast.add` returns an id you can pass to `toast.close` or `toast.update`.
+`toast.add` returns an id for `toast.close` and `toast.update`.
 
 ## Anatomy
 
@@ -129,17 +129,17 @@ toast.add({
 
 <UsageGuidelines
   guidelines={[
-    "Use a toast to confirm something people just did, or to report something that happened in the background.",
-    "Keep it short: a title of a few words and at most one line of description.",
-    "Anything people must read or act on belongs on the page or in a dialog, not a toast that disappears.",
-    "Offer one action at most, and only a quick one like Undo. Give toasts with an action a longer timeout.",
-    "Use a type only when it means something. Most confirmations are plain.",
+    "Use to confirm a user action or report a background event.",
+    "A title of a few words and at most one line of description.",
+    "Anything people must read or act on belongs on the page or in a dialog.",
+    "At most one quick action, like Undo. Give toasts with an action a longer timeout.",
+    "Add a type only when it carries meaning. Most confirmations are plain.",
   ]}
 />
 
 <Tip>
   `toast.promise(promise, { loading, success, error })` shows a loading toast
-  and swaps it for the result when the promise settles.
+  and swaps in the result when the promise settles.
 </Tip>
 
 ## Do's and don'ts
@@ -173,7 +173,7 @@ toast.add({
           </div>
         ),
         description:
-          "Don't ask for a decision in a toast. It disappears; use a dialog.",
+          "Don't ask for a decision in a toast; it disappears. Use a dialog.",
       },
     },
   ]}
@@ -271,7 +271,7 @@ takes `title`, `description`, `type`, `timeout`, `priority` and
     "Each toast is announced through a live region as it appears. A high-priority toast interrupts; the rest wait for a pause.",
     "F6 moves focus to the Notifications region, and Tab reaches each toast. Escape closes the focused toast.",
     "A toast doesn't time out while the pointer is over the stack or focus is inside it.",
-    "The Dismiss button stays hidden from screen readers until the stack is expanded, so it isn't announced with every message.",
+    "The Dismiss button is hidden from screen readers until the stack expands, so it isn't announced with every message.",
     "Type icons are decorative. Put the meaning in the title: “Upload failed”, not just a red icon.",
   ]}
 />

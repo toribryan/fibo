@@ -69,7 +69,7 @@ type RegistryItem = {
   css?: Record<string, unknown>
 }
 
-// What each package does, in a designer's words.
+// What each package does, in plain words.
 const PACKAGES: Record<string, string> = {
   "@base-ui/react": "handles keyboard, focus and screen readers",
   "class-variance-authority": "switches between variants and sizes",
@@ -170,7 +170,7 @@ function ItemDetails({
             ))}
           </ul>
         ) : (
-          <Nothing>None. It only changes your globals.css.</Nothing>
+          <Nothing>None. Changes globals.css only.</Nothing>
         )}
       </Row>
       {!isTheme && (
@@ -189,7 +189,7 @@ function ItemDetails({
               ))}
             </ul>
           ) : (
-            <Nothing>None. It is plain React and Tailwind.</Nothing>
+            <Nothing>None. Plain React and Tailwind.</Nothing>
           )}
         </Row>
       )}
@@ -218,7 +218,7 @@ function ItemDetails({
             ))}
           </ul>
         ) : (
-          <Nothing>None. It only uses tokens every shadcn project has.</Nothing>
+          <Nothing>None. Uses only stock shadcn tokens.</Nothing>
         )}
       </Row>
       {animations.length > 0 && (
@@ -270,8 +270,7 @@ function RegistryInspector({ initial = "button" }: { initial?: string }) {
   if (failed) {
     return (
       <p className="my-6 rounded-xl border border-border bg-card px-4 py-3.5 text-sm leading-6 text-muted-foreground">
-        The registry files didn&apos;t load. Reload the page to try again.
-        Running Storybook locally? Run{" "}
+        Registry files failed to load. Reload to retry. In local Storybook, run{" "}
         <code className="font-mono">pnpm registry:build</code> first.
       </p>
     )
@@ -334,67 +333,6 @@ function RegistryInspector({ initial = "button" }: { initial?: string }) {
   )
 }
 
-const COMPARISON = [
-  {
-    moment: "Adding a component gives you",
-    figma: "An instance, linked to the main component",
-    registry: "A copy of the code, in your own project",
-  },
-  {
-    moment: "When the library changes",
-    figma: "An update appears for you to accept",
-    registry: "Nothing changes until you add the part again",
-  },
-  {
-    moment: "Editing",
-    figma: "Overrides only; the main component stays locked",
-    registry: "Anything; the file is yours",
-  },
-  {
-    moment: "It brings along",
-    figma: "Uses the library's styles and variables, which stay in the library",
-    registry: "The packages, fibo parts and color tokens it uses",
-  },
-]
-
-/** How the registry compares to a Figma team library, moment by moment. */
-function LibraryComparison() {
-  return (
-    <div className="my-6 overflow-x-auto">
-      <table className="w-full min-w-lg border-collapse text-left text-sm">
-        <thead>
-          <tr className="border-b border-border text-foreground">
-            <th className="w-1/4 py-2.5 pr-4 font-medium">
-              <span className="sr-only">Moment</span>
-            </th>
-            <th className="py-2.5 pr-4 font-medium">Figma team library</th>
-            <th className="py-2.5 font-medium">fibo registry</th>
-          </tr>
-        </thead>
-        <tbody>
-          {COMPARISON.map((row) => (
-            <tr
-              key={row.moment}
-              className="border-b border-border align-top last:border-b-0"
-            >
-              <th
-                scope="row"
-                className="py-3 pr-4 leading-6 font-medium text-foreground"
-              >
-                {row.moment}
-              </th>
-              <td className="py-3 pr-4 leading-6 text-muted-foreground">
-                {row.figma}
-              </td>
-              <td className="py-3 leading-6 text-foreground">{row.registry}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
 /** A prompt to paste into a coding agent, with a copy button. */
 function AgentPrompt({ children }: { children: string }) {
   return (
@@ -407,4 +345,4 @@ function AgentPrompt({ children }: { children: string }) {
   )
 }
 
-export { AgentPrompt, LibraryComparison, RegistryFlow, RegistryInspector }
+export { AgentPrompt, RegistryFlow, RegistryInspector }

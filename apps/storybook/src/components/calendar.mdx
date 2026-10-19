@@ -12,49 +12,45 @@ import { Install } from "../blocks/install"
 
 # Calendar
 
-A month grid for picking one day or a range. It works on its own on a page,
-and it's the grid inside Date picker and Date range picker.
+A month grid for picking one day or a range, standalone or inside Date
+picker and Date range picker.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- `mode="range"` picks a start and an end. The range is drawn as one bar
-  per week, and while the second day is chosen it previews under the
-  pointer or the keyboard.
-- The whole keyboard model of a date grid: arrows by day and week, Home and
-  End, Page Up and Page Down by month, Shift for a year.
-- Bounds and rules: `minDate`, `maxDate` and `isDateDisabled`, with the
-  week starting on Sunday or Monday and names in any locale.
-- `type="scroll"` stacks a year either side in one vertical scroll with
-  44 pixel days, for a drawer on a phone.
-- `type="month"` fills its parent with one month of events and lists the
-  selected day's. In a narrow column it switches to compact cells with
-  dots.
+- `mode="range"` picks a start and an end, drawn as one bar per week, with
+  a preview under the pointer or keyboard before the second pick.
+- Full date grid keyboard model: arrows by day and week, Home and End, Page
+  Up and Page Down by month, Shift for a year.
+- `minDate`, `maxDate` and `isDateDisabled`, a Sunday or Monday week start,
+  and names in any locale.
+- `type="scroll"` stacks a year either side in one vertical scroll with 44px
+  days, for a phone drawer.
+- `type="month"` fills its parent with a month of events and lists the
+  selected day's. In a narrow column it uses compact cells with dots.
 
 ## Installation
 
 <Install name="calendar" exports={["Calendar"]} />
 
-It installs Button with it, and `lib/dates.ts`, the date helpers it uses.
-`useToday` is exported too.
+Installs Button and `lib/dates.ts`, its date helpers. `useToday` is
+exported too.
 
 ## Examples
 
 ### Range
 
-Two months side by side. The first pick sets the start, and the bar
-follows the pointer until the second; picking an earlier day orders the
-range. Where there isn't room for two months side by side, they stack;
-the days never shrink below their size.
+Two months side by side, stacking when there isn't room. Days never shrink.
+The first pick sets the start and the bar follows the pointer until the
+second. Picking an earlier day reorders the range.
 
 <Canvas of={Stories.Range} />
 
 ### Disabled days
 
 Days before `minDate`, after `maxDate` or rejected by `isDateDisabled` are
-struck through and can't be picked. They still take focus, so the keyboard
-walks through them.
+struck through and can't be picked. They still take keyboard focus.
 
 <Canvas of={Stories.DisabledDays} />
 
@@ -66,8 +62,7 @@ walks through them.
 
 ### Locale
 
-Month names, weekdays and day numbers come from `Intl` in the `locale`
-given.
+Month names, weekdays and day numbers come from `Intl` in `locale`.
 
 <Canvas of={Stories.Locale} />
 
@@ -75,39 +70,37 @@ given.
 
 `type="month"` is a full-page month of events: the month and its date span
 as the title, Previous, Today and Next, and a grid of bordered day cells
-that fills its parent. Each cell shows its day and the first two events as
-cards, then a count of the rest. Picking a day lists all its events, where
-`onEventClick` makes them buttons: beside the grid from 1024 pixels wide,
-under it below that. It picks one day, with the same `value`, `onChange`,
-`month` and bounds as the other types.
+that fills its parent. Each cell shows its day, the first two events as
+cards and a count of the rest. Picking a day lists all its events, beside
+the grid from 1024px wide and under it below that. `onEventClick` makes them
+buttons. It picks one day, with the same `value`, `onChange`, `month` and
+bounds as the other types.
 
 <Canvas of={Stories.Month} />
 
 ### On a phone
 
-The layout follows the calendar's own width, not the screen's. Below 768
-pixels the cells shrink to the day and up to three dots, and the selected
-day's events fill the space under the grid.
+Layout follows the calendar's width, not the screen's. Below 768px the
+cells shrink to the day and up to three dots, and the selected day's events
+fill the space under the grid.
 
 <Canvas of={Stories.MonthOnAPhone} />
 
 ### Empty
 
-A day with no events says so in the list.
-
 <Canvas of={Stories.MonthEmpty} />
 
 ### Many events
 
-A cell shows two cards and counts the rest; the selected day's list has
+A cell shows two cards and counts the rest. The selected day's list has
 them all.
 
 <Canvas of={Stories.MonthWithManyEvents} />
 
 ### With actions
 
-Children go at the end of the header, for actions such as search and a new
-event. The other types ignore children.
+Children go at the end of the header, for actions such as search and New
+event. Other types ignore children.
 
 <Canvas of={Stories.MonthWithActions} />
 
@@ -135,9 +128,9 @@ type CalendarEvent = {
 </div>
 ```
 
-The month view fills its parent, so give the parent a height. It picks one
-day: with `mode="range"` it draws the paged type and warns in the console.
-Its English words (Today, +N more, No events, All day) come from `labels`.
+The month view fills its parent, so the parent needs a height. It picks one
+day: with `mode="range"` it renders the paged type and warns in the console.
+Its strings (Today, +N more, No events, All day) come from `labels`.
 
 ## Usage
 
@@ -158,8 +151,8 @@ export function Availability() {
 }
 ```
 
-In range mode `onChange` fires after each pick: with only `from` after the
-first, with both after the second. Wait for `to` before you act on it.
+In range mode `onChange` fires after each pick: only `from` after the
+first, both after the second. Wait for `to` before acting on it.
 
 ## Anatomy
 
@@ -323,17 +316,17 @@ first, with both after the second. Wait for `to` before you act on it.
 
 <UsageGuidelines
   guidelines={[
-    "Use Calendar on its own when the dates are the content, such as availability on a booking page. In a form, use Date picker so the field takes one line until it's needed.",
-    "Show two months for a range that often crosses a month end, such as a stay or a report period. One is enough for a single day.",
+    "Use Calendar alone when the dates are the content, such as availability on a booking page. In a form, use Date picker so the field takes one line until needed.",
+    "Show two months for a range that often crosses a month end, such as a stay or a report period, and one for a single day.",
     <>
       Set bounds with <code>minDate</code> and <code>maxDate</code> rather than
       rejecting a pick after the fact.
     </>,
-    "Start the week where your readers do: Monday in most of Europe, Sunday in the US.",
+    "Start the week where readers do: Monday in most of Europe, Sunday in the US.",
     <>
       Use <code>type="month"</code> when events are the content and the calendar
-      has the page, or most of it. Give its parent a height. Put actions such as
-      New event in as children rather than beside it, so they sit in its header.
+      has most of the page. Give its parent a height. Pass actions such as New
+      event as children so they sit in its header.
     </>,
   ]}
 />
@@ -351,7 +344,7 @@ first, with both after the second. Wait for `to` before you act on it.
           />
         ),
         description:
-          "Do disable the days that can't be picked, so people see the rule before they try.",
+          "Disable days that can't be picked, so the rule shows before a pick.",
       },
       negative: {
         component: (
@@ -365,8 +358,7 @@ first, with both after the second. Wait for `to` before you act on it.
             </p>
           </div>
         ),
-        description:
-          "Don't let them pick it and then explain why it was wrong.",
+        description: "Don't allow the pick and then explain why it was wrong.",
       },
     },
   ]}
@@ -606,9 +598,9 @@ first, with both after the second. Wait for `to` before you act on it.
     "Each month is a grid labeled by its title. Column headers carry the full weekday name, and each day button the full date, such as Tuesday, October 20, 2026.",
     "The grid is one tab stop. Arrows move by a day or a week, Home and End to the ends of the week, Page Up and Page Down by a month, and with Shift by a year. Moving past the page turns it.",
     "Enter or Space picks the focused day. The picked days' cells are aria-selected, and today is aria-current.",
-    "Days that can't be picked are aria-disabled rather than disabled, so they stay in the keyboard path and are announced as unavailable.",
+    "Unpickable days are aria-disabled rather than disabled, so they stay in the keyboard path and are announced as unavailable.",
     "In range mode a polite live region says what happened: the start and that an end is needed, then the range and its length.",
-    "In the month type each cell holds one day button, so the grid keeps the same keyboard model. The cards and dots inside it are hidden from assistive technology; the button is described by a spoken list of the day's events instead.",
+    "In the month type each cell holds one day button, so the grid keeps the same keyboard model. Cards and dots are hidden from assistive technology. The button is described by a list of the day's events instead.",
     "The month type's events become buttons in the selected day's list, outside the grid, so nothing inside a cell takes focus. Tab moves from the grid to that list.",
     "The page slide fades in and is off under reduced motion.",
   ]}

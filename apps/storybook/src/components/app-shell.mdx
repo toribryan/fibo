@@ -12,8 +12,8 @@ import { Install } from "../blocks/install"
 # App shell
 
 The frame of a workspace app: a header with Command menu, the current page,
-and Floating nav to move between pages. Press Cmd+K or Ctrl+K in the preview
-to create a project, open one from a nested page, or clear the inbox.
+and Floating nav between pages. In the preview, Cmd+K or Ctrl+K creates a
+project, opens one from a nested page, or clears the inbox.
 
 <BlockPreview label="App shell">
   {(container) => <AppShell container={container} className="min-h-full" />}
@@ -21,23 +21,20 @@ to create a project, open one from a nested page, or clear the inbox.
 
 ## Features
 
-- **Commands that do things.** New project adds a row and opens Projects,
-  Open project is a nested page of every project, and Mark all as read
-  empties the inbox. Each runs through the same setters the pages use.
-- **Recents.** The commands you run float to the top of the menu, as
-  Command menu does on its own.
-- **Lays out by its own width.** Container queries on the root, not the
-  viewport, so the shell reads the same full screen, in a split view or in
-  this preview. At phone width the cards stack and the table drops its
-  Owner and Updated columns.
-- **Stays in its container.** The header and nav are sticky rather than
-  fixed, so the shell can sit inside another layout without escaping it.
+- **Working commands.** New project adds a row and opens Projects, Open
+  project is a nested page listing every project, and Mark all as read
+  empties the inbox. Each uses the same setters as the pages.
+- **Recents.** Run commands float to the top of the menu, Command menu's
+  built-in behavior.
+- **Container queries.** Layout follows the root's width, not the viewport,
+  so it holds full screen, in a split view or in this preview. At phone width
+  the cards stack and the table drops Owner and Updated.
+- **Sticky, not fixed.** The header and nav stay inside a surrounding
+  layout.
 
 ## Installation
 
 <Install name="app-shell" block exports={["AppShell"]} />
-
-Then render it where the screen goes:
 
 ```tsx
 import { AppShell } from "@/components/blocks/app-shell/app-shell"
@@ -47,8 +44,8 @@ export default function Page() {
 }
 ```
 
-A block is installed once and then belongs to your app. Running `shadcn add`
-again overwrites your edits, so change the files instead.
+A block is copied into your app once. Running `shadcn add` again overwrites
+your edits.
 
 ## Files
 
@@ -60,22 +57,22 @@ again overwrites your edits, so change the files instead.
 
 ## Make it yours
 
-1. Replace `data.ts` with your own data, or load it where `AppShell` reads
-   it. The pages only read the types.
-2. Swap the `page` state for your router: give each nav item an `href`, and
+1. Replace `data.ts`, or load data where `AppShell` reads it. The pages
+   only read the types.
+2. Replace the `page` state with a router: give each nav item an `href`, and
    call `event.preventDefault()` in `onValueChange` if the router handles
    links itself.
 3. Add commands to `groups` in `app-shell.tsx`. A command with `items` opens
-   a page of its own.
+   its own page.
 
 ## Accessibility
 
 <UsageGuidelines
   guidelines={[
-    "The shell uses landmarks: a header, a main region, and a nav named Pages, so screen reader users can jump straight to each.",
+    "Landmarks: a header, a main region and a nav named Pages.",
     "Floating nav marks the current page with aria-current, and every page starts with its own h1.",
-    "Command menu is a modal dialog. Focus moves into its search when it opens and back to the search button when it closes.",
-    "Changing pages here doesn't move focus. Once the shell is wired to a router, move focus to the new page's heading after each navigation, so a keyboard or screen reader user starts at the top of it.",
+    "Command menu is a modal dialog. Focus moves into its search on open and back to the search button on close.",
+    "Changing pages doesn't move focus. Once wired to a router, move focus to the new page's heading after each navigation.",
   ]}
 />
 

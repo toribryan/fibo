@@ -47,8 +47,6 @@ pnpm dlx shadcn@latest add @fibo/theme
 
 ## How fibo is built
 
-What keeps the registry, the docs and the Figma library honest with each other.
-
 - **Every part is installed the way you'd install it.** On every pull request,
   CI runs `shadcn init` in a fresh Next.js app, installs all of fibo into it,
   builds it, and fails if any class in an installed file compiles to nothing.

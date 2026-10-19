@@ -11,8 +11,8 @@ import { Install } from "../blocks/install"
 
 # Menu
 
-Menu opens a short list of actions from a button, such as More actions on a
-toolbar or the actions for one row in a table.
+A short list of actions opened from a button, such as More actions on a
+toolbar or a table row's actions.
 
 <Canvas of={Stories.Default} />
 
@@ -24,7 +24,7 @@ toolbar or the actions for one row in a table.
   starts with it, and Escape closes and returns focus.
 - Items for actions, checkboxes and radio choices, with groups, labels,
   separators and submenus.
-- A `destructive` item for delete and anything that can't be undone.
+- A `destructive` item for delete and anything irreversible.
 
 ## Installation
 
@@ -59,8 +59,8 @@ trigger in a table is distinct.
 
 ### Checkboxes
 
-Items that toggle, such as which columns a table shows. The menu stays open
-while you toggle.
+Toggle items, such as a table's visible columns. The menu stays open while
+toggling.
 
 <Canvas of={Stories.Checkboxes} />
 
@@ -72,16 +72,16 @@ One choice from a group, such as the sort order.
 
 ### Submenu
 
-A second level for a choice with its own options. The last item is disabled.
+A second level for a choice with its own options. The last item is
+disabled.
 
 <Canvas of={Stories.Submenu} />
 
 ### Colored icons
 
-An icon keeps a color you give it, such as
-`<GlobeIcon className="text-chart-2" />`, so a menu of destinations reads
-apart at a glance. Icons without one stay muted. The chart tokens are grays
-in fibo's own theme and saturated in Mechanical.
+An icon keeps a given color, such as `<GlobeIcon className="text-chart-2" />`.
+Uncolored icons stay muted. The chart tokens are grays in fibo's theme and
+saturated in Mechanical.
 
 <Canvas of={Stories.ColoredIcons} />
 
@@ -114,8 +114,8 @@ export function MoreActions({ onDelete }: { onDelete: () => void }) {
 }
 ```
 
-`render` makes the Button itself the trigger. Put a destructive item last,
-after a separator.
+`render` makes the Button the trigger. Put a destructive item last, after a
+separator.
 
 ## Anatomy
 
@@ -162,7 +162,7 @@ after a separator.
     "Keep it short: a handful of items, and at most one level of submenu.",
     "Start each item with a verb: Edit, Duplicate, Export.",
     "Put Delete last, after a separator, with the destructive variant.",
-    "Disable an item that can't be used right now rather than hiding it, so the menu doesn't change shape.",
+    "Disable an unavailable item instead of hiding it, so the menu doesn't change shape.",
   ]}
 />
 
@@ -207,10 +207,10 @@ export const StaticMenu = ({ items }) => (
 
 ## API reference
 
-MenuContent takes every prop of Base UI's Menu Popup, plus `side`, `align`
-and their offsets from the Positioner. The other parts take the props of the
-Base UI part they wrap. MenuItem, MenuLabel and MenuSubTrigger also take
-`inset`, and MenuItem takes `variant`.
+`MenuContent` takes Base UI's Menu Popup props, plus `side`, `align` and
+their offsets from the Positioner. Other parts take the props of the Base UI
+part they wrap. `MenuItem`, `MenuLabel` and `MenuSubTrigger` also take
+`inset`; `MenuItem` takes `variant`.
 
 <ArgTypes of={Stories.Default} />
 
@@ -322,9 +322,9 @@ Base UI part they wrap. MenuItem, MenuLabel and MenuSubTrigger also take
   guidelines={[
     "The trigger is a button with aria-haspopup, and the list is a menu of menuitem, menuitemcheckbox and menuitemradio, following the APG menu button pattern.",
     "Name an icon-only trigger with aria-label, and include the row it acts on, such as “Actions for Maya Okafor”.",
-    "Icons in items need no extra markup: lucide hides them from screen readers by default, and the item's text is its name.",
+    "Icons in items need no extra markup: lucide hides them from screen readers, and the item's text is its name.",
     "Focus returns to the trigger when the menu closes, whether an item was chosen or Escape was pressed.",
-    "MenuShortcut is hidden from screen readers so it isn't read as part of the item's name. It's a hint only: wire the key up yourself, and add aria-keyshortcuts to the item when you do.",
+    "MenuShortcut is hidden from screen readers so it isn't read as part of the item's name. It's a hint only: wire up the key separately, then add aria-keyshortcuts to the item.",
   ]}
 />
 

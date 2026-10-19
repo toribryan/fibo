@@ -11,20 +11,17 @@ import { Install } from "../blocks/install"
 
 # Jump bar
 
-A jump bar takes people somewhere else in a conversation: up to the messages
-they haven't read, down to ones that arrived while they were scrolled up, or
-back to the present from history.
+A jump bar moves through a conversation: up to unread messages, down to new
+ones, or back to the present from history.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
 - Three types: unread messages above with "Mark as read", a pill for new
-  messages below, and a bar for when you're viewing history.
-- Counts stop at 99+ on screen, with the full number after them for screen
-  readers.
-- `jumpTo` scrolls to a message and focuses it, instantly under reduced motion
-  or for a long jump.
+  messages below, and a bar while viewing history.
+- Counts cap at 99+ on screen; the accessible name adds the full number.
+- `jumpTo` scrolls to a message and focuses it.
 - `useAtBottom` says whether the conversation is scrolled to its end.
 
 ## Installation
@@ -36,29 +33,26 @@ back to the present from history.
 ### New messages below
 
 A pill over the bottom of the conversation, for messages that arrived while
-people were scrolled up.
+scrolled up.
 
 <Canvas of={Stories.NewBelow} />
 
 ### Over 99
 
-The count stops at 99+ on screen. The button's name keeps those words and
-adds the full number, "99+ new messages (128)", so speech input can still say
-what's on screen.
+The button's name keeps the visible words and adds the full number, "99+ new
+messages (128)", so speech input can still say what's on screen.
 
 <Canvas of={Stories.Capped} />
 
 ### Viewing history
-
-For when people have scrolled far from the present.
 
 <Canvas of={Stories.History} />
 
 ### In a timeline
 
 A message list with an unread divider, both bars, a typing indicator and a
-composer. Scroll up and use "Ben sends a message" to see the pill. Escape on a
-message or in the composer marks the conversation read.
+composer. Scroll up and press "Ben sends a message" to show the pill. Escape on
+a message or in the composer marks the conversation read.
 
 <Canvas of={Stories.InATimeline} />
 
@@ -102,16 +96,16 @@ export function Channel({
 }
 ```
 
-The bars position themselves, so put them inside a `relative` wrapper around
-the scroll container, not inside the container itself.
+The bars position themselves. Place them in a `relative` wrapper around the
+scroll container, not inside the container.
 
 ## Guidelines
 
 <UsageGuidelines
   guidelines={[
-    "Show unread-above while the unread divider is above the view, and hide it once people scroll past it or mark the conversation read.",
-    "Show new-below when messages arrive while people are scrolled up. When they're at the bottom, scroll to the new message instead.",
-    "Show history when the newest messages aren't on screen, or aren't loaded, and nothing new has arrived.",
+    "Show unread-above while the unread divider is above the view. Hide it once it is scrolled past or the conversation is marked read.",
+    "Show new-below when messages arrive while scrolled up. At the bottom, scroll to the new message instead.",
+    "Show history when the newest messages aren't on screen or aren't loaded, and nothing new has arrived.",
     "Sending a message always scrolls to the bottom and clears the unread marker.",
     "Count a message as read only when the window has focus and the message is on screen.",
   ]}
@@ -183,8 +177,8 @@ is scrolled to within `threshold` pixels of its end.
 
 <UsageGuidelines
   guidelines={[
-    "Every bar is plain buttons, reachable by Tab. A capped count keeps its visible words in the name and adds the full number after them (WCAG 2.5.3).",
-    "Move focus when a jump happens: to the first unread message, or to the newest message. jumpTo does this. Never leave focus on a button whose bar has just disappeared; after Mark as read, move it to the composer.",
+    "Every bar is plain buttons, reachable by Tab. A capped count keeps its visible words in the name and adds the full number (WCAG 2.5.3).",
+    "A jump moves focus to the first unread or newest message; jumpTo does this. Never leave focus on a button whose bar has disappeared; after Mark as read, move it to the composer.",
     "jumpTo scrolls instantly under reduced motion, and for any jump longer than three screens.",
     "The unread divider itself carries a “New” label, so the marker isn't color alone.",
   ]}

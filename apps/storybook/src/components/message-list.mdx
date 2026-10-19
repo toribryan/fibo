@@ -12,22 +12,22 @@ import { Install } from "../blocks/install"
 
 # Message list
 
-A message list shows a conversation, grouping each person's messages in a row
-under one heading with their name and picture. A group ends when the author
-changes, the day changes, or enough time passes.
+A conversation, with each run of one person's messages grouped under a
+heading with their name and picture. A group ends when the author or day
+changes, or enough time passes.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Every reason a group breaks is a named rule you can test, and each message
-  reports which one started its group.
-- The time window is a setting, measured from the previous message (rolling)
-  or from the group's first (fixed).
+- Every group break is a named, testable rule, and each message reports
+  which one started its group.
+- The time window is configurable, measured from the previous message
+  (rolling) or from the group's first (fixed).
 - Each group's author is a real heading, and every message names its author
   and time for screen readers, even mid-group.
 - One tab stop for the whole list. Arrow keys move between messages, Enter
-  goes into one, Escape comes back out.
+  enters one, Escape leaves it.
 
 ## Installation
 
@@ -36,15 +36,14 @@ changes, the day changes, or enough time passes.
   exports={["MessageList", "groupMessages", "breakRules"]}
 />
 
-It also installs [Avatar](?path=/docs/base-components-display-avatar--docs).
+Also installs [Avatar](?path=/docs/base-components-display-avatar--docs).
 
 ## Examples
 
 ### Rolling or fixed window
 
-Five messages, four minutes apart. Measured from the previous message, the
-window never runs out and they stay one group. Measured from the first, a new
-group starts once five minutes have passed since it began.
+Five messages, four minutes apart. Rolling, they stay one group. Fixed, a new
+group starts five minutes after the first.
 
 <Canvas of={Stories.Window} />
 
@@ -52,9 +51,9 @@ group starts once five minutes have passed since it began.
 
 `unreadFrom` names the first unread message. The divider above it is red with
 a "New" label, so it doesn't rely on color alone, and it breaks the group.
-Freeze the value when the conversation opens, so the line stays where it was
-while people read; clear it when they send a message, press Escape or mark
-the conversation read. Pair it with the
+Freeze the value when the conversation opens so the line stays put while
+people read; clear it when they send a message, press Escape or mark the
+conversation read. Pairs with
 [Jump bar](?path=/docs/base-components-actions-jump-bar--docs).
 
 <Canvas of={Stories.Unread} />
@@ -62,15 +61,14 @@ the conversation read. Pair it with the
 ### With a divider
 
 `dividers` maps a message id to a label. The divider sits above that message,
-and the message starts a new group.
+which starts a new group.
 
 <Canvas of={Stories.Divider} />
 
 ### Custom spacing
 
-Space between groups and space within a group are two separate values,
-`--message-group-gap` and `--message-gap`. Change the first for a more open
-list without pulling a group's messages apart.
+`--message-group-gap` sets space between groups; `--message-gap` sets space
+within one. Raise the first to open the list without splitting groups.
 
 <Canvas of={Stories.Spacing} />
 
@@ -83,8 +81,8 @@ reader labels and the deleted message text.
 
 ### Empty
 
-With no messages, the list shows `strings.empty` in an EmptyState. Pass
-`empty` to show your own, or `null` to show nothing.
+With no messages, the list shows `strings.empty` in an EmptyState. `empty`
+replaces it; `null` shows nothing.
 
 <Canvas of={Stories.Empty} />
 
@@ -114,15 +112,15 @@ export function Channel({ messages }: { messages: ChatMessage[] }) {
 }
 ```
 
-Pass the whole conversation, oldest first. Grouping looks at each message's
-neighbors, so a list that only holds the rows on screen would start a new
-group at the top of every scroll. If you virtualize, call `groupMessages` on
-the full list and render from its result.
+Pass the whole conversation, oldest first. Grouping reads each message's
+neighbors, so a list of only the visible rows starts a new group at the top
+of every scroll. To virtualize, call `groupMessages` on the full list and
+render from its result.
 
 ### Break rules
 
-`groupMessages` checks these in order, and the first that holds is the
-message's `breakReason`. The first message in the list is `start`.
+`groupMessages` checks these in order; the first that holds is the message's
+`breakReason`. The list's first message is `start`.
 
 | Rule       | A new group starts when                                      |
 | ---------- | ------------------------------------------------------------ |
@@ -136,8 +134,8 @@ message's `breakReason`. The first message in the list is `start`.
 | `window`   | more than `windowMinutes` have passed since the window began |
 
 Each message also gets a `position` of `single`, `first`, `middle` or
-`last`, rendered as `data-position`. Bubble layouts use it to square off the
-corners where bubbles meet.
+`last`, rendered as `data-position`, for squaring off corners where bubbles
+meet.
 
 ## Anatomy
 
@@ -200,9 +198,9 @@ corners where bubbles meet.
 <UsageGuidelines
   guidelines={[
     "Put the list in a scrolling container and keep the composer outside it, so Tab goes from the list straight to the composer.",
-    "Keep the window short. Five minutes keeps a burst of messages together without merging two separate thoughts.",
+    "Keep the window short. Five minutes keeps a burst together without merging separate thoughts.",
     "Use system messages for events, such as someone joining, not for things people said.",
-    "Mark where unread messages begin with unreadFrom. Use dividers for other markers between messages; each one also breaks the group.",
+    "Mark where unread messages begin with unreadFrom. Use dividers for other markers; each also breaks the group.",
   ]}
 />
 
@@ -265,7 +263,7 @@ corners where bubbles meet.
 
 ## API reference
 
-MessageList also takes every prop of a `div`, except `children`.
+`MessageList` also takes every `div` prop except `children`.
 
 <ArgTypes of={Stories.Default} />
 
@@ -361,18 +359,18 @@ MessageList also takes every prop of a `div`, except `children`.
   guidelines={[
     <>
       The list is a <code>role="log"</code>, so screen readers announce new
-      messages as they arrive. The ARIA feed pattern was the alternative; it
-      suits browsing a long stream, but announces nothing new on its own.
+      messages. The ARIA feed pattern suits browsing a long stream but announces
+      nothing new on its own.
     </>,
     "Each group's author is a heading, so screen reader users can jump from author to author. Set headingLevel to fit the page's outline.",
-    "Every message is an article named with its author and time, because a screen reader user can land in the middle of a group and never hear the heading.",
-    "The list takes one Tab stop. Arrow keys, Home and End move between messages. Enter moves focus to the first control inside a message, and Escape returns to the message. Controls inside a message stay out of the tab order until then, including ones your content adds later. Clicking into a message enters it too.",
+    "Every message is an article named with its author and time, since a screen reader user can land mid-group and miss the heading.",
+    "The list takes one Tab stop. Arrow keys, Home and End move between messages. Enter, or a click, moves focus to the first control inside a message; Escape returns to the message. Controls inside a message, including ones added later, stay out of the tab order until then.",
     "If the focused message is removed, focus moves to the message that takes its place, never to the page.",
     <>
       On later messages in a group, the time sits in a <code>time</code> element
       and shows on hover or focus.
     </>,
-    "Day dividers and your own dividers are separators named by their label.",
+    "Day and custom dividers are separators named by their label.",
   ]}
 />
 

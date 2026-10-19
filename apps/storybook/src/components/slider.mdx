@@ -12,19 +12,17 @@ import { Install } from "../blocks/install"
 
 # Slider
 
-A slider picks a number, or a range between two, by dragging a thumb along a
-track. It suits values where roughly right is right enough.
+Picks a number, or a range between two, by dragging a thumb along a track.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
 - One thumb for a value, or two for a range, built on Base UI's Slider.
-- Arrow keys step the value; Page Up and Page Down take bigger steps; Home
-  and End jump to the ends.
+- Full keyboard support: arrows, Page Up and Page Down, Home and End.
 - Horizontal or vertical, with a `step` to snap to.
-- The thumb lines up with the track's ends at the minimum and maximum
-  instead of hanging over them.
+- At the minimum and maximum the thumb aligns with the track's ends instead
+  of overhanging them.
 
 ## Installation
 
@@ -34,15 +32,15 @@ track. It suits values where roughly right is right enough.
 
 ### Range
 
-Two thumbs pick a start and an end. Each has its own name.
+Two thumbs, each with its own name.
 
 <Canvas of={Stories.Range} />
 
 ### With label and value
 
-`SliderLabel` and `SliderValue` go inside the slider and sit on one row above
-the track. The label names the thumb, and the value formats itself with
-`format`, here as a percentage.
+`SliderLabel` and `SliderValue` go inside the slider, on one row above the
+track. The label names the thumb; the value is formatted with `format`, here
+as a percentage.
 
 <Canvas of={Stories.WithLabelAndValue} />
 
@@ -74,8 +72,8 @@ export function Volume() {
 }
 ```
 
-Every thumb needs a name. For one thumb, `aria-label` on the Slider is passed
-to it. For a range, name each one with `thumbLabels`:
+Every thumb needs a name. With one thumb, the Slider's `aria-label` passes
+to it. For a range, use `thumbLabels`:
 
 ```tsx
 <Slider
@@ -124,12 +122,12 @@ to it. For a range, name each one with `thumbLabels`:
 
 <UsageGuidelines
   guidelines={[
-    "Use a slider when the exact number matters less than its rough position, like volume, brightness or a price range.",
+    "Use a slider when the rough position matters more than the exact number, like volume, brightness or a price range.",
     "When people need an exact number, use an input, or show the value beside the slider.",
-    "Show the value next to the label while it changes, so people know where they've landed.",
+    "Show the value next to the label while it changes.",
     <>
-      Set a <code>step</code> that matches how precise the value can usefully
-      be. A price range rarely needs single cents.
+      Match <code>step</code> to the useful precision. A price range rarely
+      needs single cents.
     </>,
   ]}
 />
@@ -159,7 +157,7 @@ to it. For a range, name each one with `thumbLabels`:
           </div>
         ),
         description:
-          "Don't use a slider for an exact number across a wide range. Hitting 3 out of 1,000 by dragging is fiddly; use an input.",
+          "Don't use a slider for an exact number across a wide range. Dragging to 3 of 1,000 is fiddly; use an input.",
       },
     },
   ]}
@@ -235,10 +233,10 @@ Slider takes every prop of Base UI's `Slider.Root`, including `value`,
     "Arrow keys move one step, Page Up and Page Down move ten, and Home and End jump to the minimum and maximum.",
     <>
       When the bare number isn't meaningful, like a price, pass{" "}
-      <code>format</code> with <code>Intl.NumberFormatOptions</code> so the
-      value is formatted, such as a currency.
+      <code>format</code> with <code>Intl.NumberFormatOptions</code>, such as a
+      currency.
     </>,
-    "The thumb shows a focus ring when it's reached by keyboard, and on hover as a cue that it can be dragged.",
+    "The thumb shows a focus ring on keyboard focus, and on hover as a drag cue.",
   ]}
 />
 

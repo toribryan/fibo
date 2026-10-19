@@ -219,7 +219,7 @@ const FAMILIES: Record<string, Family> = {
   actions: {
     title: "Actions",
     description:
-      "Primary is a neutral: fibo has no brand hue, so the strongest action is simply the darkest fill in light mode and the lightest in dark.",
+      "Primary is a neutral: fibo has no brand hue, so the strongest action is the darkest fill in light mode and the lightest in dark.",
     tokens: [
       {
         name: "primary",

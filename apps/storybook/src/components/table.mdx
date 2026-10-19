@@ -11,8 +11,8 @@ import { Install } from "../blocks/install"
 
 # Table
 
-Table lays out rows and columns of data in a native HTML table, at one
-compact density: 36 pixel headers and 40 pixel rows.
+A native HTML table for rows and columns of data, at one compact density:
+36px headers, 40px rows.
 
 <Canvas of={Stories.Default} />
 
@@ -20,11 +20,11 @@ compact density: 36 pixel headers and 40 pixel rows.
 
 - Native `table`, `thead`, `tbody` and `tfoot`, so screen readers announce
   rows, columns and headers.
-- Scrolls sideways inside its own box when it's wider than the page, and
-  joins the tab order while it does so keyboards can scroll it.
-- Hover and selected row states, with borders on the cells so pinned columns
-  stay lined up.
-- Data table builds selection, cell types and pinning on top of it.
+- Scrolls sideways in its own box when wider than the page, and joins the tab
+  order while it does, so keyboards can scroll it.
+- Hover and selected row states. Borders sit on the cells so pinned columns
+  stay aligned.
+- Base for Data table's selection, cell types and pinning.
 
 ## Installation
 
@@ -52,13 +52,13 @@ Totals in a `tfoot`, separated by a border.
 
 ### Selected
 
-`data-selected` on a row tints it. Data table sets it for you.
+`data-selected` on a row tints it. Data table sets it automatically.
 
 <Canvas of={Stories.Selected} />
 
 ### Wide
 
-Wider than its box, so it scrolls sideways. Tab to it and use the arrow keys.
+Scrolls sideways. Tab to it, then use the arrow keys.
 
 <Canvas of={Stories.Wide} />
 
@@ -98,8 +98,8 @@ export function Members({ members }: { members: Member[] }) {
 }
 ```
 
-Right-align numbers and their headers, with `tabular-nums` so digits line up.
-For selection, pinned columns and bulk actions, use Data table.
+Use `tabular-nums` on number cells so digits line up. For selection, pinned
+columns and bulk actions, use Data table.
 
 ## Anatomy
 
@@ -147,8 +147,8 @@ For selection, pinned columns and bulk actions, use Data table.
 
 <UsageGuidelines
   guidelines={[
-    "Use a table for data people compare across rows. For a list of things to pick from, use a list.",
-    "Keep rows one line high. A second line belongs in Data table's secondary text, and nothing goes taller.",
+    "Use for data compared across rows. For a list of things to pick from, use a list.",
+    "Keep rows one line high. A second line belongs in Data table's secondary text; nothing taller.",
     "Right-align numbers and their headers; left-align everything else.",
     "Write headers as short nouns in sentence case: Member, Team, Projects.",
     "Put totals in TableFooter, not as a last body row.",
@@ -176,7 +176,7 @@ For selection, pinned columns and bulk actions, use Data table.
             <span>100.5%</span>
           </div>
         ),
-        description: "Don't left-align numbers. They're hard to compare.",
+        description: "Don't left-align numbers; they're hard to compare.",
       },
     },
   ]}
@@ -184,8 +184,8 @@ For selection, pinned columns and bulk actions, use Data table.
 
 ## API reference
 
-Every part takes the props of the HTML element it renders. Table's
-`className` goes on the `table`, not the scroll box.
+Each part takes the props of the HTML element it renders. Table's `className`
+goes on the `table`, not the scroll box.
 
 <ArgTypes
   of={Stories.Default}
@@ -224,7 +224,7 @@ Every part takes the props of the HTML element it renders. Table's
     {
       attribute: "data-selected",
       element: "tr",
-      when: "You set it, or Data table does, on a selected row.",
+      when: "On a selected row. Set by you or by Data table.",
     },
   ]}
 />
@@ -235,7 +235,7 @@ Every part takes the props of the HTML element it renders. Table's
   guidelines={[
     "Give the table a name: a TableCaption, or aria-label or aria-labelledby on Table.",
     "Use TableHead for every column header, so each cell is announced with its column.",
-    "While the table is wider than its box, the scroll box is a focusable region that scrolls with the arrow keys. It takes the table's aria-label, or its caption, so the name is announced once.",
+    "While the table overflows, the scroll box is a focusable region that scrolls with the arrow keys. It takes the table's aria-label or caption, so the name is announced once.",
     "Header labels use foreground text on the muted band. Muted text there would be 4.34:1, under AA.",
   ]}
 />

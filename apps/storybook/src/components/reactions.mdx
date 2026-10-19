@@ -12,53 +12,50 @@ import { Install } from "../blocks/install"
 
 # Reactions
 
-Reactions let people respond to content with an emoji in one tap. They sit
-inline under the content or float in a corner of the page.
+One-tap emoji responses to content, inline under it or floating in a corner
+of the page.
 
 <Canvas of={Stories.InMessage} />
 
 ## Features
 
-- Inline pills under the content, or a floating bar pinned to a corner of the
-  viewport.
 - One tap to react or take it back, with a particle burst. Counts past a
   thousand shorten to 1.2K.
 - A picker of six common reactions, plus any already on the item. It's a
   Base UI popover, so a card that clips its overflow can't cut it off, and it
   flips to whichever side has room.
-- Controlled or uncontrolled. Particles and pill motion switch off under
-  reduced motion.
+- Inline pills, or a floating bar pinned to a viewport corner.
+- Controlled or uncontrolled.
 
 ## Installation
 
 <Install name="reactions" exports={["Reactions", "type Reaction"]} />
 
-No animation library: the burst and the pill motion use the Web Animations API.
+No animation library. The burst and pill motion use the Web Animations API.
 
 ## Examples
 
 ### Inline
 
-The default: pills under the content, with the picker's trigger at the end.
+Pills under the content, with the picker's trigger at the end.
 
 <Canvas of={Stories.Default} />
 
 ### No reactions yet
 
-With nothing on the item, only the trigger shows.
+Only the trigger shows.
 
 <Canvas of={Stories.Empty} />
 
 ### Busy post
 
-Counts past a thousand shorten, such as 1.2K, so the pills stay small.
+Shortened counts keep the pills small.
 
 <Canvas of={Stories.BusyPost} />
 
 ### Without counts
 
-`showCounts={false}` hides the numbers: the pill counts, and the total on the
-floating bar.
+`showCounts={false}` hides the pill counts and the floating bar's total.
 
 <Canvas of={Stories.WithoutCounts} />
 
@@ -70,7 +67,7 @@ floating bar.
 
 ### Controlled
 
-`reactions` and `onReactionsChange` hand the state to your data layer.
+`reactions` and `onReactionsChange` hold the state in your data layer.
 
 <Canvas of={Stories.Controlled} />
 
@@ -91,13 +88,10 @@ export function MessageReactions() {
 }
 ```
 
-A reaction's `emoji` is its identity, so keep it unique. Its `label` is what
+A reaction's `emoji` is its identity and must be unique. `label` is what
 screen readers hear.
 
 ## Anatomy
-
-Every part the component renders, with the `data-slot` it carries. You pass
-the reactions; the component builds the rest.
 
 <Anatomy
   root={{
@@ -159,25 +153,23 @@ The particles fly in one fixed layer, `reactions-particles`, added to
 <UsageGuidelines
   guidelines={[
     "Use inline beside the content it belongs to, such as a message, comment or post.",
-    "Use floating for a page-level reaction, such as the end of an article. It pins to a viewport corner.",
-    "Offer five or six choices at most. More turns a quick tap into a decision.",
+    "Use floating for a page-level reaction, such as the end of an article.",
+    "Offer five or six choices at most. More turns a tap into a decision.",
     <>
-      Leave <code>choices</code> unset to get six common reactions. Anything
-      already on the item is added to them.
+      Unset <code>choices</code> gives six common reactions, plus anything
+      already on the item.
     </>,
-    "A reaction nobody holds any more disappears instead of lingering as a zero.",
+    "A reaction nobody holds disappears instead of lingering as a zero.",
     <>
-      Counts past a thousand shorten to 1.2K, so a busy post keeps its pills
-      small. They shorten in English unless you pass <code>locale</code>, so the
-      server and the browser render the same text.
+      Counts shorten in English unless <code>locale</code> is set, so the server
+      and the browser render the same text.
     </>,
   ]}
 />
 
 <Tip>
-  Pass <code>reactions</code> and <code>onReactionsChange</code> to control the
-  state from your data layer. Without them the component keeps its own state,
-  seeded from <code>defaultReactions</code>.
+  Without <code>reactions</code> and <code>onReactionsChange</code>, the
+  component keeps its own state, seeded from <code>defaultReactions</code>.
 </Tip>
 
 ## Do's and don'ts
@@ -328,13 +320,13 @@ The particles fly in one fixed layer, `reactions-particles`, added to
       reacted. The emoji itself is hidden from screen readers.
     </>,
     'A polite live region announces each change: "Added Heart", "Removed Heart". On the floating bar, with counts on, it adds the new total: "Added Heart, 13 reactions in total".',
-    "With showCounts off, pills are named by their label alone, so screen readers hear what sighted users see.",
-    "Choices you've already picked show as pressed in the picker too.",
+    "With showCounts off, pills are named by label alone, matching what sighted users see.",
+    "Choices already picked show as pressed in the picker.",
     "Arrow keys, Home and End move through the choices. Escape closes the picker and returns focus to its trigger; tabbing away closes it too.",
     "Particles and pill motion switch off under prefers-reduced-motion.",
     <>
-      Override <code>triggerLabel</code> and <code>panelLabel</code> when your
-      product speaks another language.
+      Override <code>triggerLabel</code> and <code>panelLabel</code> for other
+      languages.
     </>,
   ]}
 />

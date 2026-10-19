@@ -339,8 +339,8 @@ function ColorScale() {
         <figcaption className="flex max-w-md flex-col items-start gap-2">
           <Badge variant="outline">Tailwind neutral</Badge>
           <span className="text-sm text-muted-foreground">
-            Pick a token or a step to trace it, and switch modes to watch the
-            ramp turn over.
+            Pick a token or step to trace it. Switch modes to see the ramp
+            invert.
           </span>
         </figcaption>
         <div

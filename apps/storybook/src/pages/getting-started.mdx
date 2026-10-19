@@ -4,7 +4,6 @@ import { DocLink } from "../blocks/doc-link"
 import { Tip } from "../blocks/guidelines"
 import {
   AgentPrompt,
-  LibraryComparison,
   RegistryFlow,
   RegistryInspector,
 } from "../blocks/registry-guide"
@@ -13,64 +12,34 @@ import {
 
 # Getting started
 
-There are two ways to use fibo in a project built on shadcn:
-
-- **Use the fibo theme.** Keep shadcn's components and add `@fibo/theme` to
-  give them fibo's colors, in light and dark.
-- **Add special components.** Install fibo's own parts, such as Command menu,
-  Filter menu and Reactions, which shadcn doesn't have.
-
-This guide shows how to do either.
+fibo is a shadcn registry: add `@fibo/theme` to give shadcn's components fibo's
+colors in light and dark, or install parts shadcn doesn't have, such as Command
+menu, Filter menu and Reactions.
 
 ## What the registry is
 
-If you've used a Figma team library, you already know most of it. fibo's Figma
-library and its code are one system: every component, property and color
-variable has the same name in both.
+One JSON file per component at `fibo.toribryan.com/r`, holding its code and
+what it needs. The shadcn CLI reads these files and copies components into your
+project as source. Every component, property and color variable has the same
+name in fibo's Figma library and in code.
 
-The registry is how the code half is shared. It's a set of files at
-`fibo.toribryan.com/r`, one per component. Each file holds the component's code
-and a list of what it needs to work. A free tool called the **shadcn CLI**
-reads those files and copies components into your project.
-
-The difference from a Figma library is what happens after you add something:
-
-<LibraryComparison />
-
-Copying instead of linking is on purpose. You can change anything about a part
-without waiting on anyone, and a fibo update never changes your product by
-surprise.
+An installed part is a copy, not a link. You can edit anything in it, and a fibo
+update never changes it until you add the part again.
 
 ## Before you start
 
-You need a project that already uses shadcn, the most common way React
-projects set up their components. Such a project has a `components.json` file
-in its top folder. If yours doesn't, this command sets it up:
+You need a shadcn project, with a `components.json` at its root. To set one up:
 
 ```bash
 pnpm dlx shadcn@latest init
 ```
 
-It asks a few questions; the defaults are fine.
-
-Run every command on this page in a terminal, inside your project's folder.
-
-<Tip title="First time in a terminal?">
-  The commands need Node.js, a free install from
-  [nodejs.org](https://nodejs.org) that includes `npx`. This page uses `pnpm`,
-  which does the same job. If you don't have pnpm, replace `pnpm dlx` with `npx`
-  in every command.
-</Tip>
-
-Working in Claude Code, Cursor or another coding agent? Paste the prompts
-under [With a coding agent](#with-a-coding-agent) instead of typing
-commands.
+`npx` works in place of `pnpm dlx` in every command. To use a coding agent
+instead, see [With a coding agent](#with-a-coding-agent).
 
 ## 1. Connect fibo to your project
 
-This is like turning on a library in Figma's Assets panel: it tells your
-project where fibo lives. Open `components.json` and add this inside its outer
-braces, next to the settings already there:
+Add to `components.json`:
 
 ```json
 "registries": {
@@ -78,10 +47,9 @@ braces, next to the settings already there:
 }
 ```
 
-Put a comma after the setting just above it, or the file won't read. Leave
-`{name}` exactly as written. The CLI replaces it with the name of the part
-you ask for. Projects started from `toribryan/design-project-template` already
-have this line.
+Keep `{name}` literal; the CLI replaces it with the requested part's name.
+Projects started from `toribryan/design-project-template` already have this
+entry.
 
 ## 2. Add a component
 
@@ -89,24 +57,21 @@ have this line.
 pnpm dlx shadcn@latest add @fibo/button
 ```
 
-The command does four things:
+`add` does four things:
 
-1. **The code arrives.** The CLI writes the component to
-   `components/ui/button.tsx`.
-2. **Packages install.** The CLI installs the packages the component is built
-   on, such as Base UI, which handles keyboard, focus and screen readers.
-3. **Other fibo parts come too.** A part built from another part brings it:
-   Toast brings Button, because its action and close controls are buttons.
-4. **Tokens are added.** The CLI adds any color token the part uses that your
-   project lacks to `globals.css`, in light and dark. It leaves tokens you
-   already have alone.
+1. **Writes the code** to `components/ui/button.tsx`.
+2. **Installs packages** the component is built on, such as Base UI, which
+   handles keyboard, focus and screen readers.
+3. **Adds the fibo parts it uses.** Toast brings Button, for its action and
+   close controls.
+4. **Adds tokens.** Any color token the part uses that your project lacks goes
+   into `globals.css`, in light and dark. Existing tokens are left alone.
 
-The inspector below reads the same files as the CLI. Pick a component to see
-what it brings.
+The inspector reads the same files as the CLI.
 
 <RegistryInspector />
 
-To add several parts at once:
+Several parts at once:
 
 ```bash
 pnpm dlx shadcn@latest add @fibo/button @fibo/input @fibo/select
@@ -118,7 +83,7 @@ Without step 1, the full URL works in any shadcn project:
 pnpm dlx shadcn@latest add https://fibo.toribryan.com/r/button.json
 ```
 
-The <DocLink to="catalog--docs" className="text-foreground underline underline-offset-4">Catalog</DocLink> shows every part you can add.
+The <DocLink to="catalog--docs" className="text-foreground underline underline-offset-4">Catalog</DocLink> lists every part.
 
 ## 3. Use it on a page
 
@@ -134,65 +99,55 @@ export function Toolbar() {
 }
 ```
 
-**The props are the Figma properties.** `variant="outline"` in code is the
-`variant` property set to outline in Figma, and `size` and `checked` work the
-same way. What you set in a mockup is what a developer types.
-
-Every component page in this Storybook has a playground to try the props and a
-table of every option.
+Props match Figma component properties: `variant="outline"` is the `variant`
+property set to outline, and `size` and `checked` work the same way. Each
+component page has a playground and a table of every option.
 
 ## 4. Make it look like fibo
 
-After step 2, your parts use your project's colors for everything standard,
-such as primary, background and borders, and fibo's only for the few extras.
-That's on purpose, so fibo fits into an existing product without restyling
-it.
+After step 2, parts use your project's colors for standard roles such as
+primary, background and borders, and fibo's only for the extras, so fibo fits
+an existing product without restyling it.
 
-To make everything look as it does here, add the theme:
+To use fibo's colors everywhere:
 
 ```bash
 pnpm dlx shadcn@latest add @fibo/theme
 ```
 
-This replaces the color values in your `globals.css` with fibo's, in light
-and dark.
-
-Every color is a role, such as `primary` or `border`, that points at a value
-in a color ramp. To retheme, edit `:root` and `.dark` in `globals.css`;
-nothing else needs to change.
+This replaces the color values in `globals.css` with fibo's, in light and dark.
+Each color is a role, such as `primary` or `border`, that points at a value in a
+color ramp. To retheme, edit `:root` and `.dark` in `globals.css`.
 
 ## 5. Change it
 
-The component file is yours now. Open `components/ui/button.tsx` and edit it:
-add a variant, change a radius, or delete what you don't use. Nothing in fibo
-overwrites it.
+An installed file such as `components/ui/button.tsx` is yours: add a variant,
+change a radius, delete what you don't use. fibo never overwrites it.
 
-One rule keeps it on-system: style with **tokens** like `bg-primary`, never raw
-colors like `bg-neutral-900` or `#171717`. Tokens follow dark mode and your
-theme; raw colors stay the same everywhere. The <DocLink to="foundations-colors--docs" className="text-foreground underline underline-offset-4">Colors</DocLink> page lists every token and what it's for.
+Style with tokens like `bg-primary`, never raw colors like `bg-neutral-900` or
+`#171717`. Tokens follow dark mode and the theme; raw colors don't. <DocLink to="foundations-colors--docs" className="text-foreground underline underline-offset-4">Colors</DocLink> lists every token and its use.
 
 ## 6. Get updates
 
-Because the code is a copy, fibo updates don't reach you automatically. To take
-the latest version of a part:
+Installed code doesn't update automatically. To take the latest version of a
+part:
 
 ```bash
 pnpm dlx shadcn@latest add @fibo/button --overwrite
 ```
 
-This replaces the whole file, including any edits you made. The <DocLink to="changelog--docs" className="text-foreground underline underline-offset-4">Changelog</DocLink> says what changed.
+This replaces the whole file, including your edits. The <DocLink to="changelog--docs" className="text-foreground underline underline-offset-4">Changelog</DocLink> lists what changed.
 
 <Tip tone="warning" title="Edited a part?">
-  Updating works like resetting all overrides: your edits are lost. Once you've
-  changed a part a lot, treat it as your own component and copy in only the fibo
-  changes you want. Before you update, make a git commit so you can compare and
-  undo.
+  `--overwrite` discards your edits. Commit first so you can compare and undo.
+  For a heavily changed part, treat it as your own component and copy in only
+  the fibo changes you want.
 </Tip>
 
 ## With a coding agent
 
-Claude Code, Cursor, v0 and similar tools can do every step above. Paste one of
-these and adjust it to your project:
+Claude Code, Cursor, v0 and similar tools can do every step above. Example
+prompts:
 
 <AgentPrompt>
   {
@@ -212,39 +167,34 @@ these and adjust it to your project:
   }
 </AgentPrompt>
 
-Two things help an agent get it right:
-
 - **[llms.txt](https://fibo.toribryan.com/llms.txt)** lists every fibo part
   with its install command, so an agent uses real parts instead of inventing
   them.
-- **The [shadcn MCP server](https://ui.shadcn.com/docs/mcp)** is a connector
-  that lets an agent browse the registry and install from it directly. Set it
-  up once with
+- **The [shadcn MCP server](https://ui.shadcn.com/docs/mcp)** lets an agent
+  browse the registry and install from it directly. Set it up with
   `pnpm dlx shadcn@latest mcp init`.
 
 ## How it works
 
-A part's path from the Figma library to your project:
-
 <RegistryFlow />
 
-1. **Designed in Figma.** Each component and its properties start in the
-   Figma library, built with fibo's color variables.
+1. **Designed in Figma.** Each component and its properties start in the Figma
+   library, built with fibo's color variables.
 2. **Built in code.** The component is written in fibo's repo with the same
-   names. Its colors come from tokens in one file, `globals.css`, which
-   matches the Figma variables one to one.
-3. **Turned into registry files.** A build step reads each component, notes
-   the packages and other fibo parts it uses, looks up the tokens its classes
-   use, and writes one file per part. It also writes `llms.txt`.
-4. **Published.** The files go live at `fibo.toribryan.com/r` with this site
-   each time a change is merged.
-5. **Checked.** Before any change is merged, an automated test installs every
-   part into a new project and builds it. If a part would arrive missing a
-   token, such as a hover color, the change can't ship.
-6. **Installed.** When you run `add`, the CLI downloads the part's file and
-   writes its code, packages and tokens into your project.
+   names. Its colors come from tokens in `globals.css`, which match the Figma
+   variables one to one.
+3. **Built into registry files.** A build step reads each component, records
+   the packages and fibo parts it uses and the tokens its classes use, and
+   writes one file per part, plus `llms.txt`.
+4. **Published.** The files go live at `fibo.toribryan.com/r` with this site on
+   every merge.
+5. **Checked.** Before a change merges, CI installs every part into a new
+   project and builds it. A part that would arrive missing a token, such as a
+   hover color, blocks the change.
+6. **Installed.** `add` downloads the part's file and writes its code, packages
+   and tokens into your project.
 
-A registry file is plain JSON. Here's the shape of Button's, trimmed:
+Button's registry file, trimmed:
 
 ```json
 {
@@ -268,17 +218,17 @@ A registry file is plain JSON. Here's the shape of Button's, trimmed:
 }
 ```
 
-- `dependencies` are the packages to install.
-- `registryDependencies` are other registry parts to add first. `utils` is
-  shadcn's small helper for combining class names.
-- `files` holds the component's full code, which becomes your file.
-- `cssVars` holds the tokens to add, once for light mode and once for dark.
+- `dependencies`: packages to install.
+- `registryDependencies`: registry parts to add first. `utils` is shadcn's
+  class-name helper.
+- `files`: the component's full code, which becomes your file.
+- `cssVars`: tokens to add, for light and dark.
 
-Use **Raw file** in the picker above to open any part's real file.
+**Raw file** in the inspector opens any part's real file.
 
 ## Run fibo locally
 
-To work on fibo itself, clone the repo and run:
+Clone the repo, then:
 
 ```bash
 pnpm install
@@ -292,9 +242,8 @@ the registry build.
 
 ### "Unknown registry @fibo"
 
-Step 1 is missing, or `components.json` has a typo. Check that `"@fibo"` sits
-inside `"registries"` and that the file is still valid JSON: every entry
-except the last ends with a comma.
+Step 1 is missing, or `components.json` has a typo or invalid JSON. Check that
+`"@fibo"` is inside `"registries"`.
 
 ### A part has no hover color or focus ring
 
@@ -303,41 +252,14 @@ their own tokens. Add it again with `--overwrite`, or add `@fibo/theme`.
 
 ### It asks whether to overwrite a file
 
-You already have a file with that name, often shadcn's own version of the same
-part, such as `components/ui/button.tsx`. Saying yes replaces it, and any edits you
-made, with fibo's. See [step 6](#6-get-updates) first.
+A file with that name exists, often shadcn's own version of the same part, such
+as `components/ui/button.tsx`. Yes replaces it, including your edits. See
+[step 6](#6-get-updates).
 
 ### My project already has shadcn's own components
 
-That's fine. fibo parts sit beside them, and only a part with the same name
-replaces one.
+fibo parts sit beside them. Only a part with the same name replaces one.
 
 ### Does it work without Tailwind?
 
-No. fibo parts are styled with Tailwind CSS 4, which `shadcn init` sets up for
-you.
-
-## Words on this page
-
-- **Registry**: a set of files, one per component, that a tool can install
-  from. fibo's lives at `fibo.toribryan.com/r`.
-- **shadcn CLI**: the command-line tool that reads registries and copies
-  components into a project. `pnpm dlx shadcn@latest` runs it without
-  installing anything.
-- **Terminal**: the app where you type commands. VS Code, Cursor and most
-  code editors have one built in.
-- **`components.json`**: your project's shadcn settings, including which
-  registries it can install from.
-- **`globals.css`**: the stylesheet that holds your project's tokens, in light
-  and dark.
-- **Token**: a named color, such as `--primary`, that points at a real
-  value per mode. The code version of a Figma color variable.
-- **Package**: code someone else maintains that a component is built on,
-  installed for you by the CLI.
-- **Part**: one fibo component, such as Button or Select.
-- **Prop**: a setting on a component in code. The code version of a Figma
-  component property.
-- **Git** and **commit**: git keeps your project's history. A commit is a
-  saved version you can compare against or go back to.
-- **Merged**: reviewed and added to fibo's main code. Merging a change
-  publishes it.
+No. fibo parts are styled with Tailwind CSS 4, which `shadcn init` sets up.

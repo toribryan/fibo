@@ -19,9 +19,7 @@ import { Install } from "../blocks/install"
 
 # Sitemap
 
-A page that helps people find their way around a site. It opens with a
-search, then lists every destination in a few groups, so nobody has to
-read through one long list of URLs.
+A site directory page: a search, then every destination in a few groups.
 
 <BlockPreview label="Sitemap">
   {() => <Sitemap onSearch={() => {}} />}
@@ -29,21 +27,20 @@ read through one long list of URLs.
 
 ## Features
 
-- A search at the top, with popular picks under it. The search can stay
-  pinned below the site's header as the page scrolls.
-- Four columns on a wide screen, two on a tablet, and one card per group on
-  a phone. The layout follows the block's own width, so it looks the same
-  in a page, a canvas or a preview pane.
+- A search at the top with popular picks under it, optionally pinned below
+  the site's header on scroll.
+- Four columns wide, two on a tablet, one card per group on a phone. The
+  layout follows the block's own width, not the viewport.
 - Groups nest one level deep, such as a state and its cities, and can fold
-  behind a toggle to keep long lists short.
-- Every link takes `render`, so a router's `Link` keeps the look.
+  behind a toggle.
+- Every link takes `render`, so a router's `Link` keeps the styling.
 
 ## Installation
 
 <Install name="sitemap" block exports={["Sitemap"]} />
 
-It also installs Button and Input group. Render it where the page goes, and
-give it `onSearch` or a `searchAction` route:
+Also installs Button and Input group. Render it with `onSearch` or a
+`searchAction` route:
 
 ```tsx
 import { Sitemap } from "@/components/blocks/sitemap/sitemap"
@@ -53,8 +50,8 @@ export default function Page() {
 }
 ```
 
-A block is installed once and then belongs to your app. Running `shadcn add`
-again overwrites your edits, so change the files instead.
+Once installed, the block's files belong to your app. Running `shadcn add`
+again overwrites your edits.
 
 ## Files
 
@@ -66,10 +63,10 @@ again overwrites your edits, so change the files instead.
 
 ## Make it yours
 
-1. Replace `data.ts` with the pages your site has. An entry with `links`
-   becomes a group, such as a state and its cities.
+1. Replace `data.ts` with your site's pages. An entry with `links` becomes
+   a group, such as a state and its cities.
 2. Point the search at your results route with `searchAction`, or handle it
-   in the app with `onSearch`.
+   with `onSearch`.
 3. Pass a router's `Link` to `SitemapLink` and `SitemapSuggestion` through
    `render` in `sitemap.tsx`, so links route without a page load.
 
@@ -77,16 +74,15 @@ again overwrites your edits, so change the files instead.
 
 ### Every location open
 
-With `collapsible` off, each state lists its cities in full. This works
-when there are only a few states.
+`collapsible` off lists every state's cities in full. Suits a site with few
+states.
 
 <Canvas of={Stories.Expanded} />
 
 ### Sticky search
 
-With `sticky`, the search stays pinned as the page scrolls. Set
-`--sitemap-sticky-top` to the height of the site's own header so the
-search sits right below it. On a phone it stays one row high.
+`sticky` pins the search. Set `--sitemap-sticky-top` to the site header's
+height so it sits right below it. On a phone it stays one row high.
 
 <Canvas of={Stories.StickySearch} />
 
@@ -99,16 +95,14 @@ under the field.
 
 ### Directory only
 
-Leave out the search and suggestions when the site has no location search
-to point them at.
+Without search and suggestions, for a site with no location search.
 
 <Canvas of={Stories.DirectoryOnly} />
 
 ## Usage
 
-For a page shaped differently from the block, compose the parts in
-`parts.tsx` yourself. `SitemapLayout` is the frame that sets the width the
-rest lays out by.
+For a different page shape, compose the parts from `parts.tsx`.
+`SitemapLayout` is the frame whose width the rest lays out by.
 
 ```tsx
 import {
@@ -158,8 +152,7 @@ export function SitemapPage({ locations }: { locations: Location[] }) {
 }
 ```
 
-Build the location links from the places the site actually has pages for,
-not from a list someone keeps up by hand.
+Build location links from the pages the site has, not a hand-kept list.
 
 ## Anatomy
 
@@ -216,16 +209,16 @@ not from a list someone keeps up by hand.
 <UsageGuidelines
   guidelines={[
     "Keep it to three to five groups, named by what people came to do: find, browse, learn, contact.",
-    "Put the search first when most visitors arrive looking for a place. The directory backs it up; it doesn't replace it.",
+    "Put the search first when most visitors arrive looking for a place. The directory backs it up, not replaces it.",
     "Fold long location lists with collapsible groups, and leave the first group open.",
-    "Show only destinations that exist. Drop a link before launch rather than point it at an empty page.",
+    "List only destinations that exist. Drop a link rather than point it at an empty page.",
     "This page is for people. Keep the XML sitemap for search engines separate.",
   ]}
 />
 
 <Tip>
-  Pin the search only if the site's header is short. Two stacked sticky bars on
-  a phone leave little room for the page.
+  Pin the search only under a short site header. Two stacked sticky bars on a
+  phone leave little room for the page.
 </Tip>
 
 ## Do's and don'ts
@@ -266,8 +259,8 @@ not from a list someone keeps up by hand.
 
 ## API reference
 
-The playground below drives the whole block. Each part also takes the
-props of the element it renders.
+These props drive the whole block. Each part also takes the props of the
+element it renders.
 
 <ArgTypes of={Stories.Default} />
 

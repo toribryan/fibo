@@ -7,32 +7,31 @@ import { Tip } from "../blocks/guidelines"
 
 # Motion
 
-Motion in fibo says where something came from and where it went. It is short,
-it eases out, and it stops entirely when someone asks for less motion.
+Motion in fibo shows where something came from and where it went. It is short,
+eases out, and stops under reduced motion.
 
 ## Durations
 
-Four durations, from Tailwind's scale. The shorter the trip, the shorter the
-time. Press Play to compare them.
+Four durations, from Tailwind's scale. The shorter the distance, the shorter
+the duration.
 
 <DurationScale />
 
 ## Entering and leaving
 
-Popups fade and scale up from 95% toward what opened them, and leave the same
-way in reverse, over 100ms: Menu, Select and Tooltip all do this, with
-`tw-animate-css`'s `animate-in` and `animate-out`. Sheets and toasts slide in
-from their edge instead.
+Popups such as Menu, Select and Tooltip fade and scale up from 95% toward their
+trigger over 100ms, and reverse on exit, with `tw-animate-css`'s `animate-in`
+and `animate-out`. Sheets and toasts slide in from their edge.
 
 <EnterExit />
 
 ## Springs
 
-Parts on the Special shelf move with `motion`, on springs rather than
-durations, so a move that's interrupted carries on from where it is. A stiff,
-well-damped spring settles quickly without bouncing; a looser one overshoots
-a little, which fibo keeps for moments meant to feel physical, such as
-Floating nav's glass lens or a reaction landing. Base parts use CSS only.
+Special parts move with `motion`, on springs rather than durations, so an
+interrupted move continues from where it is. A stiff, well-damped spring
+settles without bouncing. A looser one overshoots slightly, reserved for
+physical moments such as Floating nav's glass lens or a reaction landing. Base
+parts use CSS only.
 
 ## Reduced motion
 
@@ -49,7 +48,7 @@ stops.
 ## Rules
 
 - Ease out for things arriving, so they slow into place.
-- Prefer `transform` and `opacity`. Animating width or height lays the page
-  out again on every frame, so keep it to small, contained parts, such as a
-  nav label growing into view.
+- Prefer `transform` and `opacity`. Animating width or height triggers layout
+  on every frame, so limit it to small, contained parts, such as a nav label
+  growing into view.
 - Keep motion under 300ms for anything a person waits on.

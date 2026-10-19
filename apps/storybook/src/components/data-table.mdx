@@ -11,39 +11,29 @@ import { Install } from "../blocks/install"
 
 # Data table
 
-Data table is the one table for lists people work through: selection in the
-first column, six cell types, sorting, search and filters, locked rows that
-say why, and columns pinned to either edge. TanStack Table works out the rows
-and keeps the state; Data table draws them in a native table that matches the
-Data table in the Figma library.
+A table for lists people work through, with selection, sorting, search,
+filters, locked rows and pinned columns. TanStack Table computes the rows and
+holds the state; Data table renders a native table matching the Figma library.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- One hook, `useDataTable`, takes your rows and columns. Sorting, search,
-  filters with counts, pages, selection and which columns show all work
-  without code of your own.
+- `useDataTable` takes rows and columns. Sorting, search, filters with
+  counts, pages, selection and column visibility need no further code.
 - A checkbox column with select all, which skips locked rows and shows a
   dash while only some rows are selected. Select all matching reaches the
   rows on other pages.
-- Shift+click selects a range, in the order the rows are shown, and Escape
-  clears the selection.
-- Six cell types: primary, text, person, status, numeric and actions. A
-  second line on a cell makes its row 52 pixels.
+- Shift+click selects a range in display order; Escape clears the selection.
+- Six cell types: primary, text, person, status, numeric and actions.
 - Columns pinned to the start or end, with shadows while there's more to
-  scroll. Pinning switches off under 32rem.
-- Sorting, search, filters and the page can live in the URL, so a link opens
-  the same view.
+  scroll.
+- Sorting, search, filters and the page can live in the URL.
 - Selection changes are announced: “3 members selected”, “Selection cleared”.
-  Selected rows a filter hides stay selected and are counted: “5 members
-  selected, 2 hidden by filters”.
 - One toolbar row for every action: search, filters and create actions while
-  idle, then the selection and bulk actions in the same place while rows are
-  selected.
-- Under 32rem it keeps working: the table scrolls under an icon-only
-  toolbar, or each row becomes a card read from the same rows. Filters move
-  into a sheet.
+  idle; selection and bulk actions while rows are selected.
+- Under 32rem the table scrolls under an icon-only toolbar, or each row
+  becomes a card. Filters move into a sheet.
 
 ## Installation
 
@@ -72,59 +62,57 @@ Data table in the Figma library.
   ]}
 />
 
-It installs Table, Checkbox, Avatar, Tooltip, Button, Input, Menu, Sheet and
-Pagination, and the `@tanstack/react-table` and `@tanstack/react-store`
-packages. Data table and Rich text editor are the two base components that
-depend on a package beyond Base UI, class-variance-authority and
-lucide-react; plans 005 and 009 say why.
+Installs Table, Checkbox, Avatar, Tooltip, Button, Input, Menu, Sheet and
+Pagination, plus `@tanstack/react-table` and `@tanstack/react-store`. Data
+table and Rich text editor are the only base components with a dependency
+beyond Base UI, class-variance-authority and lucide-react; plans 005 and 009
+say why.
 
 ## Examples
 
 ### URL-synced state
 
-Sorting, the search, filters and the page each live in a search param.
-Sort, page or search and watch the params below the table change. Back and
-forward follow them.
+Sorting, search, filters and the page each live in a search param, shown
+below the table. Back and forward follow them.
 
 <Canvas of={Stories.UrlSynced} />
 
 ### Faceted filters
 
-Each filter menu shows how many rows hold each value under the other
-filters, so a choice never leads to an empty table. Status and Team here.
+Each filter menu counts the rows holding each value under the other filters,
+so a choice never leads to an empty table.
 
 <Canvas of={Stories.FacetedFilters} />
 
 ### Loading
 
-Set `loading` while the data is on its way. The body shows skeleton rows
-shaped like the visible columns, narrow cards show skeleton cards, and the
-table is `aria-busy`. Both keep the real rows' height, so nothing jumps when
-the data arrives. A hand-written body can render `DataTableSkeleton` itself.
+`loading` shows skeleton rows shaped like the visible columns, or skeleton
+cards when narrow, and sets `aria-busy`. Both keep the real rows' height, so
+nothing jumps when data arrives. A hand-written body can render
+`DataTableSkeleton` itself.
 
 <Canvas of={Stories.Loading} />
 
 ### Empty and no matches
 
-With no rows, the table says so in place of the body. When a search or
-filter hid them, it says nothing matched and offers Clear filters, which
-puts focus back in the search. Pass `empty` for your own copy, such as an
-EmptyState with an invite button, or `empty={null}` for a blank body.
+With no rows, the body says so. When a search or filter hid them, it says
+nothing matched and offers Clear filters, which returns focus to the search.
+`empty` replaces the copy, such as with an EmptyState and an invite button;
+`empty={null}` leaves the body blank.
 
 <Canvas of={Stories.Empty} />
 
 ### Column visibility and pinning
 
-Columns shows and hides every column that can hide; Last active starts
-hidden. The name is pinned to the start and actions to the end, so the
-middle scrolls under them.
+Columns toggles every hideable column; Last active starts hidden. Name is
+pinned to the start and actions to the end; the middle scrolls under them.
 
 <Canvas of={Stories.ColumnVisibility} />
 
 ### Bulk action patterns
 
-The patterns from the Figma library: Delete alone, a safe action before
-Delete, several actions with More, and an action that works on one row.
+From the Figma library: Delete alone, a safe action before Delete, several
+actions with More, and a single-row action.
 
 <Canvas of={Stories.BulkActionPatterns} />
 
@@ -136,36 +124,36 @@ Approve then Deny, and no Delete. Second lines carry the details.
 
 ### Directory
 
-Pages of five, one row locked. Select the page, then Select all 5 members;
-Show selected only filters the rows, which the app does from the selection
-it keeps in an atom.
+Pages of five, one row locked. Select the page, then Select all 5 members.
+Show selected only filters the rows; the app does this from the selection it
+keeps in an atom.
 
 <Canvas of={Stories.Directory} />
 
 ### Locked row
 
-Elena's row can't be selected. The lock explains why on hover or focus, and
-select all leaves her out.
+Elena's row can't be selected. The lock gives the reason on hover or focus,
+and select all skips the row.
 
 <Canvas of={Stories.Locked} />
 
 ### Secondary text
 
-A second line under each name, as in a review queue. Rows grow to 52 pixels.
+A second line under each name grows rows to 52 pixels.
 
 <Canvas of={Stories.SecondaryText} />
 
 ### With pagination
 
-DataTablePagination in the footer, four rows to a page. Sorting, the search
-and filters start it again from the first page; new data keeps the page,
-so one restored from a link survives rows that load later.
+DataTablePagination in the footer, four rows to a page. Sorting, search and
+filters reset to the first page; new data keeps the page, so one restored
+from a link survives rows that load later.
 
 <Canvas of={Stories.WithPagination} />
 
 ### Picker
 
-Choosing rows for a form, with the count in the footer instead of actions.
+Rows chosen for a form, with the count in the footer instead of actions.
 
 <Canvas of={Stories.Picker} />
 
@@ -179,12 +167,12 @@ the search fills the toolbar, and filters move behind Filters.
 ### Narrow, cards
 
 `narrowLayout="cards"`: each row becomes a card, select all moves into the
-toolbar, and bulk actions show their icons. Cards read the same rows as the
-table, so the search, sort and pages work the same. Cards need a
-DataTableToolbar, since that's where select all goes.
+toolbar, and bulk actions show their icons. Cards read the same rows, so
+search, sort and pages behave the same. Requires a DataTableToolbar, which
+holds select all.
 
 Narrow, the toolbar keeps the count, Clear and bulk actions. Select all
-matching and Show selected only aren't offered, as in the Figma library.
+matching and Show selected only aren't offered, matching the Figma library.
 
 <Canvas of={Stories.NarrowCards} />
 
@@ -248,9 +236,9 @@ export function Members({ members }: { members: Member[] }) {
 }
 ```
 
-Every row needs an `id`, or pass `getRowId`: selection is kept by id, so it
+Every row needs an `id`, or pass `getRowId`. Selection is kept by id, so it
 survives sorting, filtering and paging. Keep `columns` and `data` stable
-between renders. A column's `meta` sets how it draws:
+between renders. A column's `meta` sets how it renders:
 
 ```ts
 type DataTableColumnMeta = {
@@ -264,9 +252,8 @@ type DataTableColumnMeta = {
 ```
 
 The first primary or person column names each row's checkbox. Every row
-shows until you give the table a page size, in
-`initialState.pagination` or a pagination atom, and put DataTablePagination
-in the footer.
+shows until the table has a page size, in `initialState.pagination` or a
+pagination atom, with DataTablePagination in the footer.
 
 ### Reading and owning state
 
@@ -286,8 +273,8 @@ filters let through and keeps the hidden ones; Clear and Escape clear
 everything. With `manualPagination`, ids on other pages stay, since the app
 owns those.
 
-Sorting, column filters, the search and the page can be owned outside the
-table, as atoms. `useSearchParamsAtom` keeps one in the URL with
+Sorting, column filters, search and the page can be owned outside the table
+as atoms. `useSearchParamsAtom` keeps one in the URL with
 `history.replaceState`, so typing a search doesn't fill the back button. It
 starts from the empty value on the server and in the first render, so
 hydration matches, and applies the URL's value once mounted, before paint:
@@ -326,8 +313,8 @@ row pinning are left out.
 Before 1.0, Data table also took `rowIds`, `totalCount`, `value`,
 `defaultValue` and `onValueChange` props, `useDataTableSelection`, and
 hand-written `DataTableRow`, `DataTableCell` and `DataTableHead`. 1.0
-removes them. A codemod lists every use left in a project with its file and
-line. It changes nothing: writing column definitions needs a person.
+removes them. A codemod lists every remaining use with file and line. It
+changes nothing, since column definitions need writing by hand.
 
 ```sh
 pnpm dlx jscodeshift --parser tsx --dry \
@@ -371,7 +358,7 @@ const table = useDataTable({
 <UsageGuidelines
   guidelines={[
     <>
-      <code>rowIds</code> becomes <code>data</code>, your rows themselves, each
+      <code>rowIds</code> becomes <code>data</code>, the rows themselves, each
       with an <code>id</code>.
     </>,
     <>
@@ -398,7 +385,7 @@ const table = useDataTable({
       <code>totalCount</code> becomes <code>rowCount</code> with{" "}
       <code>manualPagination</code>, when the app pages on a server.
     </>,
-    "Sorting, filtering and paging that the app did itself can go: the table does them from its state.",
+    "Drop app-side sorting, filtering and paging; the table does them from its state.",
   ]}
 />
 
@@ -554,16 +541,16 @@ const table = useDataTable({
 <UsageGuidelines
   guidelines={[
     "Selection is always the first column, and row actions are always the last, pinned to the end.",
-    "Let the table sort, filter and page: give useDataTable all the rows, or set the manual options and load the rows its state describes. Don't sort or filter the rows yourself as well.",
+    "Let the table sort, filter and page: give useDataTable all the rows, or set the manual options and load the rows its state describes. Don't also sort or filter them in the app.",
     "Keep sorting, the search, filters and the page in the URL with useSearchParamsAtom when people share or bookmark the list.",
     'Give a column that people filter by a few values filterFn: "arrHas" and a DataTableFacetFilter, so the menu shows how many rows hold each.',
     "Pin the row's name to the start and at most one must-see column, usually status, to the end.",
     "Rows are 40 pixels, or 52 with secondary text. Nothing goes taller.",
     "Lock a row that can't be selected, and say why in useDataTable's lockedReason.",
     "Pin one column to each edge at most. Pinned columns stick at a fixed offset, so a second one would sit over the first.",
-    "In a picker, put DataTableSelectionCount in the footer, so people see how many they've chosen.",
+    "In a picker, put DataTableSelectionCount in the footer.",
     "Put every action in the toolbar. Don't add hover actions or a floating bar; they split actions across places.",
-    "Keep the bulk action order: your actions, then More, then Delete. Approve comes before Deny.",
+    "Bulk action order: custom actions, then More, then Delete. Approve comes before Deny.",
     "Give a bulk action that works on one row `single`, so it stays in place, dimmed, while more are selected.",
     "Give actions an icon, so they still fit on a phone. Under 32rem they show the icon alone, with the label as their name and tooltip.",
     'Use narrowLayout="cards" when a row reads better as a summary than as a line, such as people with a status. Keep scroll for data people compare across columns.',
@@ -593,7 +580,7 @@ const table = useDataTable({
           </div>
         ),
         description:
-          "Don't disable a row without a reason. People can't tell it's on purpose.",
+          "Don't disable a row without a reason. People can't tell it's intended.",
       },
     },
   ]}

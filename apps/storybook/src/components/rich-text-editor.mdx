@@ -12,9 +12,8 @@ import { Install } from "../blocks/install"
 
 # Rich text editor
 
-A rich text editor takes formatted writing: headings, emphasis, lists, quotes
-and links. It runs on Tiptap, with a toolbar for people who reach for the
-pointer and Markdown shortcuts for people who don't.
+A Tiptap-based editor for formatted writing (headings, emphasis, lists,
+quotes and links), with a toolbar and Markdown shortcuts.
 
 <Canvas of={Stories.Default} />
 
@@ -23,9 +22,9 @@ pointer and Markdown shortcuts for people who don't.
 - Bold, italic, strikethrough, inline code, a heading, lists, quotes and links
   from the toolbar, a shortcut, or Markdown as you type (`## `, `- `, `1. `,
   `> `, backticks).
-- One tab stop for the whole toolbar; arrows, Home and End move inside it, and
-  each button says whether it's on.
-- Links go in through a row under the toolbar, never a browser prompt. An
+- The toolbar is one tab stop; arrows, Home and End move inside it, and each
+  button reports whether it's on.
+- Links are entered in a row under the toolbar, not a browser prompt. An
   address Link refuses, such as `javascript:`, stays in the row marked
   invalid and never reaches the document.
 - `maxLength` stops typing and pasting at the limit and counts down from 80%.
@@ -34,39 +33,38 @@ pointer and Markdown shortcuts for people who don't.
 
 <Install name="rich-text-editor" exports={["RichTextEditor"]} />
 
-It installs Button, Input and Tooltip, and the `@tiptap/react`,
-`@tiptap/starter-kit` and `@tiptap/extensions` packages. Rich text editor and
-Data table are the two base components that depend on a package beyond Base
-UI, class-variance-authority and lucide-react; plans 005 and 009 say why.
+Also installs Button, Input, Tooltip, `@tiptap/react`, `@tiptap/starter-kit`
+and `@tiptap/extensions`. Rich text editor and Data table are the only base
+components depending on a package beyond Base UI, class-variance-authority
+and lucide-react; plans 005 and 009 say why.
 
 ## Examples
 
 ### With a limit
 
-From 80% of `maxLength` a count of what's left shows in the corner, and turns
-destructive at the limit. Screen readers hear it when it first shows, at
-each further ten characters, and at the limit, not on every keystroke.
+From 80% of `maxLength`, the remaining count shows in the corner and turns
+destructive at the limit.
 
 <Canvas of={Stories.WithLimit} />
 
 ### Minimal tools
 
-`tools` picks which buttons show. They keep the toolbar's order whatever order
-you list them in.
+`tools` picks which buttons show. They keep the toolbar's order regardless of
+list order.
 
 <Canvas of={Stories.MinimalTools} />
 
 ### Read only
 
-`editable={false}` drops the toolbar and shows the document as it will read.
+`editable={false}` drops the toolbar and shows the document as it reads.
 
 <Canvas of={Stories.ReadOnly} />
 
 ### Proposal reply
 
-A reply box with a short toolbar and a limit. The visible label names the
-writing area through `aria-labelledby` and the hint describes it through
-`aria-describedby`. Sending clears it by remounting it with a new `key`.
+A short toolbar and a limit. The visible label names the writing area via
+`aria-labelledby`; the hint describes it via `aria-describedby`. Sending
+clears it by remounting with a new `key`.
 
 <Canvas of={Stories.ProposalReplyBox} />
 
@@ -106,16 +104,16 @@ export function ReleaseNote({ onSave }: { onSave: (html: string) => void }) {
 }
 ```
 
-A label's `for` can't point at the writing area, which is not a form control,
-so name it with `aria-labelledby` and the label's `id`. The same works with
-Field: give `FieldLabel` an `id`, and `FieldDescription` one for
-`aria-describedby`. `id`, `aria-labelledby`, `aria-describedby` and
-`aria-invalid` all go on the writing area, not the frame.
+The writing area isn't a form control, so a label's `for` can't target it.
+Name it with `aria-labelledby` and the label's `id`. With Field, give
+`FieldLabel` an `id`, and `FieldDescription` one for `aria-describedby`.
+`id`, `aria-labelledby`, `aria-describedby` and `aria-invalid` go on the
+writing area, not the frame.
 
-The editor owns the document once it mounts: pass `defaultValue` to start it
-and read `onChange` to keep up. To clear or replace it, change its `key`, or
-use the Tiptap editor that `onChange` hands you. Sanitize the HTML on the
-server before you show it to anyone else.
+The editor owns the document once mounted: `defaultValue` seeds it and
+`onChange` reports changes. To clear or replace it, change its `key` or use
+the Tiptap editor `onChange` passes. Sanitize the HTML on the server before
+showing it to anyone else.
 
 ## Anatomy
 
@@ -165,10 +163,10 @@ server before you show it to anyone else.
 
 <UsageGuidelines
   guidelines={[
-    "Use it where formatting changes what the words mean: notes, proposals, release notes, replies. For a plain message or a short answer, use Textarea or Chat composer.",
+    "Use where formatting changes meaning: notes, proposals, release notes, replies. For a plain message or short answer, use Textarea or Chat composer.",
     "Show only the tools the content needs. A comment box rarely needs headings or code.",
     "State a length limit before people reach it, in the label or a description, not only in the counter.",
-    "Store and send the HTML, and sanitize it wherever it's shown to someone else.",
+    "Store and send the HTML; sanitize it wherever it's shown to someone else.",
   ]}
 />
 
@@ -322,12 +320,12 @@ server before you show it to anyone else.
       <code>aria-pressed</code>.
     </>,
     "Clicking a tool keeps focus and the selection in the writing area. Running one from the keyboard sends focus back there.",
-    "Undo and Redo stay focusable when there's nothing to do, so the toolbar's keyboard path never changes length.",
+    "Undo and Redo stay focusable when disabled, so the toolbar's keyboard path never changes length.",
     <>
       Escape closes the link row and returns to the writing area. The visible
       count is hidden from screen readers; a separate{" "}
       <code>aria-live="polite"</code> region reads it when it first shows, at
-      each further ten characters, and at the limit.
+      each further ten characters, and at the limit, not on every keystroke.
     </>,
   ]}
 />

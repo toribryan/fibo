@@ -13,17 +13,17 @@ import { Install } from "../blocks/install"
 
 # Checkbox
 
-A checkbox turns one option on or off, or picks any number of options from a
-list. The change applies when the form is submitted.
+Turns one option on or off, or picks any number from a list. The change
+applies on form submit.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
 - Checked, unchecked and indeterminate states, built on Base UI's Checkbox.
-- The hit area reaches past the 16px box to meet the 24px minimum target.
+- The hit area extends past the 16px box to meet the 24px minimum target.
 - Works with a Label beside it or wrapped around it.
-- An invalid state through `aria-invalid` that keeps the focus ring.
+- Invalid state through `aria-invalid`, keeping the focus ring.
 
 ## Installation
 
@@ -39,8 +39,8 @@ list. The change applies when the form is submitted.
 
 ### Indeterminate
 
-`indeterminate` shows a dash for a group that's partly on, such as a select
-all checkbox with some rows selected. Screen readers hear “mixed”.
+`indeterminate` shows a dash for a partly-on group, such as select all with
+some rows selected. Screen readers hear “mixed”.
 
 <Canvas of={Stories.Indeterminate} />
 
@@ -66,12 +66,10 @@ export function Replies() {
 }
 ```
 
-Pass `checked` and `onCheckedChange` to control it, or `defaultChecked` to let
-it keep its own state.
+Controlled with `checked` and `onCheckedChange`, uncontrolled with
+`defaultChecked`.
 
 ## Anatomy
-
-Every part the component renders, with the `data-slot` it carries.
 
 <Anatomy
   root={{
@@ -94,8 +92,8 @@ Every part the component renders, with the `data-slot` it carries.
   guidelines={[
     "Always pair a checkbox with a visible Label. The label is part of the hit area.",
     "Write labels as positive statements, so checked means yes.",
-    "Stack options in a column. Rows of checkboxes are hard to scan.",
-    "For a setting that applies immediately, use a switch instead.",
+    "Stack options in a column. Rows are hard to scan.",
+    "For a setting that applies immediately, use a switch.",
   ]}
 />
 
@@ -179,7 +177,7 @@ Checkbox takes every prop of Base UI's `Checkbox.Root`, including
       Connect the label with <code>htmlFor</code> and <code>id</code>, or wrap
       the checkbox in the Label.
     </>,
-    "The hit area extends past the 16px box on every side, so it meets the 24px minimum target.",
+    "The hit area extends past the 16px box on every side, to the 24px minimum target.",
     <>
       Mark errors with <code>aria-invalid</code>. The box turns destructive and
       keeps its focus ring.

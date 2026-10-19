@@ -11,23 +11,21 @@ import { Install } from "../blocks/install"
 
 # Filter menu
 
-A filter button whose menu lists the fields you can filter by, then each
-field's values. A Search filters button, or just typing, slides the same menu
-over to a search across every field and value, like a command menu.
+A two-level filter menu, fields then values, with search across every field
+and value.
 
 <Canvas of={Stories.AppliedAsChips} />
 
 ## Features
 
-- Two levels: pick a field such as Status, then tick any number of its
-  values. Each field shows how many of its values are on.
-- A Search filters button at the top slides the menu over to a search,
-  grouped by field, with the matching letters in bold. Typing a letter on the
-  menu does the same. Inside a field, the search stays within it.
-- Or, with `search="inline"`, a search box sits at the top instead, and
-  typing turns the menu into results in place.
-- Escape steps back: first it clears the search, then it leaves the field,
-  and only then does it close the menu.
+- Two levels: pick a field such as Status, then check any number of its
+  values. Each field shows a count of selected values.
+- A Search filters button, or typing a letter, slides the menu to a search
+  grouped by field, with matched letters in bold. Inside a field, search is
+  scoped to it.
+- `search="inline"` puts a search box at the top instead; typing turns the
+  menu into results in place.
+- Escape clears the search, then leaves the field, then closes the menu.
 - Views slide forward and back, and the popup's height follows its content.
   Under reduced motion, views swap in place.
 
@@ -38,49 +36,46 @@ over to a search across every field and value, like a command menu.
   exports={["FilterMenu", "type FilterField", "type FilterValue"]}
 />
 
-It installs the Button component and the `motion` package too.
+Installs Button and `motion`.
 
 ## Examples
 
 ### Applied as chips
 
-The component only picks filters. Here the app shows each applied field as a
-chip beside the button, with a button to remove it.
+The app renders each applied field as a removable chip beside the button.
 
 <Canvas of={Stories.AppliedAsChips} />
 
 ### Default
 
-The menu on its own, keeping its own state. The Search filters button
-slides the whole menu, header and body, over to the search state, which
-lists every value until you type. Back, Escape or Backspace slides it home.
+Uncontrolled. The search state slides the whole menu, header and body, and
+lists every value until you type. Back, Escape or Backspace returns.
 
 <Canvas of={Stories.Default} />
 
 ### Inline search
 
-`search="inline"` keeps a search box at the top of the menu. Typing turns it
-into results in place, and clearing the text brings the menu back.
+Clearing the text restores the menu.
 
 <Canvas of={Stories.InlineSearch} />
 
 ### With selections
 
-`defaultValue` starts with values chosen. The fields that have any show a
-count. The trigger's content is yours, here with a dot to say filters are on.
+`defaultValue` preselects values. The trigger content is custom, here with a
+dot indicating active filters.
 
 <Canvas of={Stories.WithSelections} />
 
 ### Keyboard only
 
-Opened from the keyboard: arrows move, Right opens a field, Enter ticks a
-value, and Left or Backspace goes back to the field it came from.
+Arrows move, Right opens a field, Enter checks a value, and Left or Backspace
+returns to the field list.
 
 <Canvas of={Stories.KeyboardOnly} />
 
 ### No matches
 
-A search with no results says so, using `emptyText`.
+`emptyText` sets the message.
 
 <Canvas of={Stories.NoMatches} />
 
@@ -121,9 +116,8 @@ export function IssueFilters() {
 }
 ```
 
-The menu only picks filters. `value` holds the chosen values keyed by field
-id, such as `{ status: ["todo"] }`, and showing the applied filters is up to
-your app.
+The menu only picks filters; displaying applied filters is up to the app.
+`value` holds chosen values keyed by field id, e.g. `{ status: ["todo"] }`.
 
 ```ts
 type FilterField = {
@@ -138,19 +132,16 @@ type FilterValue = Record<string, string[]>
 
 ### Fitting it into your app
 
-The menu works on its own, and each of these props lets you take over one
-part of it:
-
-- `open`, `defaultOpen` and `onOpenChange` put the open state in your hands,
-  for a keyboard shortcut or a menu that opens from elsewhere.
-- `trigger` swaps the default button for your own element. It must forward its
-  ref and props, as fibo's `Button` does.
-- `side` and `align` place the popup, and `container` portals it somewhere
-  other than the body, such as inside a dialog.
-- `popupClassName` styles the popup, which is portalled out of reach of
-  selectors on the trigger.
-- `labels` replaces the wording the menu writes for itself, alongside
-  `triggerLabel`, `placeholder`, `emptyText`, `label` and `searchLabel`.
+- `open`, `defaultOpen` and `onOpenChange` control the open state, for a
+  keyboard shortcut or an external opener.
+- `trigger` replaces the default button. It must forward its ref and props,
+  as fibo's `Button` does.
+- `side` and `align` place the popup; `container` portals it somewhere other
+  than the body, such as inside a dialog.
+- `popupClassName` styles the popup, which is portalled outside the
+  trigger's selectors.
+- `labels` replaces built-in text, alongside `triggerLabel`, `placeholder`,
+  `emptyText`, `label` and `searchLabel`.
 
 ```tsx
 <FilterMenu
@@ -222,17 +213,17 @@ part of it:
 
 <UsageGuidelines
   guidelines={[
-    "Use it above a list or table that people narrow down by several fields, like issues, orders or files.",
-    "Keep field names to one or two words, and order fields by how often people use them.",
-    "Order each field's values the way people think of them: a workflow in its order, people by name, sizes from small to large.",
-    "Show the applied filters next to the button, such as chips people can remove, so the list never looks mysteriously short.",
-    "For a single yes-or-no filter, a switch or a checkbox beside the list is quicker.",
+    "Use above a list or table filtered by several fields, such as issues, orders or files.",
+    "Keep field names to one or two words. Order fields by frequency of use.",
+    "Order values naturally: workflows in sequence, people by name, sizes small to large.",
+    "Show applied filters beside the button, such as removable chips, so a short list is explained.",
+    "For a single yes-or-no filter, use a switch or checkbox beside the list.",
   ]}
 />
 
 <Tip>
-  Give fields and values icons with the `icon` key. They help people scan a long
-  menu, and they show in search results too.
+  The `icon` key adds icons to fields and values. They aid scanning and also
+  appear in search results.
 </Tip>
 
 ## Do's and don'ts
@@ -250,7 +241,7 @@ part of it:
           </div>
         ),
         description:
-          "Group values under a short field name, in the order people expect.",
+          "Group values under a short field name, in expected order.",
       },
       negative: {
         component: (
@@ -351,16 +342,16 @@ part of it:
 
 <UsageGuidelines
   guidelines={[
-    "When the menu opens, the list takes focus and points at the highlighted row with aria-activedescendant, so screen readers read each row as the arrows move. The Search filters button is one Tab away.",
-    "Entering search moves focus into the search box, a combobox that points at the highlighted row the same way. Leaving the search moves focus back to the list.",
-    "With the inline search, focus goes to the search box when the menu opens, and stays there.",
-    "Values are options in a multi-select listbox, announced as selected or not. Each field is read with how many of its values are chosen and that it opens its values.",
-    "A search announces how many results it found.",
-    "Escape steps back one level at a time, and the last press returns focus to the Filter button.",
+    "On open, the list takes focus and points at the highlighted row with aria-activedescendant, so screen readers announce each row as the arrows move. The Search filters button is one Tab away.",
+    "Entering search moves focus to the search box, a combobox using aria-activedescendant the same way. Leaving search returns focus to the list.",
+    "With inline search, focus goes to the search box on open and stays there.",
+    "Values are options in a multi-select listbox, announced as selected or not. Each field announces its selected count and that it opens its values.",
+    "Searches announce the result count.",
+    "Escape steps back one level at a time; the last press returns focus to the Filter button.",
     <>
-      Rename every piece of text for your product's language: the trigger with{" "}
-      <code>triggerLabel</code>, the popup with <code>label</code>, and the
-      search box with <code>searchLabel</code> and <code>placeholder</code>.
+      Localize all text: the trigger with <code>triggerLabel</code>, the popup
+      with <code>label</code>, and the search box with <code>searchLabel</code>{" "}
+      and <code>placeholder</code>.
     </>,
   ]}
 />

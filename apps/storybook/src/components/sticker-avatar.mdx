@@ -13,23 +13,22 @@ import { Install } from "../blocks/install"
 
 # Sticker avatar
 
-An avatar cut out like a die-cut sticker. A white paper edge follows the
-shape of a transparent image, each sticker sits at its own slight angle, and
-a [Status dot](?path=/docs/base-components-display-status-dot--docs) put in
-it sits on the corner like a small sticker of its own.
+An avatar cut out like a die-cut sticker, with a white paper edge that
+follows a transparent image's shape and a slight per-sticker tilt.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Follows the image's own outline when its border is transparent, and turns a
-  photo with a background into a round sticker.
+- Follows the image's outline when its border is transparent; a photo with a
+  background becomes a round sticker.
 - Draws the edge once on a canvas when the image loads, then shows a plain
-  image, so a list of fifty stickers costs no more than fifty avatars.
-- Tilts by a stable angle from the name and lifts on hover, or when a row with
-  `group/sticker` is hovered.
-- Takes a StatusDot as a child, sets it on the corner turned against the
-  tilt, and adds its label to the sticker's name.
+  image, so fifty stickers cost no more than fifty avatars.
+- Tilts by a stable angle derived from the name, and lifts on hover or when a
+  `group/sticker` row is hovered.
+- Takes a [Status dot](?path=/docs/base-components-display-status-dot--docs)
+  as a child, sets it on the corner turned against the tilt like a small
+  sticker of its own, and adds its label to the sticker's name.
 
 ## Installation
 
@@ -38,8 +37,8 @@ it sits on the corner like a small sticker of its own.
   exports={["StickerAvatar", "StickerAvatarGroup", "StickerAvatarCount"]}
 />
 
-It installs the Status dot component, and adds `--sticker-edge`,
-`--sticker-ink` and `--sticker-shadow` to your theme.
+Installs Status dot and adds `--sticker-edge`, `--sticker-ink` and
+`--sticker-shadow` to your theme.
 
 ## Examples
 
@@ -51,14 +50,13 @@ The edge grows with the sticker: 2px up to 32, 3px at 40, 4px at 64, 6px at 96.
 
 ### With a status
 
-Put a `<StatusDot>` in the sticker. Present, away and offline are a dot, a
-crescent and a ring, colored with the success, warning and muted tokens, so
-each still reads without color.
+A `<StatusDot>` child. Present, away and offline are a dot, a crescent and a
+ring, so each reads without color.
 
 <Canvas of={Stories.Statuses} />
 
-Before 1.0, the sticker took `status`, `statusLabel` and `statusColor` props
-instead. The `sticker-status-to-child` codemod moves them into a StatusDot:
+Before 1.0, the sticker took `status`, `statusLabel` and `statusColor`
+props. The `sticker-status-to-child` codemod moves them into a StatusDot:
 
 ```sh
 pnpm dlx jscodeshift --parser tsx -t https://fibo.toribryan.com/codemods/sticker-status-to-child.js src
@@ -66,22 +64,20 @@ pnpm dlx jscodeshift --parser tsx -t https://fibo.toribryan.com/codemods/sticker
 
 ### Cut-out, round and initials
 
-A transparent cut-out follows its shape. A photo with a background becomes
-round. With no image, the letters themselves are cut out.
+With no image, the letters themselves are cut out.
 
 <Canvas of={Stories.Shapes} />
 
 ### In a direct message list
 
-At 32px the edge and tilt are small enough for a dense list. Each row carries
+At 32px the edge and tilt suit a dense list. Each row carries
 `group/sticker`, so hovering anywhere on it lifts the sticker.
 
 <Canvas of={Stories.DirectMessages} />
 
 ### Stack
 
-StickerAvatarGroup overlaps stickers like a laptop lid, and
-StickerAvatarCount counts the rest.
+`StickerAvatarGroup` overlaps stickers; `StickerAvatarCount` counts the rest.
 
 <Canvas of={Stories.Group} />
 
@@ -106,8 +102,8 @@ export function Member({ user }: { user: User }) {
 
 Pass an image with its background already removed. Cutting a subject out in
 the browser takes a 40 to 170 MB model, so do it once on upload, on a server,
-or let people bring their own. Images on another host need CORS headers for
-the edge to be cut; without them the sticker falls back to round.
+or let people bring their own. Cross-origin images need CORS headers for the
+edge to be cut; without them the sticker falls back to round.
 
 ## Anatomy
 
@@ -141,11 +137,10 @@ the edge to be cut; without them the sticker falls back to round.
 <UsageGuidelines
   guidelines={[
     "Use it where people and personality are the point: profiles, parties, member lists, a small group in a chat header.",
-    "Keep the layout box tight. The edge and tilt are drawn outside it, so leave a few pixels of room round stickers in a dense list.",
+    "Keep the layout box tight. The edge and tilt draw outside it, so leave a few pixels around stickers in a dense list.",
     <>
-      Turn off <code>tilt</code> where stickers line up in a grid people scan,
-      such as a table of members. Keep it in stacks and profiles, where it reads
-      as hand-placed.
+      Turn off <code>tilt</code> in a scannable grid, such as a table of
+      members. Keep it in stacks and profiles, where it reads as hand-placed.
     </>,
     <>
       Use <code>pixelated</code> for pixel art, so it scales with hard edges
@@ -228,18 +223,15 @@ the edge to be cut; without them the sticker falls back to round.
 
 ### Tokens
 
-`--sticker-edge` is white and `--sticker-ink` is near-black in both themes.
-That is deliberate: a sticker is paper, and paper doesn't change color when
-the room gets dark. A hairline and a shadow keep the white edge visible on a
-light page; the shadow is `--sticker-shadow`, the same in both themes for the
-same reason.
+`--sticker-edge` is white and `--sticker-ink` near-black in both themes,
+since paper doesn't change with the theme. A hairline and `--sticker-shadow`,
+also fixed across themes, keep the white edge visible on a light page.
 
-A StatusDot is the exception. Its disc is the page color, not paper,
-because it is colored with fibo's semantic tokens: `success` for present,
-`warning` for away and `muted-foreground` for offline. Those tokens are tuned
-for the page in each theme, so on the page color they clear the 3:1 that
-non-text marks need. On white paper the dark-theme ones would not. Give the
-dot `variant="mono"` to draw the marks in the foreground color instead.
+A StatusDot's disc is the page color, not paper. Its `success` (present),
+`warning` (away) and `muted-foreground` (offline) tokens are tuned to clear
+the 3:1 non-text contrast on the page color in each theme; on white paper
+the dark-theme ones would not. `variant="mono"` draws the marks in the
+foreground color instead.
 
 ## Accessibility
 
