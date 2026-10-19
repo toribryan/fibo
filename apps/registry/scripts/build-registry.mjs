@@ -654,7 +654,7 @@ ${items
 ## Docs
 
 - [Storybook](${homepage}/): every component with live examples, usage rules and props.
-- [Registry guide](${homepage}/?path=/docs/registry-guide--docs): what the registry is, how to install and update parts, and how it works, written for designers.
+- [Getting started](${homepage}/?path=/docs/getting-started--docs): what the registry is, installing and updating parts, and how it works.
 - [Source](https://github.com/toribryan/fibo): MIT licensed.
 `
 await mkdir(path.join(registryDir, "public"), { recursive: true })
