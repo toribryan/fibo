@@ -18,20 +18,18 @@ import { Install } from "../blocks/install"
 
 # Select
 
-A select picks one option from a list that opens on demand. It keeps a long
-list of choices down to one line until someone needs it.
+A one-line trigger that opens a list to pick one option from.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Built on Base UI's Select, so it's announced as a combobox with a
-  listbox, not as a button.
-- The list opens over the trigger with the chosen option lined up on it, as
+- Built on Base UI's Select: announced as a combobox with a listbox, not a
+  button.
+- The list opens over the trigger with the chosen option aligned to it, as
   native menus do.
-- Groups with labels and separators for longer lists.
-- Typeahead: with the list open, typing a letter jumps to the next option
-  that starts with it.
+- Labeled groups and separators for longer lists.
+- Typeahead while the list is open.
 
 ## Installation
 
@@ -46,26 +44,26 @@ list of choices down to one line until someone needs it.
   ]}
 />
 
-`SelectGroup`, `SelectLabel` and `SelectSeparator` are exported too, for
-grouped lists.
+Also exports `SelectGroup`, `SelectLabel` and `SelectSeparator`.
 
 ## Examples
 
 ### With label
 
-A visible Label, connected to the trigger with `htmlFor` and `id`.
+A Label connected to the trigger with `htmlFor` and `id`.
 
 <Canvas of={Stories.WithLabel} />
 
 ### Groups
 
-SelectGroup, SelectLabel and SelectSeparator break a list into sections.
+`SelectGroup`, `SelectLabel` and `SelectSeparator` split a list into
+sections.
 
 <Canvas of={Stories.Groups} />
 
 ### Small
 
-`size="sm"` on the trigger matches dense forms.
+`size="sm"` on the trigger, for dense forms.
 
 <Canvas of={Stories.Small} />
 
@@ -115,8 +113,8 @@ export function FruitPicker() {
 }
 ```
 
-Pass `items` to the Select so the trigger shows an option's label, not its
-raw value, before the list has ever opened.
+Pass `items` to Select so the trigger shows the option's label, not its raw
+value, before the list first opens.
 
 ## Anatomy
 
@@ -185,16 +183,16 @@ raw value, before the list has ever opened.
 <UsageGuidelines
   guidelines={[
     "Use a select for one choice from about six or more options, or when space is tight.",
-    "For fewer options that people should compare, show them all with a radio group.",
-    "Write a placeholder that says what to pick, like “Pick a timezone”, or start with a sensible option chosen.",
+    "For fewer options people should compare, use a radio group.",
+    "Write a placeholder that says what to pick, like “Pick a timezone”, or preselect a sensible option.",
     "Group long lists under short labels, and sort options within each group.",
-    "If people need to search or type their own value, a select is the wrong part.",
+    "Don't use a select when people need to search or type their own value.",
   ]}
 />
 
 <Tip>
-  Set `alignItemWithTrigger={false}` on SelectContent to drop the list below the
-  trigger instead of over it, as a menu would.
+  `alignItemWithTrigger={false}` on SelectContent opens the list below the
+  trigger instead of over it, as a menu does.
 </Tip>
 
 ## Do's and don'ts
@@ -237,8 +235,7 @@ raw value, before the list has ever opened.
             </SelectContent>
           </Select>
         ),
-        description:
-          "Use a select for a longer list, starting on a sensible choice.",
+        description: "Use a select for a longer list, with a sensible default.",
       },
       negative: {
         component: (
@@ -258,7 +255,7 @@ raw value, before the list has ever opened.
           </Select>
         ),
         description:
-          "Don't hide two options behind a click. Show them with a radio group, or use a checkbox.",
+          "Don't hide two options behind a click. Use a radio group or a checkbox.",
       },
     },
   ]}
@@ -367,9 +364,9 @@ also takes the positioning props `side`, `sideOffset`, `align`,
       Name the trigger with a Label connected by <code>htmlFor</code>, or with{" "}
       <code>aria-label</code> when there's no visible label.
     </>,
-    "Enter or Space opens the list. Arrow keys move through the options, Enter chooses, and Escape closes it. Focus returns to the trigger either way.",
+    "Enter or Space opens the list. Arrow keys move through the options, Enter chooses, and Escape closes. Focus returns to the trigger either way.",
     "While the list is open, typing a letter jumps to the next option that starts with it.",
-    "The chosen option shows a check as well as the highlight, so it doesn't depend on color alone.",
+    "The chosen option shows a check as well as the highlight, so it doesn't rely on color alone.",
   ]}
 />
 

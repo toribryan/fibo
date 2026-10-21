@@ -12,21 +12,19 @@ import { Install } from "../blocks/install"
 
 # Chapter scrubber
 
-A rail of marks, one per chapter, that swell under the pointer like the macOS
-Dock. The tallest mark, the crest, previews its chapter, so people can jump
-around a long piece without a table of contents.
+A rail of chapter marks that swell around the pointer, Dock-style, with the
+tallest mark (the crest) previewing its chapter.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Marks swell in a wave around the pointer or keyboard focus, and the crest
-  previews its chapter as a card, a label, or nothing.
-- Runs vertically in a gutter or horizontally along a player, with ticks or
-  dots in three densities.
-- Works controlled or uncontrolled, so the marker can follow scroll or playback.
-- Respects reduced motion: the springs switch off, and the wave keeps its shape
-  but appears and follows instantly.
+- Marks swell around the pointer or keyboard focus. The crest previews its
+  chapter as a card, a label, or nothing.
+- Vertical or horizontal, ticks or dots, three densities.
+- Controlled or uncontrolled, so the marker can follow scroll or playback.
+- Under reduced motion the springs switch off; the wave keeps its shape but
+  appears and follows instantly.
 
 ## Installation
 
@@ -35,48 +33,45 @@ around a long piece without a table of contents.
   exports={["ChapterScrubber", "type Chapter"]}
 />
 
-It installs `motion` with it, for the springs.
+Installs `motion` for the springs.
 
 ## Examples
 
 ### Horizontal
 
-A rail along the top of a player or a slide deck. Ticks stand up from the
-baseline and the preview opens above.
+For a player or slide deck. Ticks rise from the baseline and the preview
+opens above.
 
 <Canvas of={Stories.Horizontal} />
 
 ### Dots
 
-`variant="dot"` swaps ticks for dots, for a softer rail that sits well beside
+`variant="dot"` replaces ticks with dots, a softer rail for use beside
 imagery.
 
 <Canvas of={Stories.Dots} />
 
 ### Centered ticks
 
-`align="center"` grows ticks out from the middle line, which balances a rail
-placed on its own.
+`align="center"` grows ticks from the middle line, for a standalone rail.
 
 <Canvas of={Stories.Centered} />
 
 ### Sizes
 
-`size` sets the density: `sm`, `default` and `lg`. `rowSize`, `restLength` and
-`peakLength` override it when you need an exact rhythm.
+`size` sets the density: `sm`, `default` or `lg`. `rowSize`, `restLength` and
+`peakLength` override it for an exact rhythm.
 
 <Canvas of={Stories.Sizes} />
 
 ### Controlled
 
-Buttons elsewhere on the page drive the same marker the rail sets, through
-`currentIndex` and `onCurrentIndexChange`.
+External buttons drive the marker through `currentIndex` and
+`onCurrentIndexChange`.
 
 <Canvas of={Stories.Controlled} />
 
 ### In an article
-
-The rail in a sticky column beside a long read.
 
 <Canvas of={Stories.InAnArticle} />
 
@@ -96,10 +91,8 @@ export function Contents() {
 }
 ```
 
-Chapters sit on the rail in array order, one mark each. The `title` and
-`description` name each mark for screen readers.
-
-Each chapter takes:
+One mark per chapter, in array order. `title` and `description` name each
+mark for screen readers.
 
 ```ts
 type Chapter = {
@@ -112,8 +105,7 @@ type Chapter = {
 
 ## Anatomy
 
-Every part the component renders, with the `data-slot` it carries. You pass
-`chapters`; the component builds the rest.
+Built from `chapters`; no subcomponents to compose.
 
 <Anatomy
   root={{
@@ -128,7 +120,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
           {
             name: "item",
             slot: "chapter-scrubber-item",
-            note: "One per chapter, in array order. The option people focus and click.",
+            note: "One per chapter, in array order. The focusable, clickable option.",
             children: [
               {
                 name: "mark",
@@ -141,7 +133,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
       {
         name: "preview",
         slot: "chapter-scrubber-preview",
-        note: "Beside the crest, portalled to the body so no container clips it. Shows the chapter's meta, title and description.",
+        note: "Beside the crest, portalled to the body to avoid clipping. Shows meta, title and description.",
       },
     ],
   }}
@@ -151,21 +143,21 @@ Every part the component renders, with the `data-slot` it carries. You pass
 
 <UsageGuidelines
   guidelines={[
-    "Use it for content with a real sequence: a talk, a long read, a case study, a recording.",
-    "Keep between six and thirty chapters. Fewer reads as a list; more stops the wave from reaching the neighbors.",
+    "Use for sequential content: a talk, a long read, a case study, a recording.",
+    "Keep six to thirty chapters. Fewer reads as a list; more stops the wave reaching neighbors.",
     <>
-      Pick <code>card</code> when chapters have descriptions, and{" "}
-      <code>label</code> when the title says enough.
+      Use <code>card</code> when chapters have descriptions, <code>label</code>{" "}
+      when the title suffices.
     </>,
     <>
       Leave <code>side</code> unset in most layouts. It prefers right or top and
-      flips on its own near the viewport edge. Where neither side has room, as
-      on a phone, it opens on the roomier side and narrows to fit, and it closes
-      once the rail scrolls out of view.
+      flips near the viewport edge. When neither side fits, as on a phone, it
+      opens on the roomier side and narrows to fit. It closes once the rail
+      scrolls out of view.
     </>,
     <>
-      Set <code>currentIndex</code> from your scroll or playback position so the
-      marker keeps up with the reader between clicks.
+      Set <code>currentIndex</code> from scroll or playback position so the
+      marker tracks the reader between clicks.
     </>,
   ]}
 />
@@ -187,8 +179,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
             }))}
           />
         ),
-        description:
-          "Give it enough chapters for the wave to have neighbors to lift.",
+        description: "Use enough chapters for the wave to lift neighbors.",
       },
       negative: {
         component: (
@@ -212,8 +203,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
             Semantic roles
           </span>
         ),
-        description:
-          "Keep titles short enough to read in the moment the crest passes.",
+        description: "Keep titles short enough to read as the crest passes.",
       },
       negative: {
         component: (
@@ -222,7 +212,7 @@ Every part the component renders, with the `data-slot` it carries. You pass
           </span>
         ),
         description:
-          "Don't put the chapter's argument in its title. That belongs in the description.",
+          "Don't put the chapter's argument in its title. Use the description.",
       },
     },
   ]}
@@ -234,10 +224,10 @@ Every part the component renders, with the `data-slot` it carries. You pass
 
 ### Data attributes
 
-Style parts by slot or state, for example with
-`[&_[data-slot=chapter-scrubber-item]]:rounded-none`. The preview renders in a
-portal on the body, out of reach of the rail's selectors, so style it with
-`previewClassName`, such as `previewClassName="shadow-none"`.
+Style parts by slot or state, e.g.
+`[&_[data-slot=chapter-scrubber-item]]:rounded-none`. The preview is portalled
+to the body, outside the rail's selectors; style it with `previewClassName`,
+e.g. `previewClassName="shadow-none"`.
 
 <DataAttributes
   rows={[
@@ -287,11 +277,11 @@ portal on the body, out of reach of the rail's selectors, so style it with
 <UsageGuidelines
   guidelines={[
     <>
-      The rail is a listbox and every mark an option named by its title and
+      The rail is a listbox; each mark is an option named by its title and
       description. The current chapter is <code>aria-selected</code>.
     </>,
-    "Only one mark is in the tab order. Arrow keys, Home and End move along the rail; Enter or Space makes a chapter current.",
-    "Focus raises the wave exactly as hover does, so keyboard users get the same preview.",
+    "One mark is in the tab order. Arrow keys, Home and End move along the rail; Enter or Space makes a chapter current.",
+    "Focus raises the wave and preview exactly as hover does.",
   ]}
 />
 

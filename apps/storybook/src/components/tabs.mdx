@@ -16,21 +16,20 @@ import { Install } from "../blocks/install"
 
 # Tabs
 
-Tabs switch between views of one subject in place, such as the sections of
-a settings page. One tab is active, and only its panel shows.
+Switches between views of one subject in place, such as sections of a
+settings page. One tab is active; only its panel shows.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Two looks on the list: a segmented control, with the active tab raised on
-  a pill that slides between tabs, or `variant="line"`, a bare row with an
-  underline.
-- `sm` and `default` sizes, 32px and 36px tall like Button and Input, and
+- Two list styles: a segmented control with a sliding pill under the active
+  tab, or `variant="line"`, a bare row with an underline.
+- `sm` (32px) and `default` (36px) sizes, matching Button and Input, plus
   vertical lists for a sidebar of sections.
-- A row that runs out of room scrolls sideways instead of wrapping, and
-  keeps the active tab in view.
-- Built on Base UI's Tabs: controlled or not, with the arrow keys, Home and
+- An overflowing row scrolls sideways instead of wrapping, keeping the active
+  tab in view.
+- Built on Base UI's Tabs: controlled or uncontrolled, arrow keys, Home and
   End, and panels linked to their tabs for screen readers.
 
 ## Installation
@@ -50,58 +49,55 @@ a settings page. One tab is active, and only its panel shows.
 
 ### Line
 
-No track: the active tab is in the text color with a bar under it. Use it
-at the top of a page or card, where a segmented control would be too heavy.
+No track; the active tab takes the text color and a bar beneath. For the top
+of a page or card, where a segmented control is too heavy.
 
 <Canvas of={Stories.Line} />
 
 ### Small
 
-`size="sm"` sets a 32px row, to sit beside small buttons in a toolbar.
+`size="sm"` sets a 32px row, to sit beside small toolbar buttons.
 
 <Canvas of={Stories.Small} />
 
 ### Vertical
 
-`orientation="vertical"` on `Tabs` stacks the list beside the panels. The
-line variant moves its bar to the start edge, and the up and down arrows
-move between tabs.
+`orientation="vertical"` on `Tabs` puts the list beside the panels. The line
+variant's bar moves to the start edge; up and down arrows move between tabs.
 
 <Canvas of={Stories.Vertical} />
 
 ### With icons and counts
 
-Put an icon or a Count in a trigger as children, no props needed. An icon
-is decoration, so hide it with `aria-hidden`; give the Count a `label` so
-it is read as more than a bare number.
+Icons and Counts go in a trigger as children. Hide the icon with
+`aria-hidden`; give the Count a `label` so it reads as more than a bare
+number.
 
 <Canvas of={Stories.WithIconsAndCounts} />
 
 ### Disabled tab
 
-`disabled` on a trigger dims it. The arrow keys still reach it, so a
-screen reader can say it's there, but it can't be chosen. It stays in the
-row so the set doesn't shift when it comes back.
+`disabled` on a trigger dims it. Arrow keys still reach it, so screen readers
+announce it, but it can't be chosen. It stays in the row so the set doesn't
+shift when it's re-enabled.
 
 <Canvas of={Stories.DisabledTab} />
 
 ### Controlled
 
-Pass `value` and `onValueChange` to drive the tabs from outside, here from
-a button under the panel.
+`value` and `onValueChange` drive the tabs from outside, here from a button
+under the panel.
 
 <Canvas of={Stories.Controlled} />
 
 ### Overflowing
 
-Ten tabs in a narrow box. The row scrolls sideways with its scrollbar
-hidden, and starts scrolled to the active tab.
+Ten tabs in a narrow box. The row scrolls sideways with a hidden scrollbar,
+starting at the active tab.
 
 <Canvas of={Stories.Overflowing} />
 
 ### Account settings
-
-A card of settings sections with line tabs, each panel a set of fields.
 
 <Canvas of={Stories.AccountSettings} />
 
@@ -125,7 +121,7 @@ export function Project() {
 ```
 
 Each `TabsTrigger` needs a `TabsContent` with the same `value`. `variant` and
-`size` go on `TabsList`, which hands them to every trigger in it.
+`size` go on `TabsList`, which passes them to its triggers.
 
 ## Anatomy
 
@@ -165,18 +161,18 @@ Each `TabsTrigger` needs a `TabsContent` with the same `value`. `variant` and
 
 <UsageGuidelines
   guidelines={[
-    "Use tabs for views of the same subject that people move between freely. Steps in a sequence need a stepper; pages of a site need links.",
-    "Keep labels to one or two words, in sentence case. They are nouns, not actions.",
-    "Use the segmented control for two to five short options close to the content, and the line variant for sections of a page or card.",
-    "Keep the set the same as people use it. Disable a tab that can't be used yet rather than removing it.",
-    "Give every tab an icon or none; a row where only some have one looks unfinished.",
+    "Use for views of one subject that people move between freely. Sequential steps need a stepper; site pages need links.",
+    "Labels are one or two words, sentence case, nouns not actions.",
+    "Segmented control for two to five short options near the content; line variant for sections of a page or card.",
+    "Keep the set stable. Disable a tab that can't be used yet rather than removing it.",
+    "Give every tab an icon or none; a partial set looks unfinished.",
   ]}
 />
 
 <Tip>
-  Panels unmount when hidden. Set <code>keepMounted</code> on{" "}
-  <code>TabsContent</code> to keep a panel's state, such as a half-filled form,
-  while people look at another tab.
+  Panels unmount when hidden. <code>keepMounted</code> on{" "}
+  <code>TabsContent</code> preserves a panel's state, such as a half-filled
+  form, while another tab is open.
 </Tip>
 
 ## Do's and don'ts
@@ -207,7 +203,7 @@ Each `TabsTrigger` needs a `TabsContent` with the same `value`. `variant` and
           </Tabs>
         ),
         description:
-          "Don't use tabs for steps that must happen in order. Nothing stops people skipping ahead.",
+          "Don't use tabs for ordered steps. Nothing stops people skipping ahead.",
       },
     },
     {
@@ -238,7 +234,7 @@ Each `TabsTrigger` needs a `TabsContent` with the same `value`. `variant` and
           </Tabs>
         ),
         description:
-          "Don't stack one row of line tabs under another. Nest a segmented control if you must.",
+          "Don't stack two rows of line tabs. Nest a segmented control if needed.",
       },
     },
   ]}
@@ -363,24 +359,23 @@ and `size`.
   guidelines={[
     <>
       Name the list with <code>aria-label</code>, or{" "}
-      <code>aria-labelledby</code> pointing at a heading, so screen readers say
-      what the tabs choose between.
+      <code>aria-labelledby</code> pointing at a heading, so screen readers
+      announce what the tabs choose between.
     </>,
     <>
-      Tab moves focus into the list, onto the active tab, and Tab again moves on
-      to the panel. Inside the list, the arrow keys move between tabs (left and
-      right, or up and down when vertical), wrapping at the ends, and Home and
-      End go to the first and last.
+      Tab focuses the active tab; Tab again moves to the panel. In the list,
+      arrow keys move between tabs (left and right, or up and down when
+      vertical), wrapping at the ends. Home and End go to the first and last.
     </>,
     <>
-      Arrows only move focus: Enter or Space activates the focused tab. This is
-      Base UI's default, <code>activateOnFocus={"{false}"}</code>, which suits
-      panels that are slow to render. Set it on <code>TabsList</code> to switch
-      as focus moves.
+      Arrows only move focus; Enter or Space activates. This is Base UI's
+      default, <code>activateOnFocus={"{false}"}</code>, which suits panels that
+      are slow to render. Set it on <code>TabsList</code> to switch as focus
+      moves.
     </>,
-    "Each tab is linked to its panel, so the panel is named after its tab and the tab says which panel it controls.",
-    "The active tab is told apart by more than color: a raised pill or a bar, as well as the text color. Hover only changes the text color or adds a muted fill, never the pill or bar.",
-    "The pill slides between tabs in 200ms, and jumps straight there under reduced motion.",
+    "Each tab is linked to its panel: the panel is named by its tab, and the tab names the panel it controls.",
+    "The active tab is marked by a raised pill or a bar as well as text color. Hover changes only the text color or adds a muted fill, never the pill or bar.",
+    "The pill slides between tabs in 200ms, and jumps under reduced motion.",
   ]}
 />
 

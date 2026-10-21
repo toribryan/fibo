@@ -13,16 +13,15 @@ import { Install } from "../blocks/install"
 # Input
 
 An input takes a single line of free text: a name, an email, a search term.
-It fills the width of its container.
 
 <Canvas of={Stories.WithLabel} />
 
 ## Features
 
-- One line of text that fills the width of its container.
-- Takes every native `input` prop and type, built on Base UI's Input.
+- Fills the width of its container.
+- Built on Base UI's Input. Takes every native `input` prop and type.
 - An invalid state through `aria-invalid`, with a destructive border and ring.
-- State attributes for focus, filled and edited, for styling beyond the defaults.
+- State attributes for focused, filled and edited.
 
 ## Installation
 
@@ -44,7 +43,7 @@ It fills the width of its container.
 
 ### Disabled
 
-`disabled` dims the input and blocks the pointer.
+`disabled` dims it and blocks the pointer.
 
 <Canvas of={Stories.Disabled} />
 
@@ -69,8 +68,8 @@ export function EmailField() {
 }
 ```
 
-Give it a visible Label, the right `type`, and an `autoComplete` hint for
-personal details.
+Pair it with a visible Label, set the right `type`, and add `autoComplete`
+for personal details.
 
 ## Guidelines
 
@@ -78,7 +77,7 @@ personal details.
   guidelines={[
     "Give every input a visible Label above it. Placeholder text disappears on the first keystroke.",
     "Size the container to the expected answer. A postcode field shouldn't span the page.",
-    "Set the right type (email, tel, url, search) so phones show the right keyboard.",
+    "Set the right type (email, tel, url, search) so phones show the matching keyboard.",
     "For more than one line, use a Textarea.",
   ]}
 />
@@ -101,7 +100,7 @@ personal details.
       negative: {
         component: <Input className="w-56" placeholder="Email" />,
         description:
-          "Don't use the placeholder as the label. It vanishes as soon as people type.",
+          "Don't use the placeholder as the label. It vanishes on the first keystroke.",
       },
     },
   ]}
@@ -109,8 +108,8 @@ personal details.
 
 ## API reference
 
-Input takes every native `input` prop except `size`, which sets its height
-instead. Use `className` to set its width.
+Takes every native `input` prop. `size` sets the height instead of the native
+width; set width with `className`.
 
 <ArgTypes of={Stories.Default} />
 

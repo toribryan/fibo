@@ -11,8 +11,8 @@ import { Install } from "../blocks/install"
 
 # Badge
 
-A badge is a short, non-interactive label for a status, category or count. It
-sits next to the thing it describes.
+A short, non-interactive label for a status, category or count, placed next
+to what it describes.
 
 <Canvas of={Stories.Default} />
 
@@ -21,8 +21,8 @@ sits next to the thing it describes.
 - Three neutral variants, `default`, `secondary` and `outline`, and four
   status tints: `destructive` for states that need action, `success`,
   `warning` and `info`.
-- Sized for one or two words, next to the thing it describes.
-- Not interactive, so it adds nothing to the tab order.
+- Sized for one or two words.
+- Not in the tab order.
 
 ## Installation
 
@@ -30,11 +30,9 @@ sits next to the thing it describes.
 
 ## Examples
 
-Every variant side by side.
-
 <Canvas of={Stories.AllVariants} />
 
-A badge leads with an icon or a
+A badge can lead with an icon or a
 [Status dot](?path=/docs/base-components-display-status-dot--docs). Give the dot
 `label={null}` when the badge's text already says the status.
 
@@ -60,11 +58,11 @@ Say the state in the label. The variant only reinforces it.
 
 <UsageGuidelines
   guidelines={[
-    "Keep it to one or two words, so it can be taken in at a glance.",
+    "One or two words, readable at a glance.",
     "Use default for the one state that needs attention, secondary or outline for everything else.",
     "Use destructive only for states that need action, such as Failed or Overdue.",
-    "Use success, warning and info for a status that has one of those meanings, such as Paid, Expiring or Beta. Never for decoration.",
-    "If clicking it should do something, use a Button instead.",
+    "Use success, warning and info only for a status with that meaning, such as Paid, Expiring or Beta, never for decoration.",
+    "If it should respond to a click, use a Button.",
   ]}
 />
 
@@ -121,7 +119,7 @@ Say the state in the label. The variant only reinforces it.
       If the badge only makes sense next to its neighbor, give the pair context,
       for example with <code>aria-describedby</code>.
     </>,
-    "Never rely on the variant alone to carry meaning. The text has to say it too.",
+    "The variant never carries meaning alone. The text says it too.",
   ]}
 />
 

@@ -11,20 +11,20 @@ import { Install } from "../blocks/install"
 
 # Status dot
 
-A small mark for whether someone is present, away or offline. Put it in an
-avatar, a sticker avatar or a badge; the part it sits in places it.
+A small presence mark, present, away or offline, placed by the Avatar,
+Sticker avatar or Badge it sits in.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Told apart by shape, a dot, a crescent and a ring, so status reads without
-  color, and colored with fibo's `success`, `warning` and
-  `muted-foreground` tokens.
+- Distinct shapes, a dot, a crescent and a ring, so status reads without
+  color. Colored with the `success`, `warning` and `muted-foreground`
+  tokens.
 - A page-colored disc behind the mark keeps a clear edge on a photo or a
   sticker.
-- Says its status to screen readers, in words you can translate, and joins
-  the name of a sticker avatar it sits in.
+- Announces its status in a translatable label, which joins a Sticker
+  avatar's name.
 - Placed by its host: pinned to an avatar's corner, tilted on a sticker,
   leading the text in a badge.
 
@@ -40,7 +40,7 @@ avatar, a sticker avatar or a badge; the part it sits in places it.
   ]}
 />
 
-It installs `class-variance-authority`.
+Installs `class-variance-authority`.
 
 ## Examples
 
@@ -52,30 +52,29 @@ Present is a dot, away a crescent, offline a ring.
 
 ### Without color
 
-`variant="mono"` draws the marks in the text color, for places where
-color would compete, such as a dense list.
+`variant="mono"` draws the marks in the text color, for places where color
+would compete, such as a dense list.
 
 <Canvas of={Stories.Mono} />
 
 ### Sizes
 
-`size` is `xs`, `sm`, `default` or `lg`: 8, 10, 12 and 16 pixels. A host
-can size it too; Avatar matches it to its own size.
+`size` is `xs`, `sm`, `default` or `lg`: 8, 10, 12 and 16px. A host can
+size it too; Avatar matches it to its own size.
 
 <Canvas of={Stories.Sizes} />
 
 ### On avatars
 
-Put it in an Avatar or a Sticker avatar as a child. Avatar pins it to the
-corner; Sticker avatar sets it on the paper, turned against the tilt, and
-adds its label to the sticker's name.
+Pass it as a child. Avatar pins it to the corner; Sticker avatar sets it on
+the paper, turned against the tilt, and adds its label to the sticker's
+name.
 
 <Canvas of={Stories.OnAvatars} />
 
 ### In a badge
 
-A badge leads with it. The badge's text already says the status, so the dot
-gets `label={null}`.
+The badge's text already says the status, so the dot gets `label={null}`.
 
 <Canvas of={Stories.InABadge} />
 
@@ -96,16 +95,16 @@ export function Member() {
 }
 ```
 
-Let the dot say the status, or the text beside it, never both: pass
-`label={null}` when the words are already on screen.
+The dot or the text beside it says the status, never both: pass
+`label={null}` when the words are on screen.
 
 ## Guidelines
 
 <UsageGuidelines
   guidelines={[
-    "Use it for presence: whether someone is here, away or gone. For a state of a thing, such as Paid or Failed, use a Badge.",
-    "Pass label to translate the status, or to say it the way your product does, such as Online or Here.",
-    "Keep it on the avatar or in the badge it belongs to, not floating beside a name on its own.",
+    "Use it for presence only. For the state of a thing, such as Paid or Failed, use a Badge.",
+    "Pass label to translate the status or match your product's wording, such as Online or Here.",
+    "Keep it on its avatar or in its badge, not floating beside a name.",
     "Use mono where color would compete; the shapes still tell the states apart.",
   ]}
 />
@@ -132,7 +131,7 @@ Let the dot say the status, or the text beside it, never both: pass
           </span>
         ),
         description:
-          "Don't let both speak, or screen readers hear the status twice.",
+          "Don't let both speak; screen readers hear the status twice.",
       },
     },
   ]}

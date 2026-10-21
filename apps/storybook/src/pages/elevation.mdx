@@ -7,19 +7,17 @@ import { ElevationLevels } from "../blocks/foundations"
 # Elevation
 
 Most of fibo sits flat on the page, set off by a hairline `border-border`
-rather than a shadow. A shadow means something is lifted: you can grab it, or
-it floats over what's beneath. Shadows are Tailwind's own, `shadow-xs` to
-`shadow-lg`.
+rather than a shadow. A shadow marks something lifted: something that can be
+grabbed, or a layer floating over the page. Shadows are Tailwind's own,
+`shadow-xs` to `shadow-lg`.
 
 ## Levels
-
-Each level with what it means and the parts that use it.
 
 <ElevationLevels />
 
 ## Layers
 
-Two layers cover every part:
+Two z-index layers cover every part:
 
 - **`z-10`** lifts something above its neighbors inside a part, such as a
   pinned table column or Floating nav's lifted lens.

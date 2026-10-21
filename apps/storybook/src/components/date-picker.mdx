@@ -93,13 +93,13 @@ together. On a phone both open as a drawer from the bottom.
 
 ## Features
 
-- `DatePicker` picks as soon as a day is chosen. Presets such as Tomorrow
-  are there when you pass them.
+- `DatePicker` commits as soon as a day is chosen. Presets such as Tomorrow
+  show when passed.
 - `DateRangePicker` keeps a draft: two picks, a live preview between them,
   the range and its length in the footer, then Apply. Cancel and Escape
   leave the value as it was.
 - Presets are functions of today, so "Last 7 days" stays right tomorrow.
-  They're clamped to `minDate` and `maxDate`, and turned off when none of
+  They're clamped to `minDate` and `maxDate`, and disabled when none of
   their range is allowed.
 - Below the `sm` breakpoint the panel is a drawer: presets in a chip row,
   months in one vertical scroll with 44 pixel days, Apply at the bottom.
@@ -112,46 +112,45 @@ together. On a phone both open as a drawer from the bottom.
   exports={["DatePicker", "DateRangePicker", "defaultDateRangePresets"]}
 />
 
-It installs Calendar, Button and Sheet with it, and `lib/dates.ts`.
-`defaultDatePresets` and the `DateRange`, `DateRangePreset` and
-`DatePreset` types are exported too.
+Also installs Calendar, Button, Sheet and `lib/dates.ts`. Also exports
+`defaultDatePresets` and the `DateRange`, `DateRangePreset` and `DatePreset`
+types.
 
 ## Examples
 
 ### Open
 
-The range panel as it opens on a desktop: presets, two months, and the
-footer with Cancel and Apply. Here `open` holds it open inside a frame
-given as its `container`, and `modal={false}` keeps it from taking focus
-from the page. `defaultOpen` opens it once and lets it close.
+The desktop range panel. `open` holds it open inside the frame passed as
+`container`; `modal={false}` keeps it from taking focus from the page.
+`defaultOpen` opens it once and lets it close.
 
 <DesktopPanel />
 
 ### With presets
 
-`DatePicker` with `defaultDatePresets` in a rail beside the month. A preset
-picks and closes, like a day does.
+`defaultDatePresets` in a rail beside the month. A preset picks and closes,
+like a day.
 
 <Canvas of={Stories.WithPresets} />
 
 ### Min and max
 
-Bounds and a rule for weekends. Days outside them are struck through, and
-a preset that lands on one is turned off.
+Bounds and a weekend rule. Days outside them are struck through; a preset
+that lands on one is disabled.
 
 <Canvas of={Stories.MinAndMax} />
 
 ### Controlled
 
-`value` and `onChange` from the parent, which here prints the day.
+`value` and `onChange` held by the parent, which prints the day.
 
 <Canvas of={Stories.Controlled} />
 
 ### On a phone
 
-`type="drawer"` shows the phone layout at any width. The calendar
-scrolls through a year either side, and a pick closes the drawer. The
-frame shows it open on a phone; the story below opens it over the page.
+`type="drawer"` forces the phone layout at any width. The calendar scrolls
+a year either side; a pick closes the drawer. The frame shows it open; the
+story opens it over the page.
 
 <PhoneDrawer />
 
@@ -159,30 +158,28 @@ frame shows it open on a phone; the story below opens it over the page.
 
 ### Range, controlled
 
-`DateRangePicker` with its value held by the parent. `onChange` fires on
-Apply, never on a half-picked range.
+`onChange` fires on Apply, never on a half-picked range.
 
 <Canvas of={Stories.RangeControlled} />
 
 ### Range with custom presets
 
-`presets` replaces the rail. Each one gets today and returns a range; this
+`presets` replaces the rail. Each takes today and returns a range. This
 one also starts the week on Monday.
 
 <Canvas of={Stories.RangeCustomPresets} />
 
 ### Range, one month
 
-`months={1}` and no presets, for a narrow column. Pass `presets={[]}` to
-leave the rail out.
+`months={1}` and `presets={[]}`, for a narrow column.
 
 <Canvas of={Stories.RangeOneMonth} />
 
 ### Range on a phone
 
-The drawer: handle, the label as its title with Cancel beside it, a chip
-row of presets, the weekday header fixed
-over a vertical scroll of months, and the range with Apply at the bottom.
+Handle, the label as title with Cancel, a preset chip row, a fixed weekday
+header over a vertical scroll of months, and the range with Apply at the
+bottom.
 
 <PhoneDrawer range />
 
@@ -220,13 +217,13 @@ type DatePreset = {
 }
 ```
 
-Give each picker a `label` that says what the dates are for. It names the
-trigger and the panel, and the trigger reads it with the value.
+`label` says what the dates are for. It names the trigger and the panel,
+and the trigger reads it with the value.
 
 ## Anatomy
 
-The trigger is the only element in the page until it opens. The panel is a
-popover from it, or a drawer on a phone, and holds a Calendar.
+Until it opens, only the trigger renders. The panel is a popover, or a
+drawer on a phone, holding a Calendar.
 
 <Anatomy
   root={{
@@ -298,8 +295,8 @@ popover from it, or a drawer on a phone, and holds a Calendar.
 <UsageGuidelines
   guidelines={[
     "Use DatePicker for one day, such as a due date, and DateRangePicker for a span, such as a report period or a stay. Don't use two DatePickers for a range.",
-    "Offer presets for the ranges people pick most. The defaults suit reports; a booking flow wants This weekend or Next week.",
-    "Bound the calendar to what's allowed rather than validating after Apply.",
+    "Offer presets for the most-picked ranges. The defaults suit reports; a booking flow wants This weekend or Next week.",
+    "Bound the calendar to what's allowed instead of validating after Apply.",
     <>
       Leave <code>type</code> on <code>auto</code> in products. Force{" "}
       <code>drawer</code> or <code>popover</code> only to show or test one.
@@ -495,11 +492,11 @@ popover from it, or a drawer on a phone, and holds a Calendar.
   ]}
 />
 
-From sm up, the range picker opens a popover:
+sm and up:
 
 <DesktopPanel />
 
-Below sm, both open a drawer:
+Below sm:
 
 <div className="grid gap-x-6 sm:grid-cols-2">
   <PhoneDrawer />

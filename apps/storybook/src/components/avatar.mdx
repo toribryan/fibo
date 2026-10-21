@@ -18,18 +18,18 @@ import { Install } from "../blocks/install"
 
 # Avatar
 
-An avatar shows who someone is: their photo, or their initials when there's
-no photo or it fails to load.
+A person's photo, or their initials when there's no photo or it fails to
+load.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Falls back to initials until the photo loads, and stays on them if it
-  never does, built on Base UI's Avatar.
-- Three sizes: 24, 32 and 40 pixels.
-- A badge in the corner for status, such as online.
-- Groups overlap into a stack, with a count for the people left out.
+- Built on Base UI's Avatar: initials until the photo loads, and if it
+  never does.
+- Three sizes: 24, 32 and 40px.
+- A corner badge for status, such as online.
+- Groups overlap into a stack, with a count for the rest.
 
 ## Installation
 
@@ -41,8 +41,6 @@ no photo or it fails to load.
 
 ### Fallback
 
-When the photo fails to load, the initials stay.
-
 <Canvas of={Stories.Fallback} />
 
 ### Sizes
@@ -53,24 +51,24 @@ When the photo fails to load, the initials stay.
 
 ### With status
 
-Put a [Status dot](?path=/docs/base-components-display-status-dot--docs) in the
-avatar for presence. It pins to the corner, grows with the avatar, and its
-label is read after the photo's `alt`.
+A [Status dot](?path=/docs/base-components-display-status-dot--docs) inside
+the avatar shows presence. It pins to the corner, scales with the avatar, and
+its label is read after the photo's `alt`.
 
 <Canvas of={Stories.WithStatus} />
 
 ### With badge
 
-AvatarBadge puts a small badge in the corner for anything that isn't
-presence, such as an icon. Name it in the photo's `alt`.
+`AvatarBadge` is a corner badge for anything other than presence, such as
+an icon. Name it in the photo's `alt`.
 
 <Canvas of={Stories.WithBadge} />
 
 ### Group
 
-AvatarGroup overlaps the avatars; AvatarGroupCount says how many more. Put a
-[Count](?path=/docs/base-components-display-count--docs) with `plus` in it,
-so it shows +4 and reads “4 more”.
+`AvatarGroup` overlaps the avatars. `AvatarGroupCount` holds a
+[Count](?path=/docs/base-components-display-count--docs) with `plus`, which
+shows +4 and reads “4 more”.
 
 <Canvas of={Stories.Group} />
 
@@ -89,8 +87,7 @@ export function Author() {
 }
 ```
 
-Always include an AvatarFallback. It shows while the photo loads and stays if
-the photo fails.
+Always include `AvatarFallback`. It covers loading and failure.
 
 ## Anatomy
 
@@ -126,10 +123,10 @@ In a stack, `AvatarGroup` (`avatar-group`) wraps the avatars and
 
 <UsageGuidelines
   guidelines={[
-    "Use two initials in the fallback: first and last name. One is fine for a single name.",
+    "Use two initials in the fallback, first and last name, or one for a single name.",
     "Pick one size per list, so rows line up.",
     "In a group, show three to five faces and a count for the rest.",
-    "Put the person's name next to the avatar wherever there's room. A face alone isn't enough to recognize someone.",
+    "Put the person's name beside the avatar wherever there's room. A face alone doesn't identify someone.",
   ]}
 />
 
@@ -175,8 +172,8 @@ In a stack, `AvatarGroup` (`avatar-group`) wraps the avatars and
 ## API reference
 
 Avatar takes every prop of Base UI's `Avatar.Root`. AvatarImage takes
-`src`, `alt` and `onLoadingStatusChange`; AvatarFallback takes `delay` to
-wait before showing, so a fast photo doesn't flash the initials first.
+`src`, `alt` and `onLoadingStatusChange`. AvatarFallback takes `delay`, so a
+fast photo doesn't flash the initials first.
 
 <ArgTypes of={Stories.Default} />
 

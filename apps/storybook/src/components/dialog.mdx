@@ -11,20 +11,18 @@ import { Install } from "../blocks/install"
 
 # Dialog
 
-Dialog opens a window over the page for a short task, such as editing a few
-fields, and keeps focus there until it's done or dismissed.
+A modal window over the page for a short task, such as editing a few fields.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- A modal dialog: focus moves in and stays in, the page behind can't scroll,
-  and focus returns to the trigger on close.
-- Closes on Escape, a click outside, the corner button or any DialogClose.
-- Three widths, and a DialogBody that scrolls when the content is taller
-  than the screen, so the footer stays in reach.
-- Fades and scales in from 95%, as Command menu does, and appears in place
-  with reduced motion.
+- Modal, with focus trapping and scroll lock. See Accessibility.
+- Closes on Escape, an outside click, the corner button or any DialogClose.
+- Three widths. DialogBody scrolls when content exceeds the viewport, keeping
+  the footer in reach.
+- Fades and scales in from 95%, like Command menu. Appears in place under
+  reduced motion.
 
 ## Installation
 
@@ -43,25 +41,25 @@ fields, and keeps focus there until it's done or dismissed.
   ]}
 />
 
-It installs Button for the close button, and the `--backdrop` token.
+Installs Button, for the close button, and the `--backdrop` token.
 
 ## Examples
 
 ### Small
 
-`size="sm"` for a dialog that holds a field or two.
+`size="sm"`, for a field or two.
 
 <Canvas of={Stories.Small} />
 
 ### Large
 
-`size="lg"` for a form with more to fill in.
+`size="lg"`, for longer forms.
 
 <Canvas of={Stories.Large} />
 
 ### Long content
 
-The body scrolls inside the dialog, so the title and the footer stay put.
+The body scrolls; title and footer stay fixed.
 
 <Canvas of={Stories.LongContent} />
 
@@ -106,8 +104,8 @@ export function EditProfile() {
 }
 ```
 
-Always give it a DialogTitle: it names the dialog for screen readers. For a
-question with no way back, use Alert dialog instead.
+DialogTitle is required; it names the dialog for screen readers. For an
+irreversible confirmation, use Alert dialog.
 
 ## Anatomy
 
@@ -142,11 +140,11 @@ question with no way back, use Alert dialog instead.
 
 <UsageGuidelines
   guidelines={[
-    "Use a dialog for a short task that belongs to the page behind it. If it needs steps or room to browse, it's a page or a Sheet.",
-    "Name it for the task in the title, and say what happens on save in the description.",
-    "Put the main action last in the footer, where the eye ends up. On a phone it stacks on top, nearest the thumb.",
-    "Don't open a dialog from a dialog. Finish or close the first one.",
-    "Don't use one to show a message that needs no answer. A Toast does that without taking focus.",
+    "Use for a short task tied to the page behind. Multi-step tasks or browsing belong on a page or in a Sheet.",
+    "Title it after the task; say what saving does in the description.",
+    "Put the main action last in the footer. On phones it stacks on top, nearest the thumb.",
+    "Don't open a dialog from a dialog.",
+    "Don't use one for a message that needs no answer. A Toast does that without taking focus.",
   ]}
 />
 
@@ -186,8 +184,7 @@ question with no way back, use Alert dialog instead.
             </span>
           </div>
         ),
-        description:
-          "Don't stop someone to say something worked. Show a Toast instead.",
+        description: "Don't interrupt to confirm success. Use a Toast.",
       },
     },
   ]}
@@ -195,10 +192,10 @@ question with no way back, use Alert dialog instead.
 
 ## API reference
 
-Dialog takes Base UI's Dialog Root props, such as `open`, `defaultOpen` and
-`onOpenChange`. DialogContent takes the Popup's props plus `size`,
-`showCloseButton` and `container`, and the other parts take the props of the
-Base UI part or element they wrap.
+Dialog takes Base UI Dialog Root props (`open`, `defaultOpen`,
+`onOpenChange`). DialogContent takes Popup props plus `size`,
+`showCloseButton` and `container`. Other parts take the props of the Base UI
+part or element they wrap.
 
 <ArgTypes of={Stories.Default} />
 
@@ -253,8 +250,8 @@ Base UI part or element they wrap.
 
 <UsageGuidelines
   guidelines={[
-    "It's a modal dialog named by DialogTitle and described by DialogDescription.",
-    "Focus moves to the first control inside when it opens, stays inside while it's open, and returns to the trigger when it closes.",
+    "A modal dialog named by DialogTitle and described by DialogDescription.",
+    "Focus moves to the first control on open, is trapped while open, and returns to the trigger on close.",
     "Escape closes it from anywhere inside. The page behind is inert and doesn't scroll.",
     "The corner button is named Close for screen readers.",
   ]}

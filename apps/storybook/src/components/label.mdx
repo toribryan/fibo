@@ -10,16 +10,15 @@ import { Install } from "../blocks/install"
 
 # Label
 
-A label names a form control. Clicking it focuses or toggles the control, so
-it also widens the hit area.
+A label names a form control and widens its hit area.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Names a form control. Clicking it focuses or toggles the control.
+- Clicking it focuses or toggles the control.
 - Dims with its control when the control is disabled.
-- Lays out as a row with a gap, so an icon can sit beside the text.
+- A row with a gap, so an icon can sit beside the text.
 
 ## Installation
 
@@ -76,10 +75,9 @@ Label takes every native `label` prop.
 <UsageGuidelines
   guidelines={[
     <>
-      Always connect a label with <code>htmlFor</code> or by wrapping the
-      control.
+      Connect every label with <code>htmlFor</code> or by wrapping the control.
     </>,
-    "A label dims with its control when the control is disabled, so the pair reads as one unit.",
+    "Dims with a disabled control, so the pair reads as one unit.",
   ]}
 />
 

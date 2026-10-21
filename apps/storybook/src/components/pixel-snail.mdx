@@ -18,7 +18,7 @@ import { SnailCover } from "../blocks/snail-cover"
 
 # Pixel snail
 
-A one-color pixel-art snail who crawls on a loop while something loads. As
+A one-color pixel-art snail that crawls on a loop while something loads. As
 a sprite inside your own SVG, he can also build himself up, dance and turn
 to watch the pointer.
 
@@ -26,14 +26,13 @@ to watch the pointer.
 
 ## Features
 
-- A four-frame crawl in which head, shell and tail move on different beats,
-  so his foot stretches and gathers instead of sliding.
-- Three modes for the sprite: `crawl`, `rest` and `dance`, each a hand-timed
-  loop.
-- A build-up that loads him in like an image, from coarse blocks to fine
-  pixels, with a callback on every step for syncing sound.
-- A `look` prop that stops him and turns his eyes, head and neck toward a
-  point, and turns his whole body round when it's behind him.
+- A four-frame crawl with head, shell and tail on different beats, so his
+  foot stretches and gathers instead of sliding.
+- Three sprite modes, `crawl`, `rest` and `dance`, each a hand-timed loop.
+- A build-up from coarse blocks to fine pixels, with a callback per step
+  for syncing sound.
+- `look` stops him and turns his eyes, head and neck toward a point, and
+  his whole body when it's behind him.
 
 ## Installation
 
@@ -42,15 +41,15 @@ to watch the pointer.
   exports={["PixelSnail", "PixelSnailSprite", "type PixelSnailLook"]}
 />
 
-No animation library: every frame is state and a timer, drawn as SVG
+No animation library. Every frame is state and a timer, drawn as SVG
 rectangles.
 
 ## Examples
 
 ### Loading
 
-The default: he crawls in place over a dotted ground, as a status region
-announcing "Loading".
+Crawls in place over a dotted ground, as a status region announcing
+"Loading".
 
 <Canvas of={Stories.Default} />
 
@@ -62,7 +61,7 @@ announcing "Loading".
 
 ### Loading panel
 
-In an empty panel with a line saying what's happening and a way out.
+In an empty panel, with a line saying what's happening and a way out.
 
 <Canvas of={Stories.LoadingPanel} />
 
@@ -76,10 +75,9 @@ export function ProjectsLoading() {
 }
 ```
 
-`PixelSnail` is the loading indicator. `PixelSnailSprite` is the snail without
-a frame: a bare `<g>` for placing inside your own SVG. Its origin is under the
-middle of his foot, so a `transform` that moves him to a point stands him
-on it.
+`PixelSnail` is the loading indicator. `PixelSnailSprite` is a bare `<g>` for
+your own SVG. Its origin is under the middle of his foot, so a `transform` to
+a point stands him on it.
 
 ```tsx
 import { PixelSnailSprite } from "@/components/ui/pixel-snail"
@@ -100,41 +98,31 @@ export function SnailOnALine() {
 
 ## The loading snail
 
-The snail used to be fibo's mascot. That job has gone to a pixel rabbit,
-the one on the <DocLink to="welcome--docs" className="text-foreground underline underline-offset-4">Welcome page</DocLink>,
-since the Fibonacci sequence started as a puzzle about rabbits. The snail
-stays on as the system's loader: slow, steady and happy to wait with you.
-
-He has one color, a googly eye on each stalk and a slow sense of humor.
-Everything on this page is about how he moves and how he responds, because
-that's where his character comes from.
+fibo's former mascot, now its loader. The mascot is the pixel rabbit on the <DocLink to="welcome--docs" className="text-foreground underline underline-offset-4">Welcome page</DocLink>,
+since the Fibonacci sequence started as a puzzle about rabbits. The snail has
+one color and a googly eye on each stalk; his character is in how he moves
+and responds.
 
 ## How he moves
 
-Everything the snail does follows three rules.
-
-1. **He lives on a grid.** He's drawn in whole art pixels, with
-   `shape-rendering: crispEdges`, and he only ever moves by whole art
-   pixels. Even when he travels across a container he steps one pixel at a
-   time, so he never blurs between two.
-2. **He's timed by hand.** Each loop is a script of frames and holds rather
-   than an easing curve. The holds are deliberately uneven, because an even
-   beat reads as a machine and a snail shouldn't feel like one.
-3. **He has one color.** He draws in `currentColor`, so a text class
-   recolors him. The whites of his eyes take the page background, which
-   keeps his pupils readable in either theme.
+1. **Grid.** Drawn in whole art pixels with
+   `shape-rendering: crispEdges`, and moves only by whole art pixels, even
+   when traveling, so he never blurs between two.
+2. **Hand timing.** Each loop is a script of frames and holds, not an easing
+   curve. The holds are uneven, because an even beat reads as a machine.
+3. **One color.** He draws in `currentColor`, so a text class recolors him.
+   His eye whites take the page background, keeping his pupils readable in
+   either theme.
 
 ### The crawl
 
-A crawl cycle has four frames. The head reaches forward first while the eye
-stalks tip ahead. Then the shell slides up while the tail holds back, and the
-head settles as the stalks straighten. Each part moves on its own frame, so
-the body stretches out and gathers in like a real foot. A cycle moves him
-forward two art pixels.
+Four frames. The head reaches forward while the eye stalks tip ahead. Then
+the shell slides up while the tail holds back, and the head settles as the
+stalks straighten. A cycle moves him forward two art pixels.
 
-When he crawls in place, a dotted ground slides underneath him so he still
-reads as moving. With `travel` he crosses the container instead, entering
-past the left edge and leaving past the right one.
+In place, a dotted ground slides under him so he still reads as moving. With
+`travel` he crosses the container, entering past the left edge and leaving
+past the right.
 
 `pace` sets how long each frame holds: 110 ms fast, 180 ms by default and
 260 ms slow.
@@ -143,22 +131,21 @@ past the left edge and leaving past the right one.
 
 ### Resting and dancing
 
-The sprite has two more loops, each a script of poses and how long to hold
-them.
+Two more sprite loops, each a script of poses and holds.
 
-- **Rest** runs about eleven seconds, with holds anywhere from 140 ms to
-  1.8 seconds. He looks about, reaches, blinks and shuffles a pixel forward
-  and back, so he never ends a gesture where it began.
-- **Dance** is a beat you could count. His stalks sway every 280 ms while his
-  shell hops a row, three times over. Then he shuffles a step aside and back
-  and takes a 1.6-second breather, so the dance never turns frantic.
+- **Rest** runs about eleven seconds, with holds from 140 ms to 1.8 seconds.
+  He looks about, reaches, blinks and shuffles a pixel forward and back, so
+  he never ends a gesture where it began.
+- **Dance** is a countable beat. His stalks sway every 280 ms while his shell
+  hops a row, three times. Then he shuffles a step aside and back and holds
+  for 1.6 seconds, so it never turns frantic.
 
 <Canvas of={Stories.Modes} />
 
 ### The build-up
 
-With `assembleDelay`, he loads in like an image over a slow connection rather
-than fading in. The timeline runs like this:
+With `assembleDelay`, he loads in like an image over a slow connection
+instead of fading in:
 
 - **0 to 400 ms:** 4-pixel blocks arrive in a scattered but fixed order. A
   block is filled when enough of the pixels it covers are.
@@ -166,12 +153,11 @@ than fading in. The timeline runs like this:
 - **520 to 680 ms:** the blocks halve to 2 pixels.
 - **680 ms:** the real art appears, eyes and all.
 
-The stage comes from time since the delay ended, not from a count of timer
-ticks, so a throttled background tab skips ahead instead of dragging the
-build-up out. `onAssemble` reports each step once: the block size and the
-share shown, in tenths, then `"whole"` at the end. Use it to sync sound to
-the pixels, such as a crunchy blip that climbs in pitch as more of him arrives, a brighter
-one as the blocks split, and a chord when he's complete.
+The stage comes from elapsed time since the delay, not timer ticks, so a
+throttled background tab skips ahead instead of dragging. `onAssemble`
+reports each step once: the block size and the share shown, in tenths, then
+`"whole"`. Use it to sync sound, such as a blip that climbs in pitch as he
+fills in, a brighter one as the blocks split, and a chord at the end.
 
 <Canvas of={Stories.BuildUp} />
 
@@ -179,31 +165,27 @@ one as the blocks split, and a chord when he's complete.
 
 ### Looking at things
 
-Passing `look` stops whatever loop is playing and poses him toward a point.
-Each axis takes one of three values, `-1`, `0` or `1`, because pixel art
-can't show a finer angle.
+`look` stops the current loop and poses him toward a point. Each axis takes
+`-1`, `0` or `1`, because pixel art can't show a finer angle.
 
-- **`x`** is behind, level or ahead. His pupils move to that side of each
-  eye, his stalks lean and his head reaches forward or pulls back a pixel.
-- **`y`** is up, level or down. His eyes rise on longer stalks and his neck
-  stretches a row, or his eyes sink and his head ducks.
-- **`facing`** turns him round. At `-1` the whole sprite mirrors, so he
-  faces left.
+- **`x`**: behind, level or ahead. Pupils move to that side, stalks lean,
+  and the head reaches forward or pulls back a pixel.
+- **`y`**: up, level or down. Eyes rise on longer stalks and the neck
+  stretches a row, or eyes sink and the head ducks.
+- **`facing`**: at `-1` the sprite mirrors to face left.
 
-Pass `null` and he goes back to his mode.
+`null` returns him to his mode.
 
-The sprite doesn't read the pointer itself. You decide what he looks at and
-when, which keeps him usable for things like following a caret or watching a
-drop target. To make him follow the pointer, map it into his art pixels and
-leave a little slack:
+The sprite doesn't read the pointer, so it also works for following a caret
+or watching a drop target. To follow the pointer, map it into art pixels
+with some slack:
 
-- **A dead zone around his eyes.** He only glances once the pointer is more
-  than 1.5 art pixels off his eye line. Without it, his pupils flicker as
-  the pointer crosses the middle.
-- **A wider gap before he turns.** He turns round only when the pointer is
-  more than 4 art pixels past his middle, and he keeps his current facing
-  inside that gap. That stops him flipping back and forth when you hover
-  near him.
+- **Dead zone around the eyes.** He glances only once the pointer is more
+  than 1.5 art pixels off his eye line, so his pupils don't flicker as it
+  crosses the middle.
+- **Wider gap before turning.** He turns only when the pointer is more than
+  4 art pixels past his middle, and keeps his facing inside that gap, so he
+  doesn't flip back and forth on hover.
 
 <Canvas of={Stories.FollowsThePointer} />
 
@@ -252,12 +234,12 @@ holding one rectangle per pixel.
 
 <UsageGuidelines
   guidelines={[
-    "Use PixelSnail for waits long enough to notice, where a little character helps: an empty panel filling, an import, a first load.",
+    "Use PixelSnail for noticeable waits where character helps: an empty panel filling, an import, a first load.",
     <>
-      Give each use a <code>label</code> that says what's loading, such as
-      "Loading your projects". It's what screen readers announce.
+      Set <code>label</code> to what's loading, such as "Loading your projects".
+      Screen readers announce it.
     </>,
-    "Keep him to one per view. He's a character, and a crowd of him stops being charming.",
+    "One per view. A crowd of him stops being charming.",
     <>
       Use <code>PixelSnailSprite</code> when he's part of a drawing, such as
       standing on a line or riding a path with <code>animateMotion</code>.
@@ -270,8 +252,8 @@ holding one rectangle per pixel.
 />
 
 <Tip>
-  Keep sound optional and quiet. `onAssemble` is there for syncing it, but on
-  most pages the snail should be seen and not heard.
+  Keep sound optional and quiet. On most pages the snail should be seen and not
+  heard.
 </Tip>
 
 ## Do's and don'ts
@@ -358,16 +340,16 @@ holding one rectangle per pixel.
     <>
       <code>PixelSnail</code> is a <code>status</code> region holding{" "}
       <code>label</code> as visually hidden text, since screen readers read a
-      status region's content rather than its name. The drawing itself is hidden
-      from assistive technology.
+      status region's content, not its name. The drawing is hidden from
+      assistive technology.
     </>,
     <>
       <code>PixelSnailSprite</code> is decoration. Hide the SVG it sits in with{" "}
       <code>aria-hidden</code>, and put anything he says or means somewhere a
       screen reader can reach it.
     </>,
-    "Under prefers-reduced-motion he holds still on his resting pose. There's no crawl, travel, rest or dance loop, and he appears whole with no build-up. He still turns to look, because that only happens in response to the visitor.",
-    "He isn't focusable and never needs to be.",
+    "Under prefers-reduced-motion he holds his resting pose: no crawl, travel, rest or dance loop, and no build-up. He still turns to look, since that only responds to the visitor.",
+    "He isn't focusable.",
   ]}
 />
 

@@ -13,8 +13,7 @@ import { Install } from "../blocks/install"
 
 # Switch
 
-A switch turns a setting on or off, and the change takes effect straight
-away, with no save button.
+Turns a setting on or off. The change applies at once, with no save button.
 
 <Canvas of={Stories.Default} />
 
@@ -22,7 +21,6 @@ away, with no save button.
 
 - On and off states, built on Base UI's Switch, announced as a switch.
 - Two sizes: the default 32 by 18 pixel track, and a small one for dense rows.
-- The hit area reaches past the track to meet the 24px minimum target.
 - An invalid state through `aria-invalid` that keeps the focus ring.
 
 ## Installation
@@ -51,14 +49,11 @@ away, with no save button.
 
 ### With label
 
-A Label connected with `htmlFor` becomes part of the hit area.
+A Label linked by `htmlFor` joins the hit area.
 
 <Canvas of={Stories.WithLabel} />
 
 ### Settings list
-
-Each row has a label and a description on the left, with the switch on the
-right.
 
 <Canvas of={Stories.SettingsList} />
 
@@ -78,8 +73,8 @@ export function WifiSetting() {
 }
 ```
 
-Pass `checked` and `onCheckedChange` to control it, or `defaultChecked` to let
-it keep its own state. Save the change as soon as it fires.
+`checked` and `onCheckedChange` control it; `defaultChecked` leaves it
+uncontrolled. Save the change as soon as it fires.
 
 ## Anatomy
 
@@ -102,10 +97,10 @@ it keep its own state. Save the change as soon as it fires.
 
 <UsageGuidelines
   guidelines={[
-    "Use a switch for a setting that applies the moment it changes, like turning on notifications.",
-    "If the change only applies when a form is submitted, use a checkbox instead.",
+    "Use for a setting that applies the moment it changes, like notifications.",
+    "If the change applies only on form submit, use a checkbox.",
     "Label the setting, not the action: “Wi-Fi”, not “Turn on Wi-Fi”. The switch shows the state.",
-    "In a settings list, put the label and any description on the left and the switch on the right, so the switches line up.",
+    "In a settings list, label and description go left, switch right, so switches line up.",
   ]}
 />
 
@@ -131,7 +126,7 @@ it keep its own state. Save the change as soon as it fires.
           </div>
         ),
         description:
-          "Don't use a switch for a consent or an answer on a form. That's a checkbox.",
+          "Don't use a switch for consent or a form answer. Use a checkbox.",
       },
     },
   ]}
@@ -190,15 +185,15 @@ Switch takes every prop of Base UI's `Switch.Root`, including `checked`,
 <UsageGuidelines
   guidelines={[
     <>
-      It's announced as a switch that's on or off, with{" "}
-      <code>aria-checked</code>. Space toggles it.
+      Announced as a switch, on or off, with <code>aria-checked</code>. Space
+      toggles it.
     </>,
     <>
-      Connect a Label with <code>htmlFor</code> and <code>id</code>. Without a
-      visible label, name it with <code>aria-label</code>.
+      Link a Label with <code>htmlFor</code> and <code>id</code>, or set{" "}
+      <code>aria-label</code> when there's no visible label.
     </>,
-    "The hit area extends past the track on every side, so it meets the 24px minimum target.",
-    "The thumb's position shows the state as well as the track's color, so it doesn't depend on color alone.",
+    "The hit area extends past the track on every side to meet the 24px minimum target.",
+    "The thumb's position shows the state as well as the track's color, so state never relies on color alone.",
   ]}
 />
 

@@ -12,19 +12,19 @@ import { Install } from "../blocks/install"
 
 # Typing indicator
 
-A typing indicator says who's writing a reply in a conversation. It names up
-to three people, then says "Several people are typing…".
+Shows who's writing a reply in a conversation, naming up to three people,
+then "Several people are typing…".
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- Takes people as data and leaves out the person looking at the screen.
-- One formatter builds the whole sentence, so it can be translated properly.
-  Names are joined with `Intl.ListFormat` for the locale.
-- Screen readers hear the sentence once it holds still for 1.5 seconds, and
-  hear nothing when everyone stops.
-- Keeps its height when nobody is typing, so the messages above don't jump.
+- Takes people as data and omits the current user.
+- One formatter builds the whole sentence, so it translates properly. Names
+  are joined with `Intl.ListFormat` for the locale.
+- Announces the sentence once it settles, and stays silent when everyone
+  stops.
+- Keeps its height when nobody is typing, so messages above don't jump.
 
 ## Installation
 
@@ -49,29 +49,28 @@ Up to `maxNames` people are named, joined for the locale.
 
 ### Several people
 
-Past `maxNames`, nobody is named. This is what Discord does from four people
-on.
+Past `maxNames`, nobody is named, as Discord does from four people on.
 
 <Canvas of={Stories.Several} />
 
 ### Long names
 
-Each name is cut short at `maxNameLength` characters, so one long name can't
-push the others off the line. Screen readers still hear names in full.
+Each name is truncated at `maxNameLength` characters so one can't push the
+others off the line. Screen readers still hear names in full.
 
 <Canvas of={Stories.LongNames} />
 
 ### Custom indicator
 
 A person's `indicator` replaces the dots while they're the only one typing.
-With two or more people, everyone gets the dots again, as with Discord's
-custom typing indicators.
+With two or more, the dots return, as with Discord's custom typing
+indicators.
 
 <Canvas of={Stories.CustomIndicator} />
 
 ### Translated
 
-A Spanish formatter with `locale="es"`. Each case is a whole sentence, and
+A Spanish formatter with `locale="es"`. Each case is a whole sentence;
 `Intl.ListFormat` supplies "y".
 
 <Canvas of={Stories.Translated} />
@@ -79,8 +78,8 @@ A Spanish formatter with `locale="es"`. Each case is a whole sentence, and
 `format` gets `{ count, names, list }` and returns the whole sentence.
 `names` is empty once `count` passes `maxNames`. Never build the sentence from
 fragments like `name + " and " + other`: Russian and Polish have four plural
-forms, Arabic six and Japanese one, and the verb and the word order change with
-them. Write one sentence per case, as an ICU message for instance:
+forms, Arabic six and Japanese one, and verb and word order change with them.
+Write one sentence per case, for example as an ICU message:
 
 ```
 {count, plural,
@@ -90,14 +89,12 @@ them. Write one sentence per case, as an ICU message for instance:
 }
 ```
 
-with a separate message for "Several people are typing…" when `names` is
-empty. Pass the same `locale` the messages use, so the names are joined in that
-language.
+plus a separate message for "Several people are typing…" when `names` is
+empty. Pass the messages' `locale` so names are joined in that language.
 
 ### In a conversation
 
-People start and stop typing below a short thread. The row keeps its height,
-so the messages stay put.
+People start and stop typing below a short thread.
 
 <Canvas of={Stories.InAConversation} />
 
@@ -126,9 +123,9 @@ export function Channel({
 }
 ```
 
-Pass everyone your typing events report, yourself included, and let the
-component leave you out. Drop a person once their typing event expires, which
-is 10 seconds on Discord.
+Pass everyone the typing events report, current user included; the component
+omits them. Drop a person once their typing event expires (10 seconds on
+Discord).
 
 ## Anatomy
 
@@ -161,10 +158,10 @@ is 10 seconds on Discord.
 
 <UsageGuidelines
   guidelines={[
-    "Put it between the messages and the composer, where people look while they wait for a reply.",
-    "Keep it mounted for the life of the conversation. The status region has to be in the page before it changes, or screen readers miss the first announcement.",
-    "Name at most three people. Past that, a list of names is harder to read than a count.",
-    "In large rooms, consider turning it off. Teams does in chats of more than 20 people.",
+    "Place it between the messages and the composer, where people look while waiting.",
+    "Keep it mounted for the life of the conversation. The status region must exist before it changes, or screen readers miss the first announcement.",
+    "Name at most three people. Past that, a list is harder to read than a count.",
+    "Consider turning it off in large rooms. Teams does above 20 people.",
   ]}
 />
 
@@ -201,7 +198,7 @@ is 10 seconds on Discord.
           />
         ),
         description:
-          "Don't list everyone. A long line of names gets cut off, and screen readers read the whole list.",
+          "Don't list everyone. A long line gets cut off, and screen readers read it all.",
       },
     },
     {
@@ -228,7 +225,7 @@ is 10 seconds on Discord.
             ]}
           />
         ),
-        description: "Don't tell people that they're typing.",
+        description: "Don't tell people they're typing.",
       },
     },
   ]}
@@ -277,18 +274,18 @@ TypingIndicator also takes every prop of a `div`, except `children`.
 <UsageGuidelines
   guidelines={[
     <>
-      The sentence goes to a polite <code>role="status"</code> region that's in
-      the page from the start, outside the message log, so it doesn't mix with
-      new messages.
+      The sentence goes to a polite <code>role="status"</code> region, present
+      from the start and outside the message log so it doesn't mix with new
+      messages.
     </>,
     <>
       Announcements wait for the sentence to hold still for{" "}
-      <code>announceDelay</code> milliseconds, 1.5 seconds by default, so a
-      burst of people starting and stopping is heard once.
+      <code>announceDelay</code> ms (1500 by default), so a burst of starts and
+      stops is heard once.
     </>,
-    "When everyone stops typing, the region empties without saying anything.",
-    "The dots and the visible text are hidden from screen readers, which hear the status region instead, with names in full.",
-    "The dots can run for longer than five seconds, so under reduced motion they hold still as a plain ellipsis (WCAG 2.2.2).",
+    "When everyone stops, the region empties silently.",
+    "The dots and visible text are hidden from screen readers, which hear the status region, with names in full.",
+    "The dots can run past five seconds, so under reduced motion they hold still as a plain ellipsis (WCAG 2.2.2).",
   ]}
 />
 

@@ -16,18 +16,16 @@ import { Install } from "../blocks/install"
 
 # Radio group
 
-A radio group picks exactly one option from a short list, with every option
-visible at once.
+Picks exactly one option from a short list, with every option visible.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
 - One choice at a time, built on Base UI's Radio group.
-- Arrow keys move the selection through the options; Tab enters and leaves
-  the group as one stop.
+- Arrow keys move the selection; the group is one Tab stop.
 - Each item's hit area reaches past the 16px circle to the 24px minimum.
-- Disable the whole group, or a single option.
+- Disable the whole group or a single option.
 
 ## Installation
 
@@ -37,14 +35,13 @@ visible at once.
 
 ### With descriptions
 
-A line under each label explains the option, linked with
-`aria-describedby`.
+A line under each label, linked with `aria-describedby`.
 
 <Canvas of={Stories.WithDescriptions} />
 
 ### Horizontal
 
-A row, for two or three short options.
+For two or three short options.
 
 <Canvas of={Stories.Horizontal} />
 
@@ -76,8 +73,7 @@ export function PlanPicker() {
 }
 ```
 
-Give every item a unique `value`. The group reports the chosen one through
-`onValueChange`.
+Every item needs a unique `value`. `onValueChange` reports the chosen one.
 
 ## Anatomy
 
@@ -107,9 +103,9 @@ Give every item a unique `value`. The group reports the chosen one through
 
 <UsageGuidelines
   guidelines={[
-    "Use a radio group for two to about six options when people should compare them side by side.",
-    "For longer lists, or when space is tight, use a select.",
-    "Start with a sensible option chosen. A radio group can't be cleared back to nothing once someone picks.",
+    "Use for two to about six options that people should compare side by side.",
+    "For longer lists, or tight space, use Select.",
+    "Start with a sensible option chosen. A radio group can't be cleared once someone picks.",
     "Order options logically: smallest to largest, most to least common, or alphabetically.",
     "Stack options in a column. Use a row only for two or three short labels.",
   ]}
@@ -157,8 +153,7 @@ Give every item a unique `value`. The group reports the chosen one through
             ))}
           </RadioGroup>
         ),
-        description:
-          "Don't lay out a long list as radios. Use a select, and keep the page short.",
+        description: "Don't lay out a long list as radios. Use Select.",
       },
     },
   ]}
@@ -166,8 +161,8 @@ Give every item a unique `value`. The group reports the chosen one through
 
 ## API reference
 
-RadioGroup takes every prop of Base UI's `RadioGroup`, including `value`,
-`defaultValue`, `onValueChange`, `name` and `disabled`. RadioGroupItem takes
+`RadioGroup` takes every Base UI `RadioGroup` prop, including `value`,
+`defaultValue`, `onValueChange`, `name` and `disabled`. `RadioGroupItem` takes
 `Radio.Root`'s, including `value` and `disabled`.
 
 <ArgTypes of={Stories.Default} />
@@ -217,12 +212,12 @@ RadioGroup takes every prop of Base UI's `RadioGroup`, including `value`,
       Name the group with <code>aria-label</code>, or wrap it in a fieldset with
       a legend, so screen readers announce what the options are for.
     </>,
-    "Tab moves into the group onto the chosen option, and out again in one step. Arrow keys move between options and choose as they go.",
+    "Tab enters the group on the chosen option and leaves in one step. Arrow keys move between options and choose as they go.",
     <>
       Connect each Label with <code>htmlFor</code> and <code>id</code>. The
       label is part of the hit area.
     </>,
-    "The dot shows the chosen option as well as the fill, so it doesn't depend on color alone.",
+    "The dot marks the chosen option alongside the fill, so it doesn't rely on color alone.",
   ]}
 />
 

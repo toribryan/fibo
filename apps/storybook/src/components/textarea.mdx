@@ -10,8 +10,7 @@ import { Install } from "../blocks/install"
 
 # Textarea
 
-A textarea takes several lines of free text. It grows with its content through
-`field-sizing: content`, so it never needs its own scrollbar.
+A multi-line text field.
 
 <Canvas of={Stories.Default} />
 
@@ -19,8 +18,8 @@ A textarea takes several lines of free text. It grows with its content through
 
 - Grows with its content through `field-sizing: content`, so it never needs its
   own scrollbar.
-- Starts at a 64px minimum height. Set a taller one through `className`.
-- Takes every native `textarea` prop, with the same invalid state as Input.
+- 64px minimum height by default; set a taller one through `className`.
+- Native `textarea` props, with the same invalid state as Input.
 
 ## Installation
 
@@ -56,16 +55,15 @@ export function Notes() {
 }
 ```
 
-Pair it with a visible Label, and state any length limit before people reach
-it.
+Pair it with a visible Label, and state any length limit up front.
 
 ## Guidelines
 
 <UsageGuidelines
   guidelines={[
-    "Use it for answers that may run past one line: notes, descriptions, messages.",
-    "Pair it with a visible Label, and state any length limit before people hit it.",
-    "Set a sensible min height through className when the expected answer is long.",
+    "Use for answers that may run past one line: notes, descriptions, messages.",
+    "Pair with a visible Label; state any length limit before people hit it.",
+    "Set a taller min height through className when the expected answer is long.",
   ]}
 />
 
@@ -95,7 +93,7 @@ Textarea takes every native `textarea` prop.
       Mark errors with <code>aria-invalid</code> and link the message with{" "}
       <code>aria-describedby</code>.
     </>,
-    "Don't disable resizing and auto-grow at the same time on a fixed-height container. Content gets clipped.",
+    "Don't disable resizing and auto-grow together in a fixed-height container; content gets clipped.",
   ]}
 />
 

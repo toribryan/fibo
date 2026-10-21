@@ -8,27 +8,22 @@ import { RabbitFarm } from "../blocks/rabbit-farm"
 
 # About fibo
 
-fibo is a rabbit made of pixels, and he gives this design system its name. His
-story starts with a math puzzle from 1202 and ends somewhere between nature
-and a screen.
+fibo is the pixel rabbit this design system is named after.
 
 ## Where he comes from
 
-fibo is short for Fibonacci, the Italian mathematician, and you say it
-FEE-boh. In 1202 he wrote a book called _Liber Abaci_, and tucked inside it is
-a puzzle about rabbits.
-
-The puzzle has four rules:
+fibo is short for Fibonacci, the Italian mathematician, and is pronounced
+FEE-boh. His 1202 book _Liber Abaci_ includes a puzzle about rabbits, with four
+rules:
 
 1. Start with one pair of baby rabbits.
 2. A pair takes a month to grow up.
 3. From the month after that, it has one new baby pair every month.
-4. Nobody ever dies. (It's a math puzzle, not a farm.)
+4. No rabbit ever dies.
 
-How many pairs are there after a year? Below, each row is a month and each
-rabbit is a pair. A brace joins a pair to the baby pair it just had, and a
-single line follows a pair still too young. Watch the first six months play
-out.
+The question: how many pairs after a year? Below, the first six months: each
+row is a month and each rabbit is a pair. A brace joins a pair to the baby pair
+it just had, and a single line follows a pair still too young.
 
 <RabbitFarm />
 
@@ -37,26 +32,22 @@ out.
 - Start with 1 and 1.
 - Add the last two numbers to get the next one.
 - 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, and on forever.
-- Divide any number by the one before it and you get closer and closer to
-  1.618, the golden ratio, φ.
+- Each number divided by the one before it approaches 1.618, the golden ratio,
+  φ.
 
 ## Organic and mechanical
 
-The golden ratio comes from nature. It's nature's own algorithm, and I'm using
-it to build something mechanical. While making fibo I found an accidental
-contrast at the center of the project: organic and mechanical, two opposites
-in one place.
-
-That's why the rabbit is pixel art. He's an animal, a part of nature, rebuilt
-out of pixels.
+The golden ratio is nature's own algorithm, used here to build something
+mechanical. That contrast, organic and mechanical, sits at the center of fibo.
+It's why the rabbit is pixel art: an animal rebuilt out of pixels.
 
 <Plates names={["bunny", "sunflower"]} />
 
 ## Where to find him
 
-fibo and his sequence hide all over the site. Look for these:
+fibo and his sequence appear across the site:
 
-- On the <DocLink to="welcome--docs" className="text-foreground underline underline-offset-4">Welcome</DocLink> page, fibo builds himself up pixel by pixel, idles and hops, and watches your pointer. Poke him and he flinches. Click too fast and he hides behind his ears.
+- On the <DocLink to="welcome--docs" className="text-foreground underline underline-offset-4">Welcome</DocLink> page, fibo builds himself pixel by pixel, idles, hops and follows the pointer. A click makes him flinch; rapid clicks make him hide behind his ears.
 - The Welcome page numbers its principles 1, 2, 3, 5, and its hero is a golden rectangle.
 - The brand's cards and posters are cut on 0.618.
-- fibo never draws a spiral. Spirals only appear where nature made them, in photographs.
+- fibo never draws a spiral. Spirals appear only where nature made them, in photographs.

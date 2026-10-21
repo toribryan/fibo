@@ -8,18 +8,17 @@ import { ComponentRules, Tip } from "../blocks/guidelines"
 
 # Colors
 
-fibo is achromatic. Grays do the structural work, and color only ever carries
-meaning. Components never name a color: they read semantic tokens, and each
-token points at one of Tailwind's primitives, per mode.
+fibo is achromatic: grays carry structure and color only carries meaning.
+Components read semantic tokens, each pointing at a Tailwind primitive per mode.
 
 <ColorScale />
 
 ## How the layers work
 
-Three layers, and components only ever touch the last one.
+Three layers. Components use only the last.
 
-1. **Primitives** are Tailwind's palette, as Tailwind ships it: `neutral-900`,
-   `red-700`. fibo doesn't define its own.
+1. **Primitives** are Tailwind's palette, unchanged: `neutral-900`, `red-700`.
+   fibo defines none of its own.
 2. **Semantic tokens** live in `globals.css`. Each names a job, such as
    `--primary` or `--destructive`, and points at a primitive once for light
    mode and once for dark.
@@ -46,12 +45,11 @@ Three layers, and components only ever touch the last one.
 <button className="bg-primary text-primary-foreground">Save</button>
 ```
 
-Swapping a theme means changing the second layer. Every component follows,
-and none of them change.
+A theme changes only the second layer. Components stay the same.
 
 <Tip>
-  The tables below are read from `globals.css` itself, so they always match the
-  code. The names are the same as the variables in the Figma library.
+  The tables below are read from `globals.css`, so they always match the code.
+  Names match the Figma library's variables.
 </Tip>
 
 ## Surfaces
@@ -78,13 +76,13 @@ change. `text-success` reads `--success-text`, `border-success` reads
 `--success-border`, and `fill-success` and `stroke-success` read
 `--success-icon`, while `bg-success` keeps the solid fill.
 
-They exist because one value can't meet every bar. Text needs 4.5:1 against
+One value can't meet every bar. Text needs 4.5:1 against
 the surface behind it, while borders, icons and marks need 3:1. Holding each
 property to its own bar lets a theme tune one without breaking another, and a
 unit test fails if any of them drops below its bar in either theme. Today they
-match their status color; see
+match their status color. See
 [plan 003](https://github.com/toribryan/fibo/blob/main/plans/003-property-tokens.md)
-for why they exist and what comes next.
+for the reasoning and next steps.
 
 <TokenFamily name="properties" />
 
@@ -100,16 +98,15 @@ for why they exist and what comes next.
 
 Tokens that end in `-subtle`, `-hover` or `-ring` are a color at a set alpha,
 such as `red-700 at 8%`. They exist instead of opacity modifiers like
-`bg-destructive/10`, because Figma can't bind an opacity to a variable. Naming
-the role keeps the alpha in one place and gives design and code the same name
-to pick.
+`bg-destructive/10`, because Figma can't bind an opacity to a variable. A named
+role keeps the alpha in one place and gives design and code the same name.
 
 ## Primitives
 
-These are the only Tailwind steps fibo draws from: one gray ramp for
-structure, and two steps of four hues, 700 in light mode and 400 in dark, for
-status. The rest of [Tailwind's palette](https://tailwindcss.com/docs/colors)
-is there if a theme needs it, but components never use primitives directly.
+The Tailwind steps fibo uses: one gray ramp for structure, and two steps of
+four hues for status, 700 in light mode and 400 in dark. The rest of
+[Tailwind's palette](https://tailwindcss.com/docs/colors) is available to
+themes. Components never use primitives directly.
 
 <Primitives />
 
@@ -125,7 +122,7 @@ is there if a theme needs it, but components never use primitives directly.
           </span>
         ),
         description:
-          "Use the semantic roles: the fill and the foreground made for it. They follow the theme into dark mode.",
+          "Use the semantic fill and its matching foreground. They follow the theme and mode.",
       },
       negative: {
         component: (
@@ -134,7 +131,7 @@ is there if a theme needs it, but components never use primitives directly.
           </span>
         ),
         description:
-          "Don't reach for Tailwind colors. They stay put when the theme or the mode changes.",
+          "Don't use Tailwind colors directly. They don't change with the theme or mode.",
       },
     },
     {
@@ -153,7 +150,7 @@ is there if a theme needs it, but components never use primitives directly.
           </span>
         ),
         description:
-          "Don't add an opacity modifier. Figma can't match it, and each one is a new color to maintain.",
+          "Don't use an opacity modifier. Figma can't match it, and each one is a new color to maintain.",
       },
     },
   ]}

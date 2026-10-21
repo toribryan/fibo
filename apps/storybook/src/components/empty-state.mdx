@@ -20,19 +20,18 @@ import { Install } from "../blocks/install"
 
 # Empty state
 
-What shows where content would be: a title, why it's empty, and what to do
+A placeholder for missing content: a title, why it's empty, and what to do
 next.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- A title, an optional icon, a description and actions, each its own part.
+- Title, optional icon, description and actions, each a separate part.
 - `size="sm"` for a line in a menu or popover, `default` for a table, list
   or page.
-- Data table shows one when it has no rows, with Clear filters when a
-  search or filter hid them. Message list shows one before the first
-  message.
+- Used by Data table when it has no rows (with Clear filters when a search or
+  filter hid them) and by Message list before the first message.
 
 ## Installation
 
@@ -51,20 +50,20 @@ next.
 
 ### Small, in a menu
 
-The title alone, in muted text. Command menu and Filter menu show their no
-results line this way.
+Title only, in muted text. Command menu and Filter menu use this for no
+results.
 
 <Canvas of={Stories.Small} />
 
 ### No matches
 
-When a search or filter hid everything, say so and offer the way back.
+When a search or filter hid everything, offer a way back.
 
 <Canvas of={Stories.NoMatches} />
 
 ### Title only
 
-When there's nothing to do about it, the title is enough.
+For when there is no action to take.
 
 <Canvas of={Stories.TitleOnly} />
 
@@ -96,8 +95,8 @@ export function NoMembers({ onInvite }: { onInvite: () => void }) {
 }
 ```
 
-Say what's missing in the title and what to do in the action; the
-description is for why, when it isn't obvious.
+The title says what's missing, the action what to do. The description
+explains why, only when it isn't obvious.
 
 ## Anatomy
 
@@ -136,9 +135,9 @@ description is for why, when it isn't obvious.
 <UsageGuidelines
   guidelines={[
     "Name what's missing in the title: No members yet, not Nothing here.",
-    "Tell first-run empty apart from no matches. One invites people to add something, the other to clear a search.",
-    "One primary action at most. A second one, if any, is outline or ghost.",
-    "Leave the icon out of small empty states; a menu has no room for it.",
+    "Distinguish first-run empty from no matches. One invites adding something, the other clearing a search.",
+    "One primary action at most. A second is outline or ghost.",
+    "Omit the icon in small empty states; menus have no room for it.",
   ]}
 />
 
@@ -170,7 +169,7 @@ description is for why, when it isn't obvious.
             </EmptyStateDescription>
           </EmptyState>
         ),
-        description: "Don't leave people with a dead end.",
+        description: "Don't leave a dead end.",
       },
     },
   ]}
@@ -205,9 +204,9 @@ description is for why, when it isn't obvious.
 
 <UsageGuidelines
   guidelines={[
-    "The title and description are plain text, read in order with what's around them.",
-    "The icon is hidden from screen readers; the title says it in words.",
-    "Where an empty state replaces results as someone types, put it in a live region so the change is announced. Command menu's already is.",
+    "Title and description are plain text, read in document order.",
+    "The icon is hidden from screen readers.",
+    "When an empty state replaces results during typing, put it in a live region so the change is announced. Command menu already does.",
   ]}
 />
 

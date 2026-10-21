@@ -26,12 +26,12 @@ trigger for a header whose search opens in a command menu.
 
 - Cmd+K on macOS, Ctrl+K elsewhere, focuses the field from anywhere on the
   page. The key hint shows which, and hides on touch screens.
-- Once there's a query, the hint gives way to a clear button. Escape clears
-  first, then leaves the field.
+- With a query, a clear button replaces the hint. Escape clears first, then
+  leaves the field.
 - `SearchTrigger` is a ghost button with the icon and the hint, for a header
-  where the search opens in a dialog. The shortcut presses it.
-- Controlled through `value` and `onValueChange`, or left to keep its own
-  query. Inside a Field, the FieldLabel names it.
+  whose search opens in a dialog. The shortcut presses it.
+- Controlled with `value` and `onValueChange`, or uncontrolled. Inside a
+  Field, the FieldLabel names it.
 
 ## Installation
 
@@ -43,49 +43,47 @@ It installs Input group, Kbd and Button with it.
 
 ### Small
 
-`size="sm"` matches a small Button or Select, as in a toolbar. Inside a
-FieldGroup it takes the group's size.
+`size="sm"` matches a small Button or Select. Inside a FieldGroup it takes
+the group's size.
 
 <Canvas of={Stories.Small} />
 
 ### Without a shortcut
 
-`hotkey={null}` drops the shortcut and its hint, for a second search on a
-page that already has one on Cmd+K.
+`hotkey={null}` drops the shortcut and its hint, for a second search on the
+page.
 
 <Canvas of={Stories.NoShortcut} />
 
 ### Ghost, in a menu
 
-`variant="ghost"` drops the border and fill, so the popup around it is the
-field.
+`variant="ghost"` drops the border and fill, so the surrounding popup acts
+as the field.
 
 <Canvas of={Stories.Ghost} />
 
 ### In a field
 
-The FieldLabel names the search, and the Field's description and invalid
-state reach it.
+The Field's description and invalid state reach the input.
 
 <Canvas of={Stories.InAField} />
 
 ### Filtering a list
 
-Controlled, filtering a list as you type. The list announces its changes.
+Controlled. The list filters on each keystroke and announces its changes.
 
 <Canvas of={Stories.FilterAList} />
 
 ### Search trigger
 
-For a search that opens elsewhere. It shows no text, so its name is
-`aria-label`, Search by default.
+No visible text, so `aria-label` names it, Search by default.
 
 <Canvas of={Stories.Trigger} />
 
 ### In a header, opening a command menu
 
-`SearchTrigger` as Command menu's trigger. The menu's own hotkey is off so
-the trigger's handles Cmd+K.
+`SearchTrigger` as Command menu's trigger, with the menu's hotkey off so the
+trigger handles Cmd+K.
 
 <Canvas of={Stories.InAHeader} />
 
@@ -122,8 +120,8 @@ export function HeaderSearch({ groups }: { groups: CommandMenuGroup[] }) {
 }
 ```
 
-Give each page one shortcut: when two searches share it, the first one
-mounted takes it.
+One shortcut per page: when two searches share it, the first mounted takes
+it.
 
 ## Anatomy
 
@@ -189,7 +187,7 @@ mounted takes it.
   guidelines={[
     "Use SearchInput where search is the page's main job, such as a docs index or a table of people.",
     "Use SearchTrigger in a header or toolbar, where the search opens in a Command menu or dialog.",
-    "Keep the placeholder to what can be searched, such as Search projects…, not instructions.",
+    "The placeholder names what can be searched, such as Search projects…, not instructions.",
   ]}
 />
 
@@ -200,7 +198,7 @@ mounted takes it.
     {
       positive: {
         component: <SearchTrigger hotkey={null} />,
-        description: "Use SearchTrigger, so the header stays compact.",
+        description: "Use SearchTrigger to keep the header compact.",
       },
       negative: {
         component: (

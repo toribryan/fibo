@@ -16,8 +16,8 @@ import { Install } from "../blocks/install"
 
 # Progress
 
-A progress bar shows how far a task has got, such as an upload or an export.
-With no value, it shows that the task is under way.
+A bar showing how far a task such as an upload has got, or, with no value,
+that it's under way.
 
 <Canvas of={Stories.Default} />
 
@@ -25,9 +25,9 @@ With no value, it shows that the task is under way.
 
 - Determinate, from 0 to 100, or indeterminate while the total isn't known,
   built on Base UI's Progress.
-- A label and a formatted value sit on one row above the bar.
+- A label and formatted value on one row above the bar.
 - Announced as a progress bar with its name and value.
-- The fill glides between values, and jumps instead under reduced motion.
+- The fill glides between values; under reduced motion it jumps.
 
 ## Installation
 
@@ -41,24 +41,24 @@ With no value, it shows that the task is under way.
 ### Circle
 
 `type="circle"` draws a ring in the current text color, sized `xs` to `lg`:
-12, 16, 20 and 24 pixels. With a `value` the arc shows how far along it is;
-with `value={null}` a quarter arc turns, and holds still under reduced
-motion. Name it with `aria-label`; a circle has no room for a label.
+12, 16, 20 and 24 pixels. With a `value` the arc shows progress; with
+`value={null}` a quarter arc turns, holding still under reduced motion. Name
+it with `aria-label`, since a circle has no room for a label.
 
 <Canvas of={Stories.Circle} />
 
 ### In a button
 
-A small circle stands in for a button's icon while its action runs. The
-button's text or `aria-label` says what is happening, so the circle is
-hidden from screen readers. Toast and Chat composer use it this way.
+A small circle replaces a button's icon while its action runs. The button's
+text or `aria-label` says what's happening, so the circle is hidden from
+screen readers. Used by Toast and Chat composer.
 
 <Canvas of={Stories.InAButton} />
 
 ### Indeterminate
 
-`value={null}` for a task with no known length. A segment sweeps across the
-track; under reduced motion the bar fills in the muted text color instead.
+`value={null}` for a task of unknown length. A segment sweeps across the
+track; under reduced motion the bar fills in the muted text color.
 
 <Canvas of={Stories.Indeterminate} />
 
@@ -70,14 +70,13 @@ At 100 the bar is full and the root carries `data-complete`.
 
 ### Without label
 
-With no visible label, name the bar with `aria-label`.
+Named with `aria-label`.
 
 <Canvas of={Stories.WithoutLabel} />
 
 ### Live
 
-A controlled bar that fills as a task runs, with a label that changes when
-it finishes.
+A controlled bar whose label changes when the task finishes.
 
 <Canvas of={Stories.Live} />
 
@@ -100,7 +99,7 @@ export function Upload({ percent }: { percent: number }) {
 }
 ```
 
-Pass `value={null}` while you don't know how long the task will take.
+`value={null}` while the task's length is unknown.
 
 ## Anatomy
 
@@ -140,10 +139,10 @@ Pass `value={null}` while you don't know how long the task will take.
 
 <UsageGuidelines
   guidelines={[
-    "Use a progress bar for a task that takes more than a couple of seconds, so people know it's working.",
+    "Use for a task that takes more than a couple of seconds.",
     "Say what's happening in the label, like “Exporting report”, and change it when the task finishes.",
-    "Move to a determinate bar as soon as you know the total.",
-    "For content that's loading into a layout, use a skeleton instead.",
+    "Switch to determinate as soon as the total is known.",
+    "For content loading into a layout, use Skeleton.",
   ]}
 />
 
@@ -176,7 +175,7 @@ Pass `value={null}` while you don't know how long the task will take.
 
 ## API reference
 
-Progress takes every prop of Base UI's `Progress.Root`, including `value`,
+`Progress` takes every Base UI `Progress.Root` prop, including `value`,
 `min`, `max`, `format` and `getAriaValueText`.
 
 <ArgTypes of={Stories.Default} />
@@ -240,7 +239,7 @@ Progress takes every prop of Base UI's `Progress.Root`, including `value`,
       The root is a <code>progressbar</code> with <code>aria-valuenow</code>.
       ProgressLabel names it; without one, pass <code>aria-label</code>.
     </>,
-    "Most screen readers don't announce each change on their own. When the task finishes, say so in the label or with a toast.",
+    "Most screen readers don't announce each change. When the task finishes, say so in the label or with a toast.",
     <>
       Pass <code>getAriaValueText</code> when a percentage isn't the clearest
       reading, such as “3 of 12 files”.

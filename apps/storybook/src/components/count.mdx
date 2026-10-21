@@ -11,8 +11,8 @@ import { Install } from "../blocks/install"
 
 # Count
 
-A number as people take it in at a glance: capped at 99+, shortened to 1.2K,
-or signed as +4. Screen readers hear the exact number, or your words.
+A number formatted for a glance: capped at 99+, shortened to 1.2K, or signed
+as +4. Screen readers hear the exact number, or a label.
 
 <Canvas of={Stories.Default} />
 
@@ -21,16 +21,16 @@ or signed as +4. Screen readers hear the exact number, or your words.
 - Caps with `max`, shortens with `notation="compact"`, and signs a count of
   things not shown with `plus`.
 - Figures don't shift as the number changes.
-- Says the exact number when the one shown is capped or shortened, or a
-  label you write, such as “128 unread”.
-- Text only: the part it sits in sets its size, weight and color.
+- Announces the exact number when the shown one is capped or shortened, or
+  a custom label such as “128 unread”.
+- Text only. The surrounding part sets size, weight and color.
 
 ## Installation
 
 <Install name="count" exports={["Count", "formatCount", "type CountProps"]} />
 
-It installs the `formatCount` helper into `lib/`, for counts that sit inside
-a sentence.
+Installs the `formatCount` helper into `lib/`, for counts inside a
+sentence.
 
 ## Examples
 
@@ -40,7 +40,7 @@ a sentence.
 
 ### In other parts
 
-In a Badge for unread messages, and in AvatarGroupCount for the people not
+In a Badge for unread messages, and in AvatarGroupCount for people not
 shown.
 
 <Canvas of={Stories.InContext} />
@@ -60,8 +60,8 @@ export function Unread({ count }: { count: number }) {
 }
 ```
 
-When the count is part of a sentence, such as “12 new messages”, use
-`formatCount` and write the sentence yourself, so it can be translated whole:
+For a count inside a sentence, such as “12 new messages”, use `formatCount`
+and build the sentence around it, so it translates whole:
 
 ```tsx
 import { formatCount } from "@/lib/format-count"
@@ -74,9 +74,9 @@ const { shown } = formatCount(count, { max: 99, locale })
 <UsageGuidelines
   guidelines={[
     "Cap a count at 99+ where only “a lot” matters, such as unread badges. Shorten it to 1.2K where the size matters, such as reactions.",
-    "Give it a label that names what is counted, such as 12 unread or 4 more, unless the text beside it already does.",
+    "Label what is counted, such as 12 unread or 4 more, unless the adjacent text already does.",
     "Use plus only for things that aren't shown, such as the people after an avatar group.",
-    "Let the part it sits in style it: Count sets only the figures.",
+    "Let the surrounding part style it. Count sets only the figures.",
   ]}
 />
 
@@ -123,7 +123,7 @@ const { shown } = formatCount(count, { max: 99, locale })
 <UsageGuidelines
   guidelines={[
     "The number shown is hidden from screen readers when it differs from what they hear, so 99+ is read as 128, or as your label.",
-    "label={null} hides the count entirely, for a part whose own name already says it, such as a reaction pill.",
+    "label={null} hides the count from screen readers, for a part whose name already says it, such as a reaction pill.",
   ]}
 />
 

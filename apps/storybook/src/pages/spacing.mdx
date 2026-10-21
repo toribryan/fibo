@@ -13,7 +13,7 @@ steps, named `spacing/2` for `2` and `spacing/1-5` for `1.5`.
 
 ## Scale
 
-The steps fibo's parts use, with where each one turns up.
+The steps fibo's parts use.
 
 <SpacingScale />
 
@@ -23,21 +23,21 @@ for page-level breaks.
 
 ## Control heights
 
-Buttons, inputs, selects and toggles share one height per size, so a row of
-mixed controls lines up. `sm` is the size for dense toolbars and forms,
-`default` for everything else.
+Buttons, inputs, selects and toggles share one height per size, so mixed
+controls line up in a row. `sm` is for dense toolbars and forms, `default` for
+everything else.
 
 <ControlHeights />
 
 ## Rules
 
-- Space by step, not by eye: an off-scale value such as `gap-[7px]` won't
-  match Figma or the next part over.
+- Use scale steps only. An off-scale value such as `gap-[7px]` won't match
+  Figma or neighboring parts.
 - Let the container space its children with `gap`, rather than margins on
   each child, so a part can be moved or removed without leaving a hole.
 - A part sets its own padding; the page sets the space between parts.
 
 <Tip>
-  Inside a FieldGroup, `size="sm"` tightens the gaps between fields from 24px to
-  16px along with the controls, so a dense form says so once.
+  On a FieldGroup, `size="sm"` tightens the gaps between fields from 24px to
+  16px along with the controls, set once for the whole form.
 </Tip>

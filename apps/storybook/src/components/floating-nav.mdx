@@ -21,27 +21,23 @@ import { Install } from "../blocks/install"
 
 # Floating nav
 
-A pill of destinations that floats above the bottom of a phone screen. The
-current item stretches to show its name, and the bar can step out of the way
-while people read.
+A floating pill of destinations for phone screens that can hide on scroll.
 
 <Canvas of={Stories.Default} />
 
 ## Features
 
-- An indicator slides to the current item, which grows to show its label while
+- An indicator slides to the current item, which expands to show its label;
   the others stay as icons.
 - Floats over the page, clear of the home indicator, or sits in the flow with
   `position="static"`.
-- Can hide while the page scrolls down and return the moment it scrolls up or
-  takes focus.
+- Can hide on scroll down and return on scroll up or focus.
 - Items are links or buttons, controlled or uncontrolled, so it works with any
   router.
-- `variant="glass"` turns it into Apple's liquid glass: a clear bar that bends
+- `variant="glass"` renders Apple-style liquid glass: a clear bar that bends
   the page behind its edges, with a glass lens on the current item.
 
-It is also how this site gets around on a phone: open fibo.toribryan.com on
-one and the bar replaces Storybook's own.
+On a phone, fibo.toribryan.com uses it in place of Storybook's own navigation.
 
 ## Installation
 
@@ -55,64 +51,63 @@ one and the bar replaces Storybook's own.
   ]}
 />
 
-It installs `motion` with it, for the indicator and the slide.
+Installs `motion` for the indicator and slide.
 
 ## Examples
 
 ### Liquid glass
 
-`variant="glass"` draws the bar as liquid glass. A lightly frosted, tinted
-layer and a bright rim work in every browser. In Chromium the page behind the
-rim also bends, through an SVG displacement filter sized to the bar; Safari and
-Firefox keep the blur and rim. The current item sits under a glass lens that
-overshoots a little as it lands, and the bar swells a touch under a finger.
+A lightly frosted, tinted layer and a bright rim work in every browser. In
+Chromium the page behind the rim also bends, through an SVG displacement
+filter sized to the bar; Safari and Firefox keep the blur and rim. The
+current item's lens overshoots slightly as it lands, and the bar swells
+slightly under a finger.
 
-Pressing the bar lifts the lens off it, the way iOS does as you change tabs:
-it grows past the bar's edges, clears, and magnifies the item beneath with a
-fringe of color at its rim, then travels to the new item and settles back
-into its tint. In Safari and Firefox it lifts and clears without the
-magnifying. With reduced motion it stays put.
+A press lifts the lens, as iOS does when changing tabs: it grows past the
+bar's edges, clears, and magnifies the item beneath with a color fringe at
+its rim, then travels to the new item and settles back into its tint. Safari
+and Firefox lift and clear without magnifying. Under reduced motion it stays
+put.
 
-The glass bar doesn't clip, so the lens can lift past it, which also means it
-can't scroll sideways the way the default bar does when its items outgrow the
-screen. Keep a glass bar to items that fit, or switch to `size="sm"` on narrow
-screens.
+The glass bar doesn't clip, so the lens can lift past it, and so it can't
+scroll sideways like the default bar when items overflow. Keep glass bars to
+items that fit, or use `size="sm"` on narrow screens.
 
 <Canvas of={Stories.Glass} />
 
 ### Labels always shown
 
-`labels="always"` stacks every label under its icon, like a tab bar. Use it
-when the icons alone would not say where they go.
+`labels="always"` stacks every label under its icon, like a tab bar. For
+icons that are ambiguous alone.
 
 <Canvas of={Stories.AlwaysLabeled} />
 
 ### Compact
 
-`size="sm"` tightens the pill: 36px items and 16px icons instead of 44px and
-20px. Use it where the bar should take less of the screen, such as a site that
-also shows a scroll-to-top button or a chat launcher.
+`size="sm"`: 36px items and 16px icons instead of 44px and 20px. For screens
+with other floating controls, such as a scroll-to-top button or chat
+launcher.
 
 <Canvas of={Stories.Compact} />
 
 ### Text items
 
-Leave out an item's `icon` and it shows its label as text, always. Use it when
-there are only two or three places and their names say more than icons.
+An item without `icon` always shows its label as text. For two or three
+places whose names say more than icons.
 
 <Canvas of={Stories.TextItems} />
 
 ### Static
 
 `position="static"` keeps the bar in the flow, for a toolbar at the foot of a
-card or a preview like this one.
+card or a preview.
 
 <Canvas of={Stories.Static} />
 
 ### Controlled links
 
-Items with an `href` render as links. `onValueChange` hands over the click, so
-an app can call `event.preventDefault()` and route it itself.
+Items with an `href` render as links. `onValueChange` receives the click
+event, so the app can call `event.preventDefault()` and route it.
 
 <Canvas of={Stories.ControlledLinks} />
 
@@ -134,10 +129,8 @@ export function AppNav({ pathname }: { pathname: string }) {
 }
 ```
 
-Give every item a `label`, even with `labels="active"`. It is the item's name
-for screen readers, and the label the current item shows.
-
-Each item takes:
+Every item needs a `label`, even with `labels="active"`. It names the item
+for screen readers and is shown on the current item.
 
 ```ts
 type FloatingNavItem = {
@@ -149,8 +142,6 @@ type FloatingNavItem = {
 ```
 
 ## Anatomy
-
-Every part the component renders, with the `data-slot` it carries.
 
 <Anatomy
   root={{
@@ -186,17 +177,17 @@ Every part the component renders, with the `data-slot` it carries.
 
 <UsageGuidelines
   guidelines={[
-    "Use it for the three to five places people move between most on a phone. Everything else belongs in a menu.",
-    "Keep labels to one short word. The current label has to fit beside its icon on a 320px screen.",
+    "Use for the three to five most-visited destinations on a phone. Put the rest in a menu.",
+    "Keep labels to one short word. The current label must fit beside its icon on a 320px screen.",
     <>
-      Turn on <code>hideOnScroll</code> for reading surfaces such as articles
-      and docs. Leave it off where people switch places often.
+      Enable <code>hideOnScroll</code> on reading surfaces such as articles and
+      docs. Leave it off where people switch places often.
     </>,
     <>
-      Pad the bottom of the page by the bar's height, about <code>6rem</code>,
-      so the last content can scroll clear of it.
+      Pad the page bottom by the bar's height, about <code>6rem</code>, so the
+      last content scrolls clear of it.
     </>,
-    "Hide it at desktop widths where a sidebar or top bar already does the job.",
+    "Hide it at desktop widths where a sidebar or top bar already navigates.",
   ]}
 />
 
@@ -218,7 +209,7 @@ Every part the component renders, with the `data-slot` it carries.
             ]}
           />
         ),
-        description: "Keep it to a handful of places with one-word names.",
+        description: "Keep to a few destinations with one-word names.",
       },
       negative: {
         component: (
@@ -238,7 +229,7 @@ Every part the component renders, with the `data-slot` it carries.
           />
         ),
         description:
-          "Don't fill it with every section. Past five, icons alone stop saying where they go.",
+          "Don't add every section. Past five, icons alone become ambiguous.",
       },
     },
   ]}
@@ -250,8 +241,7 @@ Every part the component renders, with the `data-slot` it carries.
 
 ### Data attributes
 
-Style parts by slot or state, for example with
-`[&_[data-slot=floating-nav-item]]:px-4`.
+Style parts by slot or state, e.g. `[&_[data-slot=floating-nav-item]]:px-4`.
 
 <DataAttributes
   rows={[
@@ -353,7 +343,7 @@ Style parts by slot or state, for example with
 <UsageGuidelines
   guidelines={[
     <>
-      The root is a <code>nav</code> landmark, named Main unless you pass{" "}
+      The root is a <code>nav</code> landmark named Main, or by{" "}
       <code>aria-label</code>. Name it when a page has more than one.
     </>,
     <>
@@ -362,8 +352,8 @@ Style parts by slot or state, for example with
       labels stay in the DOM, so every item keeps its name.
     </>,
     "Items are plain links and buttons in the tab order. Tabbing into a hidden bar brings it back.",
-    "Glass shows the page through it, so its labels' contrast depends on what scrolls beneath. Use it over images and media, and the default bar over dense text.",
-    'Every item is at least 44px square, or 36px with size="sm", well above the 24px minimum target. With reduced motion the indicator and the bar move without animating.',
+    "Glass label contrast depends on what scrolls beneath. Use glass over images and media, the default bar over dense text.",
+    'Items are at least 44px square, or 36px with size="sm", above the 24px minimum target. Under reduced motion the indicator and bar move without animating.',
   ]}
 />
 
