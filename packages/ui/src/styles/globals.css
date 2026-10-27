@@ -310,7 +310,7 @@
   --info-icon: var(--info);
 
   --border: var(--color-neutral-200);
-  --input: var(--color-neutral-200);
+  --input: var(--color-neutral-300);
   --input-subtle: color-mix(
     in oklch,
     var(--color-neutral-200) 20%,
@@ -467,7 +467,7 @@
   --info-icon: var(--info);
 
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 20%);
   --input-subtle: oklch(1 0 0 / 5%);
   --input-subtle-hover: oklch(1 0 0 / 10%);
   --ring: var(--color-neutral-500);

@@ -4,7 +4,7 @@
     "key": "LJZ5Tt4Ba7NPPi8Xnq8i0e",
     "name": "Fibo-DS"
   },
-  "readAt": "2026-10-09",
+  "readAt": "2026-10-19",
   "variables": {
     "Color": {
       "background": {
@@ -116,8 +116,8 @@
         "Dark": "alpha/white/10"
       },
       "input": {
-        "Light": "neutral/200",
-        "Dark": "alpha/white/15"
+        "Light": "neutral/300",
+        "Dark": "alpha/white/20"
       },
       "ring": {
         "Light": "neutral/400",
@@ -215,6 +215,14 @@
         "Light": "alpha/neutral-950/20",
         "Dark": "alpha/black/60"
       },
+      "sticker-edge": {
+        "Light": "base/white",
+        "Dark": "base/white"
+      },
+      "sticker-ink": {
+        "Light": "neutral/900",
+        "Dark": "neutral/900"
+      },
       "glass": {
         "Light": "alpha/neutral-50/20",
         "Dark": "alpha/neutral-950/20"
@@ -226,14 +234,6 @@
       "glass-lens": {
         "Light": "alpha/neutral-900/10",
         "Dark": "alpha/white/10"
-      },
-      "sticker-edge": {
-        "Light": "base/white",
-        "Dark": "base/white"
-      },
-      "sticker-ink": {
-        "Light": "neutral/900",
-        "Dark": "neutral/900"
       },
       "surface": {
         "Light": "base/white",
@@ -476,6 +476,8 @@
       "context": "TEXT",
       "shortcut": "BOOLEAN",
       "opensPage": "BOOLEAN",
+      "slotContent": "SLOT",
+      "showSlot": "BOOLEAN",
       "state": ["default", "highlighted", "disabled"]
     },
     "Command menu trigger": {
