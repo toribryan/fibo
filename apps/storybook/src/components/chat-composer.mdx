@@ -167,8 +167,8 @@ Also exports `ChatComposerProvider`, `useChatComposer`, `ChatComposerHeader`,
 `ChatComposerAttachments`, `ChatComposerSuggestedReply`, `ChatComposerAction`,
 `ChatComposerAttachButton`, `ChatComposerEmojiButton`,
 `ChatComposerCommandButton`, `ChatComposerCommandMenu`,
-`ChatComposerDictationButton`, `ChatComposerMentionButton` and
-`ChatComposerDropZone`.
+`ChatComposerDictationButton`, `ChatComposerActionsSheet`,
+`ChatComposerMentionButton` and `ChatComposerDropZone`.
 
 ## Examples
 
@@ -210,6 +210,16 @@ silence, the mic's tooltip opens with the reason for a few seconds.
 `errorMessages` rewords them.
 
 <Canvas of={Stories.DictationBlocked} />
+
+### On a touch screen
+
+Where a coarse pointer is the main input, the composer changes on its own:
+Common actions collapse into a + that opens a bottom sheet of labeled rows,
+emoji and dictation step aside for the phone keyboard's own, controls grow to
+40px, Return adds a line, suggestions scroll in one row, and the text box
+stops at a third of the screen. `pointer="coarse"` forces it, as here.
+
+<Canvas of={Stories.Touch} />
 
 ### Minimal
 
@@ -680,6 +690,21 @@ Style parts by slot or state, e.g.
       when: "When rendered.",
     },
     {
+      attribute: "data-pointer",
+      element: "The frame",
+      when: "fine or coarse, for styling the touch layout.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-actions-trigger"',
+      element: "The + on touch screens",
+      when: "When the actions sheet is rendered.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-actions-sheet"',
+      element: "The sheet of actions",
+      when: "While it is open, or kept mounted while closed.",
+    },
+    {
       attribute: "data-disabled",
       element: "The frame",
       when: "The composer is disabled.",
@@ -707,6 +732,8 @@ Style parts by slot or state, e.g.
     "The emoji grid takes focus on its first emoji. Arrow keys move through it, Enter picks, and focus returns to the text box.",
     "The dictation button is a toggle: aria-pressed is true while it listens. Escape also stops it, and focus returns to the text box at the end of the dictated words.",
     "When dictation fails, the reason shows in the mic's tooltip and is read out through a status region.",
+    "On touch, the + is named More actions and opens a sheet titled Add to message. Focus moves into the sheet, and its rows read their full labels.",
+    "On touch, Return adds a line, and the keyboard's Return key says so through enterkeyhint. The send button is the only way to send.",
     "Dictation uses the browser's speech recognition. Chrome sends the audio to Google to transcribe, so say so where privacy matters, or pass your own engine to recognition.",
     "Suggested replies are buttons. Picking one fills the draft and focuses the text box; it never sends.",
     <>
@@ -908,6 +935,22 @@ State is set on the frame, so the whole field changes together.
       ),
       children: <Dragging />,
     },
+  ]}
+/>
+
+## On touch screens
+
+The same parts, adjusted where a coarse pointer is the main input. Nothing
+new to place: the parts change on their own.
+
+<UsageGuidelines
+  guidelines={[
+    "Common actions become a + that opens a bottom sheet of labeled rows: attach and commands.",
+    "Emoji and dictation step aside for the phone keyboard's own keys.",
+    "Controls grow to 40px, icon-lg, the largest step on the size scale.",
+    "Return adds a line. The send button is the only way to send, as in iMessage and WhatsApp.",
+    "Suggested replies and attachments scroll sideways in one row, so they never push the conversation up.",
+    "Keep the composer above the keyboard and clear of the home indicator. The text box stops growing at a third of the screen.",
   ]}
 />
 
