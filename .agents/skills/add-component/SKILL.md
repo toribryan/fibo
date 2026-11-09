@@ -44,6 +44,8 @@ If unsure, it is a base component.
 - Sizes come from the shared scale (`xs`, `sm`, `default`, `lg`, `xl`,
   `icon-<step>`), listed smallest first. Name a visual style `variant` and a
   structural kind `type`, and match the Figma property's name and options.
+- Name the Figma component after the export (`DropZone`, `MenuItem`), as
+  AGENTS.md describes under Figma drift.
 - Document every prop with a one-line JSDoc comment. Storybook's props table
   reads them.
 - Comments explain why, never what. No emojis in code; escape them

@@ -382,7 +382,7 @@
       "size": ["sm", "default"],
       "state": ["default", "filled", "focused", "invalid", "disabled"]
     },
-    "Input group": {
+    "InputGroup": {
       "value": "TEXT",
       "startAddon": "BOOLEAN",
       "startAddonSwap": "INSTANCE_SWAP",
@@ -409,7 +409,7 @@
       "value": "TEXT",
       "state": ["default", "filled", "focused", "invalid", "disabled"]
     },
-    "Data table": {
+    "DataTable": {
       "rows": "SLOT",
       "cards": "SLOT",
       "footer": "BOOLEAN",
@@ -417,22 +417,22 @@
       "width": ["narrow", "default"],
       "narrowLayout": ["scroll", "cards"]
     },
-    "Chat composer": {
+    "ChatComposerFrame": {
       "parts": "SLOT",
       "dropLabel": "TEXT",
       "state": ["default", "focused", "disabled", "dragging"]
     },
-    "Typing indicator": {
+    "TypingIndicator": {
       "text": "TEXT",
       "icon": "INSTANCE_SWAP",
       "indicator": ["dots", "custom"]
     },
-    "Message divider": {
+    "MessageListDivider": {
       "label": "TEXT",
       "show label": "BOOLEAN",
       "unread": ["false", "true"]
     },
-    "Message": {
+    "MessageListMessage": {
       "author": "TEXT",
       "time": "TEXT",
       "body": "TEXT",
@@ -442,7 +442,7 @@
       "show time": "BOOLEAN",
       "type": ["first", "continuation", "system", "deleted"]
     },
-    "Jump bar": {
+    "JumpBar": {
       "unread label": "TEXT",
       "mark read label": "TEXT",
       "new label": "TEXT",
@@ -450,25 +450,25 @@
       "jump label": "TEXT",
       "type": ["unread-above", "new-below", "history"]
     },
-    "Chapter scrubber": {
+    "ChapterScrubber": {
       "orientation": ["vertical", "horizontal"],
       "variant": ["tick", "dot"],
       "state": ["rest", "scrubbing"]
     },
-    "Chapter preview": {
+    "ChapterScrubberPreview": {
       "meta": "TEXT",
       "title": "TEXT",
       "description": "TEXT",
       "showMeta": "BOOLEAN",
       "preview": ["card", "label"]
     },
-    "Command menu": {
+    "CommandMenu": {
       "hints": "BOOLEAN",
       "variant": ["default", "inset"],
       "view": ["home", "results", "page"],
       "preview": ["false", "true"]
     },
-    "Command menu item": {
+    "CommandMenuItem": {
       "label": "TEXT",
       "iconStart": "BOOLEAN",
       "iconStartSwap": "INSTANCE_SWAP",
@@ -478,43 +478,43 @@
       "opensPage": "BOOLEAN",
       "state": ["default", "highlighted", "disabled"]
     },
-    "Command menu trigger": {
+    "CommandMenuTrigger": {
       "label": "TEXT"
     },
-    "Reaction Pill": {
+    "ReactionsPill": {
       "emoji": "TEXT",
       "count": "TEXT",
       "state": ["default", "hover", "active"]
     },
-    "Reactions Trigger": {
+    "ReactionsTrigger": {
       "type": ["inline", "floating"],
       "state": ["default", "hover", "open"]
     },
-    "Reactions Panel": {},
-    "Integration visual": {
+    "ReactionsPanel": {},
+    "IntegrationVisual": {
       "layout": ["corners", "orbit", "sides"]
     },
-    "Integration tile": {
+    "IntegrationVisualTile": {
       "icon": "INSTANCE_SWAP",
       "status": ["active", "idle"]
     },
-    "Integration hub": {
+    "IntegrationVisualHub": {
       "icon": "INSTANCE_SWAP",
       "text": "TEXT",
       "content": ["icon", "text"]
     },
-    "Token flow": {
+    "TokenFlow": {
       "showUse": ["false", "true"]
     },
-    "Token chip": {
+    "TokenFlowChip": {
       "label": "TEXT"
     },
-    "Floating nav": {
+    "FloatingNav": {
       "labels": ["active", "always"],
       "size": ["sm", "default"],
       "variant": ["default", "glass"]
     },
-    "Floating nav item": {
+    "FloatingNavItem": {
       "label": "TEXT",
       "icon": "INSTANCE_SWAP",
       "type": ["icon", "text"],
@@ -523,7 +523,7 @@
       "state": ["default", "current"],
       "variant": ["default", "glass"]
     },
-    "Map pin": {
+    "MapPin": {
       "label": "TEXT",
       "showIcon": "BOOLEAN",
       "icon": "INSTANCE_SWAP",
@@ -532,7 +532,7 @@
       "size": ["sm", "default"],
       "state": ["rest", "open"]
     },
-    "Map pin preview": {
+    "MapPinPreview": {
       "showImage": "BOOLEAN",
       "showMeta": "BOOLEAN",
       "meta": "TEXT",
@@ -540,38 +540,38 @@
       "description": "TEXT",
       "showContent": "BOOLEAN"
     },
-    "Sticker avatar": {
+    "StickerAvatar": {
       "showStatus": "BOOLEAN",
       "initials": "TEXT",
       "shape": ["cutout", "round", "initials"]
     },
-    "Status dot": {
+    "StatusDot": {
       "status": ["present", "away", "offline"],
       "variant": ["color", "mono"],
       "size": ["xs", "sm", "default", "lg"]
     },
-    "Sticker avatar count": {
+    "StickerAvatarCount": {
       "count": "TEXT"
     },
-    "Voice memo": {
+    "VoiceMemo": {
       "showTranscript": "BOOLEAN",
       "side": ["right", "bottom"]
     },
-    "Voice memo device": {
+    "VoiceMemoDevice": {
       "wordmark": "TEXT",
       "size": ["sm", "default"],
       "recording": ["false", "true"],
       "variant": ["default", "burgundy"]
     },
-    "Voice memo transcript": {
+    "VoiceMemoTranscript": {
       "transcript": "TEXT",
       "state": ["listening", "done"]
     },
-    "Radio group item": {
+    "RadioGroupItem": {
       "checked": ["false", "true"],
       "state": ["default", "focused", "invalid", "disabled"]
     },
-    "Radio group": {
+    "RadioGroup": {
       "option1": "TEXT",
       "option2": "TEXT",
       "option3": "TEXT"
@@ -585,10 +585,10 @@
       "checked": ["false", "true"],
       "state": ["default", "focused", "disabled"]
     },
-    "Table head": {
+    "TableHead": {
       "label": "TEXT"
     },
-    "Table cell": {
+    "TableCell": {
       "value": "TEXT",
       "state": ["default", "hover", "selected"]
     },
@@ -602,7 +602,7 @@
       "page": "TEXT",
       "position": ["first", "middle", "last"]
     },
-    "Menu item": {
+    "MenuItem": {
       "label": "TEXT",
       "showIcon": "BOOLEAN",
       "icon": "INSTANCE_SWAP",
@@ -611,22 +611,22 @@
       "variant": ["default", "destructive"],
       "state": ["default", "highlighted", "disabled"]
     },
-    "Menu checkbox item": {
+    "MenuCheckboxItem": {
       "label": "TEXT",
       "checked": ["false", "true"]
     },
-    "Menu radio item": {
+    "MenuRadioItem": {
       "label": "TEXT",
       "checked": ["false", "true"]
     },
-    "Menu sub trigger": {
+    "MenuSubTrigger": {
       "label": "TEXT",
       "state": ["default", "open"]
     },
-    "Menu label": {
+    "MenuLabel": {
       "label": "TEXT"
     },
-    "Menu separator": {},
+    "MenuSeparator": {},
     "Menu": {},
     "Separator": {
       "showLabel": "BOOLEAN",
@@ -657,11 +657,11 @@
       "showAction": "BOOLEAN",
       "type": ["default", "success", "info", "warning", "error", "loading"]
     },
-    "Filter menu": {
+    "FilterMenu": {
       "search": ["button", "inline"],
       "view": ["fields", "values", "search"]
     },
-    "Filter menu row": {
+    "FilterMenuRow": {
       "label": "TEXT",
       "showIcon": "BOOLEAN",
       "icon": "INSTANCE_SWAP",
@@ -670,11 +670,11 @@
       "checked": ["false", "true"],
       "state": ["default", "highlighted"]
     },
-    "Pixel snail": {
+    "PixelSnail": {
       "ground": "BOOLEAN",
       "size": ["sm", "default", "lg"]
     },
-    "Empty state": {
+    "EmptyState": {
       "title": "TEXT",
       "description": "TEXT",
       "showMedia": "BOOLEAN",
@@ -690,7 +690,7 @@
       "orientation": ["vertical", "horizontal"],
       "state": ["default", "invalid", "disabled"]
     },
-    "Calendar day": {
+    "CalendarDay": {
       "day": "TEXT",
       "size": ["default", "lg"],
       "state": [
@@ -704,7 +704,7 @@
         "disabled"
       ]
     },
-    "Calendar event": {
+    "CalendarEvent": {
       "title": "TEXT",
       "time": "TEXT",
       "showTime": "BOOLEAN"
@@ -714,21 +714,21 @@
       "mode": ["single", "range"],
       "size": ["default", "lg"]
     },
-    "Date picker trigger": {
+    "DatePickerTrigger": {
       "value": "TEXT",
       "size": ["sm", "default"],
       "state": ["default", "focused", "invalid", "disabled"]
     },
-    "Date range panel": {},
-    "Date picker drawer": {},
-    "Date range drawer": {},
-    "Rich text editor": {
+    "DateRangePickerPanel": {},
+    "DatePickerDrawer": {},
+    "DateRangePickerDrawer": {},
+    "RichTextEditor": {
       "toolbar": "BOOLEAN",
       "count": "BOOLEAN",
       "state": ["default", "focused", "invalid", "disabled", "read only"]
     },
-    "Rich text editor link row": {},
-    "Tabs trigger": {
+    "RichTextEditorLinkRow": {},
+    "TabsTrigger": {
       "label": "TEXT",
       "icon": "BOOLEAN",
       "iconSwap": "INSTANCE_SWAP",
@@ -741,7 +741,7 @@
       "size": ["sm", "default"],
       "orientation": ["horizontal", "vertical"]
     },
-    "Annotated text": {
+    "AnnotatedText": {
       "text": "TEXT",
       "variant": [
         "underline",
@@ -756,7 +756,7 @@
         "arrow"
       ]
     },
-    "Annotated text chip": {
+    "AnnotatedTextChip": {
       "label": "TEXT",
       "showIcon": "BOOLEAN",
       "icon": "INSTANCE_SWAP"

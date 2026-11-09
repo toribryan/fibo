@@ -244,7 +244,15 @@ function codeProps(file) {
 
 const sameSet = (a, b) =>
   a.length === b.length && a.every((option) => b.includes(option))
-const kebab = (name) => name.trim().toLowerCase().replace(/\s+/g, "-")
+// Figma names components after their code exports (CommandMenuItem), and
+// compositions after the export they fill (ChatComposerHeader/Edit).
+const kebab = (name) =>
+  name
+    .split("/")[0]
+    .trim()
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .toLowerCase()
+    .replace(/\s+/g, "-")
 const files = new Set(
   readdirSync(componentsDir)
     .filter(
@@ -253,12 +261,20 @@ const files = new Set(
     )
     .map((f) => f.replace(/\.tsx$/, ""))
 )
+// A part takes its file's name as a prefix (command-menu-item lives in
+// command-menu), so the longest file name it starts with is its file.
+const fileFor = (name) =>
+  files.has(name)
+    ? name
+    : ([...files]
+        .filter((file) => name.startsWith(`${file}-`))
+        .sort((a, b) => b.length - a.length)[0] ?? name)
 // A file can back several Figma components (Integration visual, tile, hub),
 // so the props Figma covers are pooled per file.
 const seenByFile = new Map()
 
 for (const [component, properties] of Object.entries(snapshot.components)) {
-  const name = config.componentFiles[component] ?? kebab(component)
+  const name = config.componentFiles[component] ?? fileFor(kebab(component))
   if (name === null || component.startsWith("_")) continue
   if (!files.has(name)) {
     add("info", "components", component, "in Figma with no component in code")

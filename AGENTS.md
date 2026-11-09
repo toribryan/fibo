@@ -107,10 +107,14 @@ properties with cva variants and props. Intended differences live in
 `figma/drift.config.json`, each with a reason. Run it after changing a token
 or a component's variants.
 
-Chat composer's parts are named in Figma after their code exports, such as
-`ChatComposerCommonActions`, with compositions grouped under the export they
-fill (`ChatComposerHeader/Edit`). Those names map to their file through
-`componentFiles` in the drift config.
+Figma components are named after their code exports, so an agent reading
+the file can map a node straight to an import: `Button`, `MenuItem`,
+`ChatComposerCommonActions`, icons as lucide's React names (`PaperclipIcon`).
+A Figma-only part takes its parent export as a prefix (`CommandMenuItem`,
+`SideNavigationGroup`), compositions group under the export they fill
+(`ChatComposerHeader/Edit`), and unpublished parts keep a leading `_`. The
+drift check finds each one's file by that prefix; `componentFiles` covers the
+rest.
 
 ## Ponytail
 
