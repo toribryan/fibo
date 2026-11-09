@@ -18,10 +18,10 @@ import {
   PlusIcon,
   SearchIcon,
   SmileIcon,
-  SquareSlashIcon,
   UploadIcon,
   UserIcon,
   XIcon,
+  ZapIcon,
 } from "lucide-react"
 
 import {
@@ -290,7 +290,7 @@ const PREVIEWS: Record<string, ReactNode> = {
       <div className="flex items-center gap-2 px-2 pb-2 text-muted-foreground">
         <PaperclipIcon className="ml-1.5 size-4" />
         <SmileIcon className="size-4" />
-        <SquareSlashIcon className="size-4" />
+        <ZapIcon className="size-4" />
         <span className="ml-auto flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <ArrowUpIcon className="size-4" />
         </span>

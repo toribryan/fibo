@@ -7,7 +7,7 @@ import {
   AtSignIcon,
   PaperclipIcon,
   SmileIcon,
-  SquareSlashIcon,
+  ZapIcon,
 } from "lucide-react"
 
 import { Attachment } from "@workspace/ui/components/attachment"
@@ -763,7 +763,7 @@ function ChatComposerCommandButton({
       }}
       {...props}
     >
-      {children ?? <SquareSlashIcon />}
+      {children ?? <ZapIcon />}
     </ChatComposerAction>
   )
 }
