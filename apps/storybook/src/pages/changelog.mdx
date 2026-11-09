@@ -8,6 +8,16 @@ Notable changes, newest first.
 
 ## November 2026
 
+- **Chat composer** moves to Special components, since it now brings Command
+  menu. Typing / at the start of a word opens the menu through
+  `ChatComposerCommandMenu`, and `ChatComposerCommandButton` opens it too.
+  New `ChatComposerEmojiButton` inserts native emoji from a small grid, and
+  `ChatComposerSuggestedReply` fills the draft in one tap. Common actions
+  are now attach, emoji and command; `ChatComposerMentionButton` is still
+  exported. Attachments render as **Attachment** with upload statuses and
+  image previews (pass `upload` to `LocalChatComposerProvider`), send waits
+  for uploads, and `ChatComposerDropZone` is built on **Drop zone** and is
+  meant to wrap the whole conversation panel.
 - New **Drop zone** in Base components, under Forms: wraps an area such as
   a conversation panel and shows an overlay while files are dragged over
   it, splitting dropped files by type. **Settings page** is no longer
