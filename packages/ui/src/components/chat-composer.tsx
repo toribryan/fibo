@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { ArrowUpIcon, AtSignIcon, PaperclipIcon } from "lucide-react"
+import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
+import { ArrowUpIcon, AtSignIcon, PaperclipIcon, SmileIcon } from "lucide-react"
 
 import { Attachment } from "@workspace/ui/components/attachment"
 import { Button } from "@workspace/ui/components/button"
@@ -528,6 +529,144 @@ function ChatComposerMentionButton({
   )
 }
 
+type ChatComposerEmoji = {
+  /** The character inserted into the draft. */
+  emoji: string
+  /** Names it for screen readers and the tooltip. */
+  label: string
+}
+
+// Native characters, drawn by the system's emoji font, so there is no image
+// set or dataset to ship. Browsers give no way to open the system picker.
+const DEFAULT_EMOJIS: ChatComposerEmoji[] = [
+  { emoji: "\u{1F600}", label: "Grinning" },
+  { emoji: "\u{1F602}", label: "Laughing" },
+  { emoji: "\u{1F642}", label: "Smiling" },
+  { emoji: "\u{1F609}", label: "Winking" },
+  { emoji: "\u{1F60D}", label: "Heart eyes" },
+  { emoji: "\u{1F914}", label: "Thinking" },
+  { emoji: "\u{1F62E}", label: "Surprised" },
+  { emoji: "\u{1F622}", label: "Crying" },
+  { emoji: "\u{1F605}", label: "Nervous laugh" },
+  { emoji: "\u{1F643}", label: "Upside down" },
+  { emoji: "\u{1F60E}", label: "Cool" },
+  { emoji: "\u{1F973}", label: "Party" },
+  { emoji: "\u{1F634}", label: "Sleeping" },
+  { emoji: "\u{1F92F}", label: "Mind blown" },
+  { emoji: "\u{1F62C}", label: "Grimacing" },
+  { emoji: "\u{1FAE1}", label: "Salute" },
+  { emoji: "\u{1F44D}", label: "Thumbs up" },
+  { emoji: "\u{1F44E}", label: "Thumbs down" },
+  { emoji: "\u{1F44F}", label: "Clapping" },
+  { emoji: "\u{1F64C}", label: "Raised hands" },
+  { emoji: "\u{1F64F}", label: "Thank you" },
+  { emoji: "\u{1F440}", label: "Eyes" },
+  { emoji: "\u{1F4AA}", label: "Strong" },
+  { emoji: "\u{1F44B}", label: "Wave" },
+  { emoji: "\u{2764}\u{FE0F}", label: "Heart" },
+  { emoji: "\u{1F525}", label: "Fire" },
+  { emoji: "\u{2728}", label: "Sparkles" },
+  { emoji: "\u{1F389}", label: "Celebrate" },
+  { emoji: "\u{2705}", label: "Done" },
+  { emoji: "\u{274C}", label: "No" },
+  { emoji: "\u{26A0}\u{FE0F}", label: "Warning" },
+  { emoji: "\u{1F4AF}", label: "Hundred" },
+  { emoji: "\u{1F680}", label: "Rocket" },
+  { emoji: "\u{1F4A1}", label: "Idea" },
+  { emoji: "\u{1F4CC}", label: "Pin" },
+  { emoji: "\u{1F4CE}", label: "Paperclip" },
+  { emoji: "\u{2615}", label: "Coffee" },
+  { emoji: "\u{1F41B}", label: "Bug" },
+  { emoji: "\u{1F3AF}", label: "Target" },
+  { emoji: "\u{1F331}", label: "Seedling" },
+]
+
+const EMOJI_COLUMNS = 8
+
+type ChatComposerEmojiButtonProps = Omit<ChatComposerActionProps, "label"> & {
+  /** The emoji on offer, in order. Defaults to 40 common ones. */
+  emojis?: ChatComposerEmoji[]
+  /** Names the button. */
+  label?: string
+}
+
+/** Opens a grid of native emoji and puts the one picked at the caret. */
+function ChatComposerEmojiButton({
+  emojis = DEFAULT_EMOJIS,
+  label = "Add emoji",
+  children,
+  ...props
+}: ChatComposerEmojiButtonProps) {
+  const composer = useChatComposer()
+  const [open, setOpen] = React.useState(false)
+  const gridRef = React.useRef<HTMLDivElement>(null)
+
+  function rove(event: React.KeyboardEvent<HTMLDivElement>) {
+    const targets = Array.from(
+      gridRef.current?.querySelectorAll<HTMLElement>("button") ?? []
+    )
+    const current = targets.indexOf(document.activeElement as HTMLElement)
+    const step = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      ArrowDown: EMOJI_COLUMNS,
+      ArrowUp: -EMOJI_COLUMNS,
+    }[event.key]
+    if (step === undefined || current === -1) return
+    event.preventDefault()
+    targets[Math.min(Math.max(current + step, 0), targets.length - 1)]?.focus()
+  }
+
+  return (
+    <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+      <PopoverPrimitive.Trigger
+        render={
+          <ChatComposerAction label={label} {...props}>
+            {children ?? <SmileIcon />}
+          </ChatComposerAction>
+        }
+      />
+      <PopoverPrimitive.Portal>
+        <PopoverPrimitive.Positioner
+          side="top"
+          align="start"
+          sideOffset={8}
+          className="isolate z-50"
+        >
+          <PopoverPrimitive.Popup
+            data-slot="chat-composer-emoji-picker"
+            aria-label="Emoji"
+            finalFocus={composer.meta.inputRef}
+            className="origin-(--transform-origin) rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-md outline-hidden transition-[opacity,transform] duration-150 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 motion-reduce:transition-none"
+          >
+            <div
+              ref={gridRef}
+              onKeyDown={rove}
+              className="grid grid-cols-8 gap-0.5"
+            >
+              {emojis.map(({ emoji, label }) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  aria-label={label}
+                  title={label}
+                  onClick={() => {
+                    insertAtCaret(composer, emoji)
+                    setOpen(false)
+                  }}
+                  className="flex size-8 items-center justify-center rounded-md text-lg outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </PopoverPrimitive.Popup>
+        </PopoverPrimitive.Positioner>
+      </PopoverPrimitive.Portal>
+    </PopoverPrimitive.Root>
+  )
+}
+
 /*
  * The actions most composers share. It is only JSX, so a composer that needs
  * something else leaves it out and lists its own actions instead.
@@ -728,6 +867,7 @@ export {
   ChatComposerAttachments,
   ChatComposerCommonActions,
   ChatComposerDropZone,
+  ChatComposerEmojiButton,
   ChatComposerFooter,
   ChatComposerFrame,
   ChatComposerHeader,
@@ -741,6 +881,7 @@ export {
   type ChatComposerActions,
   type ChatComposerAttachment,
   type ChatComposerContextValue,
+  type ChatComposerEmoji,
   type ChatComposerMessage,
   type ChatComposerMeta,
   type ChatComposerState,

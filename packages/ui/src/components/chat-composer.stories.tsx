@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { CornerDownRightIcon, PencilIcon } from "lucide-react"
 import { useMemo, useState, useSyncExternalStore } from "react"
-import { expect, fn, waitFor } from "storybook/test"
+import { expect, fn, waitFor, within } from "storybook/test"
 
 import { Avatar, AvatarFallback } from "./avatar.js"
 import { Button } from "./button.js"
@@ -11,6 +11,7 @@ import {
   ChatComposerAttachments,
   ChatComposerCommonActions,
   ChatComposerDropZone,
+  ChatComposerEmojiButton,
   ChatComposerFooter,
   ChatComposerFrame,
   ChatComposerHeader,
@@ -41,6 +42,7 @@ const meta: Meta<typeof LocalChatComposerProvider> = {
     ChatComposerAction,
     ChatComposerAttachButton,
     ChatComposerMentionButton,
+    ChatComposerEmojiButton,
     ChatComposerAttachments,
     ChatComposerSubmit,
     ChatComposerSuggestedReply,
@@ -204,6 +206,41 @@ export const SuggestedReplies: Story = {
     await expect(args.onSubmit).not.toHaveBeenCalled()
     await userEvent.keyboard(", shipping today")
     await expect(input).toHaveValue("Sounds good, shipping today")
+  },
+}
+
+export const Emoji: Story = {
+  render: (args) => (
+    <LocalChatComposerProvider {...args}>
+      <ChatComposerFrame>
+        <ChatComposerInput placeholder="Message #design" />
+        <ChatComposerFooter>
+          <ChatComposerEmojiButton />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const input = canvas.getByRole("textbox", { name: "Message" })
+    const body = within(canvasElement.ownerDocument.body)
+    await userEvent.type(input, "Shipped ")
+
+    // Pointer: pick one and it lands at the caret, with focus back in the box.
+    await userEvent.click(canvas.getByRole("button", { name: "Add emoji" }))
+    await userEvent.click(await body.findByRole("button", { name: "Rocket" }))
+    await waitFor(() => expect(input).toHaveFocus())
+    await expect(input).toHaveValue("Shipped \u{1F680}")
+
+    // Keyboard: open it, move with the arrows, Enter picks.
+    await userEvent.tab()
+    await userEvent.keyboard("{Enter}")
+    await waitFor(() =>
+      expect(body.getByRole("button", { name: "Grinning" })).toHaveFocus()
+    )
+    await userEvent.keyboard("{ArrowDown}{ArrowRight}{Enter}")
+    await waitFor(() => expect(input).toHaveFocus())
+    await expect(input).toHaveValue("Shipped \u{1F680}\u{1F643}")
   },
 }
 
