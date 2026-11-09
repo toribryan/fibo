@@ -205,6 +205,12 @@ same shape.
 
 <Canvas of={Stories.Dictation} />
 
+When dictation stops on an error, such as a blocked microphone or a long
+silence, the mic's tooltip opens with the reason for a few seconds.
+`errorMessages` rewords them.
+
+<Canvas of={Stories.DictationBlocked} />
+
 ### Minimal
 
 A text box and send button in one row. No header, footer or drop zone.
@@ -698,6 +704,7 @@ Style parts by slot or state, e.g.
     "Typing / opens the command menu as a dialog with focus in its search. Escape closes it and returns to the text box, with the slash left out of the draft.",
     "The emoji grid takes focus on its first emoji. Arrow keys move through it, Enter picks, and focus returns to the text box.",
     "The dictation button is a toggle: aria-pressed is true while it listens. Escape also stops it, and focus returns to the text box at the end of the dictated words.",
+    "When dictation fails, the reason shows in the mic's tooltip and is read out through a status region.",
     "Dictation uses the browser's speech recognition. Chrome sends the audio to Google to transcribe, so say so where privacy matters, or pass your own engine to recognition.",
     "Suggested replies are buttons. Picking one fills the draft and focuses the text box; it never sends.",
     <>
