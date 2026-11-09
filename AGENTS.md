@@ -107,6 +107,11 @@ properties with cva variants and props. Intended differences live in
 `figma/drift.config.json`, each with a reason. Run it after changing a token
 or a component's variants.
 
+Chat composer's parts are named in Figma after their code exports, such as
+`ChatComposerCommonActions`, with compositions grouped under the export they
+fill (`ChatComposerHeader/Edit`). Those names map to their file through
+`componentFiles` in the drift config.
+
 ## Ponytail
 
 The `ponytail` skills come from

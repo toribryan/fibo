@@ -38,7 +38,8 @@
     "Calendar.mode": "A real prop, but declared once per branch of Calendar's discriminated union (single or range), which the drift parser doesn't read.",
     "Date picker trigger.size": "A real prop, typed FieldSize from lib/field-size.ts (sm, default), which the drift parser can't resolve across files.",
     "Tabs.orientation": "Base UI's Tabs orientation prop, passed through rather than declared in tabs.tsx.",
-    "Chat composer.draft": "Code reads empty or filled from the draft itself; designers pick it by hand."
+    "ChatComposerFrame.draft": "Code reads empty or filled from the draft itself; designers pick it by hand.",
+    "ChatComposerFrame/Minimal.draft": "Code reads empty or filled from the draft itself; designers pick it by hand."
   },
   "codeOnlyProps": {
     "input-group.align": "InputGroupAddon's align, inline-start or inline-end; Figma turns each side on with startAddon and endAddon instead.",
@@ -80,7 +81,21 @@
     "Date range drawer": "date-picker",
     "Rich text editor link row": "rich-text-editor",
     "Tabs trigger": "tabs",
-    "Annotated text chip": "annotated-text"
+    "Annotated text chip": "annotated-text",
+    "ChatComposerFrame": "chat-composer",
+    "ChatComposerFrame/Minimal": "chat-composer",
+    "ChatComposerCommonActions": "chat-composer",
+    "ChatComposerSuggestedReply": "chat-composer",
+    "ChatComposerHeaderContext": "chat-composer",
+    "ChatComposerHeader/Edit": "chat-composer",
+    "ChatComposerHeader/Reply": "chat-composer",
+    "ChatComposerHeader/Attachments": "chat-composer",
+    "ChatComposerHeader/SuggestedReplies": "chat-composer",
+    "ChatComposerFooter/Message": "chat-composer",
+    "ChatComposerFooter/Edit": "chat-composer",
+    "ChatComposerFooter/ThreadReply": "chat-composer",
+    "ChatComposerFooter/SendOnly": "chat-composer",
+    "DropZone": "drop-zone"
   },
   "codeOnlyComponents": {
     "count": "Count is figures in text, styled by the part it sits in; in Figma it is typed into that part's text layer, such as 99+ or +4."
