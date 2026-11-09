@@ -213,7 +213,8 @@ silence, the mic's tooltip opens with the reason for a few seconds.
 
 ### Minimal
 
-A text box and send button in one row. No header, footer or drop zone.
+A text box and send button in one row. No header, footer or drop zone, so it
+can go down to 160px with `min-w-40`.
 
 <Canvas of={Stories.Minimal} />
 
@@ -534,6 +535,7 @@ opens as a dialog, outside the frame. The providers render no element.
       Without it, / is just a character and the command button types one.
     </>,
     "Put suggested replies in the header. They fill the draft and never send on their own.",
+    "Below 240px, use the one-row layout or leave out Common actions. The frame's minimum width stops the footer overlapping; it does not make the composer fit.",
     <>
       Return a promise from <code>onSubmit</code> for async sends. The send
       button shows busy, and a rejection keeps the draft.
@@ -782,7 +784,7 @@ Sizes at the default radius and type scale. All colors are semantic tokens.
   rows={[
     [
       "Frame",
-      "Fills its container",
+      "Fills its container, at least 240px; 160px in one row",
       "No padding of its own; rows pad themselves",
       <>
         <code>input-subtle</code> fill, 1px <code>input</code> border,{" "}
