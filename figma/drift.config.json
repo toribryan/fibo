@@ -37,7 +37,9 @@
     "Pixel snail.size": "size is keyof typeof SCALE in code, which the check cannot read; its options are sm, default and lg, as here.",
     "Calendar.mode": "A real prop, but declared once per branch of Calendar's discriminated union (single or range), which the drift parser doesn't read.",
     "Date picker trigger.size": "A real prop, typed FieldSize from lib/field-size.ts (sm, default), which the drift parser can't resolve across files.",
-    "Tabs.orientation": "Base UI's Tabs orientation prop, passed through rather than declared in tabs.tsx."
+    "Tabs.orientation": "Base UI's Tabs orientation prop, passed through rather than declared in tabs.tsx.",
+    "Chat composer.type": "Code makes the minimal composer by laying the frame out in a row (Minimal story), not with a prop; Figma needs a variant to reflow it.",
+    "Chat composer.draft": "Code reads empty or filled from the draft itself; designers pick it by hand."
   },
   "codeOnlyProps": {
     "input-group.align": "InputGroupAddon's align, inline-start or inline-end; Figma turns each side on with startAddon and endAddon instead.",
