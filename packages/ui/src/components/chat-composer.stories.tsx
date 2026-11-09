@@ -18,6 +18,7 @@ import {
   ChatComposerMentionButton,
   ChatComposerProvider,
   ChatComposerSubmit,
+  ChatComposerSuggestedReply,
   LocalChatComposerProvider,
   type ChatComposerActions,
   type ChatComposerAttachment,
@@ -42,6 +43,7 @@ const meta: Meta<typeof LocalChatComposerProvider> = {
     ChatComposerMentionButton,
     ChatComposerAttachments,
     ChatComposerSubmit,
+    ChatComposerSuggestedReply,
     ChatComposerDropZone,
   },
   argTypes: {
@@ -169,6 +171,40 @@ export const WithAttachments: Story = {
     defaultAttachments: FILES,
   },
   render: Default.render,
+}
+
+export const SuggestedReplies: Story = {
+  name: "Suggested replies",
+  render: (args) => (
+    <LocalChatComposerProvider {...args}>
+      <ChatComposerFrame>
+        <ChatComposerHeader>
+          {["Sounds good", "Can you share the file?", "Looking now"].map(
+            (reply) => (
+              <ChatComposerSuggestedReply key={reply}>
+                {reply}
+              </ChatComposerSuggestedReply>
+            )
+          )}
+        </ChatComposerHeader>
+        <ChatComposerInput placeholder="Reply to Ada" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  ),
+  play: async ({ args, canvas, userEvent }) => {
+    const input = canvas.getByRole("textbox", { name: "Message" })
+    // A suggestion fills the draft and hands focus back, but never sends.
+    await userEvent.click(canvas.getByRole("button", { name: "Sounds good" }))
+    await waitFor(() => expect(input).toHaveFocus())
+    await expect(input).toHaveValue("Sounds good")
+    await expect(args.onSubmit).not.toHaveBeenCalled()
+    await userEvent.keyboard(", shipping today")
+    await expect(input).toHaveValue("Sounds good, shipping today")
+  },
 }
 
 export const Minimal: Story = {

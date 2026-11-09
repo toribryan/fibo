@@ -548,6 +548,51 @@ function ChatComposerCommonActions({
   )
 }
 
+type ChatComposerSuggestedReplyProps = React.ComponentProps<"button"> & {
+  /** The text it puts in the draft. Defaults to its children when they are text. */
+  value?: string
+}
+
+/*
+ * A reply people can use in one tap. It fills the draft rather than sending,
+ * so people can still change it.
+ */
+function ChatComposerSuggestedReply({
+  value,
+  children,
+  className,
+  disabled,
+  onClick,
+  ...props
+}: ChatComposerSuggestedReplyProps) {
+  const { state, actions, meta } = useChatComposer()
+  const text = value ?? (typeof children === "string" ? children : "")
+  return (
+    <button
+      data-slot="chat-composer-suggested-reply"
+      type="button"
+      disabled={disabled ?? state.disabled}
+      onClick={(event) => {
+        onClick?.(event)
+        if (event.defaultPrevented) return
+        actions.setValue(text)
+        const input = meta.inputRef.current
+        requestAnimationFrame(() => {
+          input?.focus()
+          input?.setSelectionRange(text.length, text.length)
+        })
+      }}
+      className={cn(
+        "flex h-7 shrink-0 items-center rounded-full border border-border bg-background px-3 text-xs text-foreground outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle disabled:pointer-events-none",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}
+
 /** Sends the draft. Works anywhere inside the provider, not only in the frame. */
 function ChatComposerSubmit({
   className,
@@ -690,6 +735,7 @@ export {
   ChatComposerMentionButton,
   ChatComposerProvider,
   ChatComposerSubmit,
+  ChatComposerSuggestedReply,
   LocalChatComposerProvider,
   useChatComposer,
   type ChatComposerActions,
@@ -698,4 +744,5 @@ export {
   type ChatComposerMessage,
   type ChatComposerMeta,
   type ChatComposerState,
+  type ChatComposerSuggestedReplyProps,
 }
