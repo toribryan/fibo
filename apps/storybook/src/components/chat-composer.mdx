@@ -1,7 +1,9 @@
 import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+import { CornerDownRightIcon, PencilIcon } from "lucide-react"
 import { useEffect, useRef } from "react"
 
 import * as Stories from "../../../../packages/ui/src/components/chat-composer.stories"
+import { Button } from "../../../../packages/ui/src/components/button"
 import {
   ChatComposerAttachments,
   ChatComposerCommonActions,
@@ -12,8 +14,11 @@ import {
   ChatComposerInput,
   ChatComposerProvider,
   ChatComposerSubmit,
+  ChatComposerSuggestedReply,
   LocalChatComposerProvider,
 } from "../../../../packages/ui/src/components/chat-composer"
+import { Checkbox } from "../../../../packages/ui/src/components/checkbox"
+import { Kbd } from "../../../../packages/ui/src/components/kbd"
 import { Anatomy } from "../blocks/anatomy"
 import { DocTab, DocTabs } from "../blocks/doc-tabs"
 import { AnatomyDiagram, SpecTable, Specimens } from "../blocks/design-specs"
@@ -57,6 +62,42 @@ export const Still = ({ state, ...props }) => (
     <StillFrame {...props} />
   </ChatComposerProvider>
 )
+
+export const Composition = ({
+  header,
+  footer,
+  value = "",
+  attachments = [],
+}) => (
+  <ChatComposerProvider state={{ value, attachments }} actions={idle}>
+    <ChatComposerFrame className="w-full max-w-md">
+      {header ? <ChatComposerHeader>{header}</ChatComposerHeader> : null}
+      <ChatComposerInput placeholder="Message #design" />
+      <ChatComposerFooter>{footer}</ChatComposerFooter>
+    </ChatComposerFrame>
+  </ChatComposerProvider>
+)
+
+export const Showcase = ({ children }) => (
+  <div
+    inert
+    className="my-6 flex min-h-40 items-center justify-center rounded-xl border border-border bg-muted p-6"
+  >
+    {children}
+  </div>
+)
+
+export const messageFooter = (
+  <>
+    <ChatComposerCommonActions />
+    <ChatComposerSubmit />
+  </>
+)
+
+export const statusFiles = [
+  { id: "a", name: "token-audit.pdf", size: 482000 },
+  { id: "b", name: "drift-report.csv", size: 38000, status: "loading" },
+]
 
 export const Dragging = () => {
   // The real drop zone, held mid-drag by one synthetic dragenter, so the
@@ -907,6 +948,228 @@ Each arrangement matches an example under Build.
     "Attachment and Drop zone are their own components, and the slash example places a Command menu instance above the composer.",
     "Use the part names from Anatomy in the Build tab.",
     "Bind every fill and stroke to the semantic variables in the spacing table, never to a ramp gray.",
+  ]}
+/>
+
+</DocTab>
+
+<DocTab value="compositions" label="Compositions">
+
+Ready-made header and footer content, the same set Figma offers first in the
+composer's slots as preferred instances. Each is a composition of the parts,
+not a new part, so in code it is the JSX shown in the Build tab's examples.
+
+## Header
+
+### Edit
+
+For changing a message that was already sent.
+
+<Showcase>
+  <Composition
+    value="The tokens land on Friday."
+    header={
+      <>
+        <PencilIcon className="size-3.5" />
+        Editing message
+      </>
+    }
+    footer={
+      <>
+        <span className="mr-auto pl-1 text-xs text-muted-foreground">
+          <Kbd>Esc</Kbd> to cancel
+        </span>
+        <Button size="sm" variant="ghost">
+          Cancel
+        </Button>
+        <ChatComposerSubmit>Save</ChatComposerSubmit>
+      </>
+    }
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Use it only while editing a sent message, never for a new one.",
+    "Pair it with the Edit footer, so Save takes the place of send.",
+    "Keep the label to what is happening: Editing message, not the message itself.",
+  ]}
+/>
+
+### Reply
+
+For answering one message, in a thread or a busy channel.
+
+<Showcase>
+  <Composition
+    header={
+      <>
+        <CornerDownRightIcon className="size-3.5" />
+        Replying to Ada Lovelace
+      </>
+    }
+    footer={messageFooter}
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Name the person, not the message: Replying to Ada Lovelace.",
+    "Pair it with the Thread reply footer when the reply can also go to the channel.",
+    "Keep the corner-down-right icon, so it reads as a reply at a glance.",
+  ]}
+/>
+
+### Attachments
+
+For the files in the draft, before it is sent.
+
+<Showcase>
+  <Composition
+    value="Here are the audit files"
+    attachments={statusFiles}
+    header={<ChatComposerAttachments />}
+    footer={messageFooter}
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Show the header only while there are files: give it{" "}
+      <code>empty:hidden</code>.
+    </>,
+    "One Attachment per file: images as thumbnails, everything else as chips.",
+    "Leave a failed file in place with its retry, so people can see what did not make it.",
+  ]}
+/>
+
+### Suggested replies
+
+For replies people can use in one tap.
+
+<Showcase>
+  <Composition
+    header={["Sounds good", "Can you share the file?", "Looking now"].map(
+      (reply) => (
+        <ChatComposerSuggestedReply key={reply}>
+          {reply}
+        </ChatComposerSuggestedReply>
+      )
+    )}
+    footer={messageFooter}
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Offer up to three, and only when they are good guesses.",
+    "Keep each short enough that all of them fit on one line.",
+    "Take them away once the draft has text, so they do not compete with it.",
+  ]}
+/>
+
+## Footer
+
+### Message
+
+The default footer for a new message in a conversation.
+
+<Showcase>
+  <Composition footer={messageFooter} />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Start here unless the composer edits, replies or takes text only.",
+    "Leave out the common actions when the surface takes text only, such as a prompt.",
+    "Keep send at the end, where people finish typing.",
+  ]}
+/>
+
+### Edit
+
+For saving changes to a sent message.
+
+<Showcase>
+  <Composition
+    value="The tokens land on Friday."
+    header={
+      <>
+        <PencilIcon className="size-3.5" />
+        Editing message
+      </>
+    }
+    footer={
+      <>
+        <span className="mr-auto pl-1 text-xs text-muted-foreground">
+          <Kbd>Esc</Kbd> to cancel
+        </span>
+        <Button size="sm" variant="ghost">
+          Cancel
+        </Button>
+        <ChatComposerSubmit>Save</ChatComposerSubmit>
+      </>
+    }
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Use it with the Edit header, never on its own.",
+    "Name the button for what it does: Save, or Update.",
+    "Leave out the Esc hint on touch screens, where there is no Esc key.",
+  ]}
+/>
+
+### Thread reply
+
+For a reply that can also be posted to the channel.
+
+<Showcase>
+  <Composition
+    header={
+      <>
+        <CornerDownRightIcon className="size-3.5" />
+        Replying to Ada Lovelace
+      </>
+    }
+    footer={
+      <>
+        <ChatComposerCommonActions />
+        <label className="ml-auto flex items-center gap-2 pr-2 text-xs text-muted-foreground">
+          <Checkbox />
+          Also send to #design
+        </label>
+        <ChatComposerSubmit />
+      </>
+    }
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Use it only in a thread, where the choice makes sense.",
+    "Name the channel in the label: Also send to #design.",
+    "Leave the checkbox unchecked, so a reply stays in the thread unless people choose otherwise.",
+  ]}
+/>
+
+### Send only
+
+For a stacked composer that takes text alone.
+
+<Showcase>
+  <Composition
+    header="Note for the release"
+    footer={<ChatComposerSubmit className="ml-auto" />}
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Use it when there is a header but no actions, such as a note with context above it.",
+    "When there is no header either, put send beside the text instead, as in the Minimal example.",
   ]}
 />
 
