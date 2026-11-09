@@ -143,10 +143,10 @@ example to open its commands.
   draft. Attachments come from a file picker or a drop anywhere on the
   conversation, and show their upload status.
 - Typing / at the start of a word opens fibo's Command menu. The emoji button
-  opens a grid of native emoji, and suggested replies fill the draft in one
-  tap.
-- No boolean feature props. Drag and drop, emoji, commands and suggested
-  replies are parts: render one to enable it, omit it to disable it.
+  opens a grid of native emoji, the mic dictates into the draft, and
+  suggested replies fill the draft in one tap.
+- No boolean feature props. Drag and drop, emoji, commands, dictation and
+  suggested replies are parts: render one to enable it, omit it to disable it.
 
 ## Installation
 
@@ -167,7 +167,8 @@ Also exports `ChatComposerProvider`, `useChatComposer`, `ChatComposerHeader`,
 `ChatComposerAttachments`, `ChatComposerSuggestedReply`, `ChatComposerAction`,
 `ChatComposerAttachButton`, `ChatComposerEmojiButton`,
 `ChatComposerCommandButton`, `ChatComposerCommandMenu`,
-`ChatComposerMentionButton` and `ChatComposerDropZone`.
+`ChatComposerDictationButton`, `ChatComposerMentionButton` and
+`ChatComposerDropZone`.
 
 ## Examples
 
@@ -193,6 +194,16 @@ system's own picker, so the composer brings a small one; `emojis` sets the
 list.
 
 <Canvas of={Stories.Emoji} />
+
+### Dictation
+
+The mic turns speech into text at the caret, with words landing in the draft
+as they are heard; press it again or Escape to stop. It uses the browser's
+speech recognition and hides itself where there is none, such as Firefox.
+This example plays a scripted voice; `recognition` takes any engine with the
+same shape.
+
+<Canvas of={Stories.Dictation} />
 
 ### Minimal
 
@@ -399,7 +410,7 @@ A full composer has seven parts.
       fromBelow: true,
       name: "Actions",
       description:
-        "Attach, emoji and command icon buttons. Replaceable with a custom set.",
+        "Attach, emoji, command and dictation icon buttons. Replaceable with a custom set.",
     },
   ]}
 >
@@ -468,12 +479,12 @@ opens as a dialog, outside the frame. The providers render no element.
               {
                 name: "ChatComposerCommonActions",
                 slot: "chat-composer-common-actions",
-                note: "Attach, emoji and command, the actions most composers share.",
+                note: "Attach, emoji, command and dictation, the actions most composers share.",
                 children: [
                   {
                     name: "ChatComposerAction",
                     slot: "chat-composer-action",
-                    note: "An icon button. The attach, emoji and command buttons are built on it.",
+                    note: "An icon button. The attach, emoji, command and dictation buttons are built on it.",
                   },
                 ],
               },
@@ -636,7 +647,8 @@ Style parts by slot or state, e.g.
     },
     {
       attribute: 'data-slot="chat-composer-action"',
-      element: "Each icon action, including attach, emoji and command",
+      element:
+        "Each icon action, including attach, emoji, command and dictation",
       when: "When rendered.",
     },
     {
@@ -685,6 +697,8 @@ Style parts by slot or state, e.g.
     "Each attachment has a Remove button named after the file. A loading one is aria-busy, and a failed one offers Retry.",
     "Typing / opens the command menu as a dialog with focus in its search. Escape closes it and returns to the text box, with the slash left out of the draft.",
     "The emoji grid takes focus on its first emoji. Arrow keys move through it, Enter picks, and focus returns to the text box.",
+    "The dictation button is a toggle: aria-pressed is true while it listens. Escape also stops it, and focus returns to the text box at the end of the dictated words.",
+    "Dictation uses the browser's speech recognition. Chrome sends the audio to Google to transcribe, so say so where privacy matters, or pass your own engine to recognition.",
     "Suggested replies are buttons. Picking one fills the draft and focuses the text box; it never sends.",
     <>
       Dropping files is a shortcut for the attach button, which works from the
@@ -811,7 +825,8 @@ Sizes at the default radius and type scale. All colors are semantic tokens.
       "32px square, 16px icon",
       "2px between actions",
       <>
-        Ghost button, <code>muted-foreground</code> icon, fully rounded
+        Ghost button, <code>muted-foreground</code> icon, fully rounded. The mic
+        is a <code>secondary</code> button while it listens
       </>,
     ],
     [
@@ -897,13 +912,13 @@ Each arrangement matches an example under Build.
     [
       "Message",
       "Attachments, when there are any",
-      "Attach, emoji and command",
+      "Attach, emoji, command and dictation",
       "Arrow",
     ],
     [
       "Suggested replies",
       "A chip per suggestion",
-      "Attach, emoji and command",
+      "Attach, emoji, command and dictation",
       "Arrow",
     ],
     ["Minimal", "None", "None; send sits beside the text", "Arrow"],
@@ -916,7 +931,7 @@ Each arrangement matches an example under Build.
     [
       "Thread reply",
       "Replying to someone",
-      "Attach, emoji, command, and a checkbox to also post to the channel",
+      "Common actions, and a checkbox to also post to the channel",
       "Arrow",
     ],
     [

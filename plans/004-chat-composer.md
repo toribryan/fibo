@@ -61,6 +61,12 @@ emoji dataset would be a dependency. `ChatComposerEmojiButton` offers a grid
 of 40 native characters drawn by the system font, and takes `emojis` for a
 different list.
 
+**Dictation.** `ChatComposerDictationButton` uses the browser's speech
+recognition, which needs no dependency but is missing in Firefox and sends
+audio to Google in Chrome. So the button hides where it is unsupported, and
+`recognition` takes another engine with the same shape. Its pressed look is
+the Button's secondary variant, not a new composer state.
+
 **Attachments and drops.** Attachment and Drop zone are their own parts, so
 forms and other surfaces can use them. The composer renders each attachment
 with its upload status, waits for uploads before sending, and wraps Drop zone
