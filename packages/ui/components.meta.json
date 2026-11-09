@@ -28,6 +28,14 @@
     "group": "Actions",
     "figma": "169-12"
   },
+  "attachment": {
+    "title": "Attachment",
+    "description": "One added file as a chip or an image thumbnail, with its upload status and buttons to remove or retry.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new",
+    "figma": "1011-2"
+  },
   "calendar": {
     "title": "Calendar",
     "description": "A month grid for picking a day or a range, with full keyboard use; pages side by side, scrolls on phones, or fills a page with a month of events.",
@@ -357,8 +365,7 @@
     "title": "Alert dialog",
     "description": "Asks for a decision before something that can't be undone, with Cancel focused and no click-outside dismiss.",
     "tier": "base-components",
-    "group": "Overlays",
-    "status": "new"
+    "group": "Overlays"
   },
   "settings-page": {
     "title": "Settings page",

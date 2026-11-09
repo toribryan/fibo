@@ -26,6 +26,7 @@ import {
   AnnotatedText,
   AnnotatedTextChip,
 } from "@workspace/ui/components/annotated-text"
+import { Attachment } from "@workspace/ui/components/attachment"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -272,6 +273,7 @@ const PREVIEWS: Record<string, ReactNode> = {
     </div>
   ),
   textarea: <Textarea placeholder="Leave a note" className="w-52" />,
+  attachment: <Attachment name="token-audit.pdf" size={482_000} />,
   "chat-composer": (
     <div className="flex w-60 flex-col rounded-2xl border border-input bg-input-subtle">
       <span className="px-3 pt-3 pb-2 text-sm text-muted-foreground">
