@@ -1,9 +1,22 @@
 "use client"
 
 import * as React from "react"
-import { ArrowUpIcon, AtSignIcon, PaperclipIcon, XIcon } from "lucide-react"
+import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
+import {
+  ArrowUpIcon,
+  AtSignIcon,
+  PaperclipIcon,
+  SmileIcon,
+  SquareSlashIcon,
+} from "lucide-react"
 
+import { Attachment } from "@workspace/ui/components/attachment"
 import { Button } from "@workspace/ui/components/button"
+import {
+  CommandMenu,
+  type CommandMenuProps,
+} from "@workspace/ui/components/command-menu"
+import { DropZone } from "@workspace/ui/components/drop-zone"
 import { Progress } from "@workspace/ui/components/progress"
 import {
   Tooltip,
@@ -29,6 +42,10 @@ type ChatComposerAttachment = {
   size?: number
   /** The file itself, when it came from this device. */
   file?: File
+  /** Where its upload is. Leave it out for a file that needs no upload. */
+  status?: "ready" | "loading" | "error"
+  /** What went wrong, in a few words, when the upload failed. */
+  error?: string
 }
 
 type ChatComposerState = {
@@ -51,6 +68,8 @@ type ChatComposerActions = {
   addAttachments: (files: File[]) => void
   /** Removes one attachment by id. */
   removeAttachment: (id: string) => void
+  /** Tries a failed upload again. Without it, failed files offer no retry. */
+  retryAttachment?: (id: string) => void
   /** Sends the draft. */
   submit: () => void
 }
@@ -58,6 +77,8 @@ type ChatComposerActions = {
 type ChatComposerMeta = {
   /** The text box, so any part can focus it or read the caret. */
   inputRef: React.RefObject<HTMLTextAreaElement | null>
+  /** Opens the command menu, while a ChatComposerCommandMenu is rendered. */
+  openCommandsRef: React.RefObject<(() => void) | null>
 }
 
 type ChatComposerContextValue = {
@@ -88,11 +109,17 @@ function hasContent({ value, attachments }: ChatComposerMessage) {
   return value.trim() !== "" || attachments.length > 0
 }
 
+/** Whether every attachment has finished uploading. */
+function uploadsReady({ attachments }: ChatComposerState) {
+  return attachments.every((a) => (a.status ?? "ready") === "ready")
+}
+
 /** Whether the draft may be sent and the composer is free to send it. */
 function isSubmittable(state: ChatComposerState) {
   return (
     !state.disabled &&
     !state.submitting &&
+    uploadsReady(state) &&
     (state.canSubmit ?? hasContent(state))
   )
 }
@@ -119,8 +146,9 @@ function ChatComposerProvider({
 }: ChatComposerProviderProps) {
   const ownRef = React.useRef<HTMLTextAreaElement>(null)
   const ref = inputRef ?? ownRef
+  const openCommandsRef = React.useRef<(() => void) | null>(null)
   const value = React.useMemo(
-    () => ({ state, actions, meta: { inputRef: ref } }),
+    () => ({ state, actions, meta: { inputRef: ref, openCommandsRef } }),
     [state, actions, ref]
   )
   return <ChatComposerContext value={value}>{children}</ChatComposerContext>
@@ -144,6 +172,8 @@ type LocalChatComposerProviderProps = {
   disabled?: boolean
   /** Decides whether the draft may be sent. Defaults to having text or an attachment. */
   canSubmit?: (message: ChatComposerMessage) => boolean
+  /** Uploads one attachment. While it runs the attachment shows loading and send waits; a rejection marks it failed and offers retry. */
+  upload?: (attachment: ChatComposerAttachment) => Promise<void>
   /** A ref for the text box. One is made for you when omitted. */
   inputRef?: React.RefObject<HTMLTextAreaElement | null>
   /** The parts. */
@@ -173,6 +203,7 @@ function LocalChatComposerProvider({
   onSubmit,
   disabled,
   canSubmit = hasContent,
+  upload,
   inputRef,
   children,
 }: LocalChatComposerProviderProps) {
@@ -188,18 +219,42 @@ function LocalChatComposerProvider({
 
   // Submit reads the latest draft without re-creating the actions on every
   // keystroke, which would re-render every part that only needs actions.
-  const latest = React.useRef({ state, onSubmit })
+  const latest = React.useRef({ state, onSubmit, upload })
   React.useLayoutEffect(() => {
-    latest.current = { state, onSubmit }
+    latest.current = { state, onSubmit, upload }
   })
 
-  const actions = React.useMemo<ChatComposerActions>(
-    () => ({
+  const actions = React.useMemo<ChatComposerActions>(() => {
+    const patch = (id: string, next: Partial<ChatComposerAttachment>) =>
+      setAttachments((current) =>
+        current.map((a) => (a.id === id ? { ...a, ...next } : a))
+      )
+    const start = (attachment: ChatComposerAttachment) => {
+      const { upload } = latest.current
+      if (!upload) return
+      patch(attachment.id, { status: "loading", error: undefined })
+      upload(attachment).then(
+        () => patch(attachment.id, { status: "ready" }),
+        () => patch(attachment.id, { status: "error" })
+      )
+    }
+    return {
       setValue,
-      addAttachments: (files) =>
-        setAttachments((current) => [...current, ...toAttachments(files)]),
+      addAttachments: (files) => {
+        const added = toAttachments(files).map((a) =>
+          latest.current.upload ? { ...a, status: "loading" as const } : a
+        )
+        setAttachments((current) => [...current, ...added])
+        added.forEach(start)
+      },
       removeAttachment: (id) =>
         setAttachments((current) => current.filter((a) => a.id !== id)),
+      retryAttachment: (id) => {
+        const attachment = latest.current.state.attachments.find(
+          (a) => a.id === id
+        )
+        if (attachment) start(attachment)
+      },
       submit: () => {
         const { state, onSubmit } = latest.current
         if (!isSubmittable(state)) return
@@ -222,9 +277,8 @@ function LocalChatComposerProvider({
         setSubmitting(true)
         result.then(clear, () => {}).finally(() => setSubmitting(false))
       },
-    }),
-    []
-  )
+    }
+  }, [])
 
   return (
     <ChatComposerProvider state={state} actions={actions} inputRef={inputRef}>
@@ -298,7 +352,7 @@ function ChatComposerInput({
   const {
     state,
     actions,
-    meta: { inputRef },
+    meta: { inputRef, openCommandsRef },
   } = useChatComposer()
   // A caller's ref joins the composer's rather than replacing it, which
   // would break frame clicks and the mention button.
@@ -321,6 +375,12 @@ function ChatComposerInput({
       disabled={state.disabled || disabled}
       onChange={(event) => {
         onChange?.(event)
+        const openCommands = openCommandsRef.current
+        if (openCommands && startsCommand(event)) {
+          // The slash only opens the menu, so it stays out of the draft.
+          openCommands()
+          return
+        }
         actions.setValue(event.target.value)
       }}
       onKeyDown={(event) => {
@@ -344,6 +404,15 @@ function ChatComposerInput({
       )}
     />
   )
+}
+
+/** Whether this keystroke typed a slash at the start of a word. */
+function startsCommand(event: React.ChangeEvent<HTMLTextAreaElement>) {
+  const input = event.nativeEvent as InputEvent
+  if (input.inputType !== "insertText" || input.data !== "/") return false
+  const caret = event.target.selectionStart
+  const before = event.target.value[caret - 2]
+  return caret === 1 || (before !== undefined && /\s/.test(before))
 }
 
 /** A row below the text box, for actions and the send button. */
@@ -488,6 +557,217 @@ function ChatComposerMentionButton({
   )
 }
 
+type ChatComposerEmoji = {
+  /** The character inserted into the draft. */
+  emoji: string
+  /** Names it for screen readers and the tooltip. */
+  label: string
+}
+
+// Native characters, drawn by the system's emoji font, so there is no image
+// set or dataset to ship. Browsers give no way to open the system picker.
+const DEFAULT_EMOJIS: ChatComposerEmoji[] = [
+  { emoji: "\u{1F600}", label: "Grinning" },
+  { emoji: "\u{1F602}", label: "Laughing" },
+  { emoji: "\u{1F642}", label: "Smiling" },
+  { emoji: "\u{1F609}", label: "Winking" },
+  { emoji: "\u{1F60D}", label: "Heart eyes" },
+  { emoji: "\u{1F914}", label: "Thinking" },
+  { emoji: "\u{1F62E}", label: "Surprised" },
+  { emoji: "\u{1F622}", label: "Crying" },
+  { emoji: "\u{1F605}", label: "Nervous laugh" },
+  { emoji: "\u{1F643}", label: "Upside down" },
+  { emoji: "\u{1F60E}", label: "Cool" },
+  { emoji: "\u{1F973}", label: "Party" },
+  { emoji: "\u{1F634}", label: "Sleeping" },
+  { emoji: "\u{1F92F}", label: "Mind blown" },
+  { emoji: "\u{1F62C}", label: "Grimacing" },
+  { emoji: "\u{1FAE1}", label: "Salute" },
+  { emoji: "\u{1F44D}", label: "Thumbs up" },
+  { emoji: "\u{1F44E}", label: "Thumbs down" },
+  { emoji: "\u{1F44F}", label: "Clapping" },
+  { emoji: "\u{1F64C}", label: "Raised hands" },
+  { emoji: "\u{1F64F}", label: "Thank you" },
+  { emoji: "\u{1F440}", label: "Eyes" },
+  { emoji: "\u{1F4AA}", label: "Strong" },
+  { emoji: "\u{1F44B}", label: "Wave" },
+  { emoji: "\u{2764}\u{FE0F}", label: "Heart" },
+  { emoji: "\u{1F525}", label: "Fire" },
+  { emoji: "\u{2728}", label: "Sparkles" },
+  { emoji: "\u{1F389}", label: "Celebrate" },
+  { emoji: "\u{2705}", label: "Done" },
+  { emoji: "\u{274C}", label: "No" },
+  { emoji: "\u{26A0}\u{FE0F}", label: "Warning" },
+  { emoji: "\u{1F4AF}", label: "Hundred" },
+  { emoji: "\u{1F680}", label: "Rocket" },
+  { emoji: "\u{1F4A1}", label: "Idea" },
+  { emoji: "\u{1F4CC}", label: "Pin" },
+  { emoji: "\u{1F4CE}", label: "Paperclip" },
+  { emoji: "\u{2615}", label: "Coffee" },
+  { emoji: "\u{1F41B}", label: "Bug" },
+  { emoji: "\u{1F3AF}", label: "Target" },
+  { emoji: "\u{1F331}", label: "Seedling" },
+]
+
+const EMOJI_COLUMNS = 8
+
+type ChatComposerEmojiButtonProps = Omit<ChatComposerActionProps, "label"> & {
+  /** The emoji on offer, in order. Defaults to 40 common ones. */
+  emojis?: ChatComposerEmoji[]
+  /** Names the button. */
+  label?: string
+}
+
+/** Opens a grid of native emoji and puts the one picked at the caret. */
+function ChatComposerEmojiButton({
+  emojis = DEFAULT_EMOJIS,
+  label = "Add emoji",
+  children,
+  ...props
+}: ChatComposerEmojiButtonProps) {
+  const composer = useChatComposer()
+  const [open, setOpen] = React.useState(false)
+  const gridRef = React.useRef<HTMLDivElement>(null)
+
+  function rove(event: React.KeyboardEvent<HTMLDivElement>) {
+    const targets = Array.from(
+      gridRef.current?.querySelectorAll<HTMLElement>("button") ?? []
+    )
+    const current = targets.indexOf(document.activeElement as HTMLElement)
+    const step = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      ArrowDown: EMOJI_COLUMNS,
+      ArrowUp: -EMOJI_COLUMNS,
+    }[event.key]
+    if (step === undefined || current === -1) return
+    event.preventDefault()
+    targets[Math.min(Math.max(current + step, 0), targets.length - 1)]?.focus()
+  }
+
+  return (
+    <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+      <PopoverPrimitive.Trigger
+        render={
+          <ChatComposerAction label={label} {...props}>
+            {children ?? <SmileIcon />}
+          </ChatComposerAction>
+        }
+      />
+      <PopoverPrimitive.Portal>
+        <PopoverPrimitive.Positioner
+          side="top"
+          align="start"
+          sideOffset={8}
+          className="isolate z-50"
+        >
+          <PopoverPrimitive.Popup
+            data-slot="chat-composer-emoji-picker"
+            aria-label="Emoji"
+            finalFocus={composer.meta.inputRef}
+            className="origin-(--transform-origin) rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-md outline-hidden transition-[opacity,transform] duration-150 ease-out data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 motion-reduce:transition-none"
+          >
+            <div
+              ref={gridRef}
+              onKeyDown={rove}
+              className="grid grid-cols-8 gap-0.5"
+            >
+              {emojis.map(({ emoji, label }) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  aria-label={label}
+                  title={label}
+                  onClick={() => {
+                    insertAtCaret(composer, emoji)
+                    setOpen(false)
+                  }}
+                  className="flex size-8 items-center justify-center rounded-md text-lg outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </PopoverPrimitive.Popup>
+        </PopoverPrimitive.Positioner>
+      </PopoverPrimitive.Portal>
+    </PopoverPrimitive.Root>
+  )
+}
+
+type ChatComposerCommandMenuProps = Omit<
+  CommandMenuProps,
+  "open" | "defaultOpen" | "trigger" | "hotkey"
+>
+
+/*
+ * fibo's Command menu, opened by typing / at the start of a word or by
+ * ChatComposerCommandButton. Rendering it is what turns slash commands on;
+ * without it a slash is just a character. Commands act on the draft through
+ * useChatComposer, like any other part.
+ */
+function ChatComposerCommandMenu({
+  onOpenChange,
+  label = "Commands",
+  placeholder = "Search commands…",
+  ...props
+}: ChatComposerCommandMenuProps) {
+  const { meta } = useChatComposer()
+  const [open, setOpen] = React.useState(false)
+  const change = (next: boolean) => {
+    setOpen(next)
+    onOpenChange?.(next)
+  }
+  const openMenu = React.useEffectEvent(() => change(true))
+  React.useEffect(() => {
+    const ref = meta.openCommandsRef
+    ref.current = () => openMenu()
+    return () => {
+      ref.current = null
+    }
+  }, [meta.openCommandsRef])
+  return (
+    <CommandMenu
+      {...props}
+      label={label}
+      placeholder={placeholder}
+      open={open}
+      onOpenChange={change}
+      trigger={null}
+      // The page may have its own Cmd+K menu; this one opens from the draft.
+      hotkey={null}
+    />
+  )
+}
+
+/** Opens the command menu, the same as typing / at the start of a word. */
+function ChatComposerCommandButton({
+  label = "Run a command",
+  onClick,
+  children,
+  ...props
+}: Omit<ChatComposerActionProps, "label"> & {
+  /** Names the button. */
+  label?: string
+}) {
+  const composer = useChatComposer()
+  return (
+    <ChatComposerAction
+      label={label}
+      onClick={(event) => {
+        onClick?.(event)
+        if (event.defaultPrevented) return
+        const openCommands = composer.meta.openCommandsRef.current
+        if (openCommands) openCommands()
+        else insertAtCaret(composer, "/")
+      }}
+      {...props}
+    >
+      {children ?? <SquareSlashIcon />}
+    </ChatComposerAction>
+  )
+}
+
 /*
  * The actions most composers share. It is only JSX, so a composer that needs
  * something else leaves it out and lists its own actions instead.
@@ -503,8 +783,54 @@ function ChatComposerCommonActions({
       {...props}
     >
       <ChatComposerAttachButton />
-      <ChatComposerMentionButton />
+      <ChatComposerEmojiButton />
+      <ChatComposerCommandButton />
     </div>
+  )
+}
+
+type ChatComposerSuggestedReplyProps = React.ComponentProps<"button"> & {
+  /** The text it puts in the draft. Defaults to its children when they are text. */
+  value?: string
+}
+
+/*
+ * A reply people can use in one tap. It fills the draft rather than sending,
+ * so people can still change it.
+ */
+function ChatComposerSuggestedReply({
+  value,
+  children,
+  className,
+  disabled,
+  onClick,
+  ...props
+}: ChatComposerSuggestedReplyProps) {
+  const { state, actions, meta } = useChatComposer()
+  const text = value ?? (typeof children === "string" ? children : "")
+  return (
+    <button
+      data-slot="chat-composer-suggested-reply"
+      type="button"
+      disabled={disabled ?? state.disabled}
+      onClick={(event) => {
+        onClick?.(event)
+        if (event.defaultPrevented) return
+        actions.setValue(text)
+        const input = meta.inputRef.current
+        requestAnimationFrame(() => {
+          input?.focus()
+          input?.setSelectionRange(text.length, text.length)
+        })
+      }}
+      className={cn(
+        "flex h-7 shrink-0 items-center rounded-full border border-border bg-background px-3 text-xs text-foreground outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring-subtle disabled:pointer-events-none",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
   )
 }
 
@@ -558,142 +884,82 @@ function ChatComposerAttachments({
     <ul
       data-slot="chat-composer-attachments"
       aria-label="Attachments"
-      className={cn("flex flex-wrap gap-1.5", className)}
+      className={cn("flex flex-wrap items-center gap-2", className)}
       {...props}
     >
       {state.attachments.map((attachment) => (
-        <li
-          key={attachment.id}
-          data-slot="chat-composer-attachment"
-          className="flex h-7 max-w-56 items-center gap-1.5 rounded-full border border-border bg-background pr-1 pl-2.5 text-xs text-foreground"
-        >
-          <PaperclipIcon className="size-3 shrink-0 text-muted-foreground" />
-          <span className="truncate">{attachment.name}</span>
-          {attachment.size !== undefined ? (
-            <span className="shrink-0 text-muted-foreground">
-              {formatBytes(attachment.size)}
-            </span>
-          ) : null}
-          <button
-            type="button"
-            aria-label={`Remove ${attachment.name}`}
+        <li key={attachment.id} data-slot="chat-composer-attachment">
+          <ChatComposerAttachmentItem
+            attachment={attachment}
             disabled={state.disabled}
-            onClick={() => actions.removeAttachment(attachment.id)}
-            className="flex size-5 shrink-0 items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle disabled:pointer-events-none"
-          >
-            <XIcon className="size-3" />
-          </button>
+            onRemove={() => actions.removeAttachment(attachment.id)}
+            onRetry={
+              actions.retryAttachment
+                ? () => actions.retryAttachment?.(attachment.id)
+                : undefined
+            }
+          />
         </li>
       ))}
     </ul>
   )
 }
 
-/** Sizes in the units people read them in: 512 B, 12 KB, 3.4 MB. */
-function formatBytes(bytes: number) {
-  if (bytes < 1024) return `${bytes} B`
-  const units = ["KB", "MB", "GB"]
-  let size = bytes / 1024
-  let unit = 0
-  while (size >= 1024 && unit < units.length - 1) {
-    size /= 1024
-    unit++
+// One URL per file for the life of the page: revoking on unmount would
+// break the preview when Strict Mode or a list reorder remounts the item.
+const previews = new WeakMap<File, string>()
+
+function previewUrl(file: File) {
+  let url = previews.get(file)
+  if (!url) {
+    url = URL.createObjectURL(file)
+    previews.set(file, url)
   }
-  return `${size < 10 ? size.toFixed(1).replace(/\.0$/, "") : Math.round(size)} ${units[unit]}`
+  return url
 }
 
-/** Whether a file passes an accept string such as "image/*,.pdf". */
-function matchesAccept(file: File, accept?: string) {
-  if (!accept?.trim()) return true
-  const name = file.name.toLowerCase()
-  const type = file.type.toLowerCase()
-  return accept.split(",").some((raw) => {
-    const rule = raw.trim().toLowerCase()
-    if (!rule) return false
-    if (rule.startsWith(".")) return name.endsWith(rule)
-    if (rule.endsWith("/*")) return type.startsWith(rule.slice(0, -1))
-    return type === rule
-  })
+/** An image from this device previews as a thumbnail; anything else is a chip. */
+function ChatComposerAttachmentItem({
+  attachment,
+  ...props
+}: {
+  attachment: ChatComposerAttachment
+  disabled?: boolean
+  onRemove: () => void
+  onRetry?: () => void
+}) {
+  const file = attachment.file
+  const image = file?.type.startsWith("image/") ?? false
+  const src = file && image ? previewUrl(file) : undefined
+  return (
+    <Attachment
+      type={image ? "image" : "file"}
+      status={attachment.status}
+      name={attachment.name}
+      size={attachment.size}
+      error={attachment.error}
+      src={src}
+      {...props}
+    />
+  )
 }
 
 /*
- * Attaches files dropped anywhere inside it. Leave it out to turn drag and
- * drop off; there is no prop for that.
+ * A Drop zone that attaches what is dropped. Wrap the whole conversation
+ * panel, not just the frame, so the target is easy to hit. Leave it out to
+ * turn drag and drop off; there is no prop for that.
  */
-function ChatComposerDropZone({
-  className,
-  children,
-  label = "Drop files to attach",
-  accept,
-  onDragEnter,
-  onDragOver,
-  onDragLeave,
-  onDrop,
-  ...props
-}: React.ComponentProps<"div"> & {
-  /** Shown over the zone while files are dragged across it. */
-  label?: React.ReactNode
-  /** File types it takes, as in a file input's accept attribute. Match it to the attach button's. */
-  accept?: string
-}) {
+function ChatComposerDropZone(
+  props: Omit<React.ComponentProps<typeof DropZone>, "onDropFiles">
+) {
   const { state, actions } = useChatComposer()
-  const [dragging, setDragging] = React.useState(false)
-  // dragenter and dragleave fire for every child crossed, so count them.
-  const depth = React.useRef(0)
-
-  const hasFiles = (event: React.DragEvent) =>
-    !state.disabled && event.dataTransfer.types.includes("Files")
-
   return (
-    <div
+    <DropZone
       data-slot="chat-composer-drop-zone"
-      data-dragging={dragging ? "" : undefined}
-      className={cn("relative", className)}
-      onDragEnter={(event) => {
-        // A caller's handler runs first and can take the drag over by
-        // calling preventDefault, as with ChatComposerFrame's click.
-        onDragEnter?.(event)
-        if (event.defaultPrevented || !hasFiles(event)) return
-        event.preventDefault()
-        depth.current++
-        setDragging(true)
-      }}
-      onDragOver={(event) => {
-        onDragOver?.(event)
-        if (event.defaultPrevented || !hasFiles(event)) return
-        event.preventDefault()
-        event.dataTransfer.dropEffect = "copy"
-      }}
-      onDragLeave={(event) => {
-        onDragLeave?.(event)
-        depth.current = Math.max(0, depth.current - 1)
-        if (depth.current === 0) setDragging(false)
-      }}
-      onDrop={(event) => {
-        onDrop?.(event)
-        // Reset first, so the hint never sticks if the composer was
-        // disabled mid-drag.
-        depth.current = 0
-        setDragging(false)
-        if (event.defaultPrevented || !hasFiles(event)) return
-        event.preventDefault()
-        const files = Array.from(event.dataTransfer.files).filter((file) =>
-          matchesAccept(file, accept)
-        )
-        if (files.length) actions.addAttachments(files)
-      }}
       {...props}
-    >
-      {children}
-      {dragging ? (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-ring bg-background text-sm font-medium text-foreground"
-        >
-          {label}
-        </div>
-      ) : null}
-    </div>
+      disabled={state.disabled || props.disabled}
+      onDropFiles={actions.addAttachments}
+    />
   )
 }
 
@@ -701,8 +967,11 @@ export {
   ChatComposerAction,
   ChatComposerAttachButton,
   ChatComposerAttachments,
+  ChatComposerCommandButton,
+  ChatComposerCommandMenu,
   ChatComposerCommonActions,
   ChatComposerDropZone,
+  ChatComposerEmojiButton,
   ChatComposerFooter,
   ChatComposerFrame,
   ChatComposerHeader,
@@ -710,12 +979,16 @@ export {
   ChatComposerMentionButton,
   ChatComposerProvider,
   ChatComposerSubmit,
+  ChatComposerSuggestedReply,
   LocalChatComposerProvider,
   useChatComposer,
   type ChatComposerActions,
   type ChatComposerAttachment,
+  type ChatComposerCommandMenuProps,
   type ChatComposerContextValue,
+  type ChatComposerEmoji,
   type ChatComposerMessage,
   type ChatComposerMeta,
   type ChatComposerState,
+  type ChatComposerSuggestedReplyProps,
 }

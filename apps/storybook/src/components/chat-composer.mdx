@@ -1,7 +1,9 @@
 import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+import { CornerDownRightIcon, PencilIcon } from "lucide-react"
 import { useEffect, useRef } from "react"
 
 import * as Stories from "../../../../packages/ui/src/components/chat-composer.stories"
+import { Button } from "../../../../packages/ui/src/components/button"
 import {
   ChatComposerAttachments,
   ChatComposerCommonActions,
@@ -12,8 +14,11 @@ import {
   ChatComposerInput,
   ChatComposerProvider,
   ChatComposerSubmit,
+  ChatComposerSuggestedReply,
   LocalChatComposerProvider,
 } from "../../../../packages/ui/src/components/chat-composer"
+import { Checkbox } from "../../../../packages/ui/src/components/checkbox"
+import { Kbd } from "../../../../packages/ui/src/components/kbd"
 import { Anatomy } from "../blocks/anatomy"
 import { DocTab, DocTabs } from "../blocks/doc-tabs"
 import { AnatomyDiagram, SpecTable, Specimens } from "../blocks/design-specs"
@@ -58,6 +63,42 @@ export const Still = ({ state, ...props }) => (
   </ChatComposerProvider>
 )
 
+export const Composition = ({
+  header,
+  footer,
+  value = "",
+  attachments = [],
+}) => (
+  <ChatComposerProvider state={{ value, attachments }} actions={idle}>
+    <ChatComposerFrame className="w-full max-w-md">
+      {header ? <ChatComposerHeader>{header}</ChatComposerHeader> : null}
+      <ChatComposerInput placeholder="Message #design" />
+      <ChatComposerFooter>{footer}</ChatComposerFooter>
+    </ChatComposerFrame>
+  </ChatComposerProvider>
+)
+
+export const Showcase = ({ children }) => (
+  <div
+    inert
+    className="my-6 flex min-h-40 items-center justify-center rounded-xl border border-border bg-muted p-6"
+  >
+    {children}
+  </div>
+)
+
+export const messageFooter = (
+  <>
+    <ChatComposerCommonActions />
+    <ChatComposerSubmit />
+  </>
+)
+
+export const statusFiles = [
+  { id: "a", name: "token-audit.pdf", size: 482000 },
+  { id: "b", name: "drift-report.csv", size: 38000, status: "loading" },
+]
+
 export const Dragging = () => {
   // The real drop zone, held mid-drag by one synthetic dragenter, so the
   // specimen shows the overlay the component draws rather than a copy.
@@ -80,7 +121,9 @@ export const Dragging = () => {
 
 # Chat composer
 
-A message input built from composable parts around one shared draft.
+A message input built from composable parts around one shared draft, with
+attachments, native emoji, suggested replies and slash commands. Type / in the
+example to open its commands.
 
 <Canvas of={Stories.Default} />
 
@@ -97,9 +140,13 @@ A message input built from composable parts around one shared draft.
   state; `ChatComposerProvider` takes external state and actions from a store,
   a server or a sync layer.
 - Enter sends, Shift+Enter breaks the line, and the text box grows with the
-  draft. Attachments come from a file picker or a drop.
-- No boolean feature props. Drag and drop, mentions and attachments are parts:
-  render one to enable it, omit it to disable it.
+  draft. Attachments come from a file picker or a drop anywhere on the
+  conversation, and show their upload status.
+- Typing / at the start of a word opens fibo's Command menu. The emoji button
+  opens a grid of native emoji, and suggested replies fill the draft in one
+  tap.
+- No boolean feature props. Drag and drop, emoji, commands and suggested
+  replies are parts: render one to enable it, omit it to disable it.
 
 ## Installation
 
@@ -115,19 +162,37 @@ A message input built from composable parts around one shared draft.
   ]}
 />
 
-Installs Button. Also exports `ChatComposerProvider`, `useChatComposer`,
-`ChatComposerHeader`, `ChatComposerAttachments`, `ChatComposerAction`,
-`ChatComposerAttachButton`, `ChatComposerMentionButton` and
-`ChatComposerDropZone`.
+Installs Button, Attachment, Drop zone, Command menu, Tooltip and Progress.
+Also exports `ChatComposerProvider`, `useChatComposer`, `ChatComposerHeader`,
+`ChatComposerAttachments`, `ChatComposerSuggestedReply`, `ChatComposerAction`,
+`ChatComposerAttachButton`, `ChatComposerEmojiButton`,
+`ChatComposerCommandButton`, `ChatComposerCommandMenu`,
+`ChatComposerMentionButton` and `ChatComposerDropZone`.
 
 ## Examples
 
 ### With attachments
 
-Picked or dropped files show as chips in the header, each with its size and a
-remove button.
+Picked or dropped files show in the header as Attachment parts:
+images as thumbnails, other files as chips. Each shows its upload, and send
+waits until every one is ready.
 
 <Canvas of={Stories.WithAttachments} />
+
+### Suggested replies
+
+Each suggestion fills the draft and hands focus back. It never sends, so
+people can change it first.
+
+<Canvas of={Stories.SuggestedReplies} />
+
+### Emoji
+
+Native emoji in a grid, inserted at the caret. Browsers can't open the
+system's own picker, so the composer brings a small one; `emojis` sets the
+list.
+
+<Canvas of={Stories.Emoji} />
 
 ### Minimal
 
@@ -172,8 +237,8 @@ different provider.
 
 ### In a chat
 
-Under a message list, with a simulated round trip to show the send button's
-busy state.
+Under a message list, with a simulated upload and round trip. The drop zone
+wraps the whole panel, so files can land anywhere on the conversation.
 
 <Canvas of={Stories.InAChat} />
 
@@ -225,6 +290,7 @@ type ChatComposerActions = {
   setValue: (value: string) => void
   addAttachments: (files: File[]) => void
   removeAttachment: (id: string) => void
+  retryAttachment?: (id: string) => void
   submit: () => void
 }
 
@@ -233,6 +299,8 @@ type ChatComposerAttachment = {
   name: string
   size?: number // bytes
   file?: File
+  status?: "ready" | "loading" | "error" // send waits until all are ready
+  error?: string
 }
 ```
 
@@ -249,7 +317,34 @@ function SyncedComposerProvider({ children }) {
 ```
 
 Custom parts read the context with `useChatComposer()`, which returns
-`{ state, actions, meta }`, with the text box at `meta.inputRef`.
+`{ state, actions, meta }`, with the text box at `meta.inputRef`. Slash
+commands use it the same way:
+
+```tsx
+function SlashCommands() {
+  const { state, actions } = useChatComposer()
+  return (
+    <ChatComposerCommandMenu
+      groups={[
+        {
+          label: "Commands",
+          items: [
+            {
+              value: "shrug",
+              label: "Shrug",
+              onSelect: () => actions.setValue(`${state.value} ¯\\_(ツ)_/¯`),
+            },
+          ],
+        },
+      ]}
+    />
+  )
+}
+```
+
+With `LocalChatComposerProvider`, pass `upload` to run each attachment's
+upload: it shows loading while the promise runs and offers retry if it
+rejects.
 
 ## Anatomy
 
@@ -289,7 +384,7 @@ A full composer has seven parts.
       side: "right",
       name: "Attachments",
       description:
-        "A chip per file, with size and remove button. Present only when files are attached.",
+        "An Attachment per file, with its upload status and a remove button. Present only when files are attached.",
     },
     {
       token: "submit",
@@ -304,7 +399,7 @@ A full composer has seven parts.
       fromBelow: true,
       name: "Actions",
       description:
-        "Attach and mention icon buttons. Replaceable with a custom set.",
+        "Attach, emoji and command icon buttons. Replaceable with a custom set.",
     },
   ]}
 >
@@ -327,14 +422,15 @@ A full composer has seven parts.
   )}
 </AnatomyDiagram>
 
-The drop zone wraps the frame and has no appearance until files are dragged
-over it; see States. The providers render no element.
+The drop zone wraps the whole conversation panel, not just the frame, and has
+no appearance until files are dragged over it; see States. The command menu
+opens as a dialog, outside the frame. The providers render no element.
 
 <Anatomy
   root={{
     name: "ChatComposerDropZone",
     slot: "chat-composer-drop-zone",
-    note: "Optional. Attaches dropped files and shows a drop hint while dragging.",
+    note: "Optional. Wraps the conversation panel, attaches dropped files and shows an overlay while dragging.",
     children: [
       {
         name: "ChatComposerFrame",
@@ -349,7 +445,7 @@ over it; see States. The providers render no element.
               {
                 name: "ChatComposerAttachments",
                 slot: "chat-composer-attachments",
-                note: "A list of chips, each with a remove button. Absent when there are none.",
+                note: "A list of Attachments, each with a remove button. Absent when there are none.",
                 children: [
                   {
                     name: "attachment",
@@ -372,12 +468,12 @@ over it; see States. The providers render no element.
               {
                 name: "ChatComposerCommonActions",
                 slot: "chat-composer-common-actions",
-                note: "Attach and mention, the actions most composers share.",
+                note: "Attach, emoji and command, the actions most composers share.",
                 children: [
                   {
                     name: "ChatComposerAction",
                     slot: "chat-composer-action",
-                    note: "An icon button. The attach and mention buttons are built on it.",
+                    note: "An icon button. The attach, emoji and command buttons are built on it.",
                   },
                 ],
               },
@@ -412,6 +508,15 @@ over it; see States. The providers render no element.
       Omit <code>ChatComposerCommonActions</code> when a composer needs a
       different set, and list its actions explicitly.
     </>,
+    <>
+      Wrap the whole conversation panel in <code>ChatComposerDropZone</code>, so
+      files can land anywhere on it.
+    </>,
+    <>
+      Render <code>ChatComposerCommandMenu</code> to turn slash commands on.
+      Without it, / is just a character and the command button types one.
+    </>,
+    "Put suggested replies in the header. They fill the draft and never send on their own.",
     <>
       Return a promise from <code>onSubmit</code> for async sends. The send
       button shows busy, and a rejection keeps the draft.
@@ -506,12 +611,12 @@ Style parts by slot or state, e.g.
     },
     {
       attribute: 'data-slot="chat-composer-attachments"',
-      element: "The list of attachment chips",
+      element: "The list of attachments",
       when: "When there is at least one attachment.",
     },
     {
       attribute: 'data-slot="chat-composer-attachment"',
-      element: "Each attachment chip",
+      element: "Each list item, holding an Attachment",
       when: "One per attachment.",
     },
     {
@@ -531,7 +636,7 @@ Style parts by slot or state, e.g.
     },
     {
       attribute: 'data-slot="chat-composer-action"',
-      element: "Each icon action, including attach and mention",
+      element: "Each icon action, including attach, emoji and command",
       when: "When rendered.",
     },
     {
@@ -540,8 +645,18 @@ Style parts by slot or state, e.g.
       when: "When rendered.",
     },
     {
+      attribute: 'data-slot="chat-composer-suggested-reply"',
+      element: "Each suggested reply",
+      when: "When rendered.",
+    },
+    {
+      attribute: 'data-slot="chat-composer-emoji-picker"',
+      element: "The emoji grid",
+      when: "While it is open.",
+    },
+    {
       attribute: 'data-slot="chat-composer-drop-zone"',
-      element: "The drop target",
+      element: "The drop target, usually the whole panel",
       when: "When rendered.",
     },
     {
@@ -567,7 +682,10 @@ Style parts by slot or state, e.g.
     </>,
     "Icon buttons are named by their label, which is also their tooltip. The send button is named Send.",
     "Enter sends and Shift+Enter breaks the line. Enter that confirms an input method editor composition never sends.",
-    "Each attachment has a Remove button named after the file.",
+    "Each attachment has a Remove button named after the file. A loading one is aria-busy, and a failed one offers Retry.",
+    "Typing / opens the command menu as a dialog with focus in its search. Escape closes it and returns to the text box, with the slash left out of the draft.",
+    "The emoji grid takes focus on its first emoji. Arrow keys move through it, Enter picks, and focus returns to the text box.",
+    "Suggested replies are buttons. Picking one fills the draft and focuses the text box; it never sends.",
     <>
       Dropping files is a shortcut for the attach button, which works from the
       keyboard. Give both the same <code>accept</code>.
@@ -579,7 +697,9 @@ Style parts by slot or state, e.g.
 
 ## Related components
 
-<RelatedComponents names={["Textarea", "Button", "Filter menu"]} />
+<RelatedComponents
+  names={["Attachment", "Drop zone", "Command menu", "Textarea"]}
+/>
 
 ## References
 
@@ -605,9 +725,19 @@ change a composer; there are no hidden switches.
       "It's a plain message to the conversation on screen.",
     ],
     [
+      "Suggested replies",
+      "There are likely replies worth one tap, such as answers to a question.",
+      "Nothing would be a good guess. An empty header beats a weak suggestion.",
+    ],
+    [
       "Actions",
-      "People attach files or mention others from here.",
+      "People attach files, add emoji or run commands from here.",
       "The surface only takes text, such as a search or an AI prompt.",
+    ],
+    [
+      "Command menu",
+      "The surface has actions worth reaching from the keyboard.",
+      "A slash would just be a character people type, such as in a file path.",
     ],
     [
       "Send",
@@ -616,7 +746,7 @@ change a composer; there are no hidden switches.
     ],
     [
       "Drop zone",
-      "Attachments are welcome, and there's room to drop onto.",
+      "Attachments are welcome. Wrap the whole conversation panel.",
       "The composer doesn't take files.",
     ],
   ]}
@@ -648,8 +778,14 @@ Sizes at the default radius and type scale. All colors are semantic tokens.
     ],
     [
       "Attachments",
-      "Chips 28px tall, at most 224px wide; long names truncate",
-      "10px left, 4px right, 6px gaps",
+      "Attachment chips 28px tall, image thumbnails 56px",
+      "8px gaps, centered on one line",
+      "See Attachment",
+    ],
+    [
+      "Suggested reply",
+      "28px tall, hugs its text",
+      "12px sides, 8px gaps",
       <>
         <code>background</code> fill, <code>border</code> outline, 12px text,
         fully rounded
@@ -741,8 +877,9 @@ State is set on the frame, so the whole field changes together.
       label: "Dragging files",
       note: (
         <>
-          A dashed <code>ring</code> outline and short instruction cover the
-          frame until files are dropped or dragged away.
+          Drop zone's overlay: a dashed <code>ring</code> outline and short
+          instruction over whatever it wraps, until files are dropped or dragged
+          away. In a chat it wraps the whole panel.
         </>
       ),
       children: <Dragging />,
@@ -760,7 +897,13 @@ Each arrangement matches an example under Build.
     [
       "Message",
       "Attachments, when there are any",
-      "Attach and mention",
+      "Attach, emoji and command",
+      "Arrow",
+    ],
+    [
+      "Suggested replies",
+      "A chip per suggestion",
+      "Attach, emoji and command",
       "Arrow",
     ],
     ["Minimal", "None", "None; send sits beside the text", "Arrow"],
@@ -773,7 +916,7 @@ Each arrangement matches an example under Build.
     [
       "Thread reply",
       "Replying to someone",
-      "Attach, mention, and a checkbox to also post to the channel",
+      "Attach, emoji, command, and a checkbox to also post to the channel",
       "Arrow",
     ],
     [
@@ -800,10 +943,233 @@ Each arrangement matches an example under Build.
 
 <UsageGuidelines
   guidelines={[
-    "Build from nested instances, one per part, so designs swap or hide parts as code does.",
-    "Prefer instance swaps and slots over boolean properties.",
+    "The Chat composer component owns the frame, the text box and their state: state is default, focused or disabled, and draft is empty or filled.",
+    "Header and footer are slots. Fill them with Context, Attachment, Suggested reply, Common actions and a Button for send.",
+    "Attachment and Drop zone are their own components, and the slash example places a Command menu instance above the composer.",
     "Use the part names from Anatomy in the Build tab.",
     "Bind every fill and stroke to the semantic variables in the spacing table, never to a ramp gray.",
+  ]}
+/>
+
+</DocTab>
+
+<DocTab value="compositions" label="Compositions">
+
+Ready-made header and footer content, the same set Figma offers first in the
+composer's slots as preferred instances. Each is a composition of the parts,
+not a new part, so in code it is the JSX shown in the Build tab's examples.
+
+## Header
+
+### Edit
+
+For changing a message that was already sent.
+
+<Showcase>
+  <Composition
+    value="The tokens land on Friday."
+    header={
+      <>
+        <PencilIcon className="size-3.5" />
+        Editing message
+      </>
+    }
+    footer={
+      <>
+        <span className="mr-auto pl-1 text-xs text-muted-foreground">
+          <Kbd>Esc</Kbd> to cancel
+        </span>
+        <Button size="sm" variant="ghost">
+          Cancel
+        </Button>
+        <ChatComposerSubmit>Save</ChatComposerSubmit>
+      </>
+    }
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Use it only while editing a sent message, never for a new one.",
+    "Pair it with the Edit footer, so Save takes the place of send.",
+    "Keep the label to what is happening: Editing message, not the message itself.",
+  ]}
+/>
+
+### Reply
+
+For answering one message, in a thread or a busy channel.
+
+<Showcase>
+  <Composition
+    header={
+      <>
+        <CornerDownRightIcon className="size-3.5" />
+        Replying to Ada Lovelace
+      </>
+    }
+    footer={messageFooter}
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Name the person, not the message: Replying to Ada Lovelace.",
+    "Pair it with the Thread reply footer when the reply can also go to the channel.",
+    "Keep the corner-down-right icon, so it reads as a reply at a glance.",
+  ]}
+/>
+
+### Attachments
+
+For the files in the draft, before it is sent.
+
+<Showcase>
+  <Composition
+    value="Here are the audit files"
+    attachments={statusFiles}
+    header={<ChatComposerAttachments />}
+    footer={messageFooter}
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Show the header only while there are files: give it{" "}
+      <code>empty:hidden</code>.
+    </>,
+    "One Attachment per file: images as thumbnails, everything else as chips.",
+    "Leave a failed file in place with its retry, so people can see what did not make it.",
+  ]}
+/>
+
+### Suggested replies
+
+For replies people can use in one tap.
+
+<Showcase>
+  <Composition
+    header={["Sounds good", "Can you share the file?", "Looking now"].map(
+      (reply) => (
+        <ChatComposerSuggestedReply key={reply}>
+          {reply}
+        </ChatComposerSuggestedReply>
+      )
+    )}
+    footer={messageFooter}
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Offer up to three, and only when they are good guesses.",
+    "Keep each short enough that all of them fit on one line.",
+    "Take them away once the draft has text, so they do not compete with it.",
+  ]}
+/>
+
+## Footer
+
+### Message
+
+The default footer for a new message in a conversation.
+
+<Showcase>
+  <Composition footer={messageFooter} />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Start here unless the composer edits, replies or takes text only.",
+    "Leave out the common actions when the surface takes text only, such as a prompt.",
+    "Keep send at the end, where people finish typing.",
+  ]}
+/>
+
+### Edit
+
+For saving changes to a sent message.
+
+<Showcase>
+  <Composition
+    value="The tokens land on Friday."
+    header={
+      <>
+        <PencilIcon className="size-3.5" />
+        Editing message
+      </>
+    }
+    footer={
+      <>
+        <span className="mr-auto pl-1 text-xs text-muted-foreground">
+          <Kbd>Esc</Kbd> to cancel
+        </span>
+        <Button size="sm" variant="ghost">
+          Cancel
+        </Button>
+        <ChatComposerSubmit>Save</ChatComposerSubmit>
+      </>
+    }
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Use it with the Edit header, never on its own.",
+    "Name the button for what it does: Save, or Update.",
+    "Leave out the Esc hint on touch screens, where there is no Esc key.",
+  ]}
+/>
+
+### Thread reply
+
+For a reply that can also be posted to the channel.
+
+<Showcase>
+  <Composition
+    header={
+      <>
+        <CornerDownRightIcon className="size-3.5" />
+        Replying to Ada Lovelace
+      </>
+    }
+    footer={
+      <>
+        <ChatComposerCommonActions />
+        <label className="ml-auto flex items-center gap-2 pr-2 text-xs text-muted-foreground">
+          <Checkbox />
+          Also send to #design
+        </label>
+        <ChatComposerSubmit />
+      </>
+    }
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Use it only in a thread, where the choice makes sense.",
+    "Name the channel in the label: Also send to #design.",
+    "Leave the checkbox unchecked, so a reply stays in the thread unless people choose otherwise.",
+  ]}
+/>
+
+### Send only
+
+For a stacked composer that takes text alone.
+
+<Showcase>
+  <Composition
+    header="Note for the release"
+    footer={<ChatComposerSubmit className="ml-auto" />}
+  />
+</Showcase>
+
+<UsageGuidelines
+  guidelines={[
+    "Use it when there is a header but no actions, such as a note with context above it.",
+    "When there is no header either, put send beside the text instead, as in the Minimal example.",
   ]}
 />
 

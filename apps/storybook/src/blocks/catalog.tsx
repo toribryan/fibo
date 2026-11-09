@@ -2,7 +2,6 @@ import type { ReactNode } from "react"
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  AtSignIcon,
   BoldIcon,
   CalendarIcon,
   ChevronDownIcon,
@@ -18,6 +17,9 @@ import {
   PaperclipIcon,
   PlusIcon,
   SearchIcon,
+  SmileIcon,
+  SquareSlashIcon,
+  UploadIcon,
   UserIcon,
   XIcon,
 } from "lucide-react"
@@ -26,6 +28,7 @@ import {
   AnnotatedText,
   AnnotatedTextChip,
 } from "@workspace/ui/components/annotated-text"
+import { Attachment } from "@workspace/ui/components/attachment"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -272,6 +275,13 @@ const PREVIEWS: Record<string, ReactNode> = {
     </div>
   ),
   textarea: <Textarea placeholder="Leave a note" className="w-52" />,
+  attachment: <Attachment name="token-audit.pdf" size={482_000} />,
+  "drop-zone": (
+    <span className="flex h-24 w-48 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-ring text-xs">
+      <UploadIcon className="size-4 text-muted-foreground" />
+      <span className="font-medium">Drop files to attach</span>
+    </span>
+  ),
   "chat-composer": (
     <div className="flex w-60 flex-col rounded-2xl border border-input bg-input-subtle">
       <span className="px-3 pt-3 pb-2 text-sm text-muted-foreground">
@@ -279,7 +289,8 @@ const PREVIEWS: Record<string, ReactNode> = {
       </span>
       <div className="flex items-center gap-2 px-2 pb-2 text-muted-foreground">
         <PaperclipIcon className="ml-1.5 size-4" />
-        <AtSignIcon className="size-4" />
+        <SmileIcon className="size-4" />
+        <SquareSlashIcon className="size-4" />
         <span className="ml-auto flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <ArrowUpIcon className="size-4" />
         </span>

@@ -38,7 +38,6 @@ const meta: Meta<PlaygroundArgs> = {
     AlertDialogCancel,
     AlertDialogAction,
   } as Record<string, React.ComponentType<unknown>>,
-  tags: ["new"],
   parameters: { controls: { exclude: ["onAction", "onCancel"] } },
   argTypes: {
     variant: { control: "inline-radio", options: ["default", "destructive"] },

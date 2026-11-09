@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { CornerDownRightIcon, PencilIcon } from "lucide-react"
+import {
+  CodeIcon,
+  CornerDownRightIcon,
+  EraserIcon,
+  MehIcon,
+  PencilIcon,
+} from "lucide-react"
 import { useMemo, useState, useSyncExternalStore } from "react"
-import { expect, fn, waitFor } from "storybook/test"
+import { expect, fn, waitFor, within } from "storybook/test"
 
 import { Avatar, AvatarFallback } from "./avatar.js"
 import { Button } from "./button.js"
@@ -9,8 +15,11 @@ import {
   ChatComposerAction,
   ChatComposerAttachButton,
   ChatComposerAttachments,
+  ChatComposerCommandButton,
+  ChatComposerCommandMenu,
   ChatComposerCommonActions,
   ChatComposerDropZone,
+  ChatComposerEmojiButton,
   ChatComposerFooter,
   ChatComposerFrame,
   ChatComposerHeader,
@@ -18,7 +27,9 @@ import {
   ChatComposerMentionButton,
   ChatComposerProvider,
   ChatComposerSubmit,
+  ChatComposerSuggestedReply,
   LocalChatComposerProvider,
+  useChatComposer,
   type ChatComposerActions,
   type ChatComposerAttachment,
   type ChatComposerMessage,
@@ -28,7 +39,7 @@ import { Checkbox } from "./checkbox.js"
 import { Kbd } from "./kbd.js"
 
 const meta: Meta<typeof LocalChatComposerProvider> = {
-  title: "Base components/Forms/Chat composer",
+  title: "Special components/Chat composer",
   component: LocalChatComposerProvider,
   subcomponents: {
     ChatComposerProvider,
@@ -40,8 +51,12 @@ const meta: Meta<typeof LocalChatComposerProvider> = {
     ChatComposerAction,
     ChatComposerAttachButton,
     ChatComposerMentionButton,
+    ChatComposerEmojiButton,
+    ChatComposerCommandButton,
+    ChatComposerCommandMenu,
     ChatComposerAttachments,
     ChatComposerSubmit,
+    ChatComposerSuggestedReply,
     ChatComposerDropZone,
   },
   argTypes: {
@@ -81,26 +96,67 @@ const meta: Meta<typeof LocalChatComposerProvider> = {
 export default meta
 type Story = StoryObj<typeof LocalChatComposerProvider>
 
+/*
+ * Slash commands act on the draft like any other part, so they read it
+ * through useChatComposer inside the provider.
+ */
+function SlashCommands() {
+  const { state, actions } = useChatComposer()
+  const append = (text: string) =>
+    actions.setValue(state.value ? `${state.value} ${text}` : text)
+  return (
+    <ChatComposerCommandMenu
+      hints={false}
+      maxRecent={0}
+      groups={[
+        {
+          label: "Commands",
+          items: [
+            {
+              value: "shrug",
+              label: "Shrug",
+              icon: <MehIcon />,
+              onSelect: () => append("\u00AF\\_(\u30C4)_/\u00AF"),
+            },
+            {
+              value: "code",
+              label: "Code block",
+              icon: <CodeIcon />,
+              onSelect: () => append("```\n\n```"),
+            },
+            {
+              value: "clear",
+              label: "Clear the draft",
+              icon: <EraserIcon />,
+              onSelect: () => actions.setValue(""),
+            },
+          ],
+        },
+      ]}
+    />
+  )
+}
+
 export const Default: Story = {
   render: (args) => (
     <LocalChatComposerProvider {...args}>
-      <ChatComposerDropZone>
-        <ChatComposerFrame>
-          <ChatComposerHeader className="empty:hidden">
-            <ChatComposerAttachments />
-          </ChatComposerHeader>
-          <ChatComposerInput placeholder="Message #design" />
-          <ChatComposerFooter>
-            <ChatComposerCommonActions />
-            <ChatComposerSubmit />
-          </ChatComposerFooter>
-        </ChatComposerFrame>
-      </ChatComposerDropZone>
+      <ChatComposerFrame>
+        <ChatComposerHeader className="empty:hidden">
+          <ChatComposerAttachments />
+        </ChatComposerHeader>
+        <ChatComposerInput placeholder="Message #design" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+      <SlashCommands />
     </LocalChatComposerProvider>
   ),
-  play: async ({ args, canvas, userEvent }) => {
+  play: async ({ args, canvas, canvasElement, userEvent }) => {
     const input = canvas.getByRole("textbox", { name: "Message" })
     const send = canvas.getByRole("button", { name: "Send" })
+    const body = within(canvasElement.ownerDocument.body)
     await expect(send).toBeDisabled()
 
     // Keyboard: Shift+Enter breaks the line, Enter sends and clears.
@@ -120,41 +176,47 @@ export const Default: Story = {
     await expect(args.onSubmit).toHaveBeenCalledTimes(1)
     await userEvent.clear(input)
 
-    // Pointer: the mention button types @ at the caret and hands focus back.
+    // A slash inside a word is just a character.
+    await userEvent.keyboard("and/or")
+    await expect(input).toHaveValue("and/or")
+    await expect(body.queryByRole("dialog")).toBeNull()
+
+    // Keyboard: a slash after a space opens the commands and stays out of
+    // the draft; the search picks one and Enter runs it.
+    await userEvent.keyboard(" /")
+    const menu = await body.findByRole("dialog", { name: "Commands" })
+    await expect(input).toHaveValue("and/or ")
+    await userEvent.keyboard("shr{Enter}")
+    await waitFor(() => expect(menu).not.toBeInTheDocument())
+    await expect(input).toHaveValue("and/or  \u00AF\\_(\u30C4)_/\u00AF")
+    await waitFor(() => expect(input).toHaveFocus())
+
+    // Pointer: the command button opens the same menu.
+    await userEvent.click(canvas.getByRole("button", { name: "Run a command" }))
     await userEvent.click(
-      canvas.getByRole("button", { name: "Mention someone" })
+      await body.findByRole("option", { name: /Clear the draft/ })
     )
-    await waitFor(() => expect(input).toHaveFocus())
-    await userEvent.keyboard("ada ship it")
-    await expect(input).toHaveValue("@ada ship it")
-    await userEvent.click(send)
-    await expect(args.onSubmit).toHaveBeenLastCalledWith({
-      value: "@ada ship it",
-      attachments: [],
-    })
+    await expect(input).toHaveValue("")
 
-    // Sending with the button hands focus back to the text box.
-    await waitFor(() => expect(input).toHaveFocus())
-
-    // Keyboard: Tab reaches the actions in order, and Enter runs one.
-    await userEvent.tab()
-    await expect(
-      canvas.getByRole("button", { name: "Attach files" })
-    ).toHaveFocus()
-    await userEvent.tab()
-    await expect(
-      canvas.getByRole("button", { name: "Mention someone" })
-    ).toHaveFocus()
-    await userEvent.keyboard("{Enter}")
-    await waitFor(() => expect(input).toHaveFocus())
-    await expect(input).toHaveValue("@")
-    await userEvent.clear(input)
+    // Keyboard: Tab reaches the actions in order.
+    await userEvent.click(input)
+    for (const name of ["Attach files", "Add emoji", "Run a command"]) {
+      await userEvent.tab()
+      await expect(canvas.getByRole("button", { name })).toHaveFocus()
+    }
   },
 }
 
 const FILES: ChatComposerAttachment[] = [
   { id: "a", name: "token-audit.pdf", size: 482_000 },
-  { id: "b", name: "button-states.png", size: 1_830_000 },
+  { id: "b", name: "drift-report.csv", size: 38_000, status: "loading" },
+  {
+    id: "c",
+    name: "button-states.fig",
+    size: 1_830_000,
+    status: "error",
+    error: "Too large",
+  },
 ]
 
 export const WithAttachments: Story = {
@@ -164,6 +226,82 @@ export const WithAttachments: Story = {
     defaultAttachments: FILES,
   },
   render: Default.render,
+}
+
+export const SuggestedReplies: Story = {
+  name: "Suggested replies",
+  render: (args) => (
+    <LocalChatComposerProvider {...args}>
+      <ChatComposerFrame>
+        <ChatComposerHeader>
+          {["Sounds good", "Can you share the file?", "Looking now"].map(
+            (reply) => (
+              <ChatComposerSuggestedReply key={reply}>
+                {reply}
+              </ChatComposerSuggestedReply>
+            )
+          )}
+        </ChatComposerHeader>
+        <ChatComposerInput placeholder="Reply to Ada" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  ),
+  play: async ({ args, canvas, userEvent }) => {
+    const input = canvas.getByRole("textbox", { name: "Message" })
+    // A suggestion fills the draft and hands focus back, but never sends.
+    await userEvent.click(canvas.getByRole("button", { name: "Sounds good" }))
+    await waitFor(() => expect(input).toHaveFocus())
+    await expect(input).toHaveValue("Sounds good")
+    await expect(args.onSubmit).not.toHaveBeenCalled()
+    await userEvent.keyboard(", shipping today")
+    await expect(input).toHaveValue("Sounds good, shipping today")
+  },
+}
+
+export const Emoji: Story = {
+  render: (args) => (
+    <LocalChatComposerProvider {...args}>
+      <ChatComposerFrame>
+        <ChatComposerInput placeholder="Message #design" />
+        <ChatComposerFooter>
+          <ChatComposerEmojiButton />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  ),
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    const input = canvas.getByRole("textbox", { name: "Message" })
+    const body = within(canvasElement.ownerDocument.body)
+    await userEvent.type(input, "Shipped ")
+
+    // Pointer: pick one and it lands at the caret, with focus back in the box.
+    await userEvent.click(canvas.getByRole("button", { name: "Add emoji" }))
+    await userEvent.click(await body.findByRole("button", { name: "Rocket" }))
+    await waitFor(() => expect(input).toHaveFocus())
+    await expect(input).toHaveValue("Shipped \u{1F680}")
+    // The grid stays mounted for its closing fade; wait it out before tabbing.
+    await waitFor(() =>
+      expect(body.queryByRole("button", { name: "Rocket" })).toBeNull()
+    )
+
+    // Keyboard: open it, move with the arrows, Enter picks.
+    await userEvent.tab()
+    await expect(
+      canvas.getByRole("button", { name: "Add emoji" })
+    ).toHaveFocus()
+    await userEvent.keyboard("{Enter}")
+    await waitFor(() =>
+      expect(body.getByRole("button", { name: "Grinning" })).toHaveFocus()
+    )
+    await userEvent.keyboard("{ArrowDown}{ArrowRight}{Enter}")
+    await waitFor(() => expect(input).toHaveFocus())
+    await expect(input).toHaveValue("Shipped \u{1F680}\u{1F643}")
+  },
 }
 
 export const Minimal: Story = {
@@ -259,26 +397,21 @@ function ThreadReplyDemo(args: Story["args"]) {
       {...args}
       onSubmit={(message) => sendReply({ ...message, alsoChannel })}
     >
-      <ChatComposerDropZone>
-        <ChatComposerFrame>
-          <ChatComposerHeader>
-            <CornerDownRightIcon className="size-3.5" />
-            Replying to Ada Lovelace
-          </ChatComposerHeader>
-          <ChatComposerInput placeholder="Reply…" />
-          <ChatComposerFooter>
-            <ChatComposerCommonActions />
-            <label className="ml-auto flex items-center gap-2 pr-2 text-xs text-muted-foreground">
-              <Checkbox
-                checked={alsoChannel}
-                onCheckedChange={setAlsoChannel}
-              />
-              Also send to #design
-            </label>
-            <ChatComposerSubmit />
-          </ChatComposerFooter>
-        </ChatComposerFrame>
-      </ChatComposerDropZone>
+      <ChatComposerFrame>
+        <ChatComposerHeader>
+          <CornerDownRightIcon className="size-3.5" />
+          Replying to Ada Lovelace
+        </ChatComposerHeader>
+        <ChatComposerInput placeholder="Reply…" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <label className="ml-auto flex items-center gap-2 pr-2 text-xs text-muted-foreground">
+            <Checkbox checked={alsoChannel} onCheckedChange={setAlsoChannel} />
+            Also send to #design
+          </label>
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
     </LocalChatComposerProvider>
   )
 }
@@ -445,63 +578,67 @@ function ChatDemo(args: Story["args"]) {
     },
   ])
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4">
-      <ol aria-label="Messages" className="flex flex-col gap-3">
-        {messages.map((message) => (
-          <li key={message.id} className="flex items-start gap-2.5">
-            <Avatar size="sm">
-              <AvatarFallback>
-                {message.author
-                  .split(" ")
-                  .map((word) => word[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col text-sm">
-              <span className="font-medium">{message.author}</span>
-              <span className="whitespace-pre-wrap text-muted-foreground">
-                {message.text}
-              </span>
-              {message.files.map((name, index) => (
-                <span key={index} className="text-xs text-muted-foreground">
-                  {name}
-                </span>
-              ))}
-            </div>
-          </li>
-        ))}
-      </ol>
-      <LocalChatComposerProvider
-        {...args}
-        onSubmit={async (message) => {
-          args?.onSubmit?.(message)
-          // A pretend round trip, so the send button shows its busy state.
-          await new Promise((resolve) => setTimeout(resolve, 600))
-          setMessages((current) => [
-            ...current,
-            {
-              id: current.length + 1,
-              author: "You",
-              text: message.value,
-              files: message.attachments.map((file) => file.name),
-            },
-          ])
-        }}
+    <LocalChatComposerProvider
+      {...args}
+      // A pretend upload, so attachments show their loading status.
+      upload={() => new Promise((resolve) => setTimeout(resolve, 900))}
+      onSubmit={async (message) => {
+        args?.onSubmit?.(message)
+        // A pretend round trip, so the send button shows its busy state.
+        await new Promise((resolve) => setTimeout(resolve, 600))
+        setMessages((current) => [
+          ...current,
+          {
+            id: current.length + 1,
+            author: "You",
+            text: message.value,
+            files: message.attachments.map((file) => file.name),
+          },
+        ])
+      }}
+    >
+      {/* The whole panel takes drops, not just the composer. */}
+      <ChatComposerDropZone
+        description="Any file, dropped anywhere on the conversation"
+        className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4"
       >
-        <ChatComposerDropZone>
-          <ChatComposerFrame>
-            <ChatComposerHeader className="empty:hidden">
-              <ChatComposerAttachments />
-            </ChatComposerHeader>
-            <ChatComposerInput placeholder="Reply to Ada" />
-            <ChatComposerFooter>
-              <ChatComposerCommonActions />
-              <ChatComposerSubmit />
-            </ChatComposerFooter>
-          </ChatComposerFrame>
-        </ChatComposerDropZone>
-      </LocalChatComposerProvider>
-    </div>
+        <ol aria-label="Messages" className="flex flex-col gap-3">
+          {messages.map((message) => (
+            <li key={message.id} className="flex items-start gap-2.5">
+              <Avatar size="sm">
+                <AvatarFallback>
+                  {message.author
+                    .split(" ")
+                    .map((word) => word[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col text-sm">
+                <span className="font-medium">{message.author}</span>
+                <span className="whitespace-pre-wrap text-muted-foreground">
+                  {message.text}
+                </span>
+                {message.files.map((name, index) => (
+                  <span key={index} className="text-xs text-muted-foreground">
+                    {name}
+                  </span>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ol>
+        <ChatComposerFrame>
+          <ChatComposerHeader className="empty:hidden">
+            <ChatComposerAttachments />
+          </ChatComposerHeader>
+          <ChatComposerInput placeholder="Reply to Ada" />
+          <ChatComposerFooter>
+            <ChatComposerCommonActions />
+            <ChatComposerSubmit />
+          </ChatComposerFooter>
+        </ChatComposerFrame>
+      </ChatComposerDropZone>
+    </LocalChatComposerProvider>
   )
 }
 

@@ -51,9 +51,20 @@ when the caller's `onKeyDown` calls `preventDefault`.
 pieces takes its file name as the prefix (`Sheet*`, `DataTable*`), and an
 import list should say what each piece belongs to.
 
-**Shelf.** Base components: it depends on Button and lucide only, and has no
-animation beyond a busy spinner that stops under reduced motion.
+**Shelf.** Special components, since November 2026. It started on Base
+components with Button and lucide only, then slash commands brought in
+Command menu, which uses `motion`. The menu opens as a dialog, as it does
+everywhere else in fibo, rather than as a second list anchored to the text box.
 
-**Out of scope.** Rich text, a mention picker and an emoji picker. The
-mention button types `@`; a picker is a part a project can add on top of
-`useChatComposer()`.
+**Emoji.** Browsers give no way to open the system emoji picker, and a full
+emoji dataset would be a dependency. `ChatComposerEmojiButton` offers a grid
+of 40 native characters drawn by the system font, and takes `emojis` for a
+different list.
+
+**Attachments and drops.** Attachment and Drop zone are their own parts, so
+forms and other surfaces can use them. The composer renders each attachment
+with its upload status, waits for uploads before sending, and wraps Drop zone
+as `ChatComposerDropZone`, meant to cover the whole conversation panel.
+
+**Out of scope.** Rich text and a mention picker. The mention button types
+`@`; a picker is a part a project can add on top of `useChatComposer()`.

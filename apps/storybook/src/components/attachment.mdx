@@ -1,0 +1,185 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/attachment.stories"
+import { Attachment } from "../../../../packages/ui/src/components/attachment"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { ComponentRules, UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Attachment
+
+Attachment shows one file someone has added: a one-line chip with the name
+and size, or a thumbnail for an image, each with its upload status.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- `type` picks the shape: `file` is a chip, `image` is a 56px thumbnail.
+- `status` follows an upload: `ready`, `loading` or `error`.
+- Remove and retry buttons appear when you pass `onRemove` and `onRetry`.
+- Shows an upload but never runs one, so it fits a chat draft, a form or a
+  sent message.
+
+## Installation
+
+<Install
+  name="attachment"
+  exports={["Attachment", "attachmentVariants", "formatBytes"]}
+/>
+
+## Examples
+
+### Statuses
+
+Each status for a file and an image.
+
+<Canvas of={Stories.Statuses} />
+
+### Image
+
+<Canvas of={Stories.Image} />
+
+### Failed
+
+The error text replaces the size, and retry sits before remove.
+
+<Canvas of={Stories.Failed} />
+
+### In a list
+
+One attachment per file. Retry the failed one to watch it upload.
+
+<Canvas of={Stories.InAList} />
+
+## Usage
+
+```tsx
+import { Attachment } from "@/components/ui/attachment"
+
+type Upload = {
+  id: string
+  file: File
+  preview?: string
+  status: "ready" | "loading" | "error"
+}
+
+export function Uploads({ uploads, remove, retry }: Props) {
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {uploads.map((upload) => (
+        <li key={upload.id}>
+          <Attachment
+            type={upload.preview ? "image" : "file"}
+            status={upload.status}
+            name={upload.file.name}
+            size={upload.file.size}
+            src={upload.preview}
+            onRemove={() => remove(upload.id)}
+            onRetry={() => retry(upload.id)}
+          />
+        </li>
+      ))}
+    </ul>
+  )
+}
+```
+
+Whoever runs the upload owns `status`; Attachment only shows it.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use type image for pictures people should recognise at a glance, and file for everything else.",
+    "Keep remove in every status, including while a file uploads.",
+    "Show one attachment per file. A failed file never blocks the others.",
+    "Keep error text to a few words, such as Upload failed or Too large.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Attachment
+            status="error"
+            name="drift-report.csv"
+            error="Too large"
+            onRetry={() => {}}
+            onRemove={() => {}}
+          />
+        ),
+        description: "Say what went wrong in a few words, and offer retry.",
+      },
+      negative: {
+        component: (
+          <Attachment
+            status="error"
+            name="drift-report.csv"
+            error="The server returned 413 Payload Too Large"
+            onRemove={() => {}}
+          />
+        ),
+        description: "Don't show a raw error. It squeezes out the file name.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="attachment"',
+      element: "The chip or tile",
+      when: "Always.",
+    },
+    {
+      attribute: "data-type",
+      element: "The chip or tile",
+      when: "file or image.",
+    },
+    {
+      attribute: "data-status",
+      element: "The chip or tile",
+      when: "ready, loading or error.",
+    },
+    {
+      attribute: 'data-slot="attachment-remove"',
+      element: "The remove button",
+      when: "When onRemove is set.",
+    },
+    {
+      attribute: 'data-slot="attachment-retry"',
+      element: "The retry button",
+      when: "On error. On an image, the whole tile.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "Remove and retry are buttons named with the file, such as Remove token-audit.pdf.",
+    "A loading attachment sets aria-busy and reads Uploading.",
+    "The image's alt text is the file name. On error, the tile's retry button reads the error.",
+    "The loading spinner stops under reduced motion.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Chat composer", "Drop zone", "Progress"]} />

@@ -28,6 +28,14 @@
     "group": "Actions",
     "figma": "169-12"
   },
+  "attachment": {
+    "title": "Attachment",
+    "description": "One added file as a chip or an image thumbnail, with its upload status and buttons to remove or retry.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new",
+    "figma": "1011-2"
+  },
   "calendar": {
     "title": "Calendar",
     "description": "A month grid for picking a day or a range, with full keyboard use; pages side by side, scrolls on phones, or fills a page with a month of events.",
@@ -44,8 +52,8 @@
   },
   "chat-composer": {
     "title": "Chat composer",
-    "description": "A message box built from parts around one draft, so each chat surface composes its own.",
-    "tier": "base-components",
+    "description": "A message box built from parts around one draft, with attachments, native emoji, suggested replies and slash commands in the Command menu.",
+    "tier": "special-components",
     "group": "Forms",
     "figma": "509-2"
   },
@@ -89,6 +97,14 @@
     "tier": "base-components",
     "group": "Feedback",
     "figma": "710-144"
+  },
+  "drop-zone": {
+    "title": "Drop zone",
+    "description": "Wraps an area people can drop files onto, with an overlay while they drag and files split by type.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new",
+    "figma": "1007-106"
   },
   "field": {
     "title": "Field",
@@ -357,14 +373,12 @@
     "title": "Alert dialog",
     "description": "Asks for a decision before something that can't be undone, with Cancel focused and no click-outside dismiss.",
     "tier": "base-components",
-    "group": "Overlays",
-    "status": "new"
+    "group": "Overlays"
   },
   "settings-page": {
     "title": "Settings page",
     "description": "A settings screen in tabs for profile, notifications and account, with a save bar that appears on change and a confirmed danger zone.",
     "tier": "blocks",
-    "group": "Pages",
-    "status": "new"
+    "group": "Pages"
   }
 }

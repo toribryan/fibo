@@ -5,6 +5,7 @@ import { render } from "vitest-browser-react"
 import {
   ChatComposerAttachButton,
   ChatComposerAttachments,
+  ChatComposerCommandMenu,
   ChatComposerDropZone,
   ChatComposerFrame,
   ChatComposerInput,
@@ -205,6 +206,39 @@ describe("Chat composer", () => {
     await expect.element(page.getByRole("textbox")).toHaveFocus()
   })
 
+  it("opens commands on a slash only when a command menu is rendered", async () => {
+    const onOpenChange = vi.fn()
+    const screen = await render(
+      <LocalChatComposerProvider>
+        <ChatComposerFrame>
+          <ChatComposerInput />
+        </ChatComposerFrame>
+      </LocalChatComposerProvider>
+    )
+    const input = screen.getByRole("textbox")
+    await userEvent.type(input, "/giphy")
+    await expect.element(input).toHaveValue("/giphy")
+    await screen.unmount()
+
+    const withMenu = await render(
+      <LocalChatComposerProvider>
+        <ChatComposerFrame>
+          <ChatComposerInput />
+        </ChatComposerFrame>
+        <ChatComposerCommandMenu
+          groups={[{ label: "Commands", items: [{ value: "a", label: "A" }] }]}
+          onOpenChange={onOpenChange}
+        />
+      </LocalChatComposerProvider>
+    )
+    await userEvent.type(withMenu.getByRole("textbox"), "a/b")
+    expect(onOpenChange).not.toHaveBeenCalled()
+    await userEvent.type(withMenu.getByRole("textbox"), " /")
+    expect(onOpenChange).toHaveBeenLastCalledWith(true)
+    // The modal menu hides the page from queries, so read the box directly.
+    expect(withMenu.container.querySelector("textarea")).toHaveValue("a/b ")
+  })
+
   it("keeps only dropped files that match accept", async () => {
     const screen = await render(
       <LocalChatComposerProvider>
@@ -231,7 +265,10 @@ describe("Chat composer", () => {
       new DragEvent("drop", { bubbles: true, dataTransfer: data })
     )
     const list = screen.getByRole("list", { name: "Attachments" })
-    await expect.element(list).toMatchTextContent("shot.PNG")
+    // An image previews as a thumbnail named by its file.
+    await expect
+      .element(list.getByRole("img", { name: "shot.PNG" }))
+      .toBeInTheDocument()
     await expect.element(list).toMatchTextContent("spec.pdf")
     expect(list.element().textContent).not.toContain("notes.txt")
   })
@@ -263,5 +300,50 @@ describe("Chat composer", () => {
       .element().textContent
     for (const label of ["512 B", "1 KB", "1.5 KB", "471 KB", "1.7 MB"])
       expect(text).toContain(label)
+  })
+  it("holds send until uploads finish, and retries a failed one", async () => {
+    let settle: Record<string, (ok: boolean) => void> = {}
+    const upload = vi.fn(
+      (attachment: { name: string }) =>
+        new Promise<void>((resolve, reject) => {
+          settle[attachment.name] = (ok) => (ok ? resolve() : reject())
+        })
+    )
+    const screen = await render(
+      <LocalChatComposerProvider upload={upload} defaultValue="Files">
+        <ChatComposerDropZone data-testid="zone">
+          <ChatComposerFrame>
+            <ChatComposerAttachments />
+            <ChatComposerInput />
+            <ChatComposerSubmit />
+          </ChatComposerFrame>
+        </ChatComposerDropZone>
+      </LocalChatComposerProvider>
+    )
+    const data = new DataTransfer()
+    data.items.add(new File([""], "a.pdf", { type: "application/pdf" }))
+    data.items.add(new File([""], "b.pdf", { type: "application/pdf" }))
+    const zone = screen.getByTestId("zone").element()
+    zone.dispatchEvent(
+      new DragEvent("dragenter", { bubbles: true, dataTransfer: data })
+    )
+    zone.dispatchEvent(
+      new DragEvent("drop", { bubbles: true, dataTransfer: data })
+    )
+    const send = screen.getByRole("button", { name: "Send" })
+    const list = screen.getByRole("list", { name: "Attachments" })
+    await expect.element(list).toMatchTextContent(/Uploading/)
+    await expect.element(send).toBeDisabled()
+
+    settle["a.pdf"]!(true)
+    settle["b.pdf"]!(false)
+    await expect.element(list).toMatchTextContent(/Upload failed/)
+    await expect.element(send).toBeDisabled()
+
+    settle = {}
+    await screen.getByRole("button", { name: "Retry b.pdf" }).click()
+    expect(upload).toHaveBeenCalledTimes(3)
+    settle["b.pdf"]!(true)
+    await expect.element(send).toBeEnabled()
   })
 })
