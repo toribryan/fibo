@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback } from "./avatar.js"
 import { Button } from "./button.js"
 import {
   ChatComposerAction,
+  ChatComposerActionsSheet,
   ChatComposerAttachButton,
   ChatComposerAttachments,
   ChatComposerCommandButton,
@@ -51,6 +52,7 @@ const meta: Meta<typeof LocalChatComposerProvider> = {
     ChatComposerFooter,
     ChatComposerCommonActions,
     ChatComposerAction,
+    ChatComposerActionsSheet,
     ChatComposerAttachButton,
     ChatComposerMentionButton,
     ChatComposerEmojiButton,
@@ -68,6 +70,7 @@ const meta: Meta<typeof LocalChatComposerProvider> = {
     defaultAttachments: { control: false },
     onSubmit: { control: false },
     canSubmit: { control: false },
+    pointer: { control: "inline-radio", options: ["fine", "coarse"] },
     inputRef: { control: false },
     children: { control: false },
   },
@@ -414,6 +417,58 @@ export const DictationBlocked: Story = {
         "Microphone is blocked. Allow it in site settings."
       )
     )
+  },
+}
+
+export const Touch: Story = {
+  name: "On a touch screen",
+  args: { pointer: "coarse" },
+  decorators: [
+    (Story) => (
+      <div className="w-80">
+        <Story />
+      </div>
+    ),
+  ],
+  render: (args) => (
+    <LocalChatComposerProvider {...args}>
+      <ChatComposerFrame>
+        <ChatComposerHeader>
+          {["Sounds good", "Can you share the file?", "Looking now"].map(
+            (reply) => (
+              <ChatComposerSuggestedReply key={reply}>
+                {reply}
+              </ChatComposerSuggestedReply>
+            )
+          )}
+        </ChatComposerHeader>
+        <ChatComposerInput placeholder="Reply to Ada" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+      <SlashCommands />
+    </LocalChatComposerProvider>
+  ),
+  play: async ({ args, canvas, canvasElement, userEvent }) => {
+    const input = canvas.getByRole("textbox", { name: "Message" })
+    const body = within(canvasElement.ownerDocument.body)
+
+    // Return adds a line; the send button is the only way to send.
+    await userEvent.type(input, "Ship it{Enter}today")
+    await expect(input).toHaveValue("Ship it\ntoday")
+    await expect(args.onSubmit).not.toHaveBeenCalled()
+
+    // The + opens the actions as rows; a row runs its action.
+    await userEvent.click(canvas.getByRole("button", { name: "More actions" }))
+    await userEvent.click(
+      await body.findByRole("button", { name: "Run a command" })
+    )
+    await expect(
+      await body.findByRole("dialog", { name: "Commands" })
+    ).toBeVisible()
+    await userEvent.keyboard("{Escape}")
   },
 }
 

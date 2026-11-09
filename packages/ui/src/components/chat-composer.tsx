@@ -7,6 +7,7 @@ import {
   AtSignIcon,
   MicIcon,
   PaperclipIcon,
+  PlusIcon,
   SmileIcon,
   ZapIcon,
 } from "lucide-react"
@@ -18,6 +19,12 @@ import {
   type CommandMenuProps,
 } from "@workspace/ui/components/command-menu"
 import { DropZone } from "@workspace/ui/components/drop-zone"
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@workspace/ui/components/sheet"
 import { Progress } from "@workspace/ui/components/progress"
 import {
   Tooltip,
@@ -80,6 +87,31 @@ type ChatComposerMeta = {
   inputRef: React.RefObject<HTMLTextAreaElement | null>
   /** Opens the command menu, while a ChatComposerCommandMenu is rendered. */
   openCommandsRef: React.RefObject<(() => void) | null>
+  /** Whether a touch screen is the main input, which changes the footer, sizes and Return. */
+  pointer: ChatComposerPointer
+}
+
+type ChatComposerPointer = "fine" | "coarse"
+
+const COARSE = "(pointer: coarse)"
+
+function subscribePointer(onChange: () => void) {
+  const query = window.matchMedia(COARSE)
+  query.addEventListener("change", onChange)
+  return () => query.removeEventListener("change", onChange)
+}
+
+/*
+ * A laptop with a touchscreen still reports a fine pointer, so it keeps the
+ * desktop composer. The server renders fine, then a phone switches on mount.
+ */
+function usePointer(forced?: ChatComposerPointer): ChatComposerPointer {
+  const detected = React.useSyncExternalStore(
+    subscribePointer,
+    () => (window.matchMedia(COARSE).matches ? "coarse" : "fine"),
+    () => "fine" as const
+  )
+  return forced ?? detected
 }
 
 type ChatComposerContextValue = {
@@ -132,6 +164,8 @@ type ChatComposerProviderProps = {
   actions: ChatComposerActions
   /** A ref for the text box. One is made for you when omitted. */
   inputRef?: React.RefObject<HTMLTextAreaElement | null>
+  /** Forces the touch or desktop layout. Detected from the pointer when omitted. */
+  pointer?: ChatComposerPointer
   /** The parts, in any order and anywhere below. Renders no element. */
   children?: React.ReactNode
 }
@@ -143,14 +177,20 @@ function ChatComposerProvider({
   state,
   actions,
   inputRef,
+  pointer: forcedPointer,
   children,
 }: ChatComposerProviderProps) {
   const ownRef = React.useRef<HTMLTextAreaElement>(null)
   const ref = inputRef ?? ownRef
   const openCommandsRef = React.useRef<(() => void) | null>(null)
+  const pointer = usePointer(forcedPointer)
   const value = React.useMemo(
-    () => ({ state, actions, meta: { inputRef: ref, openCommandsRef } }),
-    [state, actions, ref]
+    () => ({
+      state,
+      actions,
+      meta: { inputRef: ref, openCommandsRef, pointer },
+    }),
+    [state, actions, ref, pointer]
   )
   return <ChatComposerContext value={value}>{children}</ChatComposerContext>
 }
@@ -177,6 +217,8 @@ type LocalChatComposerProviderProps = {
   upload?: (attachment: ChatComposerAttachment) => Promise<void>
   /** A ref for the text box. One is made for you when omitted. */
   inputRef?: React.RefObject<HTMLTextAreaElement | null>
+  /** Forces the touch or desktop layout. Detected from the pointer when omitted. */
+  pointer?: ChatComposerPointer
   /** The parts. */
   children?: React.ReactNode
 }
@@ -206,6 +248,7 @@ function LocalChatComposerProvider({
   canSubmit = hasContent,
   upload,
   inputRef,
+  pointer,
   children,
 }: LocalChatComposerProviderProps) {
   const [value, setValue] = React.useState(defaultValue)
@@ -282,7 +325,12 @@ function LocalChatComposerProvider({
   }, [])
 
   return (
-    <ChatComposerProvider state={state} actions={actions} inputRef={inputRef}>
+    <ChatComposerProvider
+      state={state}
+      actions={actions}
+      inputRef={inputRef}
+      pointer={pointer}
+    >
       {children}
     </ChatComposerProvider>
   )
@@ -306,6 +354,7 @@ function ChatComposerFrame({
   return (
     <div
       data-slot="chat-composer"
+      data-pointer={meta.pointer}
       data-disabled={state.disabled ? "" : undefined}
       className={cn(
         "relative flex w-full min-w-60 flex-col rounded-2xl border border-input bg-input-subtle transition-colors has-[[data-slot=chat-composer-input]:focus-visible]:border-ring has-[[data-slot=chat-composer-input]:focus-visible]:ring-[3px] has-[[data-slot=chat-composer-input]:focus-visible]:ring-ring-subtle data-disabled:cursor-not-allowed data-disabled:opacity-50",
@@ -327,11 +376,17 @@ function ChatComposerHeader({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { meta } = useChatComposer()
   return (
     <div
       data-slot="chat-composer-header"
       className={cn(
-        "flex flex-wrap items-center gap-2 px-3 pt-3 text-sm text-muted-foreground",
+        "flex items-center gap-2 px-3 pt-3 text-sm text-muted-foreground",
+        // On a phone, chips scroll sideways in one row rather than wrapping
+        // and pushing the conversation up.
+        meta.pointer === "coarse"
+          ? "[scrollbar-width:none] flex-nowrap overflow-x-auto"
+          : "flex-wrap",
         className
       )}
       {...props}
@@ -355,7 +410,7 @@ function ChatComposerInput({
   const {
     state,
     actions,
-    meta: { inputRef, openCommandsRef },
+    meta: { inputRef, openCommandsRef, pointer },
   } = useChatComposer()
   // A caller's ref joins the composer's rather than replacing it, which
   // would break frame clicks and the mention button.
@@ -373,6 +428,10 @@ function ChatComposerInput({
       ref={mergedRef}
       data-slot="chat-composer-input"
       rows={props.rows ?? 1}
+      // Phone keyboards label Return to match what it does here.
+      enterKeyHint={
+        props.enterKeyHint ?? (pointer === "coarse" ? "enter" : "send")
+      }
       aria-label={ariaLabel}
       value={state.value}
       disabled={state.disabled || disabled}
@@ -395,14 +454,20 @@ function ChatComposerInput({
           // Enter also confirms a word in an input method editor. Safari
           // reports that keydown as keyCode 229 without isComposing.
           event.nativeEvent.isComposing ||
-          event.keyCode === 229
+          event.keyCode === 229 ||
+          // On a phone, Return adds a line and the send button sends, as
+          // in every messaging app people already know.
+          pointer === "coarse"
         )
           return
         event.preventDefault()
         actions.submit()
       }}
       className={cn(
-        "field-sizing-content max-h-60 min-h-11 w-full resize-none bg-transparent px-3 py-3 text-base outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed md:text-sm",
+        "field-sizing-content min-h-11 w-full resize-none bg-transparent px-3 py-3 text-base outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed md:text-sm",
+        // With the keyboard up, a third of the screen is as much as a draft
+        // can take before it hides the conversation.
+        pointer === "coarse" ? "max-h-[33dvh]" : "max-h-60",
         className
       )}
     />
@@ -445,16 +510,47 @@ type ChatComposerActionProps = Omit<
   message?: string
 }
 
-/** An icon button for the footer, disabled with the composer. */
+// Set inside ChatComposerActionsSheet to the function that closes it, so an
+// action there draws itself as a labeled row and closes the sheet when used.
+const ActionsSheetContext = React.createContext<(() => void) | null>(null)
+
+/*
+ * An icon button for the footer, disabled with the composer. Inside the
+ * actions sheet it becomes a full-width row with its label, so the same
+ * action works in both places.
+ */
 function ChatComposerAction({
   label,
   message,
   className,
   disabled,
+  onClick,
+  children,
   ...props
 }: ChatComposerActionProps) {
-  const { state } = useChatComposer()
+  const { state, meta } = useChatComposer()
+  const closeSheet = React.useContext(ActionsSheetContext)
   const [hovered, setHovered] = React.useState(false)
+  if (closeSheet) {
+    return (
+      <Button
+        data-slot="chat-composer-action"
+        type="button"
+        variant="ghost"
+        size="lg"
+        disabled={disabled ?? state.disabled}
+        className={cn("w-full justify-start", className)}
+        {...props}
+        onClick={(event) => {
+          onClick?.(event)
+          closeSheet()
+        }}
+      >
+        {children}
+        {label}
+      </Button>
+    )
+  }
   return (
     <Tooltip open={Boolean(message) || hovered} onOpenChange={setHovered}>
       <TooltipTrigger
@@ -463,12 +559,15 @@ function ChatComposerAction({
             data-slot="chat-composer-action"
             type="button"
             variant="ghost"
-            size="icon-sm"
+            size={meta.pointer === "coarse" ? "icon-lg" : "icon-sm"}
             aria-label={label}
             disabled={disabled ?? state.disabled}
             className={cn("rounded-full text-muted-foreground", className)}
+            onClick={onClick}
             {...props}
-          />
+          >
+            {children}
+          </Button>
         }
       />
       <TooltipContent>{message ?? label}</TooltipContent>
@@ -651,6 +750,9 @@ function ChatComposerEmojiButton({
     event.preventDefault()
     targets[Math.min(Math.max(current + step, 0), targets.length - 1)]?.focus()
   }
+
+  // Phone keyboards have their own emoji key.
+  if (composer.meta.pointer === "coarse") return null
 
   return (
     <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
@@ -879,7 +981,8 @@ function ChatComposerDictationButton({
     return () => document.removeEventListener("keydown", onKeyDown)
   }, [listening])
 
-  if (!supported) return null
+  // Phone keyboards have their own dictation key.
+  if (!supported || meta.pointer === "coarse") return null
 
   function start() {
     const Recognition = browserRecognition()
@@ -958,6 +1061,73 @@ function ChatComposerDictationButton({
   )
 }
 
+type ChatComposerActionsSheetProps = {
+  /** Names the + button. */
+  label?: string
+  /** Names the sheet for screen readers. */
+  title?: string
+  /** The actions, as icon buttons such as ChatComposerAttachButton. Attach and command by default. */
+  children?: React.ReactNode
+}
+
+/*
+ * The + that holds the actions on a phone: it opens a bottom sheet where
+ * each action is a full-width row. Common actions renders it on touch; use
+ * it yourself for a custom set.
+ */
+function ChatComposerActionsSheet({
+  label = "More actions",
+  title = "Add to message",
+  children,
+}: ChatComposerActionsSheetProps) {
+  const { state, meta } = useChatComposer()
+  const [open, setOpen] = React.useState(false)
+  const close = React.useCallback(() => setOpen(false), [])
+  return (
+    <Sheet side="bottom" open={open} onOpenChange={setOpen}>
+      <SheetTrigger
+        render={
+          <Button
+            data-slot="chat-composer-actions-trigger"
+            type="button"
+            variant="ghost"
+            size={meta.pointer === "coarse" ? "icon-lg" : "icon-sm"}
+            aria-label={label}
+            disabled={state.disabled}
+            className="rounded-full text-muted-foreground"
+          />
+        }
+      >
+        <PlusIcon />
+      </SheetTrigger>
+      <SheetContent
+        data-slot="chat-composer-actions-sheet"
+        showCloseButton={false}
+        // The file picker's input lives in the sheet and has to outlive it.
+        keepMounted
+        // An action may open something else, such as the command menu,
+        // which should keep focus rather than hand it back to the +.
+        finalFocus={false}
+        className="gap-1 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),0.5rem)]"
+      >
+        <div
+          aria-hidden
+          className="mx-auto mb-2 h-1 w-9 rounded-full bg-input"
+        />
+        <SheetTitle className="sr-only">{title}</SheetTitle>
+        <ActionsSheetContext value={close}>
+          {children ?? (
+            <>
+              <ChatComposerAttachButton />
+              <ChatComposerCommandButton />
+            </>
+          )}
+        </ActionsSheetContext>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
 /*
  * The actions most composers share. It is only JSX, so a composer that needs
  * something else leaves it out and lists its own actions instead.
@@ -966,6 +1136,8 @@ function ChatComposerCommonActions({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { meta } = useChatComposer()
+  if (meta.pointer === "coarse") return <ChatComposerActionsSheet />
   return (
     <div
       data-slot="chat-composer-common-actions"
@@ -1039,7 +1211,15 @@ function ChatComposerSubmit({
     <Button
       data-slot="chat-composer-submit"
       type="button"
-      size={children ? "sm" : "icon-sm"}
+      size={
+        meta.pointer === "coarse"
+          ? children
+            ? "lg"
+            : "icon-lg"
+          : children
+            ? "sm"
+            : "icon-sm"
+      }
       aria-label={children ? undefined : ariaLabel}
       aria-busy={state.submitting || undefined}
       {...props}
@@ -1156,6 +1336,7 @@ function ChatComposerDropZone(
 
 export {
   ChatComposerAction,
+  ChatComposerActionsSheet,
   ChatComposerAttachButton,
   ChatComposerAttachments,
   ChatComposerCommandButton,
@@ -1175,6 +1356,7 @@ export {
   LocalChatComposerProvider,
   useChatComposer,
   type ChatComposerActions,
+  type ChatComposerActionsSheetProps,
   type ChatComposerAttachment,
   type ChatComposerCommandMenuProps,
   type ChatComposerContextValue,
@@ -1182,6 +1364,7 @@ export {
   type ChatComposerSpeechRecognition,
   type ChatComposerMessage,
   type ChatComposerMeta,
+  type ChatComposerPointer,
   type ChatComposerState,
   type ChatComposerSuggestedReplyProps,
 }

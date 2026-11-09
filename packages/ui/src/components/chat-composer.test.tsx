@@ -6,6 +6,7 @@ import {
   ChatComposerAttachButton,
   ChatComposerAttachments,
   ChatComposerCommandMenu,
+  ChatComposerCommonActions,
   ChatComposerDictationButton,
   ChatComposerDropZone,
   ChatComposerFrame,
@@ -331,6 +332,44 @@ describe("Chat composer", () => {
       )
       .toBeVisible()
     await expect.element(mic).toHaveAttribute("aria-pressed", "false")
+  })
+
+  it("switches to the touch layout on a coarse pointer", async () => {
+    const onSubmit = vi.fn()
+    const screen = await render(
+      <LocalChatComposerProvider pointer="coarse" onSubmit={onSubmit}>
+        <ChatComposerFrame>
+          <ChatComposerInput />
+          <ChatComposerCommonActions />
+          <ChatComposerSubmit />
+        </ChatComposerFrame>
+        <ChatComposerCommandMenu
+          groups={[{ label: "Commands", items: [{ value: "a", label: "A" }] }]}
+        />
+      </LocalChatComposerProvider>
+    )
+    const input = screen.getByRole("textbox")
+    // Return adds a line; only the button sends.
+    await userEvent.type(input, "one{Enter}two")
+    await expect.element(input).toHaveValue("one\ntwo")
+    expect(onSubmit).not.toHaveBeenCalled()
+    await expect.element(input).toHaveAttribute("enterkeyhint", "enter")
+
+    // The phone keyboard covers emoji and dictation.
+    expect(screen.getByRole("button", { name: "Add emoji" }).query()).toBeNull()
+    expect(screen.getByRole("button", { name: "Dictate" }).query()).toBeNull()
+
+    // The + opens a sheet whose rows are the actions, labeled.
+    await screen.getByRole("button", { name: "More actions" }).click()
+    const row = screen.getByRole("button", { name: "Run a command" })
+    await expect.element(row).toBeVisible()
+    await expect
+      .element(screen.getByRole("button", { name: "Attach files" }))
+      .toBeVisible()
+    await row.click()
+    await expect
+      .element(screen.getByRole("dialog", { name: "Commands" }))
+      .toBeVisible()
   })
 
   it("keeps only dropped files that match accept", async () => {
