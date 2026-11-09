@@ -5,6 +5,7 @@ import { render } from "vitest-browser-react"
 import {
   ChatComposerAttachButton,
   ChatComposerAttachments,
+  ChatComposerCommandMenu,
   ChatComposerDropZone,
   ChatComposerFrame,
   ChatComposerInput,
@@ -203,6 +204,39 @@ describe("Chat composer", () => {
     expect(ref.current).toBeInstanceOf(HTMLTextAreaElement)
     await page.getByTestId("surface").click()
     await expect.element(page.getByRole("textbox")).toHaveFocus()
+  })
+
+  it("opens commands on a slash only when a command menu is rendered", async () => {
+    const onOpenChange = vi.fn()
+    const screen = await render(
+      <LocalChatComposerProvider>
+        <ChatComposerFrame>
+          <ChatComposerInput />
+        </ChatComposerFrame>
+      </LocalChatComposerProvider>
+    )
+    const input = screen.getByRole("textbox")
+    await userEvent.type(input, "/giphy")
+    await expect.element(input).toHaveValue("/giphy")
+    await screen.unmount()
+
+    const withMenu = await render(
+      <LocalChatComposerProvider>
+        <ChatComposerFrame>
+          <ChatComposerInput />
+        </ChatComposerFrame>
+        <ChatComposerCommandMenu
+          groups={[{ label: "Commands", items: [{ value: "a", label: "A" }] }]}
+          onOpenChange={onOpenChange}
+        />
+      </LocalChatComposerProvider>
+    )
+    await userEvent.type(withMenu.getByRole("textbox"), "a/b")
+    expect(onOpenChange).not.toHaveBeenCalled()
+    await userEvent.type(withMenu.getByRole("textbox"), " /")
+    expect(onOpenChange).toHaveBeenLastCalledWith(true)
+    // The modal menu hides the page from queries, so read the box directly.
+    expect(withMenu.container.querySelector("textarea")).toHaveValue("a/b ")
   })
 
   it("keeps only dropped files that match accept", async () => {

@@ -52,8 +52,8 @@
   },
   "chat-composer": {
     "title": "Chat composer",
-    "description": "A message box built from parts around one draft, so each chat surface composes its own.",
-    "tier": "base-components",
+    "description": "A message box built from parts around one draft, with attachments, native emoji, suggested replies and slash commands in the Command menu.",
+    "tier": "special-components",
     "group": "Forms",
     "figma": "509-2"
   },

@@ -2,10 +2,20 @@
 
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
-import { ArrowUpIcon, AtSignIcon, PaperclipIcon, SmileIcon } from "lucide-react"
+import {
+  ArrowUpIcon,
+  AtSignIcon,
+  PaperclipIcon,
+  SmileIcon,
+  SquareSlashIcon,
+} from "lucide-react"
 
 import { Attachment } from "@workspace/ui/components/attachment"
 import { Button } from "@workspace/ui/components/button"
+import {
+  CommandMenu,
+  type CommandMenuProps,
+} from "@workspace/ui/components/command-menu"
 import { DropZone } from "@workspace/ui/components/drop-zone"
 import { Progress } from "@workspace/ui/components/progress"
 import {
@@ -67,6 +77,8 @@ type ChatComposerActions = {
 type ChatComposerMeta = {
   /** The text box, so any part can focus it or read the caret. */
   inputRef: React.RefObject<HTMLTextAreaElement | null>
+  /** Opens the command menu, while a ChatComposerCommandMenu is rendered. */
+  openCommandsRef: React.RefObject<(() => void) | null>
 }
 
 type ChatComposerContextValue = {
@@ -134,8 +146,9 @@ function ChatComposerProvider({
 }: ChatComposerProviderProps) {
   const ownRef = React.useRef<HTMLTextAreaElement>(null)
   const ref = inputRef ?? ownRef
+  const openCommandsRef = React.useRef<(() => void) | null>(null)
   const value = React.useMemo(
-    () => ({ state, actions, meta: { inputRef: ref } }),
+    () => ({ state, actions, meta: { inputRef: ref, openCommandsRef } }),
     [state, actions, ref]
   )
   return <ChatComposerContext value={value}>{children}</ChatComposerContext>
@@ -339,7 +352,7 @@ function ChatComposerInput({
   const {
     state,
     actions,
-    meta: { inputRef },
+    meta: { inputRef, openCommandsRef },
   } = useChatComposer()
   // A caller's ref joins the composer's rather than replacing it, which
   // would break frame clicks and the mention button.
@@ -362,6 +375,12 @@ function ChatComposerInput({
       disabled={state.disabled || disabled}
       onChange={(event) => {
         onChange?.(event)
+        const openCommands = openCommandsRef.current
+        if (openCommands && startsCommand(event)) {
+          // The slash only opens the menu, so it stays out of the draft.
+          openCommands()
+          return
+        }
         actions.setValue(event.target.value)
       }}
       onKeyDown={(event) => {
@@ -385,6 +404,15 @@ function ChatComposerInput({
       )}
     />
   )
+}
+
+/** Whether this keystroke typed a slash at the start of a word. */
+function startsCommand(event: React.ChangeEvent<HTMLTextAreaElement>) {
+  const input = event.nativeEvent as InputEvent
+  if (input.inputType !== "insertText" || input.data !== "/") return false
+  const caret = event.target.selectionStart
+  const before = event.target.value[caret - 2]
+  return caret === 1 || (before !== undefined && /\s/.test(before))
 }
 
 /** A row below the text box, for actions and the send button. */
@@ -667,6 +695,79 @@ function ChatComposerEmojiButton({
   )
 }
 
+type ChatComposerCommandMenuProps = Omit<
+  CommandMenuProps,
+  "open" | "defaultOpen" | "trigger" | "hotkey"
+>
+
+/*
+ * fibo's Command menu, opened by typing / at the start of a word or by
+ * ChatComposerCommandButton. Rendering it is what turns slash commands on;
+ * without it a slash is just a character. Commands act on the draft through
+ * useChatComposer, like any other part.
+ */
+function ChatComposerCommandMenu({
+  onOpenChange,
+  label = "Commands",
+  placeholder = "Search commands…",
+  ...props
+}: ChatComposerCommandMenuProps) {
+  const { meta } = useChatComposer()
+  const [open, setOpen] = React.useState(false)
+  const change = (next: boolean) => {
+    setOpen(next)
+    onOpenChange?.(next)
+  }
+  const openMenu = React.useEffectEvent(() => change(true))
+  React.useEffect(() => {
+    const ref = meta.openCommandsRef
+    ref.current = () => openMenu()
+    return () => {
+      ref.current = null
+    }
+  }, [meta.openCommandsRef])
+  return (
+    <CommandMenu
+      {...props}
+      label={label}
+      placeholder={placeholder}
+      open={open}
+      onOpenChange={change}
+      trigger={null}
+      // The page may have its own Cmd+K menu; this one opens from the draft.
+      hotkey={null}
+    />
+  )
+}
+
+/** Opens the command menu, the same as typing / at the start of a word. */
+function ChatComposerCommandButton({
+  label = "Run a command",
+  onClick,
+  children,
+  ...props
+}: Omit<ChatComposerActionProps, "label"> & {
+  /** Names the button. */
+  label?: string
+}) {
+  const composer = useChatComposer()
+  return (
+    <ChatComposerAction
+      label={label}
+      onClick={(event) => {
+        onClick?.(event)
+        if (event.defaultPrevented) return
+        const openCommands = composer.meta.openCommandsRef.current
+        if (openCommands) openCommands()
+        else insertAtCaret(composer, "/")
+      }}
+      {...props}
+    >
+      {children ?? <SquareSlashIcon />}
+    </ChatComposerAction>
+  )
+}
+
 /*
  * The actions most composers share. It is only JSX, so a composer that needs
  * something else leaves it out and lists its own actions instead.
@@ -682,7 +783,8 @@ function ChatComposerCommonActions({
       {...props}
     >
       <ChatComposerAttachButton />
-      <ChatComposerMentionButton />
+      <ChatComposerEmojiButton />
+      <ChatComposerCommandButton />
     </div>
   )
 }
@@ -865,6 +967,8 @@ export {
   ChatComposerAction,
   ChatComposerAttachButton,
   ChatComposerAttachments,
+  ChatComposerCommandButton,
+  ChatComposerCommandMenu,
   ChatComposerCommonActions,
   ChatComposerDropZone,
   ChatComposerEmojiButton,
@@ -880,6 +984,7 @@ export {
   useChatComposer,
   type ChatComposerActions,
   type ChatComposerAttachment,
+  type ChatComposerCommandMenuProps,
   type ChatComposerContextValue,
   type ChatComposerEmoji,
   type ChatComposerMessage,

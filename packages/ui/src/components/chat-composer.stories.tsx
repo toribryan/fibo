@@ -1,5 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { CornerDownRightIcon, PencilIcon } from "lucide-react"
+import {
+  CodeIcon,
+  CornerDownRightIcon,
+  EraserIcon,
+  MehIcon,
+  PencilIcon,
+} from "lucide-react"
 import { useMemo, useState, useSyncExternalStore } from "react"
 import { expect, fn, waitFor, within } from "storybook/test"
 
@@ -9,6 +15,8 @@ import {
   ChatComposerAction,
   ChatComposerAttachButton,
   ChatComposerAttachments,
+  ChatComposerCommandButton,
+  ChatComposerCommandMenu,
   ChatComposerCommonActions,
   ChatComposerDropZone,
   ChatComposerEmojiButton,
@@ -21,6 +29,7 @@ import {
   ChatComposerSubmit,
   ChatComposerSuggestedReply,
   LocalChatComposerProvider,
+  useChatComposer,
   type ChatComposerActions,
   type ChatComposerAttachment,
   type ChatComposerMessage,
@@ -30,7 +39,7 @@ import { Checkbox } from "./checkbox.js"
 import { Kbd } from "./kbd.js"
 
 const meta: Meta<typeof LocalChatComposerProvider> = {
-  title: "Base components/Forms/Chat composer",
+  title: "Special components/Chat composer",
   component: LocalChatComposerProvider,
   subcomponents: {
     ChatComposerProvider,
@@ -43,6 +52,8 @@ const meta: Meta<typeof LocalChatComposerProvider> = {
     ChatComposerAttachButton,
     ChatComposerMentionButton,
     ChatComposerEmojiButton,
+    ChatComposerCommandButton,
+    ChatComposerCommandMenu,
     ChatComposerAttachments,
     ChatComposerSubmit,
     ChatComposerSuggestedReply,
@@ -85,6 +96,47 @@ const meta: Meta<typeof LocalChatComposerProvider> = {
 export default meta
 type Story = StoryObj<typeof LocalChatComposerProvider>
 
+/*
+ * Slash commands act on the draft like any other part, so they read it
+ * through useChatComposer inside the provider.
+ */
+function SlashCommands() {
+  const { state, actions } = useChatComposer()
+  const append = (text: string) =>
+    actions.setValue(state.value ? `${state.value} ${text}` : text)
+  return (
+    <ChatComposerCommandMenu
+      hints={false}
+      maxRecent={0}
+      groups={[
+        {
+          label: "Commands",
+          items: [
+            {
+              value: "shrug",
+              label: "Shrug",
+              icon: <MehIcon />,
+              onSelect: () => append("\u00AF\\_(\u30C4)_/\u00AF"),
+            },
+            {
+              value: "code",
+              label: "Code block",
+              icon: <CodeIcon />,
+              onSelect: () => append("```\n\n```"),
+            },
+            {
+              value: "clear",
+              label: "Clear the draft",
+              icon: <EraserIcon />,
+              onSelect: () => actions.setValue(""),
+            },
+          ],
+        },
+      ]}
+    />
+  )
+}
+
 export const Default: Story = {
   render: (args) => (
     <LocalChatComposerProvider {...args}>
@@ -98,11 +150,13 @@ export const Default: Story = {
           <ChatComposerSubmit />
         </ChatComposerFooter>
       </ChatComposerFrame>
+      <SlashCommands />
     </LocalChatComposerProvider>
   ),
-  play: async ({ args, canvas, userEvent }) => {
+  play: async ({ args, canvas, canvasElement, userEvent }) => {
     const input = canvas.getByRole("textbox", { name: "Message" })
     const send = canvas.getByRole("button", { name: "Send" })
+    const body = within(canvasElement.ownerDocument.body)
     await expect(send).toBeDisabled()
 
     // Keyboard: Shift+Enter breaks the line, Enter sends and clears.
@@ -122,35 +176,34 @@ export const Default: Story = {
     await expect(args.onSubmit).toHaveBeenCalledTimes(1)
     await userEvent.clear(input)
 
-    // Pointer: the mention button types @ at the caret and hands focus back.
+    // A slash inside a word is just a character.
+    await userEvent.keyboard("and/or")
+    await expect(input).toHaveValue("and/or")
+    await expect(body.queryByRole("dialog")).toBeNull()
+
+    // Keyboard: a slash after a space opens the commands and stays out of
+    // the draft; the search picks one and Enter runs it.
+    await userEvent.keyboard(" /")
+    const menu = await body.findByRole("dialog", { name: "Commands" })
+    await expect(input).toHaveValue("and/or ")
+    await userEvent.keyboard("shr{Enter}")
+    await waitFor(() => expect(menu).not.toBeInTheDocument())
+    await expect(input).toHaveValue("and/or  \u00AF\\_(\u30C4)_/\u00AF")
+    await waitFor(() => expect(input).toHaveFocus())
+
+    // Pointer: the command button opens the same menu.
+    await userEvent.click(canvas.getByRole("button", { name: "Run a command" }))
     await userEvent.click(
-      canvas.getByRole("button", { name: "Mention someone" })
+      await body.findByRole("option", { name: /Clear the draft/ })
     )
-    await waitFor(() => expect(input).toHaveFocus())
-    await userEvent.keyboard("ada ship it")
-    await expect(input).toHaveValue("@ada ship it")
-    await userEvent.click(send)
-    await expect(args.onSubmit).toHaveBeenLastCalledWith({
-      value: "@ada ship it",
-      attachments: [],
-    })
+    await expect(input).toHaveValue("")
 
-    // Sending with the button hands focus back to the text box.
-    await waitFor(() => expect(input).toHaveFocus())
-
-    // Keyboard: Tab reaches the actions in order, and Enter runs one.
-    await userEvent.tab()
-    await expect(
-      canvas.getByRole("button", { name: "Attach files" })
-    ).toHaveFocus()
-    await userEvent.tab()
-    await expect(
-      canvas.getByRole("button", { name: "Mention someone" })
-    ).toHaveFocus()
-    await userEvent.keyboard("{Enter}")
-    await waitFor(() => expect(input).toHaveFocus())
-    await expect(input).toHaveValue("@")
-    await userEvent.clear(input)
+    // Keyboard: Tab reaches the actions in order.
+    await userEvent.click(input)
+    for (const name of ["Attach files", "Add emoji", "Run a command"]) {
+      await userEvent.tab()
+      await expect(canvas.getByRole("button", { name })).toHaveFocus()
+    }
   },
 }
 
@@ -231,9 +284,16 @@ export const Emoji: Story = {
     await userEvent.click(await body.findByRole("button", { name: "Rocket" }))
     await waitFor(() => expect(input).toHaveFocus())
     await expect(input).toHaveValue("Shipped \u{1F680}")
+    // The grid stays mounted for its closing fade; wait it out before tabbing.
+    await waitFor(() =>
+      expect(body.queryByRole("button", { name: "Rocket" })).toBeNull()
+    )
 
     // Keyboard: open it, move with the arrows, Enter picks.
     await userEvent.tab()
+    await expect(
+      canvas.getByRole("button", { name: "Add emoji" })
+    ).toHaveFocus()
     await userEvent.keyboard("{Enter}")
     await waitFor(() =>
       expect(body.getByRole("button", { name: "Grinning" })).toHaveFocus()
