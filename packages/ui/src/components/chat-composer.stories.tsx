@@ -420,7 +420,7 @@ export const DictationBlocked: Story = {
 export const Minimal: Story = {
   render: (args) => (
     <LocalChatComposerProvider {...args}>
-      <ChatComposerFrame className="flex-row items-end">
+      <ChatComposerFrame className="min-w-40 flex-row items-end">
         <ChatComposerInput placeholder="Ask anything" />
         {/* The margin centers the button on one line of text: 48px tall with
             16px text, 44px from md, where the text drops to 14px. */}
