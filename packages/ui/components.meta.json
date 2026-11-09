@@ -98,6 +98,14 @@
     "group": "Feedback",
     "figma": "710-144"
   },
+  "drop-zone": {
+    "title": "Drop zone",
+    "description": "Wraps an area people can drop files onto, with an overlay while they drag and files split by type.",
+    "tier": "base-components",
+    "group": "Forms",
+    "status": "new",
+    "figma": "1007-106"
+  },
   "field": {
     "title": "Field",
     "description": "A label, description and error wired to one form control, with a group that sets the size of a whole form.",
@@ -371,7 +379,6 @@
     "title": "Settings page",
     "description": "A settings screen in tabs for profile, notifications and account, with a save bar that appears on change and a confirmed danger zone.",
     "tier": "blocks",
-    "group": "Pages",
-    "status": "new"
+    "group": "Pages"
   }
 }

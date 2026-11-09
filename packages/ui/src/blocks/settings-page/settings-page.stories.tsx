@@ -6,7 +6,6 @@ import { SettingsPage } from "./settings-page.js"
 const meta: Meta<typeof SettingsPage> = {
   title: "Blocks/Settings page",
   component: SettingsPage,
-  tags: ["new"],
   parameters: {
     layout: "fullscreen",
     controls: { exclude: ["initialValues", "onSave", "container"] },

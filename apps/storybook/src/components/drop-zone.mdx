@@ -1,0 +1,111 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/drop-zone.stories"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "../blocks/data-attributes"
+import { UsageGuidelines } from "../blocks/guidelines"
+import { Install } from "../blocks/install"
+
+<Meta of={Stories} />
+
+# Drop zone
+
+Drop zone wraps an area people can drop files onto, and shows an overlay
+while they drag files over it. Drag a file from your desktop over the panel.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- Covers the area it wraps, usually a whole conversation panel, so the
+  target is easy to hit.
+- Splits dropped files by `accept` into `onDropFiles` and `onRejectFiles`.
+- Has no state of its own beyond the drag. What it covers never changes.
+- Ignores text and links dragged across it; only files show the overlay.
+
+## Installation
+
+<Install name="drop-zone" exports={["DropZone", "matchesAccept"]} />
+
+## Examples
+
+### While dragging
+
+The overlay: a dashed ring, what happens on drop, and the limits.
+
+<Canvas of={Stories.WhileDragging} />
+
+## Usage
+
+```tsx
+import { DropZone } from "@/components/ui/drop-zone"
+
+export function ChatPanel({ addFiles, reject }: Props) {
+  return (
+    <DropZone
+      accept="image/*,.pdf"
+      description="Images and PDFs up to 25 MB"
+      onDropFiles={addFiles}
+      onRejectFiles={(files) => reject(files)}
+      className="rounded-xl border"
+    >
+      <MessageList />
+      <Composer />
+    </DropZone>
+  )
+}
+```
+
+Match `accept` to the file picker's, so dropping and picking take the same
+files. In a chat, `ChatComposerDropZone` passes the composer's
+`addAttachments` for you.
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Wrap the whole conversation panel, not just the text box.",
+    "Say what happens in the label, such as Drop files to attach, and the limits in the description.",
+    "Tell people why a file was left out with onRejectFiles, for example in a toast.",
+    "Always offer a file picker too. Dropping is a shortcut, not the only way in.",
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="drop-zone"',
+      element: "The wrapper",
+      when: "Always.",
+    },
+    {
+      attribute: "data-dragging",
+      element: "The wrapper",
+      when: "While files are over it.",
+    },
+    {
+      attribute: 'data-slot="drop-zone-overlay"',
+      element: "The overlay",
+      when: "While files are over it.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "Dragging needs a pointer, so a file picker such as the composer's Attach files is the keyboard path.",
+    "The overlay is aria-hidden: it only mirrors a drag already in progress.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Attachment", "Chat composer"]} />

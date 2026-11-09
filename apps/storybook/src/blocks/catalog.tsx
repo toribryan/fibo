@@ -18,6 +18,7 @@ import {
   PaperclipIcon,
   PlusIcon,
   SearchIcon,
+  UploadIcon,
   UserIcon,
   XIcon,
 } from "lucide-react"
@@ -274,6 +275,12 @@ const PREVIEWS: Record<string, ReactNode> = {
   ),
   textarea: <Textarea placeholder="Leave a note" className="w-52" />,
   attachment: <Attachment name="token-audit.pdf" size={482_000} />,
+  "drop-zone": (
+    <span className="flex h-24 w-48 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-ring text-xs">
+      <UploadIcon className="size-4 text-muted-foreground" />
+      <span className="font-medium">Drop files to attach</span>
+    </span>
+  ),
   "chat-composer": (
     <div className="flex w-60 flex-col rounded-2xl border border-input bg-input-subtle">
       <span className="px-3 pt-3 pb-2 text-sm text-muted-foreground">
