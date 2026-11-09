@@ -14,6 +14,7 @@ import {
   LinkIcon,
   ListIcon,
   ListFilterIcon,
+  MicIcon,
   PaperclipIcon,
   PlusIcon,
   SearchIcon,
@@ -291,6 +292,7 @@ const PREVIEWS: Record<string, ReactNode> = {
         <PaperclipIcon className="ml-1.5 size-4" />
         <SmileIcon className="size-4" />
         <ZapIcon className="size-4" />
+        <MicIcon className="size-4" />
         <span className="ml-auto flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <ArrowUpIcon className="size-4" />
         </span>

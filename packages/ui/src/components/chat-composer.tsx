@@ -5,6 +5,7 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover"
 import {
   ArrowUpIcon,
   AtSignIcon,
+  MicIcon,
   PaperclipIcon,
   SmileIcon,
   ZapIcon,
@@ -768,6 +769,144 @@ function ChatComposerCommandButton({
   )
 }
 
+/** The slice of the Web Speech API's SpeechRecognition the dictation button uses. */
+type ChatComposerSpeechRecognition = {
+  lang: string
+  continuous: boolean
+  interimResults: boolean
+  start: () => void
+  stop: () => void
+  abort: () => void
+  onresult:
+    | ((event: {
+        results: ArrayLike<ArrayLike<{ transcript: string }>>
+      }) => void)
+    | null
+  onerror: ((event: { error: string }) => void) | null
+  onend: (() => void) | null
+}
+
+type SpeechRecognitionConstructor = new () => ChatComposerSpeechRecognition
+
+/** The browser's speech recognition, prefixed in Safari and older Chrome. */
+function browserRecognition(): SpeechRecognitionConstructor | undefined {
+  if (typeof window === "undefined") return undefined
+  const speech = window as unknown as {
+    SpeechRecognition?: SpeechRecognitionConstructor
+    webkitSpeechRecognition?: SpeechRecognitionConstructor
+  }
+  return speech.SpeechRecognition ?? speech.webkitSpeechRecognition
+}
+
+const noSubscription = () => () => {}
+
+type ChatComposerDictationButtonProps = Omit<
+  ChatComposerActionProps,
+  "label"
+> & {
+  /** Names the button. */
+  label?: string
+  /** The language to listen for, as a BCP 47 tag. Defaults to the browser's. */
+  lang?: string
+  /** Makes the recogniser, for another engine or a test. Defaults to the browser's own. */
+  recognition?: () => ChatComposerSpeechRecognition
+  /** Called with the recogniser's error code, such as "not-allowed" when the mic is blocked. */
+  onDictationError?: (error: string) => void
+}
+
+/*
+ * Turns speech into text at the caret, with words landing in the draft as
+ * they are heard. It renders nothing where the browser has no speech
+ * recognition and no recognition prop is given, so Common actions can
+ * always include it.
+ */
+function ChatComposerDictationButton({
+  label = "Dictate",
+  lang,
+  recognition,
+  onDictationError,
+  onClick,
+  className,
+  children,
+  ...props
+}: ChatComposerDictationButtonProps) {
+  const { state, actions, meta } = useChatComposer()
+  const supported = React.useSyncExternalStore(
+    noSubscription,
+    () => Boolean(recognition ?? browserRecognition()),
+    () => false
+  )
+  const [listening, setListening] = React.useState(false)
+  const active = React.useRef<ChatComposerSpeechRecognition | null>(null)
+
+  React.useEffect(() => () => active.current?.abort(), [])
+
+  React.useEffect(() => {
+    if (!listening) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") active.current?.stop()
+    }
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [listening])
+
+  if (!supported) return null
+
+  function start() {
+    const Recognition = browserRecognition()
+    const engine = recognition?.() ?? (Recognition ? new Recognition() : null)
+    if (!engine) return
+    const input = meta.inputRef.current
+    const begin = input?.selectionStart ?? state.value.length
+    const end = input?.selectionEnd ?? state.value.length
+    // Dictation replaces the selection, like typing would, and keeps what
+    // follows the caret after the spoken words.
+    const before = state.value.slice(0, begin)
+    const after = state.value.slice(end)
+    let caret = begin
+    engine.lang = lang ?? navigator.language
+    engine.continuous = true
+    engine.interimResults = true
+    engine.onresult = (event) => {
+      let heard = ""
+      for (let i = 0; i < event.results.length; i++)
+        heard += event.results[i]?.[0]?.transcript ?? ""
+      heard = heard.trim()
+      const space = heard && before && !/\s$/.test(before) ? " " : ""
+      actions.setValue(before + space + heard + after)
+      caret = before.length + space.length + heard.length
+    }
+    engine.onerror = (event) => onDictationError?.(event.error)
+    engine.onend = () => {
+      active.current = null
+      setListening(false)
+      input?.focus()
+      input?.setSelectionRange(caret, caret)
+    }
+    active.current = engine
+    engine.start()
+    setListening(true)
+  }
+
+  return (
+    <ChatComposerAction
+      label={label}
+      aria-pressed={listening}
+      variant={listening ? "secondary" : "ghost"}
+      className={cn(listening && "text-secondary-foreground", className)}
+      onClick={(event) => {
+        onClick?.(event)
+        if (event.defaultPrevented) return
+        if (active.current) active.current.stop()
+        else start()
+      }}
+      {...props}
+    >
+      {children ?? <MicIcon />}
+    </ChatComposerAction>
+  )
+}
+
 /*
  * The actions most composers share. It is only JSX, so a composer that needs
  * something else leaves it out and lists its own actions instead.
@@ -785,6 +924,7 @@ function ChatComposerCommonActions({
       <ChatComposerAttachButton />
       <ChatComposerEmojiButton />
       <ChatComposerCommandButton />
+      <ChatComposerDictationButton />
     </div>
   )
 }
@@ -970,6 +1110,7 @@ export {
   ChatComposerCommandButton,
   ChatComposerCommandMenu,
   ChatComposerCommonActions,
+  ChatComposerDictationButton,
   ChatComposerDropZone,
   ChatComposerEmojiButton,
   ChatComposerFooter,
@@ -987,6 +1128,7 @@ export {
   type ChatComposerCommandMenuProps,
   type ChatComposerContextValue,
   type ChatComposerEmoji,
+  type ChatComposerSpeechRecognition,
   type ChatComposerMessage,
   type ChatComposerMeta,
   type ChatComposerState,
