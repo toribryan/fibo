@@ -84,18 +84,16 @@ type Story = StoryObj<typeof LocalChatComposerProvider>
 export const Default: Story = {
   render: (args) => (
     <LocalChatComposerProvider {...args}>
-      <ChatComposerDropZone>
-        <ChatComposerFrame>
-          <ChatComposerHeader className="empty:hidden">
-            <ChatComposerAttachments />
-          </ChatComposerHeader>
-          <ChatComposerInput placeholder="Message #design" />
-          <ChatComposerFooter>
-            <ChatComposerCommonActions />
-            <ChatComposerSubmit />
-          </ChatComposerFooter>
-        </ChatComposerFrame>
-      </ChatComposerDropZone>
+      <ChatComposerFrame>
+        <ChatComposerHeader className="empty:hidden">
+          <ChatComposerAttachments />
+        </ChatComposerHeader>
+        <ChatComposerInput placeholder="Message #design" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
     </LocalChatComposerProvider>
   ),
   play: async ({ args, canvas, userEvent }) => {
@@ -154,7 +152,14 @@ export const Default: Story = {
 
 const FILES: ChatComposerAttachment[] = [
   { id: "a", name: "token-audit.pdf", size: 482_000 },
-  { id: "b", name: "button-states.png", size: 1_830_000 },
+  { id: "b", name: "drift-report.csv", size: 38_000, status: "loading" },
+  {
+    id: "c",
+    name: "button-states.fig",
+    size: 1_830_000,
+    status: "error",
+    error: "Too large",
+  },
 ]
 
 export const WithAttachments: Story = {
@@ -259,26 +264,21 @@ function ThreadReplyDemo(args: Story["args"]) {
       {...args}
       onSubmit={(message) => sendReply({ ...message, alsoChannel })}
     >
-      <ChatComposerDropZone>
-        <ChatComposerFrame>
-          <ChatComposerHeader>
-            <CornerDownRightIcon className="size-3.5" />
-            Replying to Ada Lovelace
-          </ChatComposerHeader>
-          <ChatComposerInput placeholder="Reply…" />
-          <ChatComposerFooter>
-            <ChatComposerCommonActions />
-            <label className="ml-auto flex items-center gap-2 pr-2 text-xs text-muted-foreground">
-              <Checkbox
-                checked={alsoChannel}
-                onCheckedChange={setAlsoChannel}
-              />
-              Also send to #design
-            </label>
-            <ChatComposerSubmit />
-          </ChatComposerFooter>
-        </ChatComposerFrame>
-      </ChatComposerDropZone>
+      <ChatComposerFrame>
+        <ChatComposerHeader>
+          <CornerDownRightIcon className="size-3.5" />
+          Replying to Ada Lovelace
+        </ChatComposerHeader>
+        <ChatComposerInput placeholder="Reply…" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <label className="ml-auto flex items-center gap-2 pr-2 text-xs text-muted-foreground">
+            <Checkbox checked={alsoChannel} onCheckedChange={setAlsoChannel} />
+            Also send to #design
+          </label>
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
     </LocalChatComposerProvider>
   )
 }
@@ -445,63 +445,67 @@ function ChatDemo(args: Story["args"]) {
     },
   ])
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4">
-      <ol aria-label="Messages" className="flex flex-col gap-3">
-        {messages.map((message) => (
-          <li key={message.id} className="flex items-start gap-2.5">
-            <Avatar size="sm">
-              <AvatarFallback>
-                {message.author
-                  .split(" ")
-                  .map((word) => word[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col text-sm">
-              <span className="font-medium">{message.author}</span>
-              <span className="whitespace-pre-wrap text-muted-foreground">
-                {message.text}
-              </span>
-              {message.files.map((name, index) => (
-                <span key={index} className="text-xs text-muted-foreground">
-                  {name}
-                </span>
-              ))}
-            </div>
-          </li>
-        ))}
-      </ol>
-      <LocalChatComposerProvider
-        {...args}
-        onSubmit={async (message) => {
-          args?.onSubmit?.(message)
-          // A pretend round trip, so the send button shows its busy state.
-          await new Promise((resolve) => setTimeout(resolve, 600))
-          setMessages((current) => [
-            ...current,
-            {
-              id: current.length + 1,
-              author: "You",
-              text: message.value,
-              files: message.attachments.map((file) => file.name),
-            },
-          ])
-        }}
+    <LocalChatComposerProvider
+      {...args}
+      // A pretend upload, so attachments show their loading status.
+      upload={() => new Promise((resolve) => setTimeout(resolve, 900))}
+      onSubmit={async (message) => {
+        args?.onSubmit?.(message)
+        // A pretend round trip, so the send button shows its busy state.
+        await new Promise((resolve) => setTimeout(resolve, 600))
+        setMessages((current) => [
+          ...current,
+          {
+            id: current.length + 1,
+            author: "You",
+            text: message.value,
+            files: message.attachments.map((file) => file.name),
+          },
+        ])
+      }}
+    >
+      {/* The whole panel takes drops, not just the composer. */}
+      <ChatComposerDropZone
+        description="Any file, dropped anywhere on the conversation"
+        className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4"
       >
-        <ChatComposerDropZone>
-          <ChatComposerFrame>
-            <ChatComposerHeader className="empty:hidden">
-              <ChatComposerAttachments />
-            </ChatComposerHeader>
-            <ChatComposerInput placeholder="Reply to Ada" />
-            <ChatComposerFooter>
-              <ChatComposerCommonActions />
-              <ChatComposerSubmit />
-            </ChatComposerFooter>
-          </ChatComposerFrame>
-        </ChatComposerDropZone>
-      </LocalChatComposerProvider>
-    </div>
+        <ol aria-label="Messages" className="flex flex-col gap-3">
+          {messages.map((message) => (
+            <li key={message.id} className="flex items-start gap-2.5">
+              <Avatar size="sm">
+                <AvatarFallback>
+                  {message.author
+                    .split(" ")
+                    .map((word) => word[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col text-sm">
+                <span className="font-medium">{message.author}</span>
+                <span className="whitespace-pre-wrap text-muted-foreground">
+                  {message.text}
+                </span>
+                {message.files.map((name, index) => (
+                  <span key={index} className="text-xs text-muted-foreground">
+                    {name}
+                  </span>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ol>
+        <ChatComposerFrame>
+          <ChatComposerHeader className="empty:hidden">
+            <ChatComposerAttachments />
+          </ChatComposerHeader>
+          <ChatComposerInput placeholder="Reply to Ada" />
+          <ChatComposerFooter>
+            <ChatComposerCommonActions />
+            <ChatComposerSubmit />
+          </ChatComposerFooter>
+        </ChatComposerFrame>
+      </ChatComposerDropZone>
+    </LocalChatComposerProvider>
   )
 }
 

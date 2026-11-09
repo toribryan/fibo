@@ -1,9 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { ArrowUpIcon, AtSignIcon, PaperclipIcon, XIcon } from "lucide-react"
+import { ArrowUpIcon, AtSignIcon, PaperclipIcon } from "lucide-react"
 
+import { Attachment } from "@workspace/ui/components/attachment"
 import { Button } from "@workspace/ui/components/button"
+import { DropZone } from "@workspace/ui/components/drop-zone"
 import { Progress } from "@workspace/ui/components/progress"
 import {
   Tooltip,
@@ -29,6 +31,10 @@ type ChatComposerAttachment = {
   size?: number
   /** The file itself, when it came from this device. */
   file?: File
+  /** Where its upload is. Leave it out for a file that needs no upload. */
+  status?: "ready" | "loading" | "error"
+  /** What went wrong, in a few words, when the upload failed. */
+  error?: string
 }
 
 type ChatComposerState = {
@@ -51,6 +57,8 @@ type ChatComposerActions = {
   addAttachments: (files: File[]) => void
   /** Removes one attachment by id. */
   removeAttachment: (id: string) => void
+  /** Tries a failed upload again. Without it, failed files offer no retry. */
+  retryAttachment?: (id: string) => void
   /** Sends the draft. */
   submit: () => void
 }
@@ -88,11 +96,17 @@ function hasContent({ value, attachments }: ChatComposerMessage) {
   return value.trim() !== "" || attachments.length > 0
 }
 
+/** Whether every attachment has finished uploading. */
+function uploadsReady({ attachments }: ChatComposerState) {
+  return attachments.every((a) => (a.status ?? "ready") === "ready")
+}
+
 /** Whether the draft may be sent and the composer is free to send it. */
 function isSubmittable(state: ChatComposerState) {
   return (
     !state.disabled &&
     !state.submitting &&
+    uploadsReady(state) &&
     (state.canSubmit ?? hasContent(state))
   )
 }
@@ -144,6 +158,8 @@ type LocalChatComposerProviderProps = {
   disabled?: boolean
   /** Decides whether the draft may be sent. Defaults to having text or an attachment. */
   canSubmit?: (message: ChatComposerMessage) => boolean
+  /** Uploads one attachment. While it runs the attachment shows loading and send waits; a rejection marks it failed and offers retry. */
+  upload?: (attachment: ChatComposerAttachment) => Promise<void>
   /** A ref for the text box. One is made for you when omitted. */
   inputRef?: React.RefObject<HTMLTextAreaElement | null>
   /** The parts. */
@@ -173,6 +189,7 @@ function LocalChatComposerProvider({
   onSubmit,
   disabled,
   canSubmit = hasContent,
+  upload,
   inputRef,
   children,
 }: LocalChatComposerProviderProps) {
@@ -188,18 +205,42 @@ function LocalChatComposerProvider({
 
   // Submit reads the latest draft without re-creating the actions on every
   // keystroke, which would re-render every part that only needs actions.
-  const latest = React.useRef({ state, onSubmit })
+  const latest = React.useRef({ state, onSubmit, upload })
   React.useLayoutEffect(() => {
-    latest.current = { state, onSubmit }
+    latest.current = { state, onSubmit, upload }
   })
 
-  const actions = React.useMemo<ChatComposerActions>(
-    () => ({
+  const actions = React.useMemo<ChatComposerActions>(() => {
+    const patch = (id: string, next: Partial<ChatComposerAttachment>) =>
+      setAttachments((current) =>
+        current.map((a) => (a.id === id ? { ...a, ...next } : a))
+      )
+    const start = (attachment: ChatComposerAttachment) => {
+      const { upload } = latest.current
+      if (!upload) return
+      patch(attachment.id, { status: "loading", error: undefined })
+      upload(attachment).then(
+        () => patch(attachment.id, { status: "ready" }),
+        () => patch(attachment.id, { status: "error" })
+      )
+    }
+    return {
       setValue,
-      addAttachments: (files) =>
-        setAttachments((current) => [...current, ...toAttachments(files)]),
+      addAttachments: (files) => {
+        const added = toAttachments(files).map((a) =>
+          latest.current.upload ? { ...a, status: "loading" as const } : a
+        )
+        setAttachments((current) => [...current, ...added])
+        added.forEach(start)
+      },
       removeAttachment: (id) =>
         setAttachments((current) => current.filter((a) => a.id !== id)),
+      retryAttachment: (id) => {
+        const attachment = latest.current.state.attachments.find(
+          (a) => a.id === id
+        )
+        if (attachment) start(attachment)
+      },
       submit: () => {
         const { state, onSubmit } = latest.current
         if (!isSubmittable(state)) return
@@ -222,9 +263,8 @@ function LocalChatComposerProvider({
         setSubmitting(true)
         result.then(clear, () => {}).finally(() => setSubmitting(false))
       },
-    }),
-    []
-  )
+    }
+  }, [])
 
   return (
     <ChatComposerProvider state={state} actions={actions} inputRef={inputRef}>
@@ -558,142 +598,82 @@ function ChatComposerAttachments({
     <ul
       data-slot="chat-composer-attachments"
       aria-label="Attachments"
-      className={cn("flex flex-wrap gap-1.5", className)}
+      className={cn("flex flex-wrap items-center gap-2", className)}
       {...props}
     >
       {state.attachments.map((attachment) => (
-        <li
-          key={attachment.id}
-          data-slot="chat-composer-attachment"
-          className="flex h-7 max-w-56 items-center gap-1.5 rounded-full border border-border bg-background pr-1 pl-2.5 text-xs text-foreground"
-        >
-          <PaperclipIcon className="size-3 shrink-0 text-muted-foreground" />
-          <span className="truncate">{attachment.name}</span>
-          {attachment.size !== undefined ? (
-            <span className="shrink-0 text-muted-foreground">
-              {formatBytes(attachment.size)}
-            </span>
-          ) : null}
-          <button
-            type="button"
-            aria-label={`Remove ${attachment.name}`}
+        <li key={attachment.id} data-slot="chat-composer-attachment">
+          <ChatComposerAttachmentItem
+            attachment={attachment}
             disabled={state.disabled}
-            onClick={() => actions.removeAttachment(attachment.id)}
-            className="flex size-5 shrink-0 items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring-subtle disabled:pointer-events-none"
-          >
-            <XIcon className="size-3" />
-          </button>
+            onRemove={() => actions.removeAttachment(attachment.id)}
+            onRetry={
+              actions.retryAttachment
+                ? () => actions.retryAttachment?.(attachment.id)
+                : undefined
+            }
+          />
         </li>
       ))}
     </ul>
   )
 }
 
-/** Sizes in the units people read them in: 512 B, 12 KB, 3.4 MB. */
-function formatBytes(bytes: number) {
-  if (bytes < 1024) return `${bytes} B`
-  const units = ["KB", "MB", "GB"]
-  let size = bytes / 1024
-  let unit = 0
-  while (size >= 1024 && unit < units.length - 1) {
-    size /= 1024
-    unit++
+// One URL per file for the life of the page: revoking on unmount would
+// break the preview when Strict Mode or a list reorder remounts the item.
+const previews = new WeakMap<File, string>()
+
+function previewUrl(file: File) {
+  let url = previews.get(file)
+  if (!url) {
+    url = URL.createObjectURL(file)
+    previews.set(file, url)
   }
-  return `${size < 10 ? size.toFixed(1).replace(/\.0$/, "") : Math.round(size)} ${units[unit]}`
+  return url
 }
 
-/** Whether a file passes an accept string such as "image/*,.pdf". */
-function matchesAccept(file: File, accept?: string) {
-  if (!accept?.trim()) return true
-  const name = file.name.toLowerCase()
-  const type = file.type.toLowerCase()
-  return accept.split(",").some((raw) => {
-    const rule = raw.trim().toLowerCase()
-    if (!rule) return false
-    if (rule.startsWith(".")) return name.endsWith(rule)
-    if (rule.endsWith("/*")) return type.startsWith(rule.slice(0, -1))
-    return type === rule
-  })
+/** An image from this device previews as a thumbnail; anything else is a chip. */
+function ChatComposerAttachmentItem({
+  attachment,
+  ...props
+}: {
+  attachment: ChatComposerAttachment
+  disabled?: boolean
+  onRemove: () => void
+  onRetry?: () => void
+}) {
+  const file = attachment.file
+  const image = file?.type.startsWith("image/") ?? false
+  const src = file && image ? previewUrl(file) : undefined
+  return (
+    <Attachment
+      type={image ? "image" : "file"}
+      status={attachment.status}
+      name={attachment.name}
+      size={attachment.size}
+      error={attachment.error}
+      src={src}
+      {...props}
+    />
+  )
 }
 
 /*
- * Attaches files dropped anywhere inside it. Leave it out to turn drag and
- * drop off; there is no prop for that.
+ * A Drop zone that attaches what is dropped. Wrap the whole conversation
+ * panel, not just the frame, so the target is easy to hit. Leave it out to
+ * turn drag and drop off; there is no prop for that.
  */
-function ChatComposerDropZone({
-  className,
-  children,
-  label = "Drop files to attach",
-  accept,
-  onDragEnter,
-  onDragOver,
-  onDragLeave,
-  onDrop,
-  ...props
-}: React.ComponentProps<"div"> & {
-  /** Shown over the zone while files are dragged across it. */
-  label?: React.ReactNode
-  /** File types it takes, as in a file input's accept attribute. Match it to the attach button's. */
-  accept?: string
-}) {
+function ChatComposerDropZone(
+  props: Omit<React.ComponentProps<typeof DropZone>, "onDropFiles">
+) {
   const { state, actions } = useChatComposer()
-  const [dragging, setDragging] = React.useState(false)
-  // dragenter and dragleave fire for every child crossed, so count them.
-  const depth = React.useRef(0)
-
-  const hasFiles = (event: React.DragEvent) =>
-    !state.disabled && event.dataTransfer.types.includes("Files")
-
   return (
-    <div
+    <DropZone
       data-slot="chat-composer-drop-zone"
-      data-dragging={dragging ? "" : undefined}
-      className={cn("relative", className)}
-      onDragEnter={(event) => {
-        // A caller's handler runs first and can take the drag over by
-        // calling preventDefault, as with ChatComposerFrame's click.
-        onDragEnter?.(event)
-        if (event.defaultPrevented || !hasFiles(event)) return
-        event.preventDefault()
-        depth.current++
-        setDragging(true)
-      }}
-      onDragOver={(event) => {
-        onDragOver?.(event)
-        if (event.defaultPrevented || !hasFiles(event)) return
-        event.preventDefault()
-        event.dataTransfer.dropEffect = "copy"
-      }}
-      onDragLeave={(event) => {
-        onDragLeave?.(event)
-        depth.current = Math.max(0, depth.current - 1)
-        if (depth.current === 0) setDragging(false)
-      }}
-      onDrop={(event) => {
-        onDrop?.(event)
-        // Reset first, so the hint never sticks if the composer was
-        // disabled mid-drag.
-        depth.current = 0
-        setDragging(false)
-        if (event.defaultPrevented || !hasFiles(event)) return
-        event.preventDefault()
-        const files = Array.from(event.dataTransfer.files).filter((file) =>
-          matchesAccept(file, accept)
-        )
-        if (files.length) actions.addAttachments(files)
-      }}
       {...props}
-    >
-      {children}
-      {dragging ? (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-ring bg-background text-sm font-medium text-foreground"
-        >
-          {label}
-        </div>
-      ) : null}
-    </div>
+      disabled={state.disabled || props.disabled}
+      onDropFiles={actions.addAttachments}
+    />
   )
 }
 
