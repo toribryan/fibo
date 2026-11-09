@@ -6,6 +6,7 @@ import {
   ChatComposerAttachButton,
   ChatComposerAttachments,
   ChatComposerCommandMenu,
+  ChatComposerDictationButton,
   ChatComposerDropZone,
   ChatComposerFrame,
   ChatComposerInput,
@@ -14,6 +15,7 @@ import {
   LocalChatComposerProvider,
   useChatComposer,
   type ChatComposerActions,
+  type ChatComposerSpeechRecognition,
 } from "./chat-composer.js"
 
 function Composer(
@@ -237,6 +239,98 @@ describe("Chat composer", () => {
     expect(onOpenChange).toHaveBeenLastCalledWith(true)
     // The modal menu hides the page from queries, so read the box directly.
     expect(withMenu.container.querySelector("textarea")).toHaveValue("a/b ")
+  })
+
+  it("dictates at the caret and stops on a second press", async () => {
+    const engine: ChatComposerSpeechRecognition = {
+      lang: "",
+      continuous: false,
+      interimResults: false,
+      onresult: null,
+      onerror: null,
+      onend: null,
+      start: vi.fn(),
+      stop: vi.fn(() => engine.onend?.()),
+      abort: vi.fn(),
+    }
+    const screen = await render(
+      <LocalChatComposerProvider defaultValue="Note:">
+        <ChatComposerFrame>
+          <ChatComposerInput />
+          <ChatComposerDictationButton
+            lang="en-GB"
+            recognition={() => engine}
+          />
+        </ChatComposerFrame>
+      </LocalChatComposerProvider>
+    )
+    const input = screen.getByRole("textbox")
+    const mic = screen.getByRole("button", { name: "Dictate" })
+    await input.click()
+    await mic.click()
+    expect(engine.start).toHaveBeenCalled()
+    expect(engine.lang).toBe("en-GB")
+    await expect.element(mic).toHaveAttribute("aria-pressed", "true")
+
+    // Results arrive whole each time, interim words included.
+    engine.onresult?.({ results: [[{ transcript: "ship the" }]] })
+    await expect.element(input).toHaveValue("Note: ship the")
+    engine.onresult?.({
+      results: [[{ transcript: "ship the" }], [{ transcript: " tokens" }]],
+    })
+    await expect.element(input).toHaveValue("Note: ship the tokens")
+
+    await mic.click()
+    expect(engine.stop).toHaveBeenCalled()
+    await expect.element(mic).toHaveAttribute("aria-pressed", "false")
+    await expect.element(input).toHaveFocus()
+  })
+
+  it("says why dictation stopped, except when stopped on purpose", async () => {
+    const engine: ChatComposerSpeechRecognition = {
+      lang: "",
+      continuous: false,
+      interimResults: false,
+      onresult: null,
+      onerror: null,
+      onend: null,
+      start: vi.fn(),
+      stop: vi.fn(),
+      abort: vi.fn(),
+    }
+    const onDictationError = vi.fn()
+    const screen = await render(
+      <LocalChatComposerProvider>
+        <ChatComposerFrame>
+          <ChatComposerInput />
+          <ChatComposerDictationButton
+            recognition={() => engine}
+            onDictationError={onDictationError}
+          />
+        </ChatComposerFrame>
+      </LocalChatComposerProvider>
+    )
+    const mic = screen.getByRole("button", { name: "Dictate" })
+    const status = screen.getByRole("status")
+
+    await mic.click()
+    engine.onerror?.({ error: "aborted" })
+    engine.onend?.()
+    expect(onDictationError).toHaveBeenCalledWith("aborted")
+    await expect.element(status).toHaveTextContent("")
+
+    await mic.click()
+    engine.onerror?.({ error: "not-allowed" })
+    engine.onend?.()
+    await expect
+      .element(status)
+      .toHaveTextContent("Microphone is blocked. Allow it in site settings.")
+    await expect
+      .element(
+        screen.getByText("Microphone is blocked", { exact: false }).last()
+      )
+      .toBeVisible()
+    await expect.element(mic).toHaveAttribute("aria-pressed", "false")
   })
 
   it("keeps only dropped files that match accept", async () => {

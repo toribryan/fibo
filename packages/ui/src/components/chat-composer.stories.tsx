@@ -18,6 +18,7 @@ import {
   ChatComposerCommandButton,
   ChatComposerCommandMenu,
   ChatComposerCommonActions,
+  ChatComposerDictationButton,
   ChatComposerDropZone,
   ChatComposerEmojiButton,
   ChatComposerFooter,
@@ -33,6 +34,7 @@ import {
   type ChatComposerActions,
   type ChatComposerAttachment,
   type ChatComposerMessage,
+  type ChatComposerSpeechRecognition,
   type ChatComposerState,
 } from "./chat-composer.js"
 import { Checkbox } from "./checkbox.js"
@@ -54,6 +56,7 @@ const meta: Meta<typeof LocalChatComposerProvider> = {
     ChatComposerEmojiButton,
     ChatComposerCommandButton,
     ChatComposerCommandMenu,
+    ChatComposerDictationButton,
     ChatComposerAttachments,
     ChatComposerSubmit,
     ChatComposerSuggestedReply,
@@ -301,6 +304,116 @@ export const Emoji: Story = {
     await userEvent.keyboard("{ArrowDown}{ArrowRight}{Enter}")
     await waitFor(() => expect(input).toHaveFocus())
     await expect(input).toHaveValue("Shipped \u{1F680}\u{1F643}")
+  },
+}
+
+/*
+ * A stand-in recogniser that "hears" a sentence a word at a time, so the
+ * story runs without a microphone or a permission prompt.
+ */
+function scriptedRecognition(sentence: string) {
+  return (): ChatComposerSpeechRecognition => {
+    let timer: ReturnType<typeof setInterval> | undefined
+    const engine: ChatComposerSpeechRecognition = {
+      lang: "",
+      continuous: false,
+      interimResults: false,
+      onresult: null,
+      onerror: null,
+      onend: null,
+      start: () => {
+        const words = sentence.split(" ")
+        let heard = 0
+        timer = setInterval(() => {
+          heard++
+          engine.onresult?.({
+            results: [[{ transcript: words.slice(0, heard).join(" ") }]],
+          })
+          if (heard === words.length) engine.stop()
+        }, 180)
+      },
+      stop: () => {
+        clearInterval(timer)
+        engine.onend?.()
+      },
+      abort: () => clearInterval(timer),
+    }
+    return engine
+  }
+}
+
+export const Dictation: Story = {
+  render: (args) => (
+    <LocalChatComposerProvider {...args}>
+      <ChatComposerFrame>
+        <ChatComposerInput placeholder="Message #design" />
+        <ChatComposerFooter>
+          <ChatComposerDictationButton
+            recognition={scriptedRecognition(
+              "Ship the tokens first then the parts that use them"
+            )}
+          />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const input = canvas.getByRole("textbox", { name: "Message" })
+    const mic = canvas.getByRole("button", { name: "Dictate" })
+    await userEvent.click(mic)
+    await expect(mic).toHaveAttribute("aria-pressed", "true")
+    // Words land as they are heard; a second press stops listening.
+    await waitFor(() =>
+      expect((input as HTMLTextAreaElement).value).toMatch(/^Ship the tokens/)
+    )
+    await userEvent.click(mic)
+    await expect(mic).toHaveAttribute("aria-pressed", "false")
+    await waitFor(() => expect(input).toHaveFocus())
+  },
+}
+
+/** A recogniser that fails the way Chrome does when the mic is blocked. */
+function blockedRecognition(): ChatComposerSpeechRecognition {
+  const engine: ChatComposerSpeechRecognition = {
+    lang: "",
+    continuous: false,
+    interimResults: false,
+    onresult: null,
+    onerror: null,
+    onend: null,
+    start: () =>
+      setTimeout(() => {
+        engine.onerror?.({ error: "not-allowed" })
+        engine.onend?.()
+      }, 100),
+    stop: () => engine.onend?.(),
+    abort: () => {},
+  }
+  return engine
+}
+
+export const DictationBlocked: Story = {
+  name: "Dictation blocked",
+  render: (args) => (
+    <LocalChatComposerProvider {...args}>
+      <ChatComposerFrame>
+        <ChatComposerInput placeholder="Message #design" />
+        <ChatComposerFooter>
+          <ChatComposerDictationButton recognition={blockedRecognition} />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Dictate" }))
+    // The tooltip says why, and a status region reads it out.
+    await waitFor(() =>
+      expect(canvas.getByRole("status")).toHaveTextContent(
+        "Microphone is blocked. Allow it in site settings."
+      )
+    )
   },
 }
 
