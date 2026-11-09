@@ -292,8 +292,10 @@ const INTERACTIVE =
   "button, a, input, textarea, select, label, [role=button], [tabindex], [contenteditable]"
 
 /*
- * The box around the parts. A click on its bare surface focuses the text box,
- * so the whole frame reads as one field.
+ * The box around the parts. Its 240px minimum fits the footer (four actions
+ * and send) with room to read the draft; narrower hosts use the one-row
+ * layout or fewer actions rather than overlapping them. A click on its bare
+ * surface focuses the text box, so the whole frame reads as one field.
  */
 function ChatComposerFrame({
   className,
@@ -306,7 +308,7 @@ function ChatComposerFrame({
       data-slot="chat-composer"
       data-disabled={state.disabled ? "" : undefined}
       className={cn(
-        "relative flex w-full flex-col rounded-2xl border border-input bg-input-subtle transition-colors has-[[data-slot=chat-composer-input]:focus-visible]:border-ring has-[[data-slot=chat-composer-input]:focus-visible]:ring-[3px] has-[[data-slot=chat-composer-input]:focus-visible]:ring-ring-subtle data-disabled:cursor-not-allowed data-disabled:opacity-50",
+        "relative flex w-full min-w-60 flex-col rounded-2xl border border-input bg-input-subtle transition-colors has-[[data-slot=chat-composer-input]:focus-visible]:border-ring has-[[data-slot=chat-composer-input]:focus-visible]:ring-[3px] has-[[data-slot=chat-composer-input]:focus-visible]:ring-ring-subtle data-disabled:cursor-not-allowed data-disabled:opacity-50",
         className
       )}
       onClick={(event) => {
