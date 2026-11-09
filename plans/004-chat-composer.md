@@ -67,6 +67,13 @@ audio to Google in Chrome. So the button hides where it is unsupported, and
 `recognition` takes another engine with the same shape. Its pressed look is
 the Button's secondary variant, not a new composer state.
 
+**Touch screens.** The layout follows `(pointer: coarse)` rather than the
+viewport width, so a narrow desktop window keeps the desktop composer and a
+touchscreen laptop with a mouse does too. On touch, the actions collapse into
+a + and a bottom sheet, emoji and dictation defer to the phone keyboard, and
+Return adds a line. `pointer` on the provider overrides the detection for
+tests, stories and webviews that know better.
+
 **Attachments and drops.** Attachment and Drop zone are their own parts, so
 forms and other surfaces can use them. The composer renders each attachment
 with its upload status, waits for uploads before sending, and wraps Drop zone
