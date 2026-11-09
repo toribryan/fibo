@@ -373,6 +373,50 @@ export const Dictation: Story = {
   },
 }
 
+/** A recogniser that fails the way Chrome does when the mic is blocked. */
+function blockedRecognition(): ChatComposerSpeechRecognition {
+  const engine: ChatComposerSpeechRecognition = {
+    lang: "",
+    continuous: false,
+    interimResults: false,
+    onresult: null,
+    onerror: null,
+    onend: null,
+    start: () =>
+      setTimeout(() => {
+        engine.onerror?.({ error: "not-allowed" })
+        engine.onend?.()
+      }, 100),
+    stop: () => engine.onend?.(),
+    abort: () => {},
+  }
+  return engine
+}
+
+export const DictationBlocked: Story = {
+  name: "Dictation blocked",
+  render: (args) => (
+    <LocalChatComposerProvider {...args}>
+      <ChatComposerFrame>
+        <ChatComposerInput placeholder="Message #design" />
+        <ChatComposerFooter>
+          <ChatComposerDictationButton recognition={blockedRecognition} />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.click(canvas.getByRole("button", { name: "Dictate" }))
+    // The tooltip says why, and a status region reads it out.
+    await waitFor(() =>
+      expect(canvas.getByRole("status")).toHaveTextContent(
+        "Microphone is blocked. Allow it in site settings."
+      )
+    )
+  },
+}
+
 export const Minimal: Story = {
   render: (args) => (
     <LocalChatComposerProvider {...args}>

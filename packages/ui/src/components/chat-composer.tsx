@@ -439,18 +439,22 @@ type ChatComposerActionProps = Omit<
 > & {
   /** Names the icon for screen readers and the tooltip. */
   label: string
+  /** A short notice, such as an error, shown in the tooltip and held open while set. */
+  message?: string
 }
 
 /** An icon button for the footer, disabled with the composer. */
 function ChatComposerAction({
   label,
+  message,
   className,
   disabled,
   ...props
 }: ChatComposerActionProps) {
   const { state } = useChatComposer()
+  const [hovered, setHovered] = React.useState(false)
   return (
-    <Tooltip>
+    <Tooltip open={Boolean(message) || hovered} onOpenChange={setHovered}>
       <TooltipTrigger
         render={
           <Button
@@ -465,7 +469,7 @@ function ChatComposerAction({
           />
         }
       />
-      <TooltipContent>{label}</TooltipContent>
+      <TooltipContent>{message ?? label}</TooltipContent>
     </Tooltip>
   )
 }
@@ -812,7 +816,21 @@ type ChatComposerDictationButtonProps = Omit<
   recognition?: () => ChatComposerSpeechRecognition
   /** Called with the recogniser's error code, such as "not-allowed" when the mic is blocked. */
   onDictationError?: (error: string) => void
+  /** What to say for each error code, for translation. Unlisted codes say Dictation stopped. */
+  errorMessages?: Partial<Record<string, string>>
 }
+
+const DICTATION_ERRORS: Record<string, string> = {
+  "not-allowed": "Microphone is blocked. Allow it in site settings.",
+  "service-not-allowed": "Dictation isn't allowed here.",
+  "audio-capture": "No microphone found.",
+  network: "Dictation needs a connection.",
+  "no-speech": "Didn't hear anything.",
+  "language-not-supported": "Dictation doesn't support this language.",
+}
+
+// Long enough to read, short enough that a stale notice never lingers.
+const DICTATION_MESSAGE_MS = 4000
 
 /*
  * Turns speech into text at the caret, with words landing in the draft as
@@ -825,6 +843,7 @@ function ChatComposerDictationButton({
   lang,
   recognition,
   onDictationError,
+  errorMessages,
   onClick,
   className,
   children,
@@ -837,9 +856,17 @@ function ChatComposerDictationButton({
     () => false
   )
   const [listening, setListening] = React.useState(false)
+  const [message, setMessage] = React.useState<string>()
   const active = React.useRef<ChatComposerSpeechRecognition | null>(null)
+  const clearMessage = React.useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  React.useEffect(() => () => active.current?.abort(), [])
+  React.useEffect(
+    () => () => {
+      active.current?.abort()
+      clearTimeout(clearMessage.current)
+    },
+    []
+  )
 
   React.useEffect(() => {
     if (!listening) return
@@ -876,7 +903,21 @@ function ChatComposerDictationButton({
       actions.setValue(before + space + heard + after)
       caret = before.length + space.length + heard.length
     }
-    engine.onerror = (event) => onDictationError?.(event.error)
+    engine.onerror = (event) => {
+      onDictationError?.(event.error)
+      // Aborted means the button or an unmount stopped it on purpose.
+      if (event.error === "aborted") return
+      setMessage(
+        errorMessages?.[event.error] ??
+          DICTATION_ERRORS[event.error] ??
+          "Dictation stopped."
+      )
+      clearTimeout(clearMessage.current)
+      clearMessage.current = setTimeout(
+        () => setMessage(undefined),
+        DICTATION_MESSAGE_MS
+      )
+    }
     engine.onend = () => {
       active.current = null
       setListening(false)
@@ -884,26 +925,34 @@ function ChatComposerDictationButton({
       input?.setSelectionRange(caret, caret)
     }
     active.current = engine
+    setMessage(undefined)
     engine.start()
     setListening(true)
   }
 
   return (
-    <ChatComposerAction
-      label={label}
-      aria-pressed={listening}
-      variant={listening ? "secondary" : "ghost"}
-      className={cn(listening && "text-secondary-foreground", className)}
-      onClick={(event) => {
-        onClick?.(event)
-        if (event.defaultPrevented) return
-        if (active.current) active.current.stop()
-        else start()
-      }}
-      {...props}
-    >
-      {children ?? <MicIcon />}
-    </ChatComposerAction>
+    <>
+      <ChatComposerAction
+        label={label}
+        message={message}
+        aria-pressed={listening}
+        variant={listening ? "secondary" : "ghost"}
+        className={cn(listening && "text-secondary-foreground", className)}
+        onClick={(event) => {
+          onClick?.(event)
+          if (event.defaultPrevented) return
+          if (active.current) active.current.stop()
+          else start()
+        }}
+        {...props}
+      >
+        {children ?? <MicIcon />}
+      </ChatComposerAction>
+      {/* The tooltip is not announced, so the notice is also read out here. */}
+      <span role="status" className="sr-only">
+        {message}
+      </span>
+    </>
   )
 }
 

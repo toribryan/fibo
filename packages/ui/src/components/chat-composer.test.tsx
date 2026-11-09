@@ -286,6 +286,53 @@ describe("Chat composer", () => {
     await expect.element(input).toHaveFocus()
   })
 
+  it("says why dictation stopped, except when stopped on purpose", async () => {
+    const engine: ChatComposerSpeechRecognition = {
+      lang: "",
+      continuous: false,
+      interimResults: false,
+      onresult: null,
+      onerror: null,
+      onend: null,
+      start: vi.fn(),
+      stop: vi.fn(),
+      abort: vi.fn(),
+    }
+    const onDictationError = vi.fn()
+    const screen = await render(
+      <LocalChatComposerProvider>
+        <ChatComposerFrame>
+          <ChatComposerInput />
+          <ChatComposerDictationButton
+            recognition={() => engine}
+            onDictationError={onDictationError}
+          />
+        </ChatComposerFrame>
+      </LocalChatComposerProvider>
+    )
+    const mic = screen.getByRole("button", { name: "Dictate" })
+    const status = screen.getByRole("status")
+
+    await mic.click()
+    engine.onerror?.({ error: "aborted" })
+    engine.onend?.()
+    expect(onDictationError).toHaveBeenCalledWith("aborted")
+    await expect.element(status).toHaveTextContent("")
+
+    await mic.click()
+    engine.onerror?.({ error: "not-allowed" })
+    engine.onend?.()
+    await expect
+      .element(status)
+      .toHaveTextContent("Microphone is blocked. Allow it in site settings.")
+    await expect
+      .element(
+        screen.getByText("Microphone is blocked", { exact: false }).last()
+      )
+      .toBeVisible()
+    await expect.element(mic).toHaveAttribute("aria-pressed", "false")
+  })
+
   it("keeps only dropped files that match accept", async () => {
     const screen = await render(
       <LocalChatComposerProvider>
