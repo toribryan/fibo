@@ -65,6 +65,7 @@ pnpm dlx shadcn@latest add @fibo/theme
 - **Accessibility is a test, not a review.** Every story renders in Chromium
   and fails on any axe violation. Every interactive part has a `play` function
   that drives it by pointer and keyboard.
+  [Accessibility](https://fibo.toribryan.com/?path=/docs/foundations-accessibility--docs)
 - **Breaking changes ship with codemods.** A deprecation is one entry in
   [`components.meta.json`](./packages/ui/components.meta.json) that the docs
   banner, sidebar, registry output and `llms.txt` all read, plus a tested
