@@ -131,7 +131,7 @@ lead `<Canvas>` above the tabs.
   `"status": "new"` for a new part. The registry build fails without it.
 - Add a small, inert preview to `PREVIEWS` in
   `apps/storybook/src/blocks/catalog.tsx`, keyed by file name.
-- Add a line to `apps/storybook/src/pages/changelog.mdx`.
+- Add `changes/<name>.md` with `type: added` (see `changes/README.md`).
 
 ## 6. Verify
 

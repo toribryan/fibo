@@ -29,6 +29,7 @@ Node 24 (pinned in `.nvmrc`).
 | `.agents/skills/`                  | Agent skills; `.claude/skills/` links here                           |
 | `.claude/agents/`                  | Claude Code subagents                                                |
 | `plans/`                           | Numbered design docs, see `plans/README.md`                          |
+| `changes/`                         | One changelog entry per pull request, see `changes/README.md`        |
 | `archive/`                         | Features taken off the site, kept unbuilt; see `archive/README.md`   |
 | `figma/`                           | Last-read Figma snapshot and the drift check against code            |
 | `brand/`                           | Brand kit source: the rabbit, logo, cards, posters, motion prototype |
@@ -49,6 +50,7 @@ pnpm test             # unit and story tests in Chromium, with axe checks
 pnpm format:check     # Prettier
 pnpm format:write
 pnpm figma:drift      # compare figma/snapshot.json with the code
+pnpm release <x.y.z>  # write changes/ into the changelogs and bump the version
 ```
 
 ## Definition of done
