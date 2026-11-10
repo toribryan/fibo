@@ -19,7 +19,7 @@ import {
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { FigmaIcon } from "./brand-icons.js"
-import { CopyButton } from "./install.js"
+import { CopyButton } from "@workspace/docs-blocks/install"
 
 const STAGES = [
   { icon: FigmaIcon, title: "Figma library" },

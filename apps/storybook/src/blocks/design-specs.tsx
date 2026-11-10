@@ -9,7 +9,11 @@ import {
 
 import { cn } from "@workspace/ui/lib/utils"
 
-import { LeaderLines, useAnnotations, type Callout } from "./leader-lines.js"
+import {
+  LeaderLines,
+  useAnnotations,
+  type Callout,
+} from "@workspace/docs-blocks/leader-lines"
 
 type Part = Callout & {
   /** The part's name, as the label and in the legend. */

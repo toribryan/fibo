@@ -20,7 +20,8 @@ Node 24 (pinned in `.nvmrc`).
 | `apps/storybook/.storybook/`       | Storybook config: sidebar, theme toggle, docs container              |
 | `apps/storybook/src/pages/`        | Welcome, Getting started, Catalog, foundations, Changelog            |
 | `apps/storybook/src/components/`   | One `.mdx` docs page per component                                   |
-| `apps/storybook/src/blocks/`       | Docs blocks: anatomy, data attributes, guidelines, catalog, hero     |
+| `apps/storybook/src/blocks/`       | Storybook-only docs blocks: anatomy, catalog, hero, `DocLink`        |
+| `packages/docs-blocks/`            | Docs blocks both sites use: foundations, guidelines, install, tables |
 | `apps/docs/`                       | Docs site (Fumadocs), being split out of Storybook: `plans/016`      |
 | `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                 |
 | `apps/registry/codemods/`          | jscodeshift transforms that migrate off deprecated parts             |

@@ -1,6 +1,12 @@
+// A client module even without state: in a Next server component, a .css
+// import becomes a stylesheet before the ?raw rule can turn it into text.
+"use client"
+
 import type { ReactNode } from "react"
 
-import globals from "@workspace/ui/globals.css?raw"
+// Relative, not @workspace/ui/globals.css: Turbopack can't add ?raw to a
+// package export.
+import globals from "../../ui/src/styles/globals.css?raw"
 import { cn } from "@workspace/ui/lib/utils"
 
 /*
