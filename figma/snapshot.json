@@ -4,7 +4,7 @@
     "key": "LJZ5Tt4Ba7NPPi8Xnq8i0e",
     "name": "Fibo-DS"
   },
-  "readAt": "2026-10-09",
+  "readAt": "2026-11-10",
   "variables": {
     "Color": {
       "background": {
@@ -116,8 +116,8 @@
         "Dark": "alpha/white/10"
       },
       "input": {
-        "Light": "neutral/200",
-        "Dark": "alpha/white/15"
+        "Light": "neutral/300",
+        "Dark": "alpha/white/20"
       },
       "ring": {
         "Light": "neutral/400",
@@ -215,6 +215,14 @@
         "Light": "alpha/neutral-950/20",
         "Dark": "alpha/black/60"
       },
+      "sticker-edge": {
+        "Light": "base/white",
+        "Dark": "base/white"
+      },
+      "sticker-ink": {
+        "Light": "neutral/900",
+        "Dark": "neutral/900"
+      },
       "glass": {
         "Light": "alpha/neutral-50/20",
         "Dark": "alpha/neutral-950/20"
@@ -226,14 +234,6 @@
       "glass-lens": {
         "Light": "alpha/neutral-900/10",
         "Dark": "alpha/white/10"
-      },
-      "sticker-edge": {
-        "Light": "base/white",
-        "Dark": "base/white"
-      },
-      "sticker-ink": {
-        "Light": "neutral/900",
-        "Dark": "neutral/900"
       },
       "surface": {
         "Light": "base/white",
@@ -310,6 +310,34 @@
       "chip": {
         "Light": "neutral/200",
         "Dark": "neutral/800"
+      },
+      "edge-depth": {
+        "Light": 0,
+        "Dark": 0
+      },
+      "primary-edge": {
+        "Light": "base/transparent",
+        "Dark": "base/transparent"
+      },
+      "secondary-edge": {
+        "Light": "base/transparent",
+        "Dark": "base/transparent"
+      },
+      "outline-edge": {
+        "Light": "base/transparent",
+        "Dark": "base/transparent"
+      },
+      "destructive-edge": {
+        "Light": "base/transparent",
+        "Dark": "base/transparent"
+      },
+      "sticker-shadow": {
+        "Light": "alpha/black/30",
+        "Dark": "alpha/black/30"
+      },
+      "particle-shadow": {
+        "Light": "alpha/black/18",
+        "Dark": "alpha/black/18"
       }
     },
     "Border": {
@@ -326,6 +354,23 @@
       "stroke/thin": 1,
       "stroke/thick": 2,
       "stroke/focus": 3
+    },
+    "ColorDescriptions": {
+      "background": "The page is a tint under the surfaces that hold content, so a panel, a sidebar or a docs column reads as a layer rather than one flat plane.",
+      "backdrop": "The scrim behind modal dialogs such as the Command menu.",
+      "sticker-edge": "Sticker avatar's paper: white in both themes.",
+      "sticker-ink": "Marks printed on a sticker: near-black in both themes.",
+      "glass": "Liquid glass: a clear tint, a bright rim, and the lens on a current item.",
+      "surface": "A layer above the page, below cards and popovers.",
+      "success-text": "One step darker than success in light, so text clears 4.5:1 on its own subtle tint.",
+      "warning-text": "One step darker than warning in light, so text clears 4.5:1 on its own subtle tint.",
+      "finish-burgundy": "Voice memo's burgundy metal, the same in both themes.",
+      "finish-burgundy-highlight": "The light the burgundy finish catches, the same in both themes.",
+      "finish-burgundy-shadow": "The shade the burgundy finish falls into, the same in both themes.",
+      "highlight": "A marker stroke behind text, opaque so the text above stays crisp. Annotated text highlight.",
+      "chip": "A word set apart in a pill, a step off the page. Annotated text chip.",
+      "edge-depth": "The pressed-key edge a theme can draw under raised controls (plans/011-mechanical-theme.md). fibo's controls are flat, so the edge has no depth and no color in either mode; a theme turns it on.",
+      "particle-shadow": "Reactions' flying emoji cast a soft shadow so they read over any page, the same in both themes, as the sticker's does."
     }
   },
   "components": {

@@ -1,5 +1,6 @@
-// use_figma script. Returns the Color collection as aliases per mode, and the
-// Border collection's values, in figma/snapshot.json's shape.
+// use_figma script. Returns the Color collection as aliases per mode, the
+// Border collection's values, and the Color variables' descriptions, in
+// figma/snapshot.json's shape. pnpm tokens:build writes globals.css from it.
 const collections = await figma.variables.getLocalVariableCollectionsAsync()
 const variables = await figma.variables.getLocalVariablesAsync()
 const byId = Object.fromEntries(variables.map((v) => [v.id, v]))
@@ -25,4 +26,23 @@ const read = (name) => {
     })
   )
 }
-return { Color: read("Color"), Border: read("Border") }
+// Figma returns descriptions HTML-escaped.
+const unescape = (text) =>
+  text
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+const color = collections.find((c) => c.name === "Color")
+const descriptions = Object.fromEntries(
+  color.variableIds
+    .map((id) => byId[id])
+    .filter((v) => v.description)
+    .map((v) => [v.name, unescape(v.description)])
+)
+return {
+  Color: read("Color"),
+  Border: read("Border"),
+  ColorDescriptions: descriptions,
+}

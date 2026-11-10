@@ -2,15 +2,7 @@
   "$comment": "Known, intended differences between the Figma library and the code. Every entry says why; anything not listed here is drift. Keys are Component.prop for props and file names for code-only components.",
   "ignoredProps": ["state"],
   "figmaOnlyTokens": {},
-  "codeOnlyTokens": {
-    "sticker-shadow": "Sticker avatar's lift shadow, the same in both themes. Figma's Sticker avatar draws it as a fixed drop shadow; add the variable when effects bind to it.",
-    "particle-shadow": "Reactions' flying emoji shadow, the same in both themes. Particles only exist in motion, so Figma has nothing to bind it to.",
-    "edge-depth": "Pressed-key edge depth from plans/011-mechanical-theme.md. Zero in fibo, so the library has nothing to draw; Figma gets it with the Mechanical theme's variables.",
-    "primary-edge": "Pressed-key edge color from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
-    "secondary-edge": "Pressed-key edge color from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
-    "outline-edge": "Pressed-key edge color from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it.",
-    "destructive-edge": "Pressed-key edge color from plans/011-mechanical-theme.md. Transparent in fibo; only the Mechanical theme sets it."
-  },
+  "codeOnlyTokens": {},
   "figmaOnlyProps": {
     "Avatar.type": "Code picks image or initials from whether src loads; designers pick it by hand.",
     "Checkbox.checked": "Base UI's checked and indeterminate props, not a fibo prop.",

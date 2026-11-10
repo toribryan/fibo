@@ -1,14 +1,19 @@
 ---
 name: figma-drift
-description: Check the fibo Figma library against the code for drift in color variables, radii and component variant properties, then triage what it finds. Reads Figma through the Figma MCP server into figma/snapshot.json and runs `pnpm figma:drift`. Use when asked whether Figma and code match, before a release, after changing tokens or a component's variants, or when a designer says something looks different in Figma.
+description: Read the fibo Figma library into figma/snapshot.json through the Figma MCP server, sync color tokens into globals.css with `pnpm tokens:build`, and check component variant properties against the code with `pnpm figma:drift`. Use when asked to sync tokens, whether Figma and code match, before a release, after changing a variable or a component's variants in Figma, or when a designer says something looks different in Figma.
 ---
 
 # Figma drift check
 
 fibo promises one name on both sides: every token in `globals.css` matches a
 variable in Figma's Color collection, and every component property in Figma
-is a prop in code. This skill checks that promise and reports where it
-breaks. It never fixes either side on its own.
+is a prop in code.
+
+Figma is the source for color tokens. The `:root` and `.dark` blocks in
+`globals.css`, between `tokens:start` and `tokens:end`, are written from the
+snapshot by `pnpm tokens:build` and never edited by hand
+(`plans/017-figma-token-source.md`). For components, this skill only checks
+and reports; it never fixes either side on its own.
 
 The library is `https://www.figma.com/design/LJZ5Tt4Ba7NPPi8Xnq8i0e/Fibo-DS`
 (file key `LJZ5Tt4Ba7NPPi8Xnq8i0e`).
@@ -18,7 +23,8 @@ The library is `https://www.figma.com/design/LJZ5Tt4Ba7NPPi8Xnq8i0e/Fibo-DS`
 Load the `figma-use` skill before the first `use_figma` call.
 
 1. **Variables.** One `use_figma` call running
-   [`read-variables.js`](read-variables.js). It returns `{ Color, Border }`.
+   [`read-variables.js`](read-variables.js). It returns
+   `{ Color, Border, ColorDescriptions }`.
 2. **Pages.** One read-only call:
    `return figma.root.children.map((p) => ({ id: p.id, name: p.name }))`.
    Component pages are the `↳` pages under **Base components** and
@@ -37,7 +43,21 @@ back (merge the per-page results into one `components` object), and set
 shows only what changed in Figma. That diff is worth reading on its own: it
 is everything designers changed since the last check.
 
-## 3. Run the check
+## 3. Sync tokens
+
+```bash
+pnpm tokens:build
+```
+
+It rewrites the token blocks from the snapshot, keeping their order, with
+new variables at the end and each variable's Figma description as its
+comment. The `globals.css` diff is the token change; it goes in a pull
+request with the snapshot and a `changes/` entry when users would notice.
+To sync tokens only, the Variables read in step 1 is all you need.
+
+CI runs `pnpm tokens:build --check`, so a hand edit to the block fails.
+
+## 4. Run the check
 
 CI runs it on every pull request against the committed snapshot, so a code
 change that breaks parity fails there. A Figma change only shows up once the
@@ -51,7 +71,9 @@ pnpm figma:drift --json   # the same findings for further processing
 What it compares, and how:
 
 - **Color.** Each Color variable, per mode, against the `:root` (Light) and
-  `.dark` (Dark) blocks of `globals.css`. Both sides are reduced to the
+  `.dark` (Dark) blocks of `globals.css`. After `pnpm tokens:build` these
+  always match, so an error here means the build and the check disagree on
+  how a value is written, which is a bug in one of them. Both sides are reduced to the
   primitive they point at, so `alpha/red-700/8` matches
   `color-mix(in oklch, var(--color-red-700) 8%, transparent)` and
   `alpha/white/10` matches `oklch(1 0 0 / 10%)`. A variable on one side
@@ -87,11 +109,11 @@ The default variant, the one that drops in from the library, is whichever
 sits top-left on the canvas, not first in the layer list. Leave `default`
 there.
 
-## 4. Triage
+## 5. Triage
 
 For every error and warning, work out which side moved and say what you
-would change. Do not edit `globals.css`, a component, the Figma file or the
-config without the person's go-ahead.
+would change. Do not edit a component, the Figma file or the config without
+the person's go-ahead. A token is changed in Figma, then synced.
 
 - `git log -p -S '<token>' -- packages/ui/src/styles/globals.css` shows when
   the code side last changed. If code changed after the snapshot side was
@@ -105,7 +127,7 @@ config without the person's go-ahead.
   one-sentence reason, only once the person agrees. An entry with no reason
   is drift with the alarm switched off.
 
-## 5. Report
+## 6. Report
 
 Group by severity, then area. For each finding: what differs, which side
 moved, and the change you propose, with the file or Figma page it touches.

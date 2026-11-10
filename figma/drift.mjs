@@ -84,6 +84,7 @@ function fromCode(value, mode) {
 }
 
 function fromFigma(alias, mode) {
+  if (typeof alias === "number") return `${alias}px`
   if (figmaColor[alias]) return fromFigma(figmaColor[alias][mode], mode)
   let m = alias.match(/^base\/(\w+)$/)
   if (m) return canonical(m[1])
