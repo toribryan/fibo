@@ -1,0 +1,94 @@
+---
+title: Button
+description: Triggers an action, such as submitting a form, opening a dialog, or confirming or canceling a step.
+---
+
+import { ArrowRightIcon } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
+
+<Preview>
+  <Button variant="ghost">Cancel</Button>
+  <Button>Save changes</Button>
+</Preview>
+
+## When to use it
+
+Use Button for an action on the current page. For navigation, render it as a
+link with `render={<a href="/pricing" />}` and `nativeButton={false}`, which
+keeps the look with link semantics.
+
+## Installation
+
+```bash
+pnpm dlx shadcn@latest add @fibo/button
+```
+
+## Variants
+
+Six variants, from most to least emphasis: `default`, `secondary`, `outline`,
+`ghost`, `destructive` and `link`. `destructive` is a red tint, so it never
+outshouts the primary action.
+
+<Preview>
+  <Button>Default</Button>
+  <Button variant="secondary">Secondary</Button>
+  <Button variant="outline">Outline</Button>
+  <Button variant="ghost">Ghost</Button>
+  <Button variant="destructive">Destructive</Button>
+  <Button variant="link">Link</Button>
+</Preview>
+
+## Guidelines
+
+- One default button per view. Every other action gets a quieter variant.
+- Keep labels to one to three words, in sentence case, starting with a verb.
+- Mark icons with `data-icon="inline-start"` or `"inline-end"` so the padding
+  adjusts for them.
+- The label sets the width. Stretch a button only on narrow layouts where it
+  spans the container.
+- Keep 8px between buttons in a group.
+
+## Do's and don'ts
+
+<DoDonts>
+  <DoDont
+    type="do"
+    caption="Pair one primary action with a quieter secondary one."
+  >
+    <Button variant="ghost">Cancel</Button>
+    <Button>Save changes</Button>
+  </DoDont>
+  <DoDont
+    type="dont"
+    caption="Don't put two primary buttons side by side. Neither reads as the main action."
+  >
+    <Button>Cancel</Button>
+    <Button>Save changes</Button>
+  </DoDont>
+  <DoDont
+    type="do"
+    caption="Put a directional icon after the label it points from."
+  >
+    <Button variant="outline">
+      Continue
+      <ArrowRightIcon data-icon="inline-end" />
+    </Button>
+  </DoDont>
+  <DoDont
+    type="dont"
+    caption="Don't use vague labels that force people to reread the question."
+  >
+    <Button variant="secondary">Yes</Button>
+    <Button variant="secondary">No</Button>
+  </DoDont>
+</DoDonts>
+
+## Accessibility
+
+- Icon-only buttons need an `aria-label`. The icon is decorative.
+- Disable a button only when the reason is obvious nearby. Otherwise keep it
+  enabled and explain what's missing on submit.
+- The focus ring is a 3px `ring-subtle` halo over a `ring` border, and it
+  shows for keyboard focus only.
+
+<StorybookLink id="base-components-actions-button" name="Button" />
