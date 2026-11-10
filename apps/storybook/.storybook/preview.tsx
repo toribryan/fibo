@@ -79,7 +79,15 @@ const preview: Preview = {
           "Design skills",
           "About fibo",
           "Foundations",
-          ["Colors", "Typography", "Spacing", "Elevation", "Motion", "Themes"],
+          [
+            "Colors",
+            "Typography",
+            "Spacing",
+            "Elevation",
+            "Motion",
+            "Accessibility",
+            "Themes",
+          ],
           // Base groups in the order the Catalog page shows them. Parts keep
           // the stories' import order, which is alphabetical by file, and
           // special parts and blocks sit straight under their shelf.

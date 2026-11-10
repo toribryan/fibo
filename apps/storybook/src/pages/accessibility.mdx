@@ -1,0 +1,70 @@
+import { Meta } from "@storybook/addon-docs/blocks"
+
+import { DocLink } from "../blocks/doc-link"
+import { Tip } from "../blocks/guidelines"
+
+<Meta title="Foundations/Accessibility" />
+
+# Accessibility
+
+fibo targets WCAG 2.2 AA. Most of it is checked by tests that fail the build,
+so a part can't ship with a known violation.
+
+## What the tests check
+
+| Check              | How                                                                                           | Where                                     |
+| ------------------ | --------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| Automated rules    | Every story renders in Chromium and fails on any axe violation.                               | `parameters.a11y.test` in `preview.tsx`   |
+| Keyboard and focus | Every interactive part has a `play` function on its `Default` story, by pointer and keyboard. | Each part's `.stories.tsx`                |
+| Text contrast      | Every text token clears 4.5:1 on every surface it sits on, in both modes and every theme.     | `tokens.test.ts`, `themes/themes.test.ts` |
+| Non-text contrast  | Icons, borders and chart colors clear 3:1.                                                    | Same files                                |
+
+Contrast is read from the real utility classes in a browser, not from the
+token values, so a class that stops resolving to its token also fails.
+
+## Color
+
+Status tones (`destructive`, `success`, `warning`, `info`) sit on the 700 step
+of their ramp in light mode. At the 600 step, white on solid success
+measured 3.30:1, below AA.
+
+## Focus
+
+A focused control gets a 3px `ring-subtle` ring and a `ring` border, on
+`:focus-visible` only, so a mouse click doesn't leave a ring behind.
+Destructive controls use `destructive-ring`. Figma draws the same ring as a
+`Focus ring` layer, because a Figma drop shadow can't clip the way a CSS
+`box-shadow` does.
+
+## Keyboard
+
+Base parts are built on Base UI, which supplies the roles, focus management
+and keyboard patterns from the WAI-ARIA Authoring Practices: arrow keys in
+menus, tabs and radio groups, Escape to close, and focus returned to the
+trigger when a popup closes. Each part's docs page has an Accessibility
+section with its keys and labels.
+
+## Target size
+
+The smallest controls, `xs` and `icon-xs`, are 24px, the minimum in WCAG
+2.5.8. `default` is 36px. On touch screens, prefer `default` or larger.
+
+## Motion
+
+Every animation has a reduced-motion fallback, listed under <DocLink to="foundations-motion--docs">Motion</DocLink>.
+
+## Naming
+
+A part with no visible label needs an `aria-label`, and so does any story that
+shows one, or the axe check fails.
+
+<Tip>
+  Write the label as the action, not the icon: "Delete row", not "Trash".
+</Tip>
+
+## What isn't automated
+
+axe and contrast tests catch rule violations, not whether a flow makes sense.
+Screen reader output, reading order on complex parts such as Data table, and
+zoom to 400% aren't covered by CI. Found a problem?
+[Open an issue](https://github.com/toribryan/fibo/issues/new/choose).
