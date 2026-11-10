@@ -1,0 +1,64 @@
+[
+  {
+    "id": "261fd3d2c18558d01aa58879a5fb43ba31d05b07",
+    "name": "Value",
+    "group": "Primitives",
+    "selectedTokenSets": {
+      "primitives": "enabled"
+    },
+    "$figmaCollectionId": "VariableCollectionId:161:2",
+    "$figmaModeId": "161:0"
+  },
+  {
+    "id": "0e6c131333d1ac15ef8bfcd18b62557cbd0ab4b3",
+    "name": "Light",
+    "group": "Color",
+    "selectedTokenSets": {
+      "primitives": "source",
+      "color/light": "enabled"
+    },
+    "$figmaCollectionId": "VariableCollectionId:161:3",
+    "$figmaModeId": "161:1"
+  },
+  {
+    "id": "f1f97e2bfcd9c8932c7e7bccf6da09f1f3f14dc2",
+    "name": "Dark",
+    "group": "Color",
+    "selectedTokenSets": {
+      "primitives": "source",
+      "color/dark": "enabled"
+    },
+    "$figmaCollectionId": "VariableCollectionId:161:3",
+    "$figmaModeId": "161:2"
+  },
+  {
+    "id": "a4f755f7ccf0b0eb3852b1d527f41da44a9e7fb0",
+    "name": "Value",
+    "group": "Typography",
+    "selectedTokenSets": {
+      "typography": "enabled"
+    },
+    "$figmaCollectionId": "VariableCollectionId:161:4",
+    "$figmaModeId": "161:3"
+  },
+  {
+    "id": "de41c007db5e7cee2a4911c6c2ba05b8b3a21b26",
+    "name": "Value",
+    "group": "Spacing",
+    "selectedTokenSets": {
+      "spacing": "enabled"
+    },
+    "$figmaCollectionId": "VariableCollectionId:161:5",
+    "$figmaModeId": "161:4"
+  },
+  {
+    "id": "7f58a8919fd62e421093f9fadd15c22b024ccb28",
+    "name": "Value",
+    "group": "Border",
+    "selectedTokenSets": {
+      "border": "enabled"
+    },
+    "$figmaCollectionId": "VariableCollectionId:161:6",
+    "$figmaModeId": "161:5"
+  }
+]

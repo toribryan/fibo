@@ -1,0 +1,120 @@
+{
+  "font-family": {
+    "sans": {
+      "$type": "fontFamily",
+      "$value": "Geist"
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": "Geist Mono"
+    }
+  },
+  "font-size": {
+    "xs": {
+      "$type": "number",
+      "$value": 12
+    },
+    "sm": {
+      "$type": "number",
+      "$value": 14
+    },
+    "base": {
+      "$type": "number",
+      "$value": 16
+    },
+    "lg": {
+      "$type": "number",
+      "$value": 18
+    },
+    "xl": {
+      "$type": "number",
+      "$value": 20
+    },
+    "2xl": {
+      "$type": "number",
+      "$value": 24
+    },
+    "3xl": {
+      "$type": "number",
+      "$value": 30
+    },
+    "4xl": {
+      "$type": "number",
+      "$value": 36
+    },
+    "5xl": {
+      "$type": "number",
+      "$value": 48
+    }
+  },
+  "line-height": {
+    "xs": {
+      "$type": "number",
+      "$value": 16
+    },
+    "sm": {
+      "$type": "number",
+      "$value": 20
+    },
+    "base": {
+      "$type": "number",
+      "$value": 24
+    },
+    "lg": {
+      "$type": "number",
+      "$value": 28
+    },
+    "xl": {
+      "$type": "number",
+      "$value": 28
+    },
+    "2xl": {
+      "$type": "number",
+      "$value": 32
+    },
+    "3xl": {
+      "$type": "number",
+      "$value": 36
+    },
+    "4xl": {
+      "$type": "number",
+      "$value": 40
+    },
+    "5xl": {
+      "$type": "number",
+      "$value": 48
+    }
+  },
+  "font-weight": {
+    "normal": {
+      "$type": "number",
+      "$value": 400
+    },
+    "medium": {
+      "$type": "number",
+      "$value": 500
+    },
+    "semibold": {
+      "$type": "number",
+      "$value": 600
+    },
+    "bold": {
+      "$type": "number",
+      "$value": 700
+    }
+  },
+  "tracking": {
+    "tight": {
+      "$type": "number",
+      "$value": -2
+    },
+    "normal": {
+      "$type": "number",
+      "$value": 0
+    },
+    "wide": {
+      "$type": "number",
+      "$value": 2
+    }
+  }
+}

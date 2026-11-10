@@ -34,6 +34,10 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
+      # globals.css's token blocks are generated from tokens/ (Tokens Studio).
+      - name: Tokens are current
+        run: pnpm tokens:build --check
+
       # Code against the Figma library as last read into figma/snapshot.json.
       # Refresh the snapshot with the figma-drift skill when Figma changes.
       - name: Figma drift

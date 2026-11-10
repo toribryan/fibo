@@ -10,30 +10,31 @@ Node 24 (pinned in `.nvmrc`).
 
 ## Layout
 
-| Path                               | Holds                                                                |
-| ---------------------------------- | -------------------------------------------------------------------- |
-| `packages/ui/src/components/`      | The components. One `.tsx` plus one `.stories.tsx` each              |
-| `packages/ui/src/blocks/`          | Blocks: one folder of files plus stories per block, see below        |
-| `packages/ui/components.meta.json` | Title, description, shelf and group for every component              |
-| `packages/ui/src/styles/`          | `globals.css`: semantic tokens over Tailwind's ramps, light and dark |
-| `packages/ui/src/lib/`             | `cn` and other helpers                                               |
-| `apps/storybook/.storybook/`       | Storybook config: sidebar, theme toggle, docs container              |
-| `apps/storybook/src/pages/`        | Welcome, Getting started, Catalog, foundations, Changelog            |
-| `apps/storybook/src/components/`   | One `.mdx` docs page per component                                   |
-| `apps/storybook/src/blocks/`       | Docs blocks: anatomy, data attributes, guidelines, catalog, hero     |
-| `apps/docs/`                       | Docs site (Fumadocs), being split out of Storybook: `plans/016`      |
-| `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                 |
-| `apps/registry/codemods/`          | jscodeshift transforms that migrate off deprecated parts             |
-| `packages/ui/src/21st/`            | One demo per Special component published on 21st.dev                 |
-| `packages/eslint-config/`          | Shared ESLint flat configs                                           |
-| `packages/typescript-config/`      | Shared tsconfigs                                                     |
-| `.agents/skills/`                  | Agent skills; `.claude/skills/` links here                           |
-| `.claude/agents/`                  | Claude Code subagents                                                |
-| `plans/`                           | Numbered design docs, see `plans/README.md`                          |
-| `changes/`                         | One changelog entry per pull request, see `changes/README.md`        |
-| `archive/`                         | Features taken off the site, kept unbuilt; see `archive/README.md`   |
-| `figma/`                           | Last-read Figma snapshot and the drift check against code            |
-| `brand/`                           | Brand kit source: the rabbit, logo, cards, posters, motion prototype |
+| Path                               | Holds                                                                   |
+| ---------------------------------- | ----------------------------------------------------------------------- |
+| `packages/ui/src/components/`      | The components. One `.tsx` plus one `.stories.tsx` each                 |
+| `packages/ui/src/blocks/`          | Blocks: one folder of files plus stories per block, see below           |
+| `packages/ui/components.meta.json` | Title, description, shelf and group for every component                 |
+| `packages/ui/src/styles/`          | `globals.css`: semantic tokens over Tailwind's ramps, light and dark    |
+| `packages/ui/src/lib/`             | `cn` and other helpers                                                  |
+| `apps/storybook/.storybook/`       | Storybook config: sidebar, theme toggle, docs container                 |
+| `apps/storybook/src/pages/`        | Welcome, Getting started, Catalog, foundations, Changelog               |
+| `apps/storybook/src/components/`   | One `.mdx` docs page per component                                      |
+| `apps/storybook/src/blocks/`       | Docs blocks: anatomy, data attributes, guidelines, catalog, hero        |
+| `apps/docs/`                       | Docs site (Fumadocs), being split out of Storybook: `plans/016`         |
+| `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                    |
+| `apps/registry/codemods/`          | jscodeshift transforms that migrate off deprecated parts                |
+| `packages/ui/src/21st/`            | One demo per Special component published on 21st.dev                    |
+| `packages/eslint-config/`          | Shared ESLint flat configs                                              |
+| `packages/typescript-config/`      | Shared tsconfigs                                                        |
+| `.agents/skills/`                  | Agent skills; `.claude/skills/` links here                              |
+| `.claude/agents/`                  | Claude Code subagents                                                   |
+| `plans/`                           | Numbered design docs, see `plans/README.md`                             |
+| `changes/`                         | One changelog entry per pull request, see `changes/README.md`           |
+| `archive/`                         | Features taken off the site, kept unbuilt; see `archive/README.md`      |
+| `tokens/`                          | Design tokens as Tokens Studio JSON, synced with Figma; see `plans/017` |
+| `figma/`                           | Last-read Figma snapshot and the drift check against code               |
+| `brand/`                           | Brand kit source: the rabbit, logo, cards, posters, motion prototype    |
 
 ## Commands
 
@@ -51,6 +52,7 @@ pnpm test             # unit and story tests in Chromium, with axe checks
 pnpm format:check     # Prettier
 pnpm format:write
 pnpm figma:drift      # compare figma/snapshot.json with the code
+pnpm tokens:build     # write globals.css's color blocks from tokens/
 pnpm release <x.y.z>  # write changes/ into the changelogs and bump the version
 ```
 
@@ -155,6 +157,11 @@ files again from upstream and bump the commit here.
   no package of its own, keeps its state local, never fetches, and lays out
   with container queries on its root. Its docs page opens on `BlockPreview`.
   Reasons in `plans/015-blocks.md`.
+- **Token source.** The `:root` and `.dark` blocks in `globals.css`, between
+  `tokens:start` and `tokens:end`, are generated by `pnpm tokens:build` from
+  `tokens/`, which Tokens Studio syncs with Figma. Change a token in Tokens
+  Studio and push, or edit `tokens/*.json` and rebuild; never edit the
+  block. CI fails if it is out of date. `plans/017-tokens-studio.md`.
 - **Tokens.** Semantic tokens only in components (`bg-primary`,
   `text-muted-foreground`). Primitive ramps (`neutral-*`, `red-*`, `green-*`,
   `amber-*`, `blue-*`, and fibo's own `burgundy-*` for Voice memo's finish)

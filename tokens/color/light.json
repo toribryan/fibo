@@ -1,0 +1,343 @@
+{
+  "background": {
+    "$type": "color",
+    "$value": "{neutral.50}",
+    "$description": "The page is a tint under the surfaces that hold content, so a panel, a sidebar or a docs column reads as a layer rather than one flat plane."
+  },
+  "foreground": {
+    "$type": "color",
+    "$value": "{neutral.950}"
+  },
+  "surface": {
+    "$type": "color",
+    "$value": "{base.white}"
+  },
+  "surface-foreground": {
+    "$type": "color",
+    "$value": "{neutral.950}"
+  },
+  "card": {
+    "$type": "color",
+    "$value": "{base.white}"
+  },
+  "card-foreground": {
+    "$type": "color",
+    "$value": "{neutral.950}"
+  },
+  "popover": {
+    "$type": "color",
+    "$value": "{base.white}"
+  },
+  "popover-foreground": {
+    "$type": "color",
+    "$value": "{neutral.950}"
+  },
+  "popover-overlay": {
+    "$type": "color",
+    "$value": "{alpha.white.85}"
+  },
+  "backdrop": {
+    "$type": "color",
+    "$value": "{alpha.neutral-950.20}"
+  },
+  "glass": {
+    "$type": "color",
+    "$value": "{alpha.neutral-50.20}",
+    "$description": "Liquid glass: a clear tint, a bright rim, and the lens on a current item."
+  },
+  "glass-edge": {
+    "$type": "color",
+    "$value": "{alpha.white.85}"
+  },
+  "glass-lens": {
+    "$type": "color",
+    "$value": "{alpha.neutral-900.10}"
+  },
+  "primary": {
+    "$type": "color",
+    "$value": "{neutral.900}"
+  },
+  "primary-foreground": {
+    "$type": "color",
+    "$value": "{neutral.50}"
+  },
+  "primary-hover": {
+    "$type": "color",
+    "$value": "{alpha.neutral-900.80}"
+  },
+  "primary-subtle": {
+    "$type": "color",
+    "$value": "{alpha.neutral-900.10}"
+  },
+  "secondary": {
+    "$type": "color",
+    "$value": "{neutral.100}"
+  },
+  "secondary-foreground": {
+    "$type": "color",
+    "$value": "{neutral.900}"
+  },
+  "secondary-hover": {
+    "$type": "color",
+    "$value": "{neutral.200}"
+  },
+  "muted": {
+    "$type": "color",
+    "$value": "{neutral.100}"
+  },
+  "muted-foreground": {
+    "$type": "color",
+    "$value": "{neutral.500}"
+  },
+  "accent": {
+    "$type": "color",
+    "$value": "{neutral.100}"
+  },
+  "accent-foreground": {
+    "$type": "color",
+    "$value": "{neutral.900}"
+  },
+  "highlight": {
+    "$type": "color",
+    "$value": "{neutral.200}",
+    "$description": "A marker stroke behind text, opaque so the text above stays crisp."
+  },
+  "chip": {
+    "$type": "color",
+    "$value": "{neutral.200}",
+    "$description": "A word set apart in a pill, a step off the page so it reads at a glance."
+  },
+  "destructive": {
+    "$type": "color",
+    "$value": "{red.700}"
+  },
+  "destructive-foreground": {
+    "$type": "color",
+    "$value": "{neutral.50}"
+  },
+  "destructive-subtle": {
+    "$type": "color",
+    "$value": "{alpha.red-700.8}"
+  },
+  "destructive-subtle-hover": {
+    "$type": "color",
+    "$value": "{alpha.red-700.16}"
+  },
+  "destructive-ring": {
+    "$type": "color",
+    "$value": "{alpha.red-700.20}"
+  },
+  "destructive-text": {
+    "$type": "color",
+    "$value": "{destructive}"
+  },
+  "destructive-border": {
+    "$type": "color",
+    "$value": "{destructive}"
+  },
+  "destructive-icon": {
+    "$type": "color",
+    "$value": "{destructive}"
+  },
+  "success": {
+    "$type": "color",
+    "$value": "{green.700}"
+  },
+  "success-foreground": {
+    "$type": "color",
+    "$value": "{neutral.50}"
+  },
+  "success-subtle": {
+    "$type": "color",
+    "$value": "{alpha.green-700.6}"
+  },
+  "success-text": {
+    "$type": "color",
+    "$value": "{green.800}",
+    "$description": "On the tinted page, 700 text on its own 6% tint drops under 4.5:1, so success and warning text take the 800 step. Fills, borders and icons keep 700."
+  },
+  "success-border": {
+    "$type": "color",
+    "$value": "{success}"
+  },
+  "success-icon": {
+    "$type": "color",
+    "$value": "{success}"
+  },
+  "warning": {
+    "$type": "color",
+    "$value": "{amber.700}"
+  },
+  "warning-foreground": {
+    "$type": "color",
+    "$value": "{neutral.50}"
+  },
+  "warning-subtle": {
+    "$type": "color",
+    "$value": "{alpha.amber-700.6}"
+  },
+  "warning-text": {
+    "$type": "color",
+    "$value": "{amber.800}"
+  },
+  "warning-border": {
+    "$type": "color",
+    "$value": "{warning}"
+  },
+  "warning-icon": {
+    "$type": "color",
+    "$value": "{warning}"
+  },
+  "info": {
+    "$type": "color",
+    "$value": "{blue.700}"
+  },
+  "info-foreground": {
+    "$type": "color",
+    "$value": "{neutral.50}"
+  },
+  "info-subtle": {
+    "$type": "color",
+    "$value": "{alpha.blue-700.6}"
+  },
+  "info-text": {
+    "$type": "color",
+    "$value": "{info}"
+  },
+  "info-border": {
+    "$type": "color",
+    "$value": "{info}"
+  },
+  "info-icon": {
+    "$type": "color",
+    "$value": "{info}"
+  },
+  "border": {
+    "$type": "color",
+    "$value": "{neutral.200}"
+  },
+  "input": {
+    "$type": "color",
+    "$value": "{neutral.200}"
+  },
+  "input-subtle": {
+    "$type": "color",
+    "$value": "{alpha.neutral-200.20}"
+  },
+  "input-subtle-hover": {
+    "$type": "color",
+    "$value": "{alpha.neutral-200.50}"
+  },
+  "ring": {
+    "$type": "color",
+    "$value": "{neutral.400}"
+  },
+  "ring-subtle": {
+    "$type": "color",
+    "$value": "{alpha.neutral-400.50}"
+  },
+  "edge-depth": {
+    "$type": "dimension",
+    "$value": "0px",
+    "$description": "The pressed-key edge a theme can draw under raised controls (plans/011-mechanical-theme.md). fibo's controls are flat, so the edge has no depth and no color in either mode; a theme turns it on."
+  },
+  "primary-edge": {
+    "$type": "color",
+    "$value": "{base.transparent}"
+  },
+  "secondary-edge": {
+    "$type": "color",
+    "$value": "{base.transparent}"
+  },
+  "outline-edge": {
+    "$type": "color",
+    "$value": "{base.transparent}"
+  },
+  "destructive-edge": {
+    "$type": "color",
+    "$value": "{base.transparent}"
+  },
+  "sticker-edge": {
+    "$type": "color",
+    "$value": "{base.white}",
+    "$description": "A sticker is paper: its edge is white and the marks printed on it are dark in both themes, and it casts the same shadow on either page, so these three keep their values in .dark on purpose."
+  },
+  "sticker-ink": {
+    "$type": "color",
+    "$value": "{neutral.900}"
+  },
+  "sticker-shadow": {
+    "$type": "color",
+    "$value": "{alpha.black.30}"
+  },
+  "particle-shadow": {
+    "$type": "color",
+    "$value": "{alpha.black.18}",
+    "$description": "Reactions' flying emoji cast a soft shadow so they read over any page, the same in both themes, as the sticker's does."
+  },
+  "finish-burgundy": {
+    "$type": "color",
+    "$value": "{burgundy.950}",
+    "$description": "Voice memo's burgundy finish, after the anodized aluminum of a phone in that color. A metal's color doesn't change with the page, so these keep their values in .dark on purpose."
+  },
+  "finish-burgundy-highlight": {
+    "$type": "color",
+    "$value": "{burgundy.700}"
+  },
+  "finish-burgundy-shadow": {
+    "$type": "color",
+    "$value": "{base.black}"
+  },
+  "chart-1": {
+    "$type": "color",
+    "$value": "{neutral.300}"
+  },
+  "chart-2": {
+    "$type": "color",
+    "$value": "{neutral.500}"
+  },
+  "chart-3": {
+    "$type": "color",
+    "$value": "{neutral.600}"
+  },
+  "chart-4": {
+    "$type": "color",
+    "$value": "{neutral.700}"
+  },
+  "chart-5": {
+    "$type": "color",
+    "$value": "{neutral.800}"
+  },
+  "sidebar": {
+    "$type": "color",
+    "$value": "{neutral.50}"
+  },
+  "sidebar-foreground": {
+    "$type": "color",
+    "$value": "{neutral.950}"
+  },
+  "sidebar-primary": {
+    "$type": "color",
+    "$value": "{neutral.900}"
+  },
+  "sidebar-primary-foreground": {
+    "$type": "color",
+    "$value": "{neutral.50}"
+  },
+  "sidebar-accent": {
+    "$type": "color",
+    "$value": "{neutral.100}"
+  },
+  "sidebar-accent-foreground": {
+    "$type": "color",
+    "$value": "{neutral.900}"
+  },
+  "sidebar-border": {
+    "$type": "color",
+    "$value": "{neutral.200}"
+  },
+  "sidebar-ring": {
+    "$type": "color",
+    "$value": "{neutral.400}"
+  }
+}
