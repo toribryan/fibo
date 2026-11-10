@@ -9,7 +9,13 @@ const config = {
   // Folder-style output (docs/index.html) resolves on any static host.
   trailingSlash: true,
   reactStrictMode: true,
-  transpilePackages: ["@workspace/ui"],
+  transpilePackages: ["@workspace/ui", "@workspace/docs-blocks"],
+  turbopack: {
+    rules: {
+      // The Colors blocks read globals.css as text, as Vite's ?raw does.
+      "*.css": { condition: { query: "?raw" }, type: "raw" },
+    },
+  },
 }
 
 export default withMDX(config)

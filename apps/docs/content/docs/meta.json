@@ -1,4 +1,11 @@
 {
   "title": "fibo",
-  "pages": ["index", "getting-started", "---Components---", "...components"]
+  "pages": [
+    "index",
+    "getting-started",
+    "---Foundations---",
+    "...foundations",
+    "---Components---",
+    "...components"
+  ]
 }
