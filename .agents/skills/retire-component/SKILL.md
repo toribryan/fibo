@@ -44,9 +44,8 @@ as models are read from the commit that deprecated it, for example
    - Return `null` when nothing changed.
    - Test it beside the transform in `<name>.test.js`, one case per rule and
      per reported case. Model: `spinner-to-progress.test.js`.
-6. **Changelogs.** A `### Deprecated` line in `CHANGELOG.md` and a line in
-   `apps/storybook/src/pages/changelog.mdx`, both naming the replacement and
-   the removal version.
+6. **Changelog.** `changes/<name>-deprecated.md` with `type: deprecated`,
+   naming the replacement and the removal version.
 
 Then run the definition of done from `AGENTS.md`, and check:
 
@@ -69,6 +68,6 @@ In the release named by `removal`:
    `RelatedComponents` list.
 3. Keep the codemod in `apps/registry/codemods/`. The build serves every
    file there, so late movers can still run it.
-4. A `### Removed` line in `CHANGELOG.md` and a line in the Storybook
-   changelog pointing at the codemod.
+4. `changes/<name>-removed.md` with `type: removed` and `breaking: true`,
+   pointing at the codemod.
 5. `grep -rn "<name>"` across the repo to catch leftovers.

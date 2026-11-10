@@ -56,8 +56,11 @@ keyboard only, and with reduced motion turned on.
 ## Pull requests
 
 Keep each pull request to one change. Describe what changed and why, and add
-a line to the changelog in `apps/storybook/src/pages/changelog.mdx` for
-anything a user would notice.
+a file in `changes/` for anything a user would notice; the format is in
+[`changes/README.md`](./changes/README.md). CI fails a pull request that
+changes a shipped part without one, unless it has the `no changelog` label.
+Each change is its own file so pull requests never conflict over the
+changelog.
 
 ## Versioning
 
@@ -84,12 +87,15 @@ Codemods stay published after the code they migrate off is gone.
 
 ## Releasing
 
-1. Move the `[Unreleased]` entries in `CHANGELOG.md` under a new version
-   heading with the date, and add its link at the bottom.
-2. Set `version` in the root `package.json` and `apps/registry/package.json`.
-3. Merge, then tag the merge commit `v<version>` and push the tag. The
-   release workflow checks the tag against `package.json` and publishes a
-   GitHub release with that version's changelog section.
+1. On a branch, run `pnpm release <version>`. It writes the version's section
+   of `CHANGELOG.md` from `changes/`, with breaking entries first under
+   Upgrade notes, adds the same entries to the Storybook changelog, sets
+   `version` in the root and `apps/registry` `package.json`, and deletes the
+   fragments.
+2. Review the diff and merge it.
+3. Tag the merge commit `v<version>` and push the tag. The release workflow
+   checks the tag against `package.json` and publishes a GitHub release with
+   that version's changelog section.
 
 ## Conduct
 
