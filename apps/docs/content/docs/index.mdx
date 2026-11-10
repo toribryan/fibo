@@ -1,0 +1,36 @@
+---
+title: Introduction
+description: An achromatic design system built on shadcn/ui and Base UI, installed from a shadcn registry.
+---
+
+fibo is a set of React parts on [shadcn/ui](https://ui.shadcn.com) and
+[Base UI](https://base-ui.com), with a Figma library that's checked against
+the code on every pull request. Parts install from the registry as source, so
+they follow your tokens and belong to you once they land.
+
+This site covers what fibo is for and how to use each part. Every example,
+control and props table lives in [Storybook](https://fibo.toribryan.com).
+
+## Principles
+
+- **Achromatic by default.** There is no brand hue. `primary` is a neutral,
+  and color only ever carries meaning: destructive, success, warning, info.
+- **One name on both sides.** Every token in `globals.css` matches a Figma
+  variable, and every prop matches a Figma component property.
+- **Tailwind's scales, fibo's opinions.** Spacing, type, shadows and durations
+  are Tailwind's own. fibo adds no tokens for them; the foundations say which
+  steps it uses and what each is for.
+- **Yours once installed.** Installing a part copies its source into your
+  project, where you can change it like any other file.
+
+## How it's checked
+
+- **Every part installs the way you'd install it.** CI runs `shadcn init` in a
+  fresh app, installs all of fibo, builds it, and fails if any class compiles
+  to nothing.
+- **Figma and code are diffed in CI.** Color variables, radii, and each
+  component's variant properties against its props.
+- **Accessibility is a test.** Every story fails on any axe violation, and
+  every interactive part is driven by pointer and keyboard.
+- **Breaking changes ship with codemods,** and nothing is removed without a
+  deprecation first.

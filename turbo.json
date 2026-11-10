@@ -12,7 +12,8 @@
         "public/codemods/**",
         "registry/**",
         "registry.json",
-        "storybook-static/**"
+        "storybook-static/**",
+        "out/**"
       ]
     },
     "lint": {},

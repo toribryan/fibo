@@ -1,0 +1,34 @@
+{
+  "name": "docs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "lint": "eslint --max-warnings 0",
+    "typecheck": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "@workspace/ui": "workspace:*",
+    "fumadocs-core": "16.17.8",
+    "fumadocs-mdx": "15.4.10",
+    "fumadocs-ui": "npm:@fumadocs/base-ui@16.17.8",
+    "lucide-react": "^1.48.0",
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/mdx": "^2.0.14",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "eslint": "^10.11.0",
+    "tailwindcss": "^4",
+    "typescript": "^6.0.3"
+  }
+}

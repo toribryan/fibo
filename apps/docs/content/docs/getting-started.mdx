@@ -1,0 +1,74 @@
+---
+title: Getting started
+description: Connect the registry, add a part, and make it look like fibo.
+---
+
+fibo is a shadcn registry: one JSON file per part at `fibo.toribryan.com/r`,
+holding its code and what it needs. The shadcn CLI reads those files and
+copies parts into your project as source.
+
+An installed part is a copy, not a link. You can edit anything in it, and a
+fibo update never changes it until you add the part again.
+
+## Before you start
+
+You need a shadcn project, with a `components.json` at its root:
+
+```bash
+pnpm dlx shadcn@latest init
+```
+
+## 1. Connect fibo to your project
+
+Add to `components.json`, keeping `{name}` literal:
+
+```json
+"registries": {
+  "@fibo": "https://fibo.toribryan.com/r/{name}.json"
+}
+```
+
+## 2. Add a part
+
+```bash
+pnpm dlx shadcn@latest add @fibo/button
+```
+
+`add` writes the code to `components/ui/button.tsx`, installs the packages it
+is built on, adds any fibo parts it uses, and adds the color tokens it needs
+that your project lacks. Existing tokens are left alone.
+
+## 3. Use it
+
+```tsx
+import { Button } from "@/components/ui/button"
+
+export function Toolbar() {
+  return (
+    <Button variant="outline" size="sm">
+      Save draft
+    </Button>
+  )
+}
+```
+
+Props match Figma component properties: `variant="outline"` is the `variant`
+property set to outline.
+
+## 4. Make it look like fibo
+
+Parts use your project's colors for standard roles such as `primary` and
+`border`, so fibo fits an existing product. To use fibo's colors everywhere:
+
+```bash
+pnpm dlx shadcn@latest add @fibo/theme
+```
+
+## 5. Get updates
+
+Installed code doesn't update on its own. To take the latest version of a
+part, replacing the whole file including your edits:
+
+```bash
+pnpm dlx shadcn@latest add @fibo/button --overwrite
+```

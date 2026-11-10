@@ -21,6 +21,7 @@ Node 24 (pinned in `.nvmrc`).
 | `apps/storybook/src/pages/`        | Welcome, Getting started, Catalog, Colors, Typography, Changelog     |
 | `apps/storybook/src/components/`   | One `.mdx` docs page per component                                   |
 | `apps/storybook/src/blocks/`       | Docs blocks: anatomy, data attributes, guidelines, catalog, hero     |
+| `apps/docs/`                       | Docs site (Fumadocs), being split out of Storybook: `plans/016`      |
 | `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                 |
 | `apps/registry/codemods/`          | jscodeshift transforms that migrate off deprecated parts             |
 | `packages/ui/src/21st/`            | One demo per Special component published on 21st.dev                 |
