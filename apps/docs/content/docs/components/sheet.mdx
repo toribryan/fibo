@@ -1,0 +1,273 @@
+---
+title: Sheet
+description: A panel that slides in from an edge for a focused task.
+---
+
+import { ArrowUpDownIcon, PlusIcon, SlidersHorizontalIcon } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
+import { Input } from "@workspace/ui/components/input"
+import { Label } from "@workspace/ui/components/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
+import {
+  Sheet,
+  SheetBody,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@workspace/ui/components/sheet"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <Sheet side="right">
+    <SheetTrigger render={<Button variant="outline" />}>
+      Edit profile
+    </SheetTrigger>
+    <SheetContent>
+      <SheetHeader>
+        <SheetTitle>Edit profile</SheetTitle>
+        <SheetDescription>
+          {"Changes show to your team once you save."}
+        </SheetDescription>
+      </SheetHeader>
+      <SheetBody className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="sheet-name">Name</Label>
+          <Input id="sheet-name" defaultValue="Maya Okafor" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="sheet-email">Email</Label>
+          <Input id="sheet-email" defaultValue="maya@example.com" />
+        </div>
+      </SheetBody>
+      <SheetFooter>
+        <SheetClose render={<Button />}>Save</SheetClose>
+        <SheetClose render={<Button variant="outline" />}>Cancel</SheetClose>
+      </SheetFooter>
+    </SheetContent>
+  </Sheet>
+</Preview>
+
+## When to use it
+
+Use Sheet for a focused task that needs room, such as editing a record or
+setting filters on a phone. It slides in from any edge and closes on Escape,
+an outside click, the close button, or a swipe back the way it came. Text in
+SheetBody is selectable without dragging the sheet.
+
+`side` goes on Sheet, not SheetContent as in shadcn, because it also sets the
+swipe-to-close direction. Always include a SheetTitle.
+
+## Installation
+
+<Install
+  name="sheet"
+  exports={[
+    "Sheet",
+    "SheetTrigger",
+    "SheetContent",
+    "SheetHeader",
+    "SheetTitle",
+    "SheetDescription",
+    "SheetBody",
+    "SheetFooter",
+    "SheetClose",
+  ]}
+/>
+
+It installs Button, for the close button, with it.
+
+## Sides
+
+`side="bottom"` for phones, closed with a swipe down. `side="left"` for
+navigation over the page.
+
+<Preview>
+  <Sheet side="bottom">
+    <SheetTrigger render={<Button variant="outline" />}>Bottom</SheetTrigger>
+    <SheetContent>
+      <SheetHeader>
+        <SheetTitle>Edit profile</SheetTitle>
+        <SheetDescription>
+          {"Changes show to your team once you save."}
+        </SheetDescription>
+      </SheetHeader>
+      <SheetBody className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="sheet-bottom-name">Name</Label>
+          <Input id="sheet-bottom-name" defaultValue="Maya Okafor" />
+        </div>
+      </SheetBody>
+      <SheetFooter>
+        <SheetClose render={<Button />}>Save</SheetClose>
+        <SheetClose render={<Button variant="outline" />}>Cancel</SheetClose>
+      </SheetFooter>
+    </SheetContent>
+  </Sheet>
+  <Sheet side="left">
+    <SheetTrigger render={<Button variant="outline" />}>Left</SheetTrigger>
+    <SheetContent>
+      <SheetHeader>
+        <SheetTitle>Edit profile</SheetTitle>
+        <SheetDescription>
+          {"Changes show to your team once you save."}
+        </SheetDescription>
+      </SheetHeader>
+      <SheetBody className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="sheet-left-name">Name</Label>
+          <Input id="sheet-left-name" defaultValue="Maya Okafor" />
+        </div>
+      </SheetBody>
+      <SheetFooter>
+        <SheetClose render={<Button />}>Save</SheetClose>
+        <SheetClose render={<Button variant="outline" />}>Cancel</SheetClose>
+      </SheetFooter>
+    </SheetContent>
+  </Sheet>
+</Preview>
+
+## Filters
+
+Sort, group and filter controls in a bottom sheet behind one icon button.
+
+<Preview>
+  <Sheet side="bottom">
+    <SheetTrigger
+      render={<Button variant="outline" size="icon-sm" aria-label="Filters" />}
+    >
+      <SlidersHorizontalIcon />
+    </SheetTrigger>
+    <SheetContent>
+      <SheetHeader>
+        <SheetTitle>Filters</SheetTitle>
+      </SheetHeader>
+      <SheetBody className="flex flex-col gap-2">
+        <Select
+          defaultValue="name"
+          items={[
+            { value: "name", label: "Name" },
+            { value: "team", label: "Team" },
+          ]}
+        >
+          <SelectTrigger className="w-full" aria-label="Sort by">
+            <ArrowUpDownIcon />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="name">Name</SelectItem>
+            <SelectItem value="team">Team</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select
+          defaultValue="none"
+          items={[
+            { value: "none", label: "No grouping" },
+            { value: "team", label: "Team" },
+          ]}
+        >
+          <SelectTrigger className="w-full" aria-label="Group by">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">No grouping</SelectItem>
+            <SelectItem value="team">Team</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select
+          defaultValue="all"
+          items={[
+            { value: "all", label: "All roles" },
+            { value: "admin", label: "Admin" },
+            { value: "editor", label: "Editor" },
+          ]}
+        >
+          <SelectTrigger className="w-full" aria-label="Role">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All roles</SelectItem>
+            <SelectItem value="admin">Admin</SelectItem>
+            <SelectItem value="editor">Editor</SelectItem>
+          </SelectContent>
+        </Select>
+      </SheetBody>
+      <SheetFooter>
+        <Button variant="ghost" className="justify-start">
+          <PlusIcon />
+          {"Add filter"}
+        </Button>
+      </SheetFooter>
+    </SheetContent>
+  </Sheet>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a sheet for a task that needs room but belongs to the page behind it: editing a record, filters on a phone.",
+    "Open from the right on wide screens and from the bottom on phones, within thumb reach.",
+    "One task per sheet. If it needs steps or its own navigation, make it a page.",
+    "Put the main action first in the footer, and keep Cancel as a way out.",
+    "Don't stack sheets on sheets.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-48 flex-col gap-2 rounded-t-xl border-t border-border bg-background p-3 text-sm shadow-lg">
+            <span className="font-medium">Filters</span>
+            <span className="h-8 rounded-sm border border-input bg-input-subtle" />
+            <span className="h-8 rounded-sm border border-input bg-input-subtle" />
+          </div>
+        ),
+        description: "Give it one job and a title that names it.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-48 flex-col gap-2 rounded-t-xl border-t border-border bg-background p-3 text-sm shadow-lg">
+            <span className="font-medium">Step 1 of 4</span>
+            <span className="h-8 rounded-sm border border-input bg-input-subtle" />
+            <span className="self-end rounded-sm bg-primary px-2 py-1 text-xs text-primary-foreground">
+              Next
+            </span>
+          </div>
+        ),
+        description:
+          "Don't put a multi-step flow in a sheet. It needs a page of its own.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The panel is a modal dialog named by SheetTitle and described by
+  SheetDescription.
+- Focus moves in on open, stays inside while open, and returns to the
+  trigger on close.
+- Swiping is never the only way out: Escape, an outside click and the close
+  button all close it.
+- Name an icon-only trigger with aria-label, such as “Filters”.
+- With reduced motion on, it appears and disappears without sliding.
+
+<StorybookLink id="base-components-overlays-sheet" name="Sheet" />

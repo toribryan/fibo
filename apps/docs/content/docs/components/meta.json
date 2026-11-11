@@ -41,6 +41,12 @@
     "filter-menu",
     "floating-nav",
     "pagination",
-    "tabs"
+    "tabs",
+    "---Overlays---",
+    "alert-dialog",
+    "dialog",
+    "menu",
+    "sheet",
+    "tooltip"
   ]
 }

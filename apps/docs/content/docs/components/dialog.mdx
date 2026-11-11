@@ -1,0 +1,225 @@
+---
+title: Dialog
+description: A window over the page for a short task, such as editing a few fields, that keeps focus until it's done or dismissed.
+---
+
+import { Button } from "@workspace/ui/components/button"
+import {
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@workspace/ui/components/dialog"
+import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field"
+import { Input } from "@workspace/ui/components/input"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <Dialog>
+    <DialogTrigger render={<Button variant="outline" />}>
+      Edit profile
+    </DialogTrigger>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Edit profile</DialogTitle>
+        <DialogDescription>
+          {"Changes show on your profile once you save."}
+        </DialogDescription>
+      </DialogHeader>
+      <FieldGroup>
+        <Field>
+          <FieldLabel>Name</FieldLabel>
+          <Input defaultValue="Ada Lovelace" />
+        </Field>
+        <Field>
+          <FieldLabel>Username</FieldLabel>
+          <Input defaultValue="ada" />
+        </Field>
+      </FieldGroup>
+      <DialogFooter>
+        <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
+        <DialogClose render={<Button />}>Save changes</DialogClose>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</Preview>
+
+## When to use it
+
+Use Dialog for a short task over the page, such as editing a few fields. It
+closes on Escape, an outside click, the corner button or any DialogClose.
+DialogTitle is required; it names the dialog for screen readers. For an
+irreversible confirmation, use Alert dialog.
+
+## Installation
+
+<Install
+  name="dialog"
+  exports={[
+    "Dialog",
+    "DialogTrigger",
+    "DialogContent",
+    "DialogHeader",
+    "DialogTitle",
+    "DialogDescription",
+    "DialogBody",
+    "DialogFooter",
+    "DialogClose",
+  ]}
+/>
+
+It installs Button, for the close button, and the `--backdrop` token with it.
+
+## Sizes
+
+`size="sm"` for a field or two, `default`, and `size="lg"` for longer forms.
+
+<Preview>
+  <Dialog>
+    <DialogTrigger render={<Button variant="outline" />}>Small</DialogTrigger>
+    <DialogContent size="sm">
+      <DialogHeader>
+        <DialogTitle>Rename file</DialogTitle>
+        <DialogDescription>
+          {"The new name shows for everyone with access."}
+        </DialogDescription>
+      </DialogHeader>
+      <Field>
+        <FieldLabel>Name</FieldLabel>
+        <Input defaultValue="Roadmap 2027" />
+      </Field>
+      <DialogFooter>
+        <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
+        <DialogClose render={<Button />}>Rename</DialogClose>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+  <Dialog>
+    <DialogTrigger render={<Button variant="outline" />}>Large</DialogTrigger>
+    <DialogContent size="lg">
+      <DialogHeader>
+        <DialogTitle>Edit profile</DialogTitle>
+        <DialogDescription>
+          {"Changes show on your profile once you save."}
+        </DialogDescription>
+      </DialogHeader>
+      <FieldGroup>
+        <Field>
+          <FieldLabel>Name</FieldLabel>
+          <Input defaultValue="Ada Lovelace" />
+        </Field>
+        <Field>
+          <FieldLabel>Username</FieldLabel>
+          <Input defaultValue="ada" />
+        </Field>
+      </FieldGroup>
+      <DialogFooter>
+        <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
+        <DialogClose render={<Button />}>Save changes</DialogClose>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</Preview>
+
+## Long content
+
+DialogBody scrolls when content exceeds the viewport; title and footer stay
+fixed, keeping the footer in reach.
+
+<Preview>
+  <Dialog>
+    <DialogTrigger render={<Button variant="outline" />}>
+      Read the terms
+    </DialogTrigger>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Terms of service</DialogTitle>
+        <DialogDescription>{"Last updated October 2026."}</DialogDescription>
+      </DialogHeader>
+      <DialogBody className="flex flex-col gap-3 text-sm text-muted-foreground">
+        {Array.from({ length: 12 }, (_, index) => (
+          <div key={index}>
+            {`${index + 1}. The workspace belongs to the people who make it. We keep what you write private, back it up every night, and hand it all back in a standard format whenever you ask.`}
+          </div>
+        ))}
+      </DialogBody>
+      <DialogFooter>
+        <DialogClose render={<Button />}>Got it</DialogClose>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use for a short task tied to the page behind. Multi-step tasks or browsing belong on a page or in a Sheet.",
+    "Title it after the task; say what saving does in the description.",
+    "Put the main action last in the footer. On phones it stacks on top, nearest the thumb.",
+    "Don't open a dialog from a dialog.",
+    "Don't use one for a message that needs no answer. A Toast does that without taking focus.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 flex-col gap-3 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <span className="font-semibold">Rename file</span>
+            <span className="h-8 rounded-sm border border-input bg-input-subtle" />
+            <span className="flex justify-end gap-2">
+              <span className="rounded-md border border-border px-2 py-1 text-xs">
+                Cancel
+              </span>
+              <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground">
+                Rename
+              </span>
+            </span>
+          </div>
+        ),
+        description: "Name the action after what it does: Rename, not OK.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 flex-col gap-3 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <span className="font-semibold">Saved</span>
+            <span className="text-muted-foreground">
+              Your changes were saved.
+            </span>
+            <span className="flex justify-end">
+              <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground">
+                OK
+              </span>
+            </span>
+          </div>
+        ),
+        description: "Don't interrupt to confirm success. Use a Toast.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- A modal dialog named by DialogTitle and described by DialogDescription.
+- Focus moves to the first control on open, is trapped while open, and
+  returns to the trigger on close.
+- Escape closes it from anywhere inside. The page behind is inert and
+  doesn't scroll.
+- The corner button is named Close for screen readers.
+
+<StorybookLink id="base-components-overlays-dialog" name="Dialog" />

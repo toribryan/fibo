@@ -1,0 +1,126 @@
+---
+title: Menu
+description: A short list of actions that opens from a button.
+---
+
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  MenuCheckboxesDemo,
+  MenuDefaultDemo,
+  MenuRadioDemo,
+  MenuRowActionsDemo,
+  MenuSubmenuDemo,
+  StaticMenu,
+} from "@/components/demos/menu"
+
+<Preview>
+  <MenuDefaultDemo />
+</Preview>
+
+## When to use it
+
+Use Menu for a short list of actions opened from a button, such as More
+actions on a toolbar or a table row's actions. It opens by click, Enter, Space
+or the down arrow, and Escape closes it and returns focus. To pick a value for
+a form, use Select.
+
+## Installation
+
+<Install
+  name="menu"
+  exports={[
+    "Menu",
+    "MenuTrigger",
+    "MenuContent",
+    "MenuItem",
+    "MenuCheckboxItem",
+    "MenuRadioGroup",
+    "MenuRadioItem",
+    "MenuGroup",
+    "MenuLabel",
+    "MenuSeparator",
+    "MenuShortcut",
+    "MenuSub",
+    "MenuSubTrigger",
+    "MenuSubContent",
+  ]}
+/>
+
+## Row actions
+
+An icon-only trigger at the end of a row. Its label names the row, so each
+trigger in a table is distinct.
+
+<Preview>
+  <MenuRowActionsDemo />
+</Preview>
+
+## Checkbox and radio items
+
+Checkbox items toggle, such as a table's visible columns, and the menu stays
+open while toggling. Radio items pick one choice from a group, such as the
+sort order.
+
+<Preview>
+  <MenuCheckboxesDemo />
+  <MenuRadioDemo />
+</Preview>
+
+## Submenu
+
+A second level for a choice with its own options. The last item is disabled.
+
+<Preview>
+  <MenuSubmenuDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a menu for actions. To pick a value for a form, use Select.",
+    "Keep it short: a handful of items, and at most one level of submenu.",
+    "Start each item with a verb: Edit, Duplicate, Export.",
+    "Put Delete last, after a separator, with the destructive variant.",
+    "Disable an unavailable item instead of hiding it, so the menu doesn't change shape.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: <StaticMenu items={["Export", "---", "!Delete"]} />,
+        description: "Put Delete last, set apart and marked destructive.",
+      },
+      negative: {
+        component: <StaticMenu items={["Delete", "Export"]} />,
+        description:
+          "Don't lead with Delete or style it like the rest. It's too easy to choose by mistake.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The trigger is a button with `aria-haspopup`, and the list is a menu of
+  `menuitem`, `menuitemcheckbox` and `menuitemradio`, following the APG menu
+  button pattern.
+- Name an icon-only trigger with `aria-label`, and include the row it acts
+  on, such as “Actions for Maya Okafor”.
+- Icons in items need no extra markup: lucide hides them from screen readers,
+  and the item's text is its name.
+- Focus returns to the trigger when the menu closes, whether an item was
+  chosen or Escape was pressed.
+- MenuShortcut is hidden from screen readers so it isn't read as part of the
+  item's name. It's a hint only: wire up the key separately, then add
+  `aria-keyshortcuts` to the item.
+
+<StorybookLink id="base-components-overlays-menu" name="Menu" />
