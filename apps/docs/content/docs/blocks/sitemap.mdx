@@ -1,0 +1,104 @@
+---
+title: Sitemap
+description: A site directory page, with a search and then every destination in a few groups.
+---
+
+import { Tip, UsageGuidelines } from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<BlockFrame id="blocks-sitemap--default" label="Sitemap" />
+
+## When to use it
+
+Start from Sitemap for a site directory page: a search, then every
+destination in a few groups.
+
+- A search at the top with popular picks under it, optionally pinned below
+  the site's header on scroll.
+- Four columns wide, two on a tablet, one card per group on a phone. The
+  layout follows the block's own width, not the viewport.
+- Groups nest one level deep, such as a state and its cities, and can fold
+  behind a toggle.
+- Every link takes `render`, so a router's `Link` keeps the styling.
+
+It's built from [Input group](/docs/components/input-group) and
+[Button](/docs/components/button).
+
+## Installation
+
+<Install name="sitemap" block exports={["Sitemap"]} />
+
+Also installs Button and Input group. Render it with `onSearch` or a
+`searchAction` route:
+
+```tsx
+import { Sitemap } from "@/components/blocks/sitemap/sitemap"
+
+export default function Page() {
+  return <Sitemap searchAction="/search" />
+}
+```
+
+Once installed, the block's files belong to your app. Running `shadcn add`
+again overwrites your edits.
+
+| File          | Holds                                                          |
+| ------------- | -------------------------------------------------------------- |
+| `sitemap.tsx` | The page, built from `data.ts`.                                |
+| `parts.tsx`   | The parts: layout, header, search, suggestions and directory.  |
+| `data.ts`     | The title, search hint, suggestions and every section's links. |
+
+## Make it yours
+
+1. Replace `data.ts` with your site's pages. An entry with `links` becomes
+   a group, such as a state and its cities.
+2. Point the search at your results route with `searchAction`, or handle it
+   with `onSearch`.
+3. Pass a router's `Link` to `SitemapLink` and `SitemapSuggestion` through
+   `render` in `sitemap.tsx`, so links route without a page load.
+4. To pin the search, set `sticky` and set `--sitemap-sticky-top` to the
+   site header's height so it sits right below it. On a phone it stays one
+   row high.
+
+For a different page shape, such as the directory alone, compose the parts
+from `parts.tsx`. `SitemapLayout` is the frame whose width the rest lays out
+by. Build location links from the pages the site has, not a hand-kept list.
+
+## Every location open
+
+`collapsible` off lists every state's cities in full. Suits a site with few
+states.
+
+<BlockFrame
+  id="blocks-sitemap--expanded"
+  label="Sitemap, every location open"
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Keep it to three to five groups, named by what people came to do: find, browse, learn, contact.",
+    "Put the search first when most visitors arrive looking for a place. The directory backs it up, not replaces it.",
+    "Fold long location lists with collapsible groups, and leave the first group open.",
+    "List only destinations that exist. Drop a link rather than point it at an empty page.",
+    "This page is for people. Keep the XML sitemap for search engines separate.",
+    "Name links for the page they open. Don't list raw paths or vague labels; people scan for words, not URLs.",
+  ]}
+/>
+
+<Tip>
+  Pin the search only under a short site header. Two stacked sticky bars on a
+  phone leave little room for the page.
+</Tip>
+
+## Accessibility
+
+- The search is a `search` landmark and the directory a `navigation`
+  landmark named "Sitemap", so screen reader users can jump between them.
+- The title is the page's h1 and each group an h2 that names its list.
+- A group's toggle is a button with `aria-expanded`, separate from the
+  group's own link, so both stay reachable by keyboard.
+- Links are at least 44px tall, for touch.
+
+<StorybookLink id="blocks-sitemap" name="Sitemap" />

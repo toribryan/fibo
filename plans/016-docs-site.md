@@ -81,6 +81,9 @@ MDX and read better as text than Storybook's iframe.
    Accessibility and Themes.
 3. **Components.** Port every component and block page's guidance. The
    `add-component` skill writes the docs page in `apps/docs` from here on.
+   Blocks import their own files with `.js`, which the docs site's bundler
+   can't resolve, so a block page shows its Storybook story in an iframe
+   (`BlockFrame`), passing the page's theme as `?theme=`.
 4. **Cutover.** `build:site` puts the docs at the root and Storybook under
    `/storybook`, with the `?path=` redirect. README, `llms.txt` and the
    Figma library's resource links point at the docs site.

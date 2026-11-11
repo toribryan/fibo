@@ -1,0 +1,146 @@
+---
+title: Pixel snail
+description: A one-color pixel snail that crawls on a loop while something loads.
+---
+
+import { Button } from "@workspace/ui/components/button"
+import { PixelSnail } from "@workspace/ui/components/pixel-snail"
+import {
+  PixelSnailFollowerDemo,
+  PixelSnailModesDemo,
+} from "@/components/demos/pixel-snail"
+import {
+  ComponentRules,
+  Tip,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <PixelSnail label="Loading" />
+</Preview>
+
+## When to use it
+
+Use Pixel snail for noticeable waits where character helps, such as an empty
+panel filling or a first load. `PixelSnail` crawls in place over a dotted
+ground as a status region announcing its `label`. `PixelSnailSprite` is a
+bare `<g>` for your own SVG, where he can also build himself up, dance and
+turn to watch the pointer. No animation library: every frame is state and a
+timer, drawn as SVG rectangles.
+
+## Installation
+
+<Install
+  name="pixel-snail"
+  exports={["PixelSnail", "PixelSnailSprite", "type PixelSnailLook"]}
+/>
+
+## Loading panel
+
+In an empty panel, with a line saying what's happening and a way out.
+
+<Preview>
+  <div className="flex w-80 flex-col items-center gap-3 rounded-xl border border-border bg-card p-8 text-center">
+    <PixelSnail label="Loading your projects" />
+    <div className="text-sm text-muted-foreground">Fetching your projects</div>
+    <Button size="sm" variant="outline">
+      Cancel
+    </Button>
+  </div>
+</Preview>
+
+## Sprite modes
+
+`PixelSnailSprite` has three hand-timed loops: `crawl`, `rest` and `dance`.
+Its origin is under the middle of his foot, so a `transform` to a point
+stands him on it.
+
+<Preview>
+  <PixelSnailModesDemo />
+</Preview>
+
+## Following the pointer
+
+`look` stops the current loop and poses him toward a point. Each axis takes
+`-1`, `0` or `1`, and `facing` at `-1` mirrors him to face left; `null`
+returns him to his mode. The sprite doesn't read the pointer itself, so this
+example maps it into art pixels with a dead zone around the eyes and a wider
+gap before he turns, so he doesn't flicker or flip on hover.
+
+<Preview>
+  <PixelSnailFollowerDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use PixelSnail for noticeable waits where character helps: an empty panel filling, an import, a first load.",
+    <>
+      Set <code>label</code> to what's loading, such as "Loading your projects".
+      Screen readers announce it.
+    </>,
+    "One per view. A crowd of him stops being charming.",
+    <>
+      Use <code>PixelSnailSprite</code> when he's part of a drawing, such as
+      standing on a line or riding a path with <code>animateMotion</code>.
+    </>,
+    <>
+      Hold <code>look</code> while something has his attention, and go back to{" "}
+      <code>null</code> when it's gone.
+    </>,
+  ]}
+/>
+
+<Tip>
+  Keep sound optional and quiet. On most pages the snail should be seen and not
+  heard.
+</Tip>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex flex-col items-center gap-2">
+            <PixelSnail label="Loading your projects" />
+            <span className="text-sm text-muted-foreground">
+              Fetching your projects
+            </span>
+          </div>
+        ),
+        description:
+          "Say what's loading, next to him and in his label, and give him room.",
+      },
+      negative: {
+        component: (
+          <div className="flex gap-2">
+            {[0, 1, 2, 3].map((i) => (
+              <PixelSnail key={i} size="sm" ground={false} />
+            ))}
+          </div>
+        ),
+        description:
+          "Don't use a row of snails for a list of loading items. Use one, or a plainer indicator.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- `PixelSnail` is a `status` region holding `label` as visually hidden text,
+  since screen readers read a status region's content, not its name. The
+  drawing is hidden from assistive technology.
+- `PixelSnailSprite` is decoration. Hide the SVG it sits in with
+  `aria-hidden`, and put anything he says or means somewhere a screen reader
+  can reach it.
+- Under prefers-reduced-motion he holds his resting pose: no crawl, travel,
+  rest or dance loop, and no build-up. He still turns to look, since that
+  only responds to the visitor.
+- He isn't focusable.
+
+<StorybookLink id="special-components-pixel-snail" name="Pixel snail" />

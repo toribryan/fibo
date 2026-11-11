@@ -1,0 +1,86 @@
+---
+title: Settings page
+description: A settings screen in three tabs, with a save bar that appears on any edit.
+---
+
+import { Install } from "@workspace/docs-blocks/install"
+
+<BlockFrame id="blocks-settings-page--default" label="Settings page" />
+
+## When to use it
+
+Start from Settings page for an app's settings screen: three tabs, Profile,
+Notifications and Account, with a save bar that appears on any edit and Cmd+S
+or Ctrl+S from any field.
+
+- **One form, one save.** All tabs edit the same settings and save together.
+  The save bar shows while anything differs from the last save; Discard
+  reverts it all.
+- **Validated on save.** An empty name stops the save, switches to Profile
+  and marks the field.
+- **Confirmed danger zone.** Delete account opens an Alert dialog with
+  Cancel focused.
+- **Lays out by its own width.** Wide, each group's heading sits beside its
+  fields; narrow, it stacks above them.
+
+It's built from [Tabs](/docs/components/tabs),
+[Field](/docs/components/field), [Input](/docs/components/input),
+[Textarea](/docs/components/textarea), [Select](/docs/components/select),
+[Switch](/docs/components/switch),
+[Radio group](/docs/components/radio-group),
+[Alert dialog](/docs/components/alert-dialog) and [Toast](/docs/components/toast).
+
+## Installation
+
+<Install name="settings-page" block exports={["SettingsPage"]} />
+
+Render it and persist in `onSave`:
+
+```tsx
+import { SettingsPage } from "@/components/blocks/settings-page/settings-page"
+
+export default function Page() {
+  return (
+    <SettingsPage
+      initialValues={settings}
+      onSave={(next) => saveSettings(next)}
+    />
+  )
+}
+```
+
+Once installed, the block's files belong to your app. Running `shadcn add`
+again overwrites your edits.
+
+| File                | Holds                                                           |
+| ------------------- | --------------------------------------------------------------- |
+| `settings-page.tsx` | The form, the tabs, the save bar, the shortcut and the Toaster. |
+| `sections.tsx`      | Profile, Notifications and Account, with the danger zone.       |
+| `data.ts`           | The settings type, the starting values and the option lists.    |
+
+## Make it yours
+
+1. Change the `Settings` type in `data.ts` to what your app stores, then add
+   or remove fields in `sections.tsx`.
+2. Pass loaded values as `initialValues` and persist in `onSave`. Values are
+   marked saved only once `onSave` returns, so a throw keeps the save bar
+   up. For a network save, make `save` in `settings-page.tsx` async and
+   await it.
+3. If your app already mounts a Toaster, remove the one at the bottom of
+   `settings-page.tsx`.
+4. Wire Delete account to your own flow in `sections.tsx`. As shipped it
+   shows a toast and deletes nothing.
+
+## Accessibility
+
+- Every control has a visible label from Field, and each description is read
+  with it.
+- A missing name sets aria-invalid on the field and shows the error under it.
+- A status region announces the save bar, so screen reader users hear that
+  there are unsaved changes.
+- Tabs follow the tabs pattern: arrow keys move between them, and Enter or
+  Space opens one.
+- The delete confirmation is an alertdialog with Cancel focused, and Escape
+  cancels.
+
+<StorybookLink id="blocks-settings-page" name="Settings page" />

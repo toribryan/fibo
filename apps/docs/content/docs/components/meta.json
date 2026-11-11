@@ -47,6 +47,17 @@
     "dialog",
     "menu",
     "sheet",
-    "tooltip"
+    "tooltip",
+    "---Feedback---",
+    "empty-state",
+    "pixel-snail",
+    "progress",
+    "reactions",
+    "skeleton",
+    "toast",
+    "typing-indicator",
+    "---Diagrams---",
+    "integration-visual",
+    "token-flow"
   ]
 }

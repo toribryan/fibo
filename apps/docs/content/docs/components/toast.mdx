@@ -1,0 +1,132 @@
+---
+title: Toast
+description: A brief message in the corner about something that just happened.
+---
+
+import {
+  ComponentRules,
+  Tip,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  ToastActionDemo,
+  ToastDefaultDemo,
+  ToastPromiseDemo,
+  ToastTypesDemo,
+} from "@/components/demos/toast"
+
+<Preview>
+  <ToastDefaultDemo />
+</Preview>
+
+## When to use it
+
+Use Toast to confirm something that just happened, such as a save, or to
+report a background event, such as a failed upload. Mount `Toaster` once
+near the app root, then call `toast.add({ title, description })` from
+anywhere, even outside React. It returns an id for `toast.close` and
+`toast.update`. Toasts stack in the bottom corner and fan out on hover or
+focus. Anything people must read or act on belongs on the page or in a
+dialog.
+
+## Installation
+
+<Install name="toast" exports={["Toaster", "toast"]} />
+
+Also installs Button, for the action and close buttons.
+
+## Types
+
+`type` adds an icon in the matching status color.
+
+<Preview>
+  <ToastTypesDemo />
+</Preview>
+
+## With action
+
+`actionProps` adds a button. Here Undo closes the toast by the id `toast.add`
+returned.
+
+<Preview>
+  <ToastActionDemo />
+</Preview>
+
+## Promise
+
+A loading toast that resolves to success after two seconds.
+
+<Preview>
+  <ToastPromiseDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use to confirm a user action or report a background event.",
+    "A title of a few words and at most one line of description.",
+    "Anything people must read or act on belongs on the page or in a dialog.",
+    "At most one quick action, like Undo. Give toasts with an action a longer timeout.",
+    "Add a type only when it carries meaning. Most confirmations are plain.",
+  ]}
+/>
+
+<Tip>
+  `toast.promise(promise, { loading, success, error })` shows a loading toast
+  and swaps in the result when the promise settles.
+</Tip>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-64 items-center gap-3 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <div className="flex flex-1 flex-col gap-1">
+              <span className="font-medium">{"Changes saved"}</span>
+              <span className="text-muted-foreground">
+                {"Your profile is up to date."}
+              </span>
+            </div>
+          </div>
+        ),
+        description: "Confirm what just happened, in a few words.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-64 items-center gap-3 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <div className="flex flex-1 flex-col gap-1">
+              <span className="font-medium">{"Delete your account?"}</span>
+              <span className="text-muted-foreground">
+                {
+                  "This removes all 14 projects and can't be undone. Confirm within 5 seconds."
+                }
+              </span>
+            </div>
+          </div>
+        ),
+        description:
+          "Don't ask for a decision in a toast; it disappears. Use a dialog.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Each toast is announced through a live region as it appears. A
+  high-priority toast interrupts; the rest wait for a pause.
+- F6 moves focus to the Notifications region, and Tab reaches each toast.
+  Escape closes the focused toast.
+- A toast doesn't time out while the pointer is over the stack or focus is
+  inside it.
+- The Dismiss button is hidden from screen readers until the stack expands,
+  so it isn't announced with every message.
+- Type icons are decorative. Put the meaning in the title: “Upload failed”,
+  not just a red icon.
+
+<StorybookLink id="base-components-feedback-toast" name="Toast" />

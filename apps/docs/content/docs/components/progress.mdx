@@ -1,0 +1,147 @@
+---
+title: Progress
+description: Shows how far a task has got, or that it's under way.
+---
+
+import { ArrowUpIcon } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
+import {
+  Progress,
+  ProgressLabel,
+  ProgressValue,
+} from "@workspace/ui/components/progress"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import { ProgressLiveDemo } from "@/components/demos/progress"
+
+<Preview>
+  <div className="w-80">
+    <Progress value={60}>
+      <ProgressLabel>{"Uploading photos"}</ProgressLabel>
+      <ProgressValue />
+    </Progress>
+  </div>
+</Preview>
+
+## When to use it
+
+Use Progress for a task that takes more than a couple of seconds, such as an
+upload. Pass a `value` from 0 to 100 when the total is known, or
+`value={null}` while it isn't. A label and formatted value sit on one row
+above the bar. The fill glides between values; under reduced motion it
+jumps. For content loading into a layout, use Skeleton.
+
+## Installation
+
+<Install
+  name="progress"
+  exports={["Progress", "ProgressLabel", "ProgressValue", "progressVariants"]}
+/>
+
+## Live
+
+A controlled bar whose label changes when the task finishes.
+
+<Preview>
+  <ProgressLiveDemo />
+</Preview>
+
+## Circle
+
+`type="circle"` draws a ring in the current text color, sized `xs` to `lg`:
+12, 16, 20 and 24 pixels. With a `value` the arc shows progress; with
+`value={null}` a quarter arc turns, holding still under reduced motion. Name
+it with `aria-label`, since a circle has no room for a label.
+
+<Preview>
+  <div className="flex flex-col gap-6">
+    <div className="flex items-center gap-4 text-primary">
+      <Progress type="circle" value={null} aria-label="Loading" />
+      <Progress type="circle" value={25} aria-label="Upload" />
+      <Progress type="circle" value={60} aria-label="Upload" />
+      <Progress type="circle" value={100} aria-label="Upload" />
+    </div>
+    <div className="flex items-end gap-4 text-muted-foreground">
+      <Progress type="circle" size="xs" value={null} aria-label="Loading" />
+      <Progress type="circle" size="sm" value={null} aria-label="Loading" />
+      <Progress
+        type="circle"
+        size="default"
+        value={null}
+        aria-label="Loading"
+      />
+      <Progress type="circle" size="lg" value={null} aria-label="Loading" />
+    </div>
+  </div>
+</Preview>
+
+## In a button
+
+A small circle replaces a button's icon while its action runs. The button's
+text or `aria-label` says what's happening, so the circle is hidden from
+screen readers. Used by Toast and Chat composer.
+
+<Preview>
+  <Button disabled>
+    <Progress type="circle" size="sm" value={null} aria-hidden="true" />
+    {"Saving"}
+  </Button>
+  <Button size="icon" aria-label="Sending" disabled>
+    <Progress type="circle" size="sm" value={null} aria-hidden="true" />
+  </Button>
+  <Button size="icon" aria-label="Send">
+    <ArrowUpIcon />
+  </Button>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use for a task that takes more than a couple of seconds.",
+    "Say what's happening in the label, like “Exporting report”, and change it when the task finishes.",
+    "Switch to determinate as soon as the total is known.",
+    "For content loading into a layout, use Skeleton.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Progress value={45} className="w-56">
+            <ProgressLabel>{"Exporting report"}</ProgressLabel>
+            <ProgressValue />
+          </Progress>
+        ),
+        description: "Say what's in progress and how far it has got.",
+      },
+      negative: {
+        component: (
+          <Progress value={45} aria-label="Progress" className="w-56">
+            <ProgressLabel>{"Please wait…"}</ProgressLabel>
+          </Progress>
+        ),
+        description:
+          "Don't just ask people to wait. They can't tell what's happening or whether it's stuck.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The root is a `progressbar` with `aria-valuenow`. ProgressLabel names it;
+  without one, pass `aria-label`.
+- Most screen readers don't announce each change. When the task finishes,
+  say so in the label or with a toast.
+- Pass `getAriaValueText` when a percentage isn't the clearest reading, such
+  as “3 of 12 files”.
+
+<StorybookLink id="base-components-feedback-progress" name="Progress" />
