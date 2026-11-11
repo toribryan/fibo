@@ -31,7 +31,11 @@ Check each item and report only the ones that fail, with file and line:
    JSDoc line.
 4. **Accessibility.** Interactive parts are reachable by keyboard, have a
    `focus-visible` ring, and icon-only controls have an accessible name.
-   Motion is skipped under `prefers-reduced-motion`.
+   Motion is skipped under `prefers-reduced-motion`. The ref and spread
+   props land on the focusable element. A consumer's `aria-*` labelling is
+   kept and ids merged. Busy controls set `aria-busy`. Decorative icons are
+   `aria-hidden`. No positive `tabindex`, no `aria-hidden` on focusable
+   elements, no prop hiding a native attribute.
 5. **Stories.** No `autodocs` tag. `Default` is driven by args. Data and
    callback props have `control: false`.
 6. **Docs page.** Sections in the order Features, Installation, Examples,
@@ -43,7 +47,9 @@ Check each item and report only the ones that fail, with file and line:
    in a Build tab that comes first, the design material in a Design tab
    after it, and one Anatomy (see the add-component skill).
 7. **Tests.** Interactive parts have a `play` function on `Default` covering
-   pointer and keyboard. Bare stories name the part with `aria-label`. Logic
+   pointer and keyboard, `Disabled` and `Focused` stories, and `Invalid` and
+   `Loading` stories where the part has those states, plus a unit test of
+   the ARIA it promises. Bare stories name the part with `aria-label`. Logic
    that stories cannot show has a `<name>.test.tsx`. No story imports from
    `vitest`.
 8. **Comments.** They explain why, not what, and none describe removed code.
