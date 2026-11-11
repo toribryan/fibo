@@ -397,6 +397,7 @@
       "iconEnd": "BOOLEAN",
       "iconStartSwap": "INSTANCE_SWAP",
       "iconEndSwap": "INSTANCE_SWAP",
+      "loading": "BOOLEAN",
       "variant": [
         "default",
         "outline",

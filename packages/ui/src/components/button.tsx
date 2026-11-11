@@ -1,6 +1,8 @@
+import * as React from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
+import { Progress } from "@workspace/ui/components/progress"
 import { cn } from "@workspace/ui/lib/utils"
 
 const buttonVariants = cva(
@@ -38,21 +40,74 @@ const buttonVariants = cva(
   }
 )
 
+type IconComponent = React.ComponentType<React.SVGProps<SVGSVGElement>>
+
+type ButtonProps = ButtonPrimitive.Props &
+  VariantProps<typeof buttonVariants> & {
+    /** Shows a spinner in place of the start icon and blocks presses, keeping focus on the button. */
+    loading?: boolean
+    /** An icon component before the label, such as lucide's `PlusIcon`. */
+    iconStart?: IconComponent
+    /** An icon component after the label, such as lucide's `ArrowRightIcon`. */
+    iconEnd?: IconComponent
+    /** Stretches the button to the width of its container. */
+    fillWidth?: boolean
+  }
+
+// The ring matches the icon it replaces: 12px on xs, 16px everywhere else.
+const SPINNER_SIZE = { xs: "xs", "icon-xs": "xs" } as const
+
 function Button({
   className,
   variant = "default",
   size = "default",
+  loading = false,
+  iconStart: IconStart,
+  iconEnd: IconEnd,
+  fillWidth = false,
+  disabled,
+  children,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ButtonProps) {
+  const iconOnly = size?.startsWith("icon")
   return (
     <ButtonPrimitive
       data-slot="button"
       data-variant={variant}
       data-size={size}
-      className={cn(buttonVariants({ variant, size, className }))}
+      data-loading={loading || undefined}
+      disabled={disabled || loading}
+      focusableWhenDisabled={loading && !disabled}
+      aria-busy={loading || undefined}
+      className={cn(
+        buttonVariants({ variant, size, className }),
+        fillWidth && "w-full",
+        loading && "cursor-progress"
+      )}
       {...props}
-    />
+    >
+      {loading ? (
+        <Progress
+          type="circle"
+          size={SPINNER_SIZE[size as keyof typeof SPINNER_SIZE] ?? "sm"}
+          value={null}
+          aria-hidden="true"
+          data-icon={iconOnly ? undefined : "inline-start"}
+        />
+      ) : (
+        IconStart && (
+          <IconStart
+            aria-hidden="true"
+            data-icon={iconOnly ? undefined : "inline-start"}
+          />
+        )
+      )}
+      {loading && iconOnly ? null : children}
+      {IconEnd && !(loading && iconOnly) && (
+        <IconEnd aria-hidden="true" data-icon="inline-end" />
+      )}
+    </ButtonPrimitive>
   )
 }
 
-export { Button, buttonVariants }
+export { Button, buttonVariants, type ButtonProps }
