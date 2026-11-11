@@ -12,9 +12,12 @@ const sans = Geist({ subsets: ["latin"], variable: "--font-sans" })
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://fibo.toribryan.com"),
   title: { template: "%s | fibo", default: "fibo" },
   description:
     "An achromatic design system built on shadcn/ui and Base UI, installed from a shadcn registry.",
+  openGraph: { siteName: "fibo", type: "website" },
+  twitter: { card: "summary_large_image" },
 }
 
 export default function Layout({ children }: { children: ReactNode }) {

@@ -368,7 +368,7 @@ export const CARDS = [
       <span class="mono abs" style="left:89px; bottom:34px; font-size:21px; color:var(--soft);">fibo.toribryan.com</span>`,
   },
   {
-    // The link preview for fibo.toribryan.com, copied to apps/storybook/public/og.png.
+    // The link preview, copied to apps/docs/app/opengraph-image.png and apps/storybook/public/og.png.
     id: "og",
     w: 1200,
     h: 630,

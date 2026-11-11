@@ -2,5 +2,19 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "buildCommand": "pnpm build:site",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "query", "key": "path" }],
+      "destination": "/storybook/",
+      "permanent": true
+    },
+    {
+      "source": "/iframe.html",
+      "destination": "/storybook/iframe.html",
+      "permanent": true
+    }
+  ]
 }

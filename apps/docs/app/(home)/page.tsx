@@ -21,7 +21,7 @@ export default function HomePage() {
         </Button>
         <Button
           variant="outline"
-          render={<a href={STORYBOOK} />}
+          render={<a href={`${STORYBOOK}/`} />}
           nativeButton={false}
         >
           Open Storybook

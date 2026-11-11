@@ -11,8 +11,8 @@ they follow your tokens and belong to you once they land.
 [![MIT license](https://img.shields.io/badge/license-MIT-black)](./LICENSE)
 [![shadcn registry](https://img.shields.io/badge/shadcn-%40fibo-black)](https://fibo.toribryan.com)
 
-[Docs](https://fibo.toribryan.com) ·
-[Catalog](https://fibo.toribryan.com/?path=/docs/catalog--docs) ·
+[Docs](https://fibo.toribryan.com/docs/) ·
+[Storybook](https://fibo.toribryan.com/storybook/) ·
 [Figma library](https://www.figma.com/design/LJZ5Tt4Ba7NPPi8Xnq8i0e/Fibo-DS) ·
 [llms.txt](https://fibo.toribryan.com/llms.txt) ·
 [Changelog](./CHANGELOG.md)
@@ -61,11 +61,11 @@ pnpm dlx shadcn@latest add @fibo/theme
   variable-bound fill, so `bg-destructive/10` has no Figma equivalent. fibo
   names those steps instead (`-subtle`, `-hover`, `-ring`), and the two sides
   use one name. Status tones sit on the 700 step so every pair clears WCAG AA
-  in both themes. [Colors](https://fibo.toribryan.com/?path=/docs/foundations-colors--docs)
+  in both themes. [Colors](https://fibo.toribryan.com/docs/foundations/colors/)
 - **Accessibility is a test, not a review.** Every story renders in Chromium
   and fails on any axe violation. Every interactive part has a `play` function
   that drives it by pointer and keyboard.
-  [Accessibility](https://fibo.toribryan.com/?path=/docs/foundations-accessibility--docs)
+  [Accessibility](https://fibo.toribryan.com/docs/foundations/accessibility/)
 - **Breaking changes ship with codemods.** A deprecation is one entry in
   [`components.meta.json`](./packages/ui/components.meta.json) that the docs
   banner, sidebar, registry output and `llms.txt` all read, plus a tested
@@ -118,64 +118,64 @@ notes.
 
 **3 themes.** [Theme][theme] (`@fibo/theme`), [Mechanical theme][theme-mechanical] (`@fibo/theme-mechanical`), [Electrical theme][theme-electrical] (`@fibo/theme-electrical`).
 
-[alert-dialog]: https://fibo.toribryan.com/?path=/docs/base-components-overlays-alert-dialog--docs
-[attachment]: https://fibo.toribryan.com/?path=/docs/base-components-forms-attachment--docs
-[avatar]: https://fibo.toribryan.com/?path=/docs/base-components-display-avatar--docs
-[badge]: https://fibo.toribryan.com/?path=/docs/base-components-display-badge--docs
-[button]: https://fibo.toribryan.com/?path=/docs/base-components-actions-button--docs
-[calendar]: https://fibo.toribryan.com/?path=/docs/base-components-forms-calendar--docs
-[checkbox]: https://fibo.toribryan.com/?path=/docs/base-components-forms-checkbox--docs
-[count]: https://fibo.toribryan.com/?path=/docs/base-components-display-count--docs
-[data-table]: https://fibo.toribryan.com/?path=/docs/base-components-display-data-table--docs
-[date-picker]: https://fibo.toribryan.com/?path=/docs/base-components-forms-date-picker--docs
-[dialog]: https://fibo.toribryan.com/?path=/docs/base-components-overlays-dialog--docs
-[drop-zone]: https://fibo.toribryan.com/?path=/docs/base-components-forms-drop-zone--docs
-[empty-state]: https://fibo.toribryan.com/?path=/docs/base-components-feedback-empty-state--docs
-[field]: https://fibo.toribryan.com/?path=/docs/base-components-forms-field--docs
-[input]: https://fibo.toribryan.com/?path=/docs/base-components-forms-input--docs
-[input-group]: https://fibo.toribryan.com/?path=/docs/base-components-forms-input-group--docs
-[jump-bar]: https://fibo.toribryan.com/?path=/docs/base-components-actions-jump-bar--docs
-[kbd]: https://fibo.toribryan.com/?path=/docs/base-components-display-kbd--docs
-[label]: https://fibo.toribryan.com/?path=/docs/base-components-forms-label--docs
-[menu]: https://fibo.toribryan.com/?path=/docs/base-components-overlays-menu--docs
-[message-list]: https://fibo.toribryan.com/?path=/docs/base-components-display-message-list--docs
-[pagination]: https://fibo.toribryan.com/?path=/docs/base-components-navigation-pagination--docs
-[progress]: https://fibo.toribryan.com/?path=/docs/base-components-feedback-progress--docs
-[radio-group]: https://fibo.toribryan.com/?path=/docs/base-components-forms-radio-group--docs
-[rich-text-editor]: https://fibo.toribryan.com/?path=/docs/base-components-forms-rich-text-editor--docs
-[search-input]: https://fibo.toribryan.com/?path=/docs/base-components-forms-search-input--docs
-[select]: https://fibo.toribryan.com/?path=/docs/base-components-forms-select--docs
-[separator]: https://fibo.toribryan.com/?path=/docs/base-components-display-separator--docs
-[sheet]: https://fibo.toribryan.com/?path=/docs/base-components-overlays-sheet--docs
-[skeleton]: https://fibo.toribryan.com/?path=/docs/base-components-feedback-skeleton--docs
-[slider]: https://fibo.toribryan.com/?path=/docs/base-components-forms-slider--docs
-[status-dot]: https://fibo.toribryan.com/?path=/docs/base-components-display-status-dot--docs
-[switch]: https://fibo.toribryan.com/?path=/docs/base-components-forms-switch--docs
-[table]: https://fibo.toribryan.com/?path=/docs/base-components-display-table--docs
-[tabs]: https://fibo.toribryan.com/?path=/docs/base-components-navigation-tabs--docs
-[textarea]: https://fibo.toribryan.com/?path=/docs/base-components-forms-textarea--docs
-[toast]: https://fibo.toribryan.com/?path=/docs/base-components-feedback-toast--docs
-[tooltip]: https://fibo.toribryan.com/?path=/docs/base-components-overlays-tooltip--docs
-[typing-indicator]: https://fibo.toribryan.com/?path=/docs/base-components-feedback-typing-indicator--docs
-[annotated-text]: https://fibo.toribryan.com/?path=/docs/special-components-annotated-text--docs
-[chapter-scrubber]: https://fibo.toribryan.com/?path=/docs/special-components-chapter-scrubber--docs
-[chat-composer]: https://fibo.toribryan.com/?path=/docs/special-components-chat-composer--docs
-[command-menu]: https://fibo.toribryan.com/?path=/docs/special-components-command-menu--docs
-[filter-menu]: https://fibo.toribryan.com/?path=/docs/special-components-filter-menu--docs
-[floating-nav]: https://fibo.toribryan.com/?path=/docs/special-components-floating-nav--docs
-[integration-visual]: https://fibo.toribryan.com/?path=/docs/special-components-integration-visual--docs
-[map-pin]: https://fibo.toribryan.com/?path=/docs/special-components-map-pin--docs
-[pixel-snail]: https://fibo.toribryan.com/?path=/docs/special-components-pixel-snail--docs
-[reactions]: https://fibo.toribryan.com/?path=/docs/special-components-reactions--docs
-[sticker-avatar]: https://fibo.toribryan.com/?path=/docs/special-components-sticker-avatar--docs
-[token-flow]: https://fibo.toribryan.com/?path=/docs/special-components-token-flow--docs
-[voice-memo]: https://fibo.toribryan.com/?path=/docs/special-components-voice-memo--docs
-[app-shell]: https://fibo.toribryan.com/?path=/docs/blocks-app-shell--docs
-[settings-page]: https://fibo.toribryan.com/?path=/docs/blocks-settings-page--docs
-[sitemap]: https://fibo.toribryan.com/?path=/docs/blocks-sitemap--docs
-[theme]: https://fibo.toribryan.com/?path=/docs/foundations-colors--docs
-[theme-mechanical]: https://fibo.toribryan.com/?path=/docs/foundations-themes--docs
-[theme-electrical]: https://fibo.toribryan.com/?path=/docs/foundations-themes--docs
+[alert-dialog]: https://fibo.toribryan.com/docs/components/alert-dialog/
+[attachment]: https://fibo.toribryan.com/docs/components/attachment/
+[avatar]: https://fibo.toribryan.com/docs/components/avatar/
+[badge]: https://fibo.toribryan.com/docs/components/badge/
+[button]: https://fibo.toribryan.com/docs/components/button/
+[calendar]: https://fibo.toribryan.com/docs/components/calendar/
+[checkbox]: https://fibo.toribryan.com/docs/components/checkbox/
+[count]: https://fibo.toribryan.com/docs/components/count/
+[data-table]: https://fibo.toribryan.com/docs/components/data-table/
+[date-picker]: https://fibo.toribryan.com/docs/components/date-picker/
+[dialog]: https://fibo.toribryan.com/docs/components/dialog/
+[drop-zone]: https://fibo.toribryan.com/docs/components/drop-zone/
+[empty-state]: https://fibo.toribryan.com/docs/components/empty-state/
+[field]: https://fibo.toribryan.com/docs/components/field/
+[input]: https://fibo.toribryan.com/docs/components/input/
+[input-group]: https://fibo.toribryan.com/docs/components/input-group/
+[jump-bar]: https://fibo.toribryan.com/docs/components/jump-bar/
+[kbd]: https://fibo.toribryan.com/docs/components/kbd/
+[label]: https://fibo.toribryan.com/docs/components/label/
+[menu]: https://fibo.toribryan.com/docs/components/menu/
+[message-list]: https://fibo.toribryan.com/docs/components/message-list/
+[pagination]: https://fibo.toribryan.com/docs/components/pagination/
+[progress]: https://fibo.toribryan.com/docs/components/progress/
+[radio-group]: https://fibo.toribryan.com/docs/components/radio-group/
+[rich-text-editor]: https://fibo.toribryan.com/docs/components/rich-text-editor/
+[search-input]: https://fibo.toribryan.com/docs/components/search-input/
+[select]: https://fibo.toribryan.com/docs/components/select/
+[separator]: https://fibo.toribryan.com/docs/components/separator/
+[sheet]: https://fibo.toribryan.com/docs/components/sheet/
+[skeleton]: https://fibo.toribryan.com/docs/components/skeleton/
+[slider]: https://fibo.toribryan.com/docs/components/slider/
+[status-dot]: https://fibo.toribryan.com/docs/components/status-dot/
+[switch]: https://fibo.toribryan.com/docs/components/switch/
+[table]: https://fibo.toribryan.com/docs/components/table/
+[tabs]: https://fibo.toribryan.com/docs/components/tabs/
+[textarea]: https://fibo.toribryan.com/docs/components/textarea/
+[toast]: https://fibo.toribryan.com/docs/components/toast/
+[tooltip]: https://fibo.toribryan.com/docs/components/tooltip/
+[typing-indicator]: https://fibo.toribryan.com/docs/components/typing-indicator/
+[annotated-text]: https://fibo.toribryan.com/docs/components/annotated-text/
+[chapter-scrubber]: https://fibo.toribryan.com/docs/components/chapter-scrubber/
+[chat-composer]: https://fibo.toribryan.com/docs/components/chat-composer/
+[command-menu]: https://fibo.toribryan.com/docs/components/command-menu/
+[filter-menu]: https://fibo.toribryan.com/docs/components/filter-menu/
+[floating-nav]: https://fibo.toribryan.com/docs/components/floating-nav/
+[integration-visual]: https://fibo.toribryan.com/docs/components/integration-visual/
+[map-pin]: https://fibo.toribryan.com/docs/components/map-pin/
+[pixel-snail]: https://fibo.toribryan.com/docs/components/pixel-snail/
+[reactions]: https://fibo.toribryan.com/docs/components/reactions/
+[sticker-avatar]: https://fibo.toribryan.com/docs/components/sticker-avatar/
+[token-flow]: https://fibo.toribryan.com/docs/components/token-flow/
+[voice-memo]: https://fibo.toribryan.com/docs/components/voice-memo/
+[app-shell]: https://fibo.toribryan.com/docs/blocks/app-shell/
+[settings-page]: https://fibo.toribryan.com/docs/blocks/settings-page/
+[sitemap]: https://fibo.toribryan.com/docs/blocks/sitemap/
+[theme]: https://fibo.toribryan.com/docs/foundations/colors/
+[theme-mechanical]: https://fibo.toribryan.com/docs/foundations/themes/
+[theme-electrical]: https://fibo.toribryan.com/docs/foundations/themes/
 
 <!-- parts:end -->
 
@@ -206,7 +206,7 @@ Storybook runs at http://localhost:6006.
 | ------------------------------ | --------------------------------------------------------------------- |
 | `pnpm storybook`               | Storybook                                                             |
 | `pnpm dev`                     | Every app in dev mode                                                 |
-| `pnpm build`                   | Build the registry and Storybook                                      |
+| `pnpm build`                   | Build the registry, Storybook and the docs site                       |
 | `pnpm build:site`              | Build, then assemble the deployable site in `dist/`                   |
 | `pnpm registry:build`          | Regenerate the registry JSON, `llms.txt` and this README's parts list |
 | `pnpm --filter registry smoke` | Install every part into a fresh shadcn app                            |
