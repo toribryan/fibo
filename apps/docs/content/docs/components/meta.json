@@ -21,6 +21,19 @@
     "slider",
     "switch",
     "textarea",
-    "voice-memo"
+    "voice-memo",
+    "---Display---",
+    "annotated-text",
+    "avatar",
+    "badge",
+    "count",
+    "data-table",
+    "kbd",
+    "map-pin",
+    "message-list",
+    "separator",
+    "status-dot",
+    "sticker-avatar",
+    "table"
   ]
 }

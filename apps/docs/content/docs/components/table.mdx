@@ -1,0 +1,228 @@
+---
+title: Table
+description: Rows and columns of data, at one compact density.
+---
+
+import { Badge } from "@workspace/ui/components/badge"
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@workspace/ui/components/table"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <div className="w-full">
+    <Table>
+      <TableCaption>Members of the Acme workspace.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Member</TableHead>
+          <TableHead>Team</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead className="text-right">Projects</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell className="font-medium">Maya Okafor</TableCell>
+          <TableCell>Design</TableCell>
+          <TableCell>
+            <Badge variant="success">Active</Badge>
+          </TableCell>
+          <TableCell className="text-right text-muted-foreground tabular-nums">
+            12
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-medium">Priya Raman</TableCell>
+          <TableCell>Engineering</TableCell>
+          <TableCell>
+            <Badge variant="warning">Away</Badge>
+          </TableCell>
+          <TableCell className="text-right text-muted-foreground tabular-nums">
+            8
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-medium">Jordan Alvarez</TableCell>
+          <TableCell>Marketing</TableCell>
+          <TableCell>
+            <Badge variant="success">Active</Badge>
+          </TableCell>
+          <TableCell className="text-right text-muted-foreground tabular-nums">
+            5
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-medium">Sam Whitfield</TableCell>
+          <TableCell>Support</TableCell>
+          <TableCell>
+            <Badge variant="info">Invited</Badge>
+          </TableCell>
+          <TableCell className="text-right text-muted-foreground tabular-nums">
+            0
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  </div>
+</Preview>
+
+## When to use it
+
+Use Table for data compared across rows: a native HTML table at one compact
+density, 36px headers and 40px rows. It scrolls sideways in its own box when
+wider than the page. For selection, pinned columns and bulk actions, use Data
+table, which is built on it.
+
+## Installation
+
+<Install
+  name="table"
+  exports={[
+    "Table",
+    "TableHeader",
+    "TableBody",
+    "TableFooter",
+    "TableRow",
+    "TableHead",
+    "TableCell",
+    "TableCaption",
+  ]}
+/>
+
+## With footer
+
+Totals in a `tfoot`, separated by a border.
+
+<Preview>
+  <div className="w-full">
+    <Table aria-label="Storage by team">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Team</TableHead>
+          <TableHead className="text-right">Members</TableHead>
+          <TableHead className="text-right">Storage (GB)</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell className="font-medium">Design</TableCell>
+          <TableCell className="text-right tabular-nums">14</TableCell>
+          <TableCell className="text-right tabular-nums">1,280</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-medium">Engineering</TableCell>
+          <TableCell className="text-right tabular-nums">42</TableCell>
+          <TableCell className="text-right tabular-nums">312</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-medium">Marketing</TableCell>
+          <TableCell className="text-right tabular-nums">15</TableCell>
+          <TableCell className="text-right tabular-nums">240</TableCell>
+        </TableRow>
+      </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell>Total</TableCell>
+          <TableCell className="text-right tabular-nums">71</TableCell>
+          <TableCell className="text-right tabular-nums">1,832</TableCell>
+        </TableRow>
+      </TableFooter>
+    </Table>
+  </div>
+</Preview>
+
+## Selected
+
+`data-selected` on a row tints it. Data table sets it automatically.
+
+<Preview>
+  <div className="w-full">
+    <Table aria-label="Members">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Member</TableHead>
+          <TableHead>Team</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell className="font-medium">Maya Okafor</TableCell>
+          <TableCell>Design</TableCell>
+        </TableRow>
+        <TableRow data-selected>
+          <TableCell className="font-medium">Priya Raman</TableCell>
+          <TableCell>Engineering</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-medium">Jordan Alvarez</TableCell>
+          <TableCell>Marketing</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use for data compared across rows. For a list of things to pick from, use a list.",
+    "Keep rows one line high. A second line belongs in Data table's secondary text; nothing taller.",
+    "Right-align numbers and their headers; left-align everything else.",
+    "Write headers as short nouns in sentence case: Member, Team, Projects.",
+    "Put totals in TableFooter, not as a last body row.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-40 justify-between text-sm">
+            <span>Projects</span>
+            <span className="tabular-nums">97%</span>
+          </div>
+        ),
+        description: "Right-align numbers so their digits line up.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-40 flex-col text-sm">
+            <span>97%</span>
+            <span>100.5%</span>
+          </div>
+        ),
+        description: "Don't left-align numbers; they're hard to compare.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Give the table a name: a TableCaption, or aria-label or aria-labelledby on
+  Table.
+- Use TableHead for every column header, so each cell is announced with its
+  column.
+- While the table overflows, the scroll box is a focusable region that
+  scrolls with the arrow keys. It takes the table's aria-label or caption, so
+  the name is announced once.
+- Header labels use foreground text on the muted band. Muted text there would
+  be 4.34:1, under AA.
+
+<StorybookLink id="base-components-display-table" name="Table" />

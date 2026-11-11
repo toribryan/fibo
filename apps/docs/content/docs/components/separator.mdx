@@ -1,0 +1,102 @@
+---
+title: Separator
+description: A thin rule between groups of content, across or down, with an optional label.
+---
+
+import { Separator } from "@workspace/ui/components/separator"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <div className="flex h-24 w-72 items-center justify-center">
+    <Separator />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Separator when groups would run together without a rule. Prefer space
+first. It runs across its container, or down its row's height, and children
+make a labeled rule: line, label, line.
+
+## Installation
+
+<Install name="separator" exports={["Separator"]} />
+
+## Vertical
+
+Between items in a row, such as toolbar actions. Takes the row's height.
+
+<Preview>
+  <div className="flex h-5 items-center gap-3 text-sm">
+    <span>Edit</span>
+    <Separator orientation="vertical" />
+    <span>Share</span>
+    <Separator orientation="vertical" />
+    <span>Delete</span>
+  </div>
+</Preview>
+
+## With a label
+
+Children sit between two lines, such as a date in a conversation.
+
+<Preview>
+  <div className="w-72">
+    <Separator>Today</Separator>
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Separate groups, not every item. A list where every row has a rule reads as a grid.",
+    "Keep labels to a word or two, such as a date or New.",
+    "Inside a Menu or a Select, use their own MenuSeparator and SelectSeparator, which sit inside the popup's padding.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 flex-col gap-2 text-sm">
+            <span>Profile</span>
+            <span>Settings</span>
+            <Separator />
+            <span>Sign out</span>
+          </div>
+        ),
+        description: "Set off a group that does something different.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 flex-col gap-2 text-sm">
+            <span>Profile</span>
+            <Separator />
+            <span>Settings</span>
+            <Separator />
+            <span>Sign out</span>
+          </div>
+        ),
+        description: "Don't rule off every row.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The separator role and aria-orientation make screen readers announce a
+  break.
+- A separator's children aren't read, so a text label becomes its
+  aria-label. Pass aria-label when the label isn't plain text.
+
+<StorybookLink id="base-components-display-separator" name="Separator" />

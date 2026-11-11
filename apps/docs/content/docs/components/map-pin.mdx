@@ -1,0 +1,128 @@
+---
+title: Map pin
+description: A pin for a point on a map, with a preview that opens on click or tap.
+---
+
+import { MapPin } from "@workspace/ui/components/map-pin"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  MapPinColorsDemo,
+  MapPinContentDemo,
+  MapPinDemo,
+  MapPinLabelsDemo,
+} from "@/components/demos/map-pin"
+
+<Preview>
+  <MapPinDemo />
+</Preview>
+
+## When to use it
+
+Use Map pin for a point on a map: a dot, an icon or a pill with a short label
+such as a price. It brings no map; Mapbox, MapLibre or any library that
+places a DOM element on its map positions it and moves it as the map pans and
+zooms. It lifts part way on hover, then opens a preview card on click or tap
+and stays open, so the card can hold links and actions. Escape or a click
+elsewhere closes it and returns focus.
+
+`label` names the pin for screen readers. Every pin needs one, even when it
+shows a price.
+
+## Installation
+
+<Install
+  name="map-pin"
+  exports={["MapPin", "mapPinVariants", "type MapPinProps"]}
+/>
+
+Installs `@base-ui/react` for the popover. The map library is not included.
+
+## Label pins
+
+`type="label"` shows a short value in a pill. The open pin fills in, so it's
+clear which preview it owns.
+
+<Preview>
+  <MapPinLabelsDemo />
+</Preview>
+
+## Colors
+
+`variant` takes fibo's status colors, here marking whether each place is
+open. The status is also in each pin's `label` and meta, so it doesn't rest
+on color alone.
+
+<Preview>
+  <MapPinColorsDemo />
+</Preview>
+
+## Custom content
+
+Children render under the other fields, for actions such as directions or
+saving the place.
+
+<Preview>
+  <MapPinContentDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use dots for places, icons when the kind of place matters, and labels when a value matters at a glance, such as prices or times. Keep labels to a few characters.",
+    "Keep pins default unless color carries meaning, such as open or closed. Put the meaning in a legend and in each pin's label too.",
+    "Give every pin a label: the place's name. Screen readers announce it and it names the preview.",
+    "Keep the card short: an image, a title, a line of description. Put the full page behind a link in the content.",
+    "Control the open preview when a list sits beside the map, so the two never disagree.",
+    "Leave side at top for most maps. The card flips when it would leave the screen.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex items-center gap-3">
+            <MapPin type="label" label="Blue Bottle Coffee" text="$6" />
+            <MapPin type="label" label="Golden Ratio Books" text="$18" />
+          </div>
+        ),
+        description: "Keep labels to a short value people compare.",
+      },
+      negative: {
+        component: (
+          <div className="flex items-center gap-3">
+            <MapPin type="label" label="Blue Bottle Coffee" />
+            <MapPin type="label" label="Golden Ratio Books" />
+          </div>
+        ),
+        description:
+          "Don't spell out whole names on the map. Long pills crowd each other; put names in the preview.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Each pin is a button named by its label, and says it opens a dialog. A
+  label pin showing a price is still announced by the place's name.
+- Enter or Space opens the preview and moves focus into it. Escape closes it
+  and returns focus to the pin.
+- The preview is a dialog named by the pin's label, so screen readers
+  announce which place they're in.
+- A dot is 16px to look at but takes presses across 32px, above the 24px
+  minimum target.
+- Color never stands alone: put the status in the pin's label, which screen
+  readers announce, and in the preview.
+- With reduced motion, the pin changes without animating and the card fades
+  in place.
+
+<StorybookLink id="special-components-map-pin" name="Map pin" />

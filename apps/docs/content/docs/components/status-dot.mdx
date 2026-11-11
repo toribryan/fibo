@@ -1,0 +1,174 @@
+---
+title: Status dot
+description: A small mark for whether someone is present, away or offline, told apart by shape.
+---
+
+import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
+import { Badge } from "@workspace/ui/components/badge"
+import { StatusDot } from "@workspace/ui/components/status-dot"
+import { StickerAvatar } from "@workspace/ui/components/sticker-avatar"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <StatusDot status="present" />
+</Preview>
+
+## When to use it
+
+Use Status dot for presence: present, away or offline. It's placed by the
+Avatar, Sticker avatar or Badge it sits in, and each status has its own shape,
+so it reads without color. A page-colored disc behind the mark keeps a clear
+edge on a photo or a sticker. For the state of a thing, such as Paid or
+Failed, use a Badge.
+
+## Installation
+
+<Install
+  name="status-dot"
+  exports={[
+    "StatusDot",
+    "statusDotVariants",
+    "type StatusDotProps",
+    "type StatusDotStatus",
+  ]}
+/>
+
+Installs `class-variance-authority`.
+
+## Status by shape
+
+Present is a dot, away a crescent, offline a ring. `variant="mono"` draws the
+marks in the text color, for places where color would compete, such as a
+dense list.
+
+<Preview>
+  <div className="flex flex-col gap-4">
+    <div className="flex items-center gap-6">
+      <span className="flex items-center gap-2 text-sm">
+        <StatusDot status="present" label={null} />
+        Present
+      </span>
+      <span className="flex items-center gap-2 text-sm">
+        <StatusDot status="away" label={null} />
+        Away
+      </span>
+      <span className="flex items-center gap-2 text-sm">
+        <StatusDot status="offline" label={null} />
+        Offline
+      </span>
+    </div>
+    <div className="flex items-center gap-6">
+      <span className="flex items-center gap-2 text-sm">
+        <StatusDot status="present" variant="mono" label={null} />
+        Present
+      </span>
+      <span className="flex items-center gap-2 text-sm">
+        <StatusDot status="away" variant="mono" label={null} />
+        Away
+      </span>
+      <span className="flex items-center gap-2 text-sm">
+        <StatusDot status="offline" variant="mono" label={null} />
+        Offline
+      </span>
+    </div>
+  </div>
+</Preview>
+
+## On avatars
+
+Pass it as a child. Avatar pins it to the corner and matches its size;
+Sticker avatar sets it on the paper, turned against the tilt, and adds its
+label to the sticker's name.
+
+<Preview>
+  <div className="flex items-center gap-8">
+    <Avatar size="sm">
+      <AvatarFallback>AR</AvatarFallback>
+      <StatusDot status="present" />
+    </Avatar>
+    <Avatar>
+      <AvatarFallback>AR</AvatarFallback>
+      <StatusDot status="present" />
+    </Avatar>
+    <Avatar size="lg">
+      <AvatarFallback>AR</AvatarFallback>
+      <StatusDot status="present" />
+    </Avatar>
+    <StickerAvatar name="Ana Ruiz" size={56}>
+      <StatusDot status="away" />
+    </StickerAvatar>
+  </div>
+</Preview>
+
+## In a badge
+
+The badge's text already says the status, so the dot gets `label={null}`.
+
+<Preview>
+  <Badge variant="outline">
+    <StatusDot status="present" label={null} />
+    Online
+  </Badge>
+  <Badge variant="outline">
+    <StatusDot status="away" label={null} />
+    Away
+  </Badge>
+  <Badge variant="outline">
+    <StatusDot status="offline" label={null} />
+    Offline
+  </Badge>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use it for presence only. For the state of a thing, such as Paid or Failed, use a Badge.",
+    "Pass label to translate the status or match your product's wording, such as Online or Here.",
+    "Keep it on its avatar or in its badge, not floating beside a name.",
+    "Use mono where color would compete; the shapes still tell the states apart.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <span className="flex items-center gap-2 text-sm">
+            <StatusDot status="away" label={null} />
+            Away
+          </span>
+        ),
+        description: "Silence the dot when the word beside it says the status.",
+      },
+      negative: {
+        component: (
+          <span className="flex items-center gap-2 text-sm">
+            <StatusDot status="away" />
+            Away
+          </span>
+        ),
+        description:
+          "Don't let both speak; screen readers hear the status twice.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The status is in a visually hidden span, read after whatever comes before
+  it: the photo's alt in an Avatar, the name in a Sticker avatar.
+- A Sticker avatar is one image to screen readers, so the dot's label joins
+  its name through aria-labelledby: Ana Ruiz, Away.
+- Shape carries the status as well as color, so it holds for color blindness
+  and in mono.
+
+<StorybookLink id="base-components-display-status-dot" name="Status dot" />
