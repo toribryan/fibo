@@ -183,6 +183,22 @@ files again from upstream and bump the commit here.
   a visual style (outline, ghost); `type` is for a structural kind that
   changes what renders (Reactions inline or floating, Avatar image or
   initials). `pnpm figma:drift` checks both.
+- **Props and refs.** The ref and spread props land on the focusable
+  element, never a wrapper, and `className` on the root. No prop named
+  after a native attribute it would hide. A one-piece field (`TextField`,
+  `CheckboxField`) is built only from composed parts and adds no styles of
+  its own (`plans/018-field-components.md`).
+- **Accessibility.** Keep a consumer's `aria-label`, `aria-labelledby` and
+  `aria-describedby`, merging ids with the part's own. A `label` that takes a
+  node is wired with `<label>` or `aria-labelledby`, never an `aria-label`
+  string. Busy controls set `aria-busy` and can't be pressed again.
+  Decorative icons are `aria-hidden`. Never a positive `tabindex`,
+  `aria-hidden` on something focusable, ARIA that repeats native semantics,
+  or a placeholder as the only label.
+- **State stories.** An interactive part ships `Default` with a pointer and
+  keyboard `play`, `Disabled`, and `Focused` (a `play` that presses Tab, so
+  Chromatic snapshots the focus ring), plus `Invalid` and `Loading` where
+  the part has those states. A unit test covers the ARIA it promises.
 - **Stories.** No `autodocs` tag: each component has an MDX docs page. New
   parts take `tags: ["new"]` and `"status": "new"`, at most three at once;
   adding a fourth means taking both off the oldest. `pnpm registry:build`
