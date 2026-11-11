@@ -1,0 +1,165 @@
+---
+title: Floating nav
+description: A pill of destinations floating above the bottom of a phone screen that steps aside on scroll.
+---
+
+import {
+  BellIcon,
+  BookmarkIcon,
+  CircleHelpIcon,
+  CompassIcon,
+  HouseIcon,
+  SettingsIcon,
+  UserIcon,
+} from "lucide-react"
+import { FloatingNav } from "@workspace/ui/components/floating-nav"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  FloatingNavDefaultDemo,
+  FloatingNavGlassDemo,
+  FloatingNavLabeledDemo,
+  FloatingNavLinksDemo,
+} from "@/components/demos/floating-nav"
+
+<Preview>
+  <FloatingNavDefaultDemo />
+</Preview>
+
+## When to use it
+
+Use Floating nav for the three to five most-visited destinations on a phone.
+An indicator slides to the current item, which expands to show its label;
+the others stay as icons. It floats over the page clear of the home
+indicator, or sits in the flow with `position="static"`, and with
+`hideOnScroll` it hides on scroll down and returns on scroll up or focus.
+Items are links or buttons, controlled or uncontrolled, so it works with any
+router.
+
+## Installation
+
+<Install
+  name="floating-nav"
+  exports={[
+    "FloatingNav",
+    "floatingNavVariants",
+    "floatingNavItemVariants",
+    "type FloatingNavItem",
+  ]}
+/>
+
+It installs `motion` with it, for the indicator and slide.
+
+## Liquid glass
+
+`variant="glass"` renders a clear bar that bends the page behind its edges,
+with a glass lens on the current item. In Chromium the page behind the rim
+bends through an SVG displacement filter; Safari and Firefox keep the blur
+and rim. A press lifts the lens, which travels to the new item and settles.
+Under reduced motion it stays put. The glass bar doesn't clip, so it can't
+scroll sideways when items overflow: keep it to items that fit, or use
+`size="sm"` on narrow screens.
+
+<Preview>
+  <FloatingNavGlassDemo />
+</Preview>
+
+## Labels always shown
+
+`labels="always"` stacks every label under its icon, like a tab bar. For
+icons that are ambiguous alone.
+
+<Preview>
+  <FloatingNavLabeledDemo />
+</Preview>
+
+## Controlled links
+
+Items with an `href` render as links. `onValueChange` receives the click
+event, so the app can call `event.preventDefault()` and route it.
+
+<Preview>
+  <FloatingNavLinksDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use for the three to five most-visited destinations on a phone. Put the rest in a menu.",
+    "Keep labels to one short word. The current label must fit beside its icon on a 320px screen.",
+    <>
+      Enable <code>hideOnScroll</code> on reading surfaces such as articles and
+      docs. Leave it off where people switch places often.
+    </>,
+    <>
+      Pad the page bottom by the bar's height, about <code>6rem</code>, so the
+      last content scrolls clear of it.
+    </>,
+    "Hide it at desktop widths where a sidebar or top bar already navigates.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <FloatingNav
+            position="static"
+            aria-label="Example"
+            defaultValue="home"
+            items={[
+              { value: "home", label: "Home", icon: <HouseIcon /> },
+              { value: "explore", label: "Explore", icon: <CompassIcon /> },
+              { value: "profile", label: "Profile", icon: <UserIcon /> },
+            ]}
+          />
+        ),
+        description: "Keep to a few destinations with one-word names.",
+      },
+      negative: {
+        component: (
+          <FloatingNav
+            position="static"
+            aria-label="Example"
+            defaultValue="home"
+            items={[
+              { value: "home", label: "Home", icon: <HouseIcon /> },
+              { value: "explore", label: "Explore", icon: <CompassIcon /> },
+              { value: "saved", label: "Saved", icon: <BookmarkIcon /> },
+              { value: "profile", label: "Profile", icon: <UserIcon /> },
+              { value: "settings", label: "Settings", icon: <SettingsIcon /> },
+              { value: "alerts", label: "Alerts", icon: <BellIcon /> },
+              { value: "help", label: "Help", icon: <CircleHelpIcon /> },
+            ]}
+          />
+        ),
+        description:
+          "Don't add every section. Past five, icons alone become ambiguous.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The root is a `nav` landmark named Main, or by `aria-label`. Name it when a
+  page has more than one.
+- The current item carries `aria-current="page"` when it is a link, or
+  `aria-current="true"` when it is a button. Hidden labels stay in the DOM, so
+  every item keeps its name.
+- Items are plain links and buttons in the tab order. Tabbing into a hidden
+  bar brings it back.
+- Glass label contrast depends on what scrolls beneath. Use glass over images
+  and media, the default bar over dense text.
+- Items are at least 44px square, or 36px with `size="sm"`, above the 24px
+  minimum target. Under reduced motion the indicator and bar move without
+  animating.
+
+<StorybookLink id="special-components-floating-nav" name="Floating nav" />

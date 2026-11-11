@@ -1,0 +1,135 @@
+---
+title: Filter menu
+description: A filter menu of fields and values that turns into a search as you type.
+---
+
+import {
+  ComponentRules,
+  Tip,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  FilterMenuChipsDemo,
+  FilterMenuDefaultDemo,
+  FilterMenuInlineSearchDemo,
+  FilterMenuSelectionsDemo,
+} from "@/components/demos/filter-menu"
+
+<Preview>
+  <FilterMenuChipsDemo />
+</Preview>
+
+## When to use it
+
+Use Filter menu above a list or table filtered by several fields. Pick a
+field such as Status, then check any number of its values; each field shows a
+count of what's selected. The menu only picks filters, so the app shows the
+applied ones, here as removable chips. `value` holds chosen values keyed by
+field id, such as `{ status: ["todo"] }`.
+
+## Installation
+
+<Install
+  name="filter-menu"
+  exports={["FilterMenu", "type FilterField", "type FilterValue"]}
+/>
+
+It installs Button and `motion` with it.
+
+## Search
+
+Uncontrolled. The Search filters button, or typing a letter, slides the menu
+to a search grouped by field, with matched letters in bold. It lists every
+value until you type. Back, Escape or Backspace returns.
+
+<Preview>
+  <FilterMenuDefaultDemo />
+</Preview>
+
+## Inline search
+
+`search="inline"` puts a search box at the top instead. Typing turns the menu
+into results in place, and clearing the text restores it.
+
+<Preview>
+  <FilterMenuInlineSearchDemo />
+</Preview>
+
+## With selections
+
+`defaultValue` preselects values. The trigger content is custom, here with a
+dot indicating active filters.
+
+<Preview>
+  <FilterMenuSelectionsDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use above a list or table filtered by several fields, such as issues, orders or files.",
+    "Keep field names to one or two words. Order fields by frequency of use.",
+    "Order values naturally: workflows in sequence, people by name, sizes small to large.",
+    "Show applied filters beside the button, such as removable chips, so a short list is explained.",
+    "For a single yes-or-no filter, use a switch or checkbox beside the list.",
+  ]}
+/>
+
+<Tip>
+  The `icon` key adds icons to fields and values. They aid scanning and also
+  appear in search results.
+</Tip>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Status</span>
+            <span className="text-muted-foreground">
+              Backlog, Todo, In progress, Done
+            </span>
+          </div>
+        ),
+        description:
+          "Group values under a short field name, in expected order.",
+      },
+      negative: {
+        component: (
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Issue status filter options</span>
+            <span className="text-muted-foreground">
+              Done, Backlog, In progress, Todo
+            </span>
+          </div>
+        ),
+        description:
+          "Don't write long field names or shuffle values. The menu is for scanning.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- On open, the list takes focus and points at the highlighted row with
+  aria-activedescendant, so screen readers announce each row as the arrows
+  move. The Search filters button is one Tab away.
+- Entering search moves focus to the search box, a combobox using
+  aria-activedescendant the same way. Leaving search returns focus to the
+  list.
+- With inline search, focus goes to the search box on open and stays there.
+- Values are options in a multi-select listbox, announced as selected or not.
+  Each field announces its selected count and that it opens its values.
+- Searches announce the result count.
+- Escape steps back one level at a time; the last press returns focus to the
+  Filter button.
+- Localize all text: the trigger with `triggerLabel`, the popup with `label`,
+  and the search box with `searchLabel` and `placeholder`.
+
+<StorybookLink id="special-components-filter-menu" name="Filter menu" />

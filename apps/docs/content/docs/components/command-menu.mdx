@@ -1,0 +1,143 @@
+---
+title: Command menu
+description: A Cmd+K palette with nested pages, recent commands, ranked search and a preview pane.
+---
+
+import {
+  ComponentRules,
+  Tip,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  CommandMenuControlledDemo,
+  CommandMenuDefaultDemo,
+  CommandMenuInsetDemo,
+  CommandMenuPreviewDemo,
+} from "@/components/demos/command-menu"
+
+<Preview>
+  <CommandMenuDefaultDemo />
+</Preview>
+
+## When to use it
+
+Use Command menu for navigation and for actions otherwise buried in menus. An
+item with `items` opens a nested page instead of running, commands you run
+float to the top under Recent, and searching from the first page reaches
+every page. Cmd+K on macOS, Ctrl+K elsewhere, toggles it; the examples here
+set `hotkey={null}` so they don't clash with this site's search.
+
+## Installation
+
+<Install
+  name="command-menu"
+  exports={[
+    "CommandMenu",
+    "commandMenuVariants",
+    "type CommandMenuGroup",
+    "type CommandMenuItem",
+  ]}
+/>
+
+It installs Button, Kbd, `motion`, `class-variance-authority` and the
+`--backdrop` token with it.
+
+## With preview
+
+Files and people have a `preview`, so the dialog widens and a pane follows
+the highlight. Items without one show a placeholder. The pane is hidden below
+the `sm` breakpoint.
+
+<Preview>
+  <CommandMenuPreviewDemo />
+</Preview>
+
+## Inset
+
+`variant="inset"` sets the list in a card inside a muted shell. The search
+box and keyboard hints sit on the shell with no rules between them.
+
+<Preview>
+  <CommandMenuInsetDemo />
+</Preview>
+
+## Controlled
+
+`trigger={null}` renders no trigger. `open` and `onOpenChange` control the
+state, here from an external button.
+
+<Preview>
+  <CommandMenuControlledDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use for navigation and for actions otherwise buried in menus.",
+    "Start action labels with a verb (New file, Change theme); use plain names for places and things (Inbox, Roadmap 2027).",
+    "Make an item a page when it needs a choice first: a theme, a person, a status. Keep pages one or two levels deep.",
+    "Add keywords for synonyms: appearance for Change theme, create for New file.",
+    "Add previews to items chosen by content, such as files and people. Omit them on plain actions.",
+    "Don't make it the only path to anything. It is an accelerator.",
+  ]}
+/>
+
+<Tip>
+  An item's `shortcut` is only a label. Bind the keys in your app, or omit
+  `shortcut`.
+</Tip>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Change theme</span>
+            <span className="pl-4 text-muted-foreground">
+              Light, Dark, System
+            </span>
+          </div>
+        ),
+        description: "Put one action's choices on their own page.",
+      },
+      negative: {
+        component: (
+          <div className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Switch to light theme</span>
+            <span className="font-medium">Switch to dark theme</span>
+            <span className="font-medium">Switch to system theme</span>
+          </div>
+        ),
+        description:
+          "Don't list every variant on the first page. It buries the other commands.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- A modal dialog named by label. Focus moves to the search box on open, is
+  trapped while open, and returns to the trigger on close.
+- With `modal` set to `false` focus is neither trapped nor moved. Reserve it
+  for a menu that is part of the page, such as a demo in a card.
+- The search box is a combobox pointing at the highlighted command with
+  aria-activedescendant, so screen readers announce each one as the arrows
+  move.
+- On a page, the search box is named after it (Command menu, Change theme)
+  and the back button names its destination. Items that open a page say so.
+- Escape steps back one level: clear the search, leave the page, then close
+  the menu without running anything.
+- Searches announce the result count. The preview pane is a polite live
+  region.
+- Keyboard hints are hidden from screen readers, which announce combobox keys
+  themselves.
+- All built-in text is translatable through `labels`, alongside
+  `placeholder`, `emptyText` and `label`.
+
+<StorybookLink id="special-components-command-menu" name="Command menu" />

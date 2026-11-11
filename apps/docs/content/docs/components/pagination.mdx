@@ -1,0 +1,96 @@
+---
+title: Pagination
+description: Moves through a long list one page at a time.
+---
+
+import { Pagination } from "@workspace/ui/components/pagination"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import { PaginationControlledDemo } from "@/components/demos/pagination"
+
+<Preview>
+  <Pagination pageCount={400} pageSize={25} totalCount={10000} noun="members" />
+</Preview>
+
+## When to use it
+
+Use Pagination under a long list to move through it page by page, with the
+visible range, such as "1 to 25 of 10,000 members". It doesn't fetch or slice:
+it reports the page, and the app loads its rows. Previous and Next stay
+focusable on the first and last page, so focus isn't lost.
+
+## Installation
+
+<Install name="pagination" exports={["Pagination"]} />
+
+Also installs Button.
+
+## Controlled
+
+`page` and `onPageChange` let the parent own the page. This one starts on the
+last page, where the range stops at the total.
+
+<Preview>
+  <PaginationControlledDemo />
+</Preview>
+
+## Pages only
+
+Without `pageSize` and `totalCount`, only the pages show.
+
+<Preview>
+  <Pagination pageCount={10} />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Put it under the list it pages, aligned to the end.",
+    "Show the range whenever the total is known.",
+    "Name the rows with noun, in the plural people would say: members, documents, requests.",
+    "Keep the page size the same from page to page.",
+    "Don't paginate a list that fits on one screen.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <span className="text-sm text-muted-foreground">
+            1 to 25 of 10,000 members
+          </span>
+        ),
+        description: "Say what the rows are and how many there are.",
+      },
+      negative: {
+        component: (
+          <span className="text-sm text-muted-foreground">
+            Showing 1-25 of 10000 results
+          </span>
+        ),
+        description:
+          "Don't write a generic “results”, or a long number without separators.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The root is a nav named "Pagination". Pass `aria-label` to name it after the
+  list when a page has more than one.
+- Previous and Next are named "Previous page" and "Next page".
+- At either end the button is `aria-disabled`, not `disabled`, so it keeps
+  focus and is still announced.
+- The page reads as "Page 2 of 400", not "2 slash 400", and is announced when
+  it changes.
+
+<StorybookLink id="base-components-navigation-pagination" name="Pagination" />
