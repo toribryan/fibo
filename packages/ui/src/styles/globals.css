@@ -220,14 +220,18 @@
  * `[data-theme="fibo"]` repeats fibo's values on a region inside a page in
  * another theme (styles/themes), so the region keeps fibo's own look.
  */
+/* tokens:start: written by pnpm tokens:build from Figma's Color collection
+   (figma/snapshot.json). Change the variable in Figma, never here. */
 :root,
 [data-theme="fibo"] {
   /*
-   * The page is a tint under the surfaces that hold content, so a panel,
-   * a sidebar or a docs column reads as a layer rather than one flat plane.
+   * The page is a tint under the surfaces that hold content, so a panel, a
+   * sidebar or a docs column reads as a layer rather than one flat plane.
    */
   --background: var(--color-neutral-50);
   --foreground: var(--color-neutral-950);
+
+  /* A layer above the page, below cards and popovers. */
   --surface: var(--color-white);
   --surface-foreground: var(--color-neutral-950);
   --card: var(--color-white);
@@ -235,12 +239,14 @@
   --popover: var(--color-white);
   --popover-foreground: var(--color-neutral-950);
   --popover-overlay: color-mix(in oklch, var(--color-white) 85%, transparent);
+
+  /* The scrim behind modal dialogs such as the Command menu. */
   --backdrop: color-mix(in oklch, var(--color-neutral-950) 20%, transparent);
+
   /* Liquid glass: a clear tint, a bright rim, and the lens on a current item. */
   --glass: color-mix(in oklch, var(--color-neutral-50) 20%, transparent);
   --glass-edge: color-mix(in oklch, var(--color-white) 85%, transparent);
   --glass-lens: color-mix(in oklch, var(--color-neutral-900) 10%, transparent);
-
   --primary: var(--color-neutral-900);
   --primary-foreground: var(--color-neutral-50);
   --primary-hover: color-mix(
@@ -260,11 +266,15 @@
   --muted-foreground: var(--color-neutral-500);
   --accent: var(--color-neutral-100);
   --accent-foreground: var(--color-neutral-900);
-  /* A marker stroke behind text, opaque so the text above stays crisp. */
-  --highlight: var(--color-neutral-200);
-  /* A word set apart in a pill, a step off the page so it reads at a glance. */
-  --chip: var(--color-neutral-200);
 
+  /*
+   * A marker stroke behind text, opaque so the text above stays crisp.
+   * Annotated text highlight.
+   */
+  --highlight: var(--color-neutral-200);
+
+  /* A word set apart in a pill, a step off the page. Annotated text chip. */
+  --chip: var(--color-neutral-200);
   --destructive: var(--color-red-700);
   --destructive-foreground: var(--color-neutral-50);
   --destructive-subtle: color-mix(
@@ -288,10 +298,10 @@
   --success: var(--color-green-700);
   --success-foreground: var(--color-neutral-50);
   --success-subtle: color-mix(in oklch, var(--color-green-700) 6%, transparent);
+
   /*
-   * On the tinted page, 700 text on its own 6% tint drops under 4.5:1, so
-   * success and warning text take the 800 step. Fills, borders and icons
-   * keep 700.
+   * One step darker than success in light, so text clears 4.5:1 on its own
+   * subtle tint.
    */
   --success-text: var(--color-green-800);
   --success-border: var(--success);
@@ -299,6 +309,11 @@
   --warning: var(--color-amber-700);
   --warning-foreground: var(--color-neutral-50);
   --warning-subtle: color-mix(in oklch, var(--color-amber-700) 6%, transparent);
+
+  /*
+   * One step darker than warning in light, so text clears 4.5:1 on its own
+   * subtle tint.
+   */
   --warning-text: var(--color-amber-800);
   --warning-border: var(--warning);
   --warning-icon: var(--warning);
@@ -308,9 +323,8 @@
   --info-text: var(--info);
   --info-border: var(--info);
   --info-icon: var(--info);
-
   --border: var(--color-neutral-200);
-  --input: var(--color-neutral-200);
+  --input: var(--color-neutral-300);
   --input-subtle: color-mix(
     in oklch,
     var(--color-neutral-200) 20%,
@@ -335,12 +349,10 @@
   --outline-edge: transparent;
   --destructive-edge: transparent;
 
-  /*
-   * A sticker is paper: its edge is white and the marks printed on it are
-   * dark in both themes, and it casts the same shadow on either page, so
-   * these three keep their values in .dark on purpose.
-   */
+  /* Sticker avatar's paper: white in both themes. */
   --sticker-edge: var(--color-white);
+
+  /* Marks printed on a sticker: near-black in both themes. */
   --sticker-ink: var(--color-neutral-900);
   --sticker-shadow: color-mix(in oklch, var(--color-black) 30%, transparent);
 
@@ -350,23 +362,20 @@
    */
   --particle-shadow: color-mix(in oklch, var(--color-black) 18%, transparent);
 
-  /*
-   * Voice memo's burgundy finish, after the anodized aluminum of a phone
-   * in that color. A metal's color doesn't change with the page, so these
-   * keep their values in .dark on purpose.
-   */
+  /* Voice memo's burgundy metal, the same in both themes. */
   --finish-burgundy: var(--color-burgundy-950);
-  --finish-burgundy-highlight: var(--color-burgundy-700);
-  --finish-burgundy-shadow: var(--color-black);
 
+  /* The light the burgundy finish catches, the same in both themes. */
+  --finish-burgundy-highlight: var(--color-burgundy-700);
+
+  /* The shade the burgundy finish falls into, the same in both themes. */
+  --finish-burgundy-shadow: var(--color-black);
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);
   --chart-3: var(--color-neutral-600);
   --chart-4: var(--color-neutral-700);
   --chart-5: var(--color-neutral-800);
-
   --radius: 0.5rem;
-
   --sidebar: var(--color-neutral-50);
   --sidebar-foreground: var(--color-neutral-950);
   --sidebar-primary: var(--color-neutral-900);
@@ -396,7 +405,6 @@
   --glass: color-mix(in oklch, var(--color-neutral-950) 20%, transparent);
   --glass-edge: color-mix(in oklch, var(--color-white) 15%, transparent);
   --glass-lens: color-mix(in oklch, var(--color-white) 10%, transparent);
-
   --primary: var(--color-neutral-50);
   --primary-foreground: var(--color-neutral-900);
   --primary-hover: color-mix(
@@ -418,7 +426,6 @@
   --accent-foreground: var(--color-neutral-50);
   --highlight: var(--color-neutral-700);
   --chip: var(--color-neutral-800);
-
   --destructive: var(--color-red-400);
   --destructive-foreground: var(--color-neutral-950);
   --destructive-subtle: color-mix(
@@ -465,45 +472,43 @@
   --info-text: var(--info);
   --info-border: var(--info);
   --info-icon: var(--info);
-
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --input-subtle: oklch(1 0 0 / 5%);
-  --input-subtle-hover: oklch(1 0 0 / 10%);
+  --border: color-mix(in oklch, var(--color-white) 10%, transparent);
+  --input: color-mix(in oklch, var(--color-white) 20%, transparent);
+  --input-subtle: color-mix(in oklch, var(--color-white) 5%, transparent);
+  --input-subtle-hover: color-mix(
+    in oklch,
+    var(--color-white) 10%,
+    transparent
+  );
   --ring: var(--color-neutral-500);
   --ring-subtle: color-mix(in oklch, var(--color-neutral-500) 50%, transparent);
-
   --edge-depth: 0px;
   --primary-edge: transparent;
   --secondary-edge: transparent;
   --outline-edge: transparent;
   --destructive-edge: transparent;
-
   --sticker-edge: var(--color-white);
   --sticker-ink: var(--color-neutral-900);
   --sticker-shadow: color-mix(in oklch, var(--color-black) 30%, transparent);
-
   --particle-shadow: color-mix(in oklch, var(--color-black) 18%, transparent);
-
   --finish-burgundy: var(--color-burgundy-950);
   --finish-burgundy-highlight: var(--color-burgundy-700);
   --finish-burgundy-shadow: var(--color-black);
-
   --chart-1: var(--color-neutral-300);
   --chart-2: var(--color-neutral-500);
   --chart-3: var(--color-neutral-600);
   --chart-4: var(--color-neutral-700);
   --chart-5: var(--color-neutral-800);
-
   --sidebar: var(--color-neutral-900);
   --sidebar-foreground: var(--color-neutral-50);
   --sidebar-primary: var(--color-neutral-50);
   --sidebar-primary-foreground: var(--color-neutral-900);
   --sidebar-accent: var(--color-neutral-800);
   --sidebar-accent-foreground: var(--color-neutral-50);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-border: color-mix(in oklch, var(--color-white) 10%, transparent);
   --sidebar-ring: var(--color-neutral-500);
 }
+/* tokens:end */
 
 @layer base {
   :root,

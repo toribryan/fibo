@@ -52,6 +52,7 @@ pnpm test             # unit and story tests in Chromium, with axe checks
 pnpm format:check     # Prettier
 pnpm format:write
 pnpm figma:drift      # compare figma/snapshot.json with the code
+pnpm tokens:build     # write globals.css's color blocks from figma/snapshot.json
 pnpm release <x.y.z>  # write changes/ into the changelogs and bump the version
 ```
 
@@ -103,8 +104,8 @@ It stays installable until the next major release. The reasons are in
 
 ## Figma drift
 
-Use the `figma-drift` skill (`.agents/skills/figma-drift/SKILL.md`) to check
-the Figma library against the code. It reads Figma through the Figma MCP
+Use the `figma-drift` skill (`.agents/skills/figma-drift/SKILL.md`) to sync
+color tokens from Figma and check the Figma library against the code. It reads Figma through the Figma MCP
 server into `figma/snapshot.json`, then `pnpm figma:drift` compares Color
 variables with `globals.css`, radii with `--radius`, and component variant
 properties with cva variants and props. Intended differences live in
@@ -156,6 +157,11 @@ files again from upstream and bump the commit here.
   no package of its own, keeps its state local, never fetches, and lays out
   with container queries on its root. Its docs page opens on `BlockPreview`.
   Reasons in `plans/015-blocks.md`.
+- **Token source.** Figma's Color collection is the source of the `:root`
+  and `.dark` blocks in `globals.css`, between `tokens:start` and
+  `tokens:end`. Change a variable in Figma, refresh the snapshot with the
+  `figma-drift` skill, then run `pnpm tokens:build`; never edit the block.
+  CI fails if it doesn't match the snapshot. `plans/017-figma-token-source.md`.
 - **Tokens.** Semantic tokens only in components (`bg-primary`,
   `text-muted-foreground`). Primitive ramps (`neutral-*`, `red-*`, `green-*`,
   `amber-*`, `blue-*`, and fibo's own `burgundy-*` for Voice memo's finish)
