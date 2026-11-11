@@ -1,0 +1,112 @@
+---
+title: Skeleton
+description: A placeholder in the shape of content that's still loading.
+---
+
+import { Skeleton } from "@workspace/ui/components/skeleton"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <Skeleton className="h-4 w-48" />
+</Preview>
+
+## When to use it
+
+Use Skeleton for content that loads into a known layout. It's one styled
+`div`, sized and shaped with classes into a line, a circle or a card, with a
+slow pulse that stops under reduced motion. Match the size and shape of the
+incoming content so the layout doesn't shift when it arrives.
+
+## Installation
+
+<Install name="skeleton" exports={["Skeleton"]} />
+
+## Profile row
+
+<Preview>
+  <div className="flex items-center gap-3" aria-busy="true">
+    <Skeleton className="size-10 rounded-full" />
+    <div className="flex flex-col gap-2">
+      <Skeleton className="h-4 w-40" />
+      <Skeleton className="h-3 w-28" />
+    </div>
+  </div>
+</Preview>
+
+## Card
+
+<Preview>
+  <div
+    className="flex w-72 flex-col gap-4 rounded-xl border border-border bg-card p-4"
+    aria-busy="true"
+  >
+    <Skeleton className="aspect-video w-full rounded-lg" />
+    <div className="flex flex-col gap-2">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-4 w-1/2" />
+    </div>
+    <Skeleton className="h-8 w-24 rounded-full" />
+  </div>
+</Preview>
+
+## Paragraph
+
+<Preview>
+  <div className="flex w-80 flex-col gap-2" aria-busy="true">
+    <Skeleton className="h-3.5 w-full" />
+    <Skeleton className="h-3.5 w-full" />
+    <Skeleton className="h-3.5 w-11/12" />
+    <Skeleton className="h-3.5 w-2/3" />
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use skeletons for content that loads into a known layout: lists, cards, profiles.",
+    "Mirror the real layout, simplified. Leave out icons, borders and small details.",
+    "Vary text line widths, with the last line short, so they read as text rather than a grid.",
+    "For a task with a known length, like an upload, use a progress bar.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex items-center gap-3">
+            <Skeleton className="size-10 rounded-full" />
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+        ),
+        description: "Match the shape of what's loading.",
+      },
+      negative: {
+        component: <Skeleton className="h-20 w-56 rounded-xl" />,
+        description:
+          "Don't use one block for everything. It hides what's coming and the layout shifts on arrival.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Skeletons have no role and aren't announced. Set `aria-busy="true"` on the
+  region that's loading, and remove it when the content arrives.
+- For a long load, add a visually hidden status message, such as “Loading
+  projects”.
+- The pulse stops under prefers-reduced-motion.
+
+<StorybookLink id="base-components-feedback-skeleton" name="Skeleton" />

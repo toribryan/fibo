@@ -1,0 +1,133 @@
+---
+title: Token flow
+description: Walks a color token from raw value to primitive to semantic role.
+---
+
+import { TokenFlow } from "@workspace/ui/components/token-flow"
+import {
+  ComponentRules,
+  Tip,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  TokenFlowDemo,
+  TokenFlowSingleRowDemo,
+} from "@/components/demos/token-flow"
+
+<Preview>
+  <TokenFlowDemo showUse />
+</Preview>
+
+## When to use it
+
+Use Token flow to show how a color token is built: one row per role, its raw
+value, primitive and semantic role joined by wires, with a pulse along each
+wire while the plate is on screen. Rows with a `dark` pair scramble to their
+dark values when the theme changes while the role's name stays put. Try the
+site's theme switch. `showUse` prints what each role is for under its chip.
+
+## Installation
+
+<Install name="token-flow" exports={["TokenFlow", "type TokenRow"]} />
+
+No animation library; the pulse and scramble use the Web Animations API and
+`requestAnimationFrame`.
+
+## Without use
+
+The default: three chips per row, no `use` line.
+
+<Preview>
+  <TokenFlowDemo />
+</Preview>
+
+## Single row
+
+One role, with `showUse`.
+
+<Preview>
+  <TokenFlowSingleRowDemo />
+</Preview>
+
+## Vertical
+
+`orientation="vertical"` stacks the tiers at every width, for a narrow column
+or card. The default stacks only on narrow screens.
+
+<Preview>
+  <TokenFlowDemo orientation="vertical" showUse />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use in docs, case studies and onboarding, where the point is how a token is built, not how it looks.",
+    "Three to five rows, one per role.",
+    <>
+      Rows with a <code>dark</code> pair show why semantic roles exist: the name
+      stays put while the value changes.
+    </>,
+    <>
+      Turn on <code>showUse</code> when readers don't know the role names yet.
+    </>,
+  ]}
+/>
+
+<Tip>
+  The plate follows the document's `dark` class. A host with its own theme, such
+  as a preview frame, can pin it with `theme` and scope a `dark` class to a
+  wrapper so the surfaces follow.
+</Tip>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <TokenFlow
+            className="w-full"
+            rows={[
+              {
+                base: "oklch(0.205 0 0)",
+                primitive: "neutral-900",
+                semantic: "bg-primary",
+              },
+            ]}
+          />
+        ),
+        description: "Name the semantic role as it's written in code.",
+      },
+      negative: {
+        component: (
+          <TokenFlow
+            className="w-full"
+            rows={[
+              {
+                base: "oklch(0.205 0 0)",
+                primitive: "neutral-900",
+                semantic: "dark gray",
+              },
+            ]}
+          />
+        ),
+        description:
+          "Don't describe the color in the last column; the swatch does that.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Each chip carries its tier in screen-reader text, so it reads as
+  "Primitive neutral-900", not a bare value.
+- Scrambled text is hidden from assistive tech; only the settled value is
+  announced.
+- The pulse runs only while the plate is on screen. Neither pulse nor
+  scramble plays under prefers-reduced-motion.
+
+<StorybookLink id="special-components-token-flow" name="Token flow" />

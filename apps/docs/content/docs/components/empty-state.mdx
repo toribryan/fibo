@@ -1,0 +1,162 @@
+---
+title: Empty state
+description: "What shows where content would be: a title, why it's empty, and what to do next."
+---
+
+import { InboxIcon, SearchXIcon, UsersIcon } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
+import {
+  EmptyState,
+  EmptyStateActions,
+  EmptyStateDescription,
+  EmptyStateMedia,
+  EmptyStateTitle,
+} from "@workspace/ui/components/empty-state"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <div className="w-96 rounded-lg border border-border">
+    <EmptyState>
+      <EmptyStateMedia>
+        <UsersIcon />
+      </EmptyStateMedia>
+      <EmptyStateTitle>{"No members yet"}</EmptyStateTitle>
+      <EmptyStateDescription>
+        {"Invite people to work on this project with you."}
+      </EmptyStateDescription>
+      <EmptyStateActions>
+        <Button size="sm">Invite members</Button>
+      </EmptyStateActions>
+    </EmptyState>
+  </div>
+</Preview>
+
+## When to use it
+
+Use Empty state where a table, list, menu or page has nothing to show. The
+title says what's missing, the action what to do, and the description
+explains why only when it isn't obvious. `size="sm"` fits a line in a menu
+or popover; `default` fits a table, list or page. Data table and Message list
+use it already.
+
+## Installation
+
+<Install
+  name="empty-state"
+  exports={[
+    "EmptyState",
+    "EmptyStateMedia",
+    "EmptyStateTitle",
+    "EmptyStateDescription",
+    "EmptyStateActions",
+  ]}
+/>
+
+## Small, in a menu
+
+Title only, in muted text. Command menu and Filter menu use this for no
+results.
+
+<Preview>
+  <div className="w-64 rounded-xl border border-border bg-popover shadow-lg">
+    <EmptyState size="sm">
+      <EmptyStateTitle>{"No matching filters"}</EmptyStateTitle>
+    </EmptyState>
+  </div>
+</Preview>
+
+## No matches
+
+When a search or filter hid everything, offer a way back.
+
+<Preview>
+  <div className="w-96 rounded-lg border border-border">
+    <EmptyState>
+      <EmptyStateMedia>
+        <SearchXIcon />
+      </EmptyStateMedia>
+      <EmptyStateTitle>{"No matching members"}</EmptyStateTitle>
+      <EmptyStateDescription>
+        {"Try another search, or clear the filters."}
+      </EmptyStateDescription>
+      <EmptyStateActions>
+        <Button variant="outline" size="sm">
+          Clear filters
+        </Button>
+      </EmptyStateActions>
+    </EmptyState>
+  </div>
+</Preview>
+
+## Title only
+
+For when there is no action to take.
+
+<Preview>
+  <div className="w-96 rounded-lg border border-border">
+    <EmptyState>
+      <EmptyStateMedia>
+        <InboxIcon />
+      </EmptyStateMedia>
+      <EmptyStateTitle>{"You're all caught up"}</EmptyStateTitle>
+    </EmptyState>
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Name what's missing in the title: No members yet, not Nothing here.",
+    "Distinguish first-run empty from no matches. One invites adding something, the other clearing a search.",
+    "One primary action at most. A second is outline or ghost.",
+    "Omit the icon in small empty states; menus have no room for it.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <EmptyState className="py-6">
+            <EmptyStateMedia>
+              <UsersIcon />
+            </EmptyStateMedia>
+            <EmptyStateTitle>{"No members yet"}</EmptyStateTitle>
+            <EmptyStateActions>
+              <Button size="sm">Invite members</Button>
+            </EmptyStateActions>
+          </EmptyState>
+        ),
+        description: "Say what's missing and offer the next step.",
+      },
+      negative: {
+        component: (
+          <EmptyState className="py-6">
+            <EmptyStateTitle>{"Nothing here"}</EmptyStateTitle>
+            <EmptyStateDescription>
+              {"There is no data to display at this time."}
+            </EmptyStateDescription>
+          </EmptyState>
+        ),
+        description: "Don't leave a dead end.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Title and description are plain text, read in document order.
+- The icon is hidden from screen readers.
+- When an empty state replaces results during typing, put it in a live
+  region so the change is announced. Command menu already does.
+
+<StorybookLink id="base-components-feedback-empty-state" name="Empty state" />

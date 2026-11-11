@@ -1,0 +1,173 @@
+---
+title: Reactions
+description: Emoji responses to content, in one tap.
+---
+
+import { Reactions } from "@workspace/ui/components/reactions"
+import { ReactionsControlledDemo } from "@/components/demos/reactions"
+import {
+  ComponentRules,
+  Tip,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+export const seeded = [
+  { emoji: "👍", label: "Thumbs up", count: 5 },
+  { emoji: "❤️", label: "Heart", count: 3, active: true },
+  { emoji: "😂", label: "Laughing", count: 1 },
+]
+
+<Preview>
+  <div className="w-full max-w-lg rounded-xl border border-border bg-card p-4">
+    <div className="flex items-center gap-2.5">
+      <span className="grid size-8 place-content-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+        TB
+      </span>
+      <div className="flex flex-col">
+        <span className="text-sm font-medium text-card-foreground">
+          Tori Bryan
+        </span>
+        <span className="text-xs font-medium text-muted-foreground">
+          12:45 PM
+        </span>
+      </div>
+    </div>
+    <div className="mt-3 mb-3 text-sm text-card-foreground">
+      {
+        "Just shipped the reactions component. Picking one turns a click into a small celebration, which is the whole point."
+      }
+    </div>
+    <Reactions defaultReactions={seeded} />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Reactions for one-tap emoji responses to content, inline under it or
+floating in a corner of the page. One tap reacts or takes it back, with a
+particle burst. A picker offers six common reactions plus any already on the
+item; it's a Base UI popover, so a card that clips its overflow can't cut it
+off. It works controlled or uncontrolled.
+
+## Installation
+
+<Install name="reactions" exports={["Reactions", "type Reaction"]} />
+
+## Busy post
+
+Counts past a thousand shorten to 1.2K, which keeps the pills small.
+
+<Preview>
+  <Reactions
+    defaultReactions={[
+      { emoji: "👍", label: "Thumbs up", count: 12847 },
+      { emoji: "❤️", label: "Heart", count: 3420, active: true },
+      { emoji: "😂", label: "Laughing", count: 961 },
+      { emoji: "🎉", label: "Celebrate", count: 1205 },
+    ]}
+  />
+</Preview>
+
+## Floating
+
+`type="floating"` pins a bar to a viewport corner, chosen with `position`.
+Here a transformed wrapper stands in for the viewport, so the bar pins to the
+preview instead of the page.
+
+<Preview>
+  <div className="relative min-h-64 w-full [transform:translateZ(0)]">
+    <Reactions type="floating" defaultReactions={seeded} />
+  </div>
+</Preview>
+
+## Controlled
+
+`reactions` and `onReactionsChange` hold the state in your data layer.
+
+<Preview>
+  <ReactionsControlledDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use inline beside the content it belongs to, such as a message, comment or post.",
+    "Use floating for a page-level reaction, such as the end of an article.",
+    "Offer five or six choices at most. More turns a tap into a decision.",
+    <>
+      Unset <code>choices</code> gives six common reactions, plus anything
+      already on the item.
+    </>,
+    "A reaction nobody holds disappears instead of lingering as a zero.",
+    <>
+      Counts shorten in English unless <code>locale</code> is set, so the server
+      and the browser render the same text.
+    </>,
+  ]}
+/>
+
+<Tip>
+  Without `reactions` and `onReactionsChange`, the component keeps its own
+  state, seeded from `defaultReactions`.
+</Tip>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Reactions
+            particles={0}
+            defaultReactions={[
+              { emoji: "👍", label: "Thumbs up", count: 5 },
+              { emoji: "❤️", label: "Heart", count: 3, active: true },
+            ]}
+          />
+        ),
+        description: "Keep reactions right under the content they respond to.",
+      },
+      negative: {
+        component: (
+          <Reactions
+            particles={0}
+            defaultReactions={[
+              "👍",
+              "❤️",
+              "😂",
+              "🎉",
+              "😮",
+              "🔥",
+              "👀",
+              "🙌",
+              "💯",
+            ].map((emoji, i) => ({ emoji, label: emoji, count: 9 - i }))}
+          />
+        ),
+        description:
+          "Don't let every emoji become a pill. A wall of reactions reads as noise; offer fewer choices.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Each pill is a toggle button named by the reaction's label and count, such
+  as "Heart, 3 reactions", with `aria-pressed` for whether you've reacted.
+  The emoji itself is hidden from screen readers.
+- A polite live region announces each change: "Added Heart", "Removed Heart".
+  On the floating bar, with counts on, it adds the new total: "Added Heart,
+  13 reactions in total".
+- With showCounts off, pills are named by label alone, matching what sighted
+  users see.
+- Choices already picked show as pressed in the picker.
+- Arrow keys, Home and End move through the choices. Escape closes the picker
+  and returns focus to its trigger; tabbing away closes it too.
+- Particles and pill motion switch off under prefers-reduced-motion.
+- Override `triggerLabel` and `panelLabel` for other languages.
+
+<StorybookLink id="special-components-reactions" name="Reactions" />

@@ -1,0 +1,75 @@
+---
+title: App shell
+description: The frame of a workspace app, with a header, Command menu, the current page and Floating nav between pages.
+---
+
+import { Install } from "@workspace/docs-blocks/install"
+
+<BlockFrame id="blocks-app-shell--default" label="App shell" />
+
+## When to use it
+
+Start from App shell when you build a workspace app: a header with
+[Command menu](/docs/components/command-menu), the current page, and
+[Floating nav](/docs/components/floating-nav) between Home, Projects and
+Inbox. In the preview, Cmd+K or Ctrl+K creates a project, opens one from a
+nested page, or clears the inbox.
+
+- **Working commands.** New project adds a row and opens Projects, Open
+  project is a nested page listing every project, and Mark all as read
+  empties the inbox. Each uses the same setters as the pages.
+- **Recents.** Run commands float to the top of the menu, Command menu's
+  built-in behavior.
+- **Container queries.** Layout follows the root's width, not the viewport,
+  so it holds full screen, in a split view or in this preview. At phone width
+  the cards stack and the table drops Owner and Updated.
+- **Sticky, not fixed.** The header and nav stay inside a surrounding
+  layout.
+
+It's built from [Command menu](/docs/components/command-menu),
+[Floating nav](/docs/components/floating-nav),
+[Table](/docs/components/table), [Badge](/docs/components/badge),
+[Empty state](/docs/components/empty-state) and [Kbd](/docs/components/kbd).
+
+## Installation
+
+<Install name="app-shell" block exports={["AppShell"]} />
+
+```tsx
+import { AppShell } from "@/components/blocks/app-shell/app-shell"
+
+export default function Page() {
+  return <AppShell />
+}
+```
+
+A block is copied into your app once. Running `shadcn add` again overwrites
+your edits.
+
+| File            | Holds                                                             |
+| --------------- | ----------------------------------------------------------------- |
+| `app-shell.tsx` | The header, Command menu's commands, page state and Floating nav. |
+| `pages.tsx`     | Home, Projects and Inbox.                                         |
+| `data.ts`       | The workspace, user, projects and messages, with their types.     |
+
+## Make it yours
+
+1. Replace `data.ts`, or load data where `AppShell` reads it. The pages
+   only read the types.
+2. Replace the `page` state with a router: give each nav item an `href`, and
+   call `event.preventDefault()` in `onValueChange` if the router handles
+   links itself.
+3. Add commands to `groups` in `app-shell.tsx`. A command with `items` opens
+   its own page.
+
+## Accessibility
+
+- Landmarks: a header, a main region and a nav named Pages.
+- Floating nav marks the current page with aria-current, and every page
+  starts with its own h1.
+- Command menu is a modal dialog. Focus moves into its search on open and
+  back to the search button on close.
+- Changing pages doesn't move focus. Once wired to a router, move focus to
+  the new page's heading after each navigation.
+
+<StorybookLink id="blocks-app-shell" name="App shell" />

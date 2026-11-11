@@ -1,0 +1,163 @@
+---
+title: Integration visual
+description: A hub and the tools wired into it, with pulses along the routes.
+---
+
+import {
+  ComponentRules,
+  Tip,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  IntegrationVisualCardDemo,
+  IntegrationVisualDemo,
+  IntegrationVisualIdleDemo,
+  IntegrationVisualMediaDemo,
+  IntegrationVisualOrbitDemo,
+  IntegrationVisualPlatesDemo,
+  IntegrationVisualRulesDo,
+  IntegrationVisualRulesDont,
+  IntegrationVisualSidesDemo,
+} from "@/components/demos/integration-visual"
+
+<Preview>
+  <IntegrationVisualDemo />
+</Preview>
+
+## When to use it
+
+Use Integration visual to show a product and the tools wired into it, at the
+top of a card or a marketing section. Pulses run along live routes, inward,
+outward, or through the hub from left to right, while idle tools keep their
+route and dim. Hovering or focusing the hub opens a preview: any content, an
+image or a looping video. Under reduced motion the pulses, halo and springs
+stop, the preview fades in, and a preview video holds its first frame.
+
+Items fill the layout's slots in order; any past its limit are dropped. Each
+`title` names its tile for screen readers.
+
+## Installation
+
+<Install
+  name="integration-visual"
+  exports={["IntegrationVisual", "type IntegrationItem"]}
+/>
+
+Installs `motion`, for the pulses and the halo.
+
+## Media preview
+
+`preview={{ src, alt }}` shows an image, an animated image, or a muted,
+looping video. Media is 16:9 unless `aspectRatio` is set. Hover or focus the
+snail.
+
+<Preview>
+  <IntegrationVisualMediaDemo />
+</Preview>
+
+## Orbit
+
+Up to eight tools, evenly spaced on an ellipse with straight spokes.
+
+<Preview>
+  <IntegrationVisualOrbitDemo />
+</Preview>
+
+## Sides
+
+A pipeline. `side` on each item puts it in the input or output column;
+`pulse="through"` runs the pulses from inputs, through the hub, to outputs.
+
+<Preview>
+  <IntegrationVisualSidesDemo />
+</Preview>
+
+## Idle items
+
+Every other tool is `idle`: its route stays, dimmed, with no pulse.
+
+<Preview>
+  <IntegrationVisualIdleDemo />
+</Preview>
+
+## Plates
+
+`background` sets the plate: `dots`, `grid` or `none`.
+
+<Preview>
+  <IntegrationVisualPlatesDemo />
+</Preview>
+
+## In a card
+
+A count in the hub, with the claim in the card text below.
+
+<Preview>
+  <IntegrationVisualCardDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    <>
+      Choose the layout by count: <code>corners</code> for four,{" "}
+      <code>orbit</code> for five to eight, <code>sides</code> when data flows
+      in one side and out the other.
+    </>,
+    <>
+      Mark tools that aren't connected yet as <code>idle</code> rather than
+      leaving them out, so the diagram shows what's possible as well as live.
+    </>,
+    <>
+      Use <code>pulse="inward"</code> for sources feeding the hub,{" "}
+      <code>"outward"</code> for the hub sending to them, and{" "}
+      <code>"through"</code> for a pipeline that flows from left to right.
+    </>,
+    <>
+      Name the hub with the product, a count, or a mark in <code>center</code>.
+      Keep it to a word or a number.
+    </>,
+    "Put it at the top of a card and let the card's text make the claim.",
+  ]}
+/>
+
+<Tip>
+  Keyboard users can't reach anything inside the preview. Put links in the card
+  around the diagram instead.
+</Tip>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: <IntegrationVisualRulesDo />,
+        description:
+          "Let only the live routes pulse, so the motion means something.",
+      },
+      negative: {
+        component: <IntegrationVisualRulesDont />,
+        description:
+          "Don't use corners for two tools; the diagram looks unfinished. Use sides.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The diagram is a labeled group, and each tool is a list item named by its
+  title, with ", idle" added for idle ones. Set `label` to say what the
+  diagram is.
+- Routes, pulses and the halo are decorative and hidden from assistive tech.
+- When there's a preview the hub is a button, named by `centerLabel` (or by
+  `center` when that's text, or by `label`). Focus shows the preview as hover
+  does, the preview describes the hub, and Escape closes it.
+
+<StorybookLink
+  id="special-components-integration-visual"
+  name="Integration visual"
+/>

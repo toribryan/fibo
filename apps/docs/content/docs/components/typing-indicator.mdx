@@ -1,0 +1,174 @@
+---
+title: Typing indicator
+description: Says who's typing in a conversation, naming up to three people.
+---
+
+import { TypingIndicator } from "@workspace/ui/components/typing-indicator"
+import {
+  TypingIndicatorConversationDemo,
+  TypingIndicatorTranslatedDemo,
+} from "@/components/demos/typing-indicator"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <TypingIndicator
+    className="w-80"
+    currentUserId="me"
+    people={[
+      { id: "ana", name: "Ana" },
+      { id: "ben", name: "Ben" },
+      { id: "me", name: "You" },
+    ]}
+  />
+</Preview>
+
+## When to use it
+
+Use Typing indicator below the messages in a conversation to show who's
+writing a reply. It names up to three people, then says "Several people are
+typing…". It takes people as data and omits the current user, joins names
+with `Intl.ListFormat` for the locale, announces the sentence once it
+settles, and keeps its height when nobody is typing so messages above don't
+jump.
+
+## Installation
+
+<Install
+  name="typing-indicator"
+  exports={["TypingIndicator", "formatTyping"]}
+/>
+
+## Several people
+
+Past `maxNames`, nobody is named, as Discord does from four people on.
+
+<Preview>
+  <TypingIndicator
+    className="w-80"
+    people={[
+      { id: "ana", name: "Ana" },
+      { id: "ben", name: "Ben" },
+      { id: "cy", name: "Cy" },
+      { id: "dara", name: "Dara" },
+      { id: "eli", name: "Eli" },
+    ]}
+  />
+</Preview>
+
+## Translated
+
+A Spanish formatter with `locale="es"`. `format` gets `{ count, names, list }`
+and returns the whole sentence; `names` is empty once `count` passes
+`maxNames`. Write one sentence per case instead of building it from fragments
+like `name + " and " + other`, since plural forms, verbs and word order vary
+by language. `Intl.ListFormat` supplies "y".
+
+<Preview>
+  <TypingIndicatorTranslatedDemo />
+</Preview>
+
+## In a conversation
+
+People start and stop typing below a short thread.
+
+<Preview>
+  <TypingIndicatorConversationDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Place it between the messages and the composer, where people look while waiting.",
+    "Keep it mounted for the life of the conversation. The status region must exist before it changes, or screen readers miss the first announcement.",
+    "Name at most three people. Past that, a list is harder to read than a count.",
+    "Consider turning it off in large rooms. Teams does above 20 people.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <TypingIndicator
+            className="w-56"
+            people={[
+              { id: "a", name: "Ana" },
+              { id: "b", name: "Ben" },
+              { id: "c", name: "Cy" },
+              { id: "d", name: "Dara" },
+            ]}
+          />
+        ),
+        description: "Switch to “Several people” past three names.",
+      },
+      negative: {
+        component: (
+          <TypingIndicator
+            className="w-56"
+            maxNames={5}
+            people={[
+              { id: "a", name: "Ana" },
+              { id: "b", name: "Ben" },
+              { id: "c", name: "Cy" },
+              { id: "d", name: "Dara" },
+            ]}
+          />
+        ),
+        description:
+          "Don't list everyone. A long line gets cut off, and screen readers read it all.",
+      },
+    },
+    {
+      positive: {
+        component: (
+          <TypingIndicator
+            className="w-56"
+            people={[
+              { id: "a", name: "Ana" },
+              { id: "me", name: "You" },
+            ]}
+            currentUserId="me"
+          />
+        ),
+        description: "Pass currentUserId so people never see themselves.",
+      },
+      negative: {
+        component: (
+          <TypingIndicator
+            className="w-56"
+            people={[
+              { id: "a", name: "Ana" },
+              { id: "me", name: "You" },
+            ]}
+          />
+        ),
+        description: "Don't tell people they're typing.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The sentence goes to a polite `role="status"` region, present from the
+  start and outside the message log so it doesn't mix with new messages.
+- Announcements wait for the sentence to hold still for `announceDelay` ms
+  (1500 by default), so a burst of starts and stops is heard once.
+- When everyone stops, the region empties silently.
+- The dots and visible text are hidden from screen readers, which hear the
+  status region, with names in full.
+- The dots can run past five seconds, so under reduced motion they hold still
+  as a plain ellipsis (WCAG 2.2.2).
+
+<StorybookLink
+  id="base-components-feedback-typing-indicator"
+  name="Typing indicator"
+/>
