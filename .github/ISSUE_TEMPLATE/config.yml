@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Documentation
-    url: https://fibo.toribryan.com
-    about: Every component with live examples, usage rules and props.
+    url: https://fibo.toribryan.com/docs/
+    about: What each part is for and how to use it, with live examples.
   - name: Security issue
     url: https://github.com/toribryan/fibo/security/advisories/new
     about: Report vulnerabilities privately, not as a public issue.

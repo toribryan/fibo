@@ -508,8 +508,8 @@ items.push({
   description:
     "fibo's full token set, light and dark: the achromatic roles, status colors and named -subtle, -hover and -ring roles.",
   author: "Tori Bryan",
-  docs: `Token reference: ${homepage}/?path=/docs/foundations-colors--docs`,
-  meta: { docs: `${homepage}/?path=/docs/foundations-colors--docs` },
+  docs: `Token reference: ${homepage}/docs/foundations/colors/`,
+  meta: { docs: `${homepage}/docs/foundations/colors/` },
   cssVars: {
     theme: Object.fromEntries(
       Object.entries(themeVars).filter(
@@ -565,7 +565,7 @@ function themeRules(source) {
 }
 
 for (const [name, info] of Object.entries(THEMES)) {
-  const docs = `${homepage}/?path=/docs/foundations-themes--docs`
+  const docs = `${homepage}/docs/foundations/themes/`
   items.push({
     name: `theme-${name}`,
     type: "registry:theme",
@@ -653,8 +653,9 @@ ${items
 
 ## Docs
 
-- [Storybook](${homepage}/): every component with live examples, usage rules and props.
-- [Getting started](${homepage}/?path=/docs/getting-started--docs): what the registry is, installing and updating parts, and how it works.
+- [Docs](${homepage}/docs/): what each part is for, how to use it, and its usage rules.
+- [Getting started](${homepage}/docs/getting-started/): what the registry is, installing and updating parts, and how it works.
+- [Storybook](${homepage}/storybook/): every component with live examples, controls and props.
 - [Source](https://github.com/toribryan/fibo): MIT licensed.
 `
 await mkdir(path.join(registryDir, "public"), { recursive: true })
