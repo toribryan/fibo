@@ -1,0 +1,183 @@
+---
+title: Data table
+description: "A table for lists people work through, on TanStack Table: sorting, search, filters with counts, pages, selection, cell types, locked rows and pinned columns."
+---
+
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  DataTableDemo,
+  DataTableEmptyDemo,
+  DataTableLockedDemo,
+  DataTablePickerDemo,
+} from "@/components/demos/data-table"
+
+<Preview>
+  <div className="w-full">
+    <DataTableDemo />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Data table for lists people work through: selecting rows, sorting,
+searching, filtering and acting on them in bulk. `useDataTable` takes rows and
+columns, and TanStack Table computes the rows and holds the state, so sorting,
+search, filters with counts, pages, selection and column visibility need no
+further code. Data table renders a native table matching the Figma library.
+For a plain read-only grid, use Table.
+
+## Installation
+
+<Install
+  name="data-table"
+  exports={[
+    "useDataTable",
+    "createDataTableColumnHelper",
+    "DataTable",
+    "DataTableToolbar",
+    "DataTableFilters",
+    "DataTableSearch",
+    "DataTableFacetFilter",
+    "DataTableActions",
+    "DataTableAction",
+    "DataTableColumns",
+    "DataTableBulkActions",
+    "DataTableBulkAction",
+    "DataTableContent",
+    "DataTableCards",
+    "DataTableEmpty",
+    "DataTableSkeleton",
+    "DataTableFooter",
+    "DataTablePagination",
+    "DataTableSelectionCount",
+  ]}
+/>
+
+Installs Table, Checkbox, Avatar, Tooltip, Button, Input, Menu, Sheet and
+Pagination, plus `@tanstack/react-table` and `@tanstack/react-store`.
+
+## Locked row
+
+Elena's row can't be selected. The lock gives the reason on hover or focus,
+and select all skips the row.
+
+<Preview>
+  <div className="w-full">
+    <DataTableLockedDemo />
+  </div>
+</Preview>
+
+## Empty and no matches
+
+With no rows, the body says so. When a search or filter hid them, it says
+nothing matched and offers Clear filters, which returns focus to the search.
+`empty` replaces the copy; `empty={null}` leaves the body blank.
+
+<Preview>
+  <div className="w-full">
+    <DataTableEmptyDemo />
+  </div>
+</Preview>
+
+## Picker
+
+Rows chosen for a form, with the count in the footer instead of actions.
+
+<Preview>
+  <div className="w-full">
+    <DataTablePickerDemo />
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Selection is always the first column, and row actions are always the last, pinned to the end.",
+    "Let the table sort, filter and page: give useDataTable all the rows, or set the manual options and load the rows its state describes. Don't also sort or filter them in the app.",
+    "Keep sorting, the search, filters and the page in the URL with useSearchParamsAtom when people share or bookmark the list.",
+    'Give a column that people filter by a few values filterFn: "arrHas" and a DataTableFacetFilter, so the menu shows how many rows hold each.',
+    "Pin the row's name to the start and at most one must-see column, usually status, to the end.",
+    "Rows are 40 pixels, or 52 with secondary text. Nothing goes taller.",
+    "Lock a row that can't be selected, and say why in useDataTable's lockedReason.",
+    "Pin one column to each edge at most. Pinned columns stick at a fixed offset, so a second one would sit over the first.",
+    "In a picker, put DataTableSelectionCount in the footer.",
+    "Put every action in the toolbar. Don't add hover actions or a floating bar; they split actions across places.",
+    "Bulk action order: custom actions, then More, then Delete. Approve comes before Deny.",
+    <>
+      Give a bulk action that works on one row <code>single</code>, so it stays
+      in place, dimmed, while more are selected.
+    </>,
+    "Give actions an icon, so they still fit on a phone. Under 32rem they show the icon alone, with the label as their name and tooltip.",
+    'Use narrowLayout="cards" when a row reads better as a summary than as a line, such as people with a status. Keep scroll for data people compare across columns.',
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 items-center gap-2 rounded-md border border-border px-3 py-2 text-sm">
+            <span className="size-4 rounded-sm border border-input bg-input-subtle opacity-50" />
+            <span className="font-medium">Elena Marsh</span>
+            <span className="text-xs text-muted-foreground">Locked</span>
+          </div>
+        ),
+        description: "Show why a row can't be selected.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 items-center gap-2 rounded-md border border-border px-3 py-2 text-sm">
+            <span className="size-4 rounded-sm border border-input bg-input-subtle opacity-50" />
+            <span className="font-medium">Elena Marsh</span>
+          </div>
+        ),
+        description:
+          "Don't disable a row without a reason. People can't tell it's intended.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- It's a native table, not a grid: checkboxes and buttons are ordinary Tab
+  stops. TanStack Table only works out the rows; the markup is Data table's.
+- Every head carries `scope="col"`. A sortable head holds a button named by
+  the column. Only the sorted head carries `aria-sort`, ascending or
+  descending, so the order is announced once, where it applies.
+- DataTableSearch is a search field; give it an `aria-label` when there's no
+  visible label. Facet filter menus name each choice with its count,
+  “Active 3”, and say how many are ticked on the button.
+- Name it with `aria-label` or `aria-labelledby` on DataTable.
+- Each row checkbox is named from its primary or person cell, “Select Maya
+  Okafor”. Select all says its scope, “Select all members on this page”.
+- A locked row's checkbox is disabled and described by the reason. The lock
+  is focusable, so keyboard users can open its tooltip.
+- Selection changes are announced through a status region once they take
+  effect, so a change a controlled parent turns down isn't announced. Escape
+  clears the selection.
+- The toolbar is a group named “Filters and actions” or “Bulk actions”, not a
+  toolbar role, so its controls stay ordinary Tab stops and arrow keys stay
+  with the search field.
+- When the focused control goes away, such as Clear or Select all matching,
+  focus moves to Clear, or to select all when nothing is selected, instead of
+  the page.
+- A single-row action that's dimmed stays focusable and is described by why:
+  “Works on one member at a time”.
+- Only one of the table and the cards is ever in the page, so screen readers
+  don't meet each row twice. Cards are a list, and each card's checkbox is
+  named from its title.
+- Icon-only actions on a narrow table keep their label as their accessible
+  name and show it as a tooltip.
+- Status badges sit on the background, so their tints keep AA contrast on
+  selected and hovered rows.
+
+<StorybookLink id="base-components-display-data-table" name="Data table" />

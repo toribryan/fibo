@@ -1,0 +1,108 @@
+---
+title: Badge
+description: A short label for status, category or count.
+---
+
+import { Badge } from "@workspace/ui/components/badge"
+import { StatusDot } from "@workspace/ui/components/status-dot"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <Badge>Badge</Badge>
+</Preview>
+
+## When to use it
+
+Use Badge for a short, non-interactive label for a status, category or count,
+placed next to what it describes. Say the state in the label; the variant
+only reinforces it. It isn't in the tab order, so anything that responds to a
+click is a Button.
+
+## Installation
+
+<Install name="badge" exports={["Badge", "badgeVariants"]} />
+
+## Variants
+
+Three neutral variants, `default`, `secondary` and `outline`, and four status
+tints: `destructive` for states that need action, `success`, `warning` and
+`info`.
+
+<Preview>
+  <Badge>default</Badge>
+  <Badge variant="secondary">secondary</Badge>
+  <Badge variant="destructive">destructive</Badge>
+  <Badge variant="outline">outline</Badge>
+  <Badge variant="success">success</Badge>
+  <Badge variant="warning">warning</Badge>
+  <Badge variant="info">info</Badge>
+</Preview>
+
+## With a status dot
+
+A badge can lead with an icon or a Status dot. Give the dot `label={null}`
+when the badge's text already says the status.
+
+<Preview>
+  <Badge variant="outline">
+    <StatusDot status="present" label={null} />
+    Online
+  </Badge>
+  <Badge variant="secondary">
+    <StatusDot status="away" label={null} />
+    Away
+  </Badge>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "One or two words, readable at a glance.",
+    "Use default for the one state that needs attention, secondary or outline for everything else.",
+    "Use destructive only for states that need action, such as Failed or Overdue.",
+    "Use success, warning and info only for a status with that meaning, such as Paid, Expiring or Beta, never for decoration.",
+    "If it should respond to a click, use a Button.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex items-center gap-2 text-sm">
+            Invoice #1042 <Badge variant="destructive">Overdue</Badge>
+          </div>
+        ),
+        description: "Say the state in the label, and let color reinforce it.",
+      },
+      negative: {
+        component: (
+          <div className="flex items-center gap-2 text-sm">
+            Invoice #1042{" "}
+            <Badge variant="destructive">
+              This invoice is now 14 days overdue
+            </Badge>
+          </div>
+        ),
+        description:
+          "Don't write a sentence. Move longer copy into the row itself.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- If the badge only makes sense next to its neighbor, give the pair context,
+  for example with `aria-describedby`.
+- The variant never carries meaning alone. The text says it too.
+
+<StorybookLink id="base-components-display-badge" name="Badge" />

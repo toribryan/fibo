@@ -1,0 +1,200 @@
+---
+title: Annotated text
+description: Hand-drawn marks on a word or phrase, from underlines and circles to a highlighter, plus sticker chips that can cycle through words.
+---
+
+import { BlocksIcon, SparklesIcon } from "lucide-react"
+import {
+  AnnotatedText,
+  AnnotatedTextChip,
+  AnnotatedTextCycle,
+} from "@workspace/ui/components/annotated-text"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+export const variants = [
+  "underline",
+  "wavy",
+  "double",
+  "highlight",
+  "circle",
+  "box",
+  "bracket",
+  "strike",
+  "cross",
+  "arrow",
+]
+
+<Preview>
+  <div className="m-0 max-w-xl text-3xl font-medium tracking-tight">
+    Ship the smallest change that{" "}
+    <AnnotatedText variant="wavy" tone="success">
+      fully solves
+    </AnnotatedText>{" "}
+    the problem.
+  </div>
+</Preview>
+
+## When to use it
+
+Use Annotated text for emphasis in display type and editorial copy. The marks
+are drawn as SVG in the text's own pixels, so they keep their proportions at
+any type size, and their wobble is seeded from the text, so a phrase looks
+the same on every render. `animate` draws a mark in on first scroll into
+view. Keep annotated phrases short: they never wrap, since a mark is drawn
+round one line.
+
+## Installation
+
+<Install
+  name="annotated-text"
+  exports={[
+    "AnnotatedText",
+    "AnnotatedTextChip",
+    "AnnotatedTextCycle",
+    "type AnnotatedTextVariant",
+    "type AnnotatedTextTone",
+    "type AnnotatedTextCycleItem",
+  ]}
+/>
+
+Installs `motion`, for the cycling chip's slide and resize. The marks are
+CSS transitions.
+
+## Variants
+
+`highlight` sits behind the text. Every other mark is drawn over or around
+it.
+
+<Preview>
+  <div className="grid grid-cols-2 gap-x-16 gap-y-10 text-2xl sm:grid-cols-5">
+    {variants.map((variant) => (
+      <figure key={variant} className="m-0 flex flex-col items-start gap-3">
+        <AnnotatedText variant={variant}>Annotate</AnnotatedText>
+        <figcaption className="font-mono text-xs text-muted-foreground">
+          {variant}
+        </figcaption>
+      </figure>
+    ))}
+  </div>
+</Preview>
+
+## Sticker chips
+
+`AnnotatedTextChip` puts a sticker at the pill's start, tilted by an amount
+derived from the word. An emoji or `<img>` gets a white die-cut edge round its
+outline; a line icon is printed in ink on a paper tile.
+
+<Preview>
+  <div className="m-0 max-w-2xl text-center text-4xl leading-[1.3] font-medium tracking-tight">
+    A tool to create visual{" "}
+    <AnnotatedTextChip icon={<BlocksIcon />}>systems</AnnotatedTextChip>,
+    customize <AnnotatedTextChip icon={"\u{1F3A8}"}>colors</AnnotatedTextChip>,
+    and build interfaces with{" "}
+    <AnnotatedTextChip icon={<SparklesIcon />}>anything</AnnotatedTextChip>.
+  </div>
+</Preview>
+
+## Cycling chips
+
+`AnnotatedTextCycle` swaps word and sticker in one pill, which springs to
+fit. It pauses under the pointer and, by default, runs through once and
+settles on the last item.
+
+<Preview>
+  <div className="m-0 max-w-2xl text-center text-4xl leading-[1.3] font-medium tracking-tight">
+    Build interfaces with{" "}
+    <AnnotatedTextCycle
+      items={[
+        { label: "systems", icon: <BlocksIcon /> },
+        { label: "agents", icon: "\u{1F916}" },
+        { label: "anything", icon: <SparklesIcon /> },
+      ]}
+    />
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use marks for emphasis in display type and editorial copy: a hero line, a pull quote, a callout in a guide.",
+    "One or two marks per paragraph, or nothing stands out.",
+    <>
+      Leave <code>tone</code> at default unless the mark carries meaning. In
+      fibo, color only carries meaning.
+    </>,
+    <>
+      Stage draw-ins with <code>delay</code> in reading order, and keep the
+      whole sequence under two seconds.
+    </>,
+    "Use chips for a few key nouns in a headline, each with a sticker that matches the word.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <p className="m-0 text-lg">
+            Name what a color{" "}
+            <AnnotatedText variant="circle">does</AnnotatedText>.
+          </p>
+        ),
+        description: "Mark the one word the sentence turns on.",
+      },
+      negative: {
+        component: (
+          <p className="m-0 text-lg">
+            <AnnotatedText variant="wavy">Name</AnnotatedText> what a{" "}
+            <AnnotatedText variant="box">color</AnnotatedText>{" "}
+            <AnnotatedText variant="circle">does</AnnotatedText>.
+          </p>
+        ),
+        description:
+          "Don't mark every word. The marks compete and the line gets hard to read.",
+      },
+    },
+    {
+      positive: {
+        component: (
+          <p className="m-0 text-lg">
+            Save <AnnotatedTextChip>time</AnnotatedTextChip> on every build.
+          </p>
+        ),
+        description: "Use a chip in display copy, for a short noun.",
+      },
+      negative: {
+        component: (
+          <p className="m-0 text-sm">
+            Read the <AnnotatedTextChip>documentation</AnnotatedTextChip> for
+            the full list of options before you start.
+          </p>
+        ),
+        description:
+          "Don't use a chip as a link or a tag in body text. Use a link or a Badge.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Marks and stickers are hidden from assistive technology. If a mark carries
+  meaning, like a struck-out price, say so in the text too.
+- `AnnotatedTextCycle` gives screen readers one fixed word: `label`, or the
+  first item. The moving pill is hidden from them.
+- By default the cycle runs through once and stops. A looping cycle moves for
+  more than five seconds, so pair `loop` with a control that sets `paused`
+  (WCAG 2.2.2). It also pauses under the pointer.
+- Under prefers-reduced-motion marks appear whole without drawing in, and a
+  cycle holds on its first item.
+- Check that text over a highlight keeps its contrast in both themes.
+
+<StorybookLink id="special-components-annotated-text" name="Annotated text" />

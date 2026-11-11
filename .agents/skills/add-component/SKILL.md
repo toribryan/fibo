@@ -133,7 +133,10 @@ too: `apps/docs/content/docs/components/<name>.mdx`. Copy
 Guidelines, Do's and don'ts, Accessibility, and `<StorybookLink>` last. API
 reference, data attributes and anatomy stay in Storybook. An example that
 needs state goes in `apps/docs/components/demos/<name>.tsx` with
-`"use client"`; never import a story file. Add the page to its group in
+`"use client"`; never import a story file. MDX wraps text that sits on its
+own line inside a JSX element in a `<p>`, so inside anything that renders a
+`<p>` (FieldDescription, a `<p>` wrapper) write the text as `{"..."}` or use a
+`<div>`, or the page fails to hydrate. Add the page to its group in
 `apps/docs/content/docs/components/meta.json`.
 
 ## 5. Register the metadata

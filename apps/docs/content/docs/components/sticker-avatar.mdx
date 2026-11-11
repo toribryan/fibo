@@ -1,0 +1,125 @@
+---
+title: Sticker avatar
+description: An avatar cut out like a die-cut sticker, with a paper edge that follows its shape and a status told by shape.
+---
+
+import {
+  StickerAvatarEdgeDo,
+  StickerAvatarEdgeDont,
+  StickerAvatarGroupDemo,
+  StickerAvatarListDemo,
+  StickerAvatarPreview,
+  StickerAvatarStatusesDemo,
+} from "@/components/demos/sticker-avatar"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <StickerAvatarPreview />
+</Preview>
+
+## When to use it
+
+Use Sticker avatar where people and personality are the point. A transparent
+image gets a white paper edge that follows its outline; a photo with a
+background becomes a round sticker, and with no image the initials are cut
+out. Each sticker tilts by a stable angle from the name and lifts on hover.
+The edge is drawn once when the image loads, so fifty stickers cost no more
+than fifty avatars.
+
+Pass an image with its background already removed. Cutting a subject out in
+the browser takes a 40 to 170 MB model, so do it once on upload, on a server,
+or let people bring their own. Cross-origin images need CORS headers for the
+edge to be cut; without them the sticker falls back to round.
+
+## Installation
+
+<Install
+  name="sticker-avatar"
+  exports={["StickerAvatar", "StickerAvatarGroup", "StickerAvatarCount"]}
+/>
+
+Installs Status dot and adds `--sticker-edge`, `--sticker-ink` and
+`--sticker-shadow` to your theme.
+
+## With a status
+
+A [Status dot](/docs/components/status-dot) child. The sticker sets it on the
+corner, turned against the tilt, and adds its label to the sticker's name.
+Present, away and offline are a dot, a crescent and a ring, so each reads
+without color.
+
+<Preview>
+  <StickerAvatarStatusesDemo />
+</Preview>
+
+## In a direct message list
+
+At 32px the edge and tilt suit a dense list. Each row carries
+`group/sticker`, so hovering anywhere on it lifts the sticker.
+
+<Preview>
+  <StickerAvatarListDemo />
+</Preview>
+
+## Stack
+
+`StickerAvatarGroup` overlaps stickers; `StickerAvatarCount` counts the rest.
+
+<Preview>
+  <StickerAvatarGroupDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use it where people and personality are the point: profiles, parties, member lists, a small group in a chat header.",
+    "Keep the layout box tight. The edge and tilt draw outside it, so leave a few pixels around stickers in a dense list.",
+    <>
+      Turn off <code>tilt</code> in a scannable grid, such as a table of
+      members. Keep it in stacks and profiles, where it reads as hand-placed.
+    </>,
+    <>
+      Use <code>pixelated</code> for pixel art, so it scales with hard edges
+      instead of blurring.
+    </>,
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: <StickerAvatarEdgeDo />,
+        description:
+          "Let the edge follow the size. The default stays in proportion.",
+      },
+      negative: {
+        component: <StickerAvatarEdgeDont />,
+        description:
+          "Don't thicken the edge past the default. The paper swamps the subject.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The root is `role="img"`, named by `name` and a StatusDot's label through
+  `aria-labelledby`: “Ana Ruiz, Away”. Pass the dot a `label` to translate the
+  status.
+- Inside a row or button that already says the name, set `aria-hidden` on the
+  sticker so the name isn't read twice.
+- Status never relies on color alone. Each state has its own shape, and its
+  label is in the accessible name.
+- The hit area and layout are the square box, not the cut, so an odd shape is
+  no harder to click.
+- With reduced motion the sticker keeps its tilt and shadow but doesn't lift.
+
+<StorybookLink id="special-components-sticker-avatar" name="Sticker avatar" />

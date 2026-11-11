@@ -1,0 +1,127 @@
+---
+title: Count
+description: "A number at a glance: capped at 99+, shortened to 1.2K or signed as +4, read out in full."
+---
+
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+} from "@workspace/ui/components/avatar"
+import { Badge } from "@workspace/ui/components/badge"
+import { Count } from "@workspace/ui/components/count"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <Count value={128} max={99} className="text-sm font-medium" />
+</Preview>
+
+## When to use it
+
+Use Count for a number people take in at a glance: capped with `max`,
+shortened with `notation="compact"`, or signed with `plus` for things not
+shown. Figures don't shift as the number changes, and screen readers hear the
+exact number or a label such as “128 unread”. It's text only; the surrounding
+part sets size, weight and color.
+
+## Installation
+
+<Install name="count" exports={["Count", "formatCount", "type CountProps"]} />
+
+Installs the `formatCount` helper into `lib/`, for counts inside a sentence,
+such as “12 new messages”. Build the sentence around it, so it translates
+whole.
+
+## Formats
+
+<Preview>
+  <dl className="grid grid-cols-[auto_auto] items-center gap-x-8 gap-y-3 text-sm">
+    <dt className="text-muted-foreground">Plain</dt>
+    <dd>
+      <Count value={42} />
+    </dd>
+    <dt className="text-muted-foreground">Capped at 99</dt>
+    <dd>
+      <Count value={128} max={99} />
+    </dd>
+    <dt className="text-muted-foreground">Compact</dt>
+    <dd>
+      <Count value={12345} notation="compact" locale="en-US" />
+    </dd>
+    <dt className="text-muted-foreground">Not shown</dt>
+    <dd>
+      <Count value={4} plus label={(n) => `${n} more`} />
+    </dd>
+  </dl>
+</Preview>
+
+## In other parts
+
+In a Badge for unread messages, and in AvatarGroupCount for people not shown.
+
+<Preview>
+  <Badge variant="secondary">
+    <Count value={128} max={99} label={(n) => `${n} unread`} />
+  </Badge>
+  <AvatarGroup>
+    <Avatar>
+      <AvatarFallback>AL</AvatarFallback>
+    </Avatar>
+    <Avatar>
+      <AvatarFallback>GH</AvatarFallback>
+    </Avatar>
+    <Avatar>
+      <AvatarFallback>KJ</AvatarFallback>
+    </Avatar>
+    <AvatarGroupCount>
+      <Count value={9} plus label={(n) => `${n} more`} />
+    </AvatarGroupCount>
+  </AvatarGroup>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Cap a count at 99+ where only “a lot” matters, such as unread badges. Shorten it to 1.2K where the size matters, such as reactions.",
+    "Label what is counted, such as 12 unread or 4 more, unless the adjacent text already does.",
+    "Use plus only for things that aren't shown, such as the people after an avatar group.",
+    "Let the surrounding part style it. Count sets only the figures.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <span className="text-sm">
+            Inbox <Count value={128} max={99} label={(n) => `${n} unread`} />
+          </span>
+        ),
+        description: "Cap long counts, and say what is counted.",
+      },
+      negative: {
+        component: <span className="text-sm">Inbox 128</span>,
+        description:
+          "Don't leave a bare number for screen readers to guess at.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The number shown is hidden from screen readers when it differs from what
+  they hear, so 99+ is read as 128, or as your label.
+- `label={null}` hides the count from screen readers, for a part whose name
+  already says it, such as a reaction pill.
+
+<StorybookLink id="base-components-display-count" name="Count" />

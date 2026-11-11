@@ -1,0 +1,160 @@
+---
+title: Avatar
+description: A person's photo, or their initials when there's no photo.
+---
+
+import { CheckIcon } from "lucide-react"
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+} from "@workspace/ui/components/avatar"
+import { Count } from "@workspace/ui/components/count"
+import { StatusDot } from "@workspace/ui/components/status-dot"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <Avatar size="lg">
+    <AvatarFallback>AL</AvatarFallback>
+  </Avatar>
+</Preview>
+
+## When to use it
+
+Use Avatar to show who someone is: their photo, or their initials until the
+photo loads and if it never does. It comes in three sizes, takes a corner
+badge or status, and stacks into a group with a count for the rest.
+
+## Installation
+
+<Install name="avatar" exports={["Avatar", "AvatarImage", "AvatarFallback"]} />
+
+`AvatarBadge`, `AvatarGroup` and `AvatarGroupCount` are exported too. Always
+include `AvatarFallback`. It covers loading and failure.
+
+## Sizes
+
+`size` is `sm`, `default` or `lg`: 24, 32 and 40px.
+
+<Preview>
+  <div className="flex items-end gap-3">
+    <Avatar size="sm">
+      <AvatarFallback>GH</AvatarFallback>
+    </Avatar>
+    <Avatar>
+      <AvatarFallback>GH</AvatarFallback>
+    </Avatar>
+    <Avatar size="lg">
+      <AvatarFallback>GH</AvatarFallback>
+    </Avatar>
+  </div>
+</Preview>
+
+## With status or badge
+
+A [Status dot](/docs/components/status-dot) inside the avatar shows presence.
+It pins to the corner, scales with the avatar, and its label is read after the
+photo's `alt`. `AvatarBadge` is a corner badge for anything other than
+presence, such as an icon. Name it in the photo's `alt`.
+
+<Preview>
+  <Avatar size="lg">
+    <AvatarFallback>KJ</AvatarFallback>
+    <StatusDot status="present" />
+  </Avatar>
+  <Avatar size="lg">
+    <AvatarFallback>AL</AvatarFallback>
+    <AvatarBadge>
+      <CheckIcon />
+    </AvatarBadge>
+  </Avatar>
+</Preview>
+
+## Group
+
+`AvatarGroup` overlaps the avatars. `AvatarGroupCount` holds a
+[Count](/docs/components/count) with `plus`, which shows +4 and reads “4 more”.
+
+<Preview>
+  <AvatarGroup>
+    <Avatar>
+      <AvatarFallback>AL</AvatarFallback>
+    </Avatar>
+    <Avatar>
+      <AvatarFallback>GH</AvatarFallback>
+    </Avatar>
+    <Avatar>
+      <AvatarFallback>KJ</AvatarFallback>
+    </Avatar>
+    <AvatarGroupCount>
+      <Count value={4} plus label={(n) => `${n} more`} />
+    </AvatarGroupCount>
+  </AvatarGroup>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use two initials in the fallback, first and last name, or one for a single name.",
+    "Pick one size per list, so rows line up.",
+    "In a group, show three to five faces and a count for the rest.",
+    "Put the person's name beside the avatar wherever there's room. A face alone doesn't identify someone.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <AvatarGroup>
+            {["AL", "GH", "KJ"].map((initials) => (
+              <Avatar key={initials}>
+                <AvatarFallback>{initials}</AvatarFallback>
+              </Avatar>
+            ))}
+            <AvatarGroupCount>
+              <Count value={9} plus label={(n) => `${n} more`} />
+            </AvatarGroupCount>
+          </AvatarGroup>
+        ),
+        description: "Show a few faces and count the rest.",
+      },
+      negative: {
+        component: (
+          <AvatarGroup>
+            {["AL", "GH", "KJ", "MB", "RT", "SC", "TL", "YW"].map(
+              (initials) => (
+                <Avatar key={initials}>
+                  <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
+              )
+            )}
+          </AvatarGroup>
+        ),
+        description:
+          "Don't stack everyone. Past five, faces blur into a band nobody can read.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Give AvatarImage an `alt` with the person's name. If their name is already
+  written beside it, use `alt=""` so it isn't read twice.
+- The initials are read out as text. When a name sits beside the avatar, hide
+  the avatar with aria-hidden instead.
+- A badge's color isn't announced. Put the status in the image's alt, such as
+  “Ada Lovelace, online”.
+
+<StorybookLink id="base-components-display-avatar" name="Avatar" />
