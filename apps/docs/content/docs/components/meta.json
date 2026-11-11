@@ -3,6 +3,7 @@
   "pages": [
     "---Actions---",
     "button",
+    "jump-bar",
     "---Forms---",
     "attachment",
     "calendar",
