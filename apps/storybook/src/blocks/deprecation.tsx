@@ -3,7 +3,7 @@ import { TriangleAlertIcon } from "lucide-react"
 import componentsMeta from "@workspace/ui/components.meta.json" with { type: "json" }
 
 import { DocLink } from "./doc-link.js"
-import { CopyButton } from "./install.js"
+import { CopyButton } from "@workspace/docs-blocks/install"
 import { LINKS } from "./links.js"
 
 type Deprecated = {

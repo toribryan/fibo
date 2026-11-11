@@ -1,3 +1,5 @@
+"use client"
+
 import {
   useEffect,
   useRef,
@@ -13,8 +15,8 @@ import {
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { DARK, LIGHT, primitive } from "./color-tokens.js"
-import { LeaderLines, useAnnotations, type Callout } from "./leader-lines.js"
+import { DARK, LIGHT, primitive } from "./color-tokens"
+import { LeaderLines, useAnnotations, type Callout } from "./leader-lines"
 
 type Mode = "light" | "dark"
 

@@ -1,5 +1,11 @@
+/* The two themes name these fonts but don't load them; see Themes. */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter+Tight:wght@400..700&display=swap");
 @import "@workspace/ui/globals.css";
+@import "@workspace/ui/themes/mechanical.css";
+@import "@workspace/ui/themes/electrical.css";
 @import "fumadocs-ui/css/preset.css";
+
+@source "../../../packages/docs-blocks/src";
 
 /*
  * Fumadocs' chrome reads --color-fd-*. Pointing them at fibo's semantic

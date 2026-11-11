@@ -10,6 +10,7 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@workspace/docs-blocks": "workspace:*",
     "@workspace/ui": "workspace:*",
     "fumadocs-core": "16.17.8",
     "fumadocs-mdx": "15.4.10",
