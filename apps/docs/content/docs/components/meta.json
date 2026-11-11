@@ -34,6 +34,13 @@
     "separator",
     "status-dot",
     "sticker-avatar",
-    "table"
+    "table",
+    "---Navigation---",
+    "chapter-scrubber",
+    "command-menu",
+    "filter-menu",
+    "floating-nav",
+    "pagination",
+    "tabs"
   ]
 }

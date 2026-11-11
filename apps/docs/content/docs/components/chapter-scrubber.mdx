@@ -1,0 +1,158 @@
+---
+title: Chapter scrubber
+description: A rail of marks that swell under the pointer like the Dock, previewing the chapter at the crest.
+---
+
+import { ChapterScrubber } from "@workspace/ui/components/chapter-scrubber"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  ChapterScrubberControlledDemo,
+  ChapterScrubberDemo,
+  ChapterScrubberDotsDemo,
+  ChapterScrubberHorizontalDemo,
+} from "@/components/demos/chapter-scrubber"
+
+<Preview>
+  <ChapterScrubberDemo />
+</Preview>
+
+## When to use it
+
+Use Chapter scrubber to move through sequential content: a talk, a long read,
+a case study, a recording. Marks swell around the pointer or keyboard focus,
+Dock-style, and the tallest mark (the crest) previews its chapter as a card,
+a label or nothing. It runs vertical or horizontal, with ticks or dots, in
+three densities. Under reduced motion the springs switch off; the wave keeps
+its shape but appears and follows instantly.
+
+## Installation
+
+<Install
+  name="chapter-scrubber"
+  exports={["ChapterScrubber", "type Chapter"]}
+/>
+
+Installs `motion` for the springs.
+
+## Horizontal
+
+For a player or slide deck. Ticks rise from the baseline and the preview
+opens above.
+
+<Preview>
+  <ChapterScrubberHorizontalDemo />
+</Preview>
+
+## Dots
+
+`variant="dot"` replaces ticks with dots, a softer rail for use beside
+imagery.
+
+<Preview>
+  <ChapterScrubberDotsDemo />
+</Preview>
+
+## Controlled
+
+`currentIndex` and `onCurrentIndexChange` let external buttons, scroll or
+playback drive the marker.
+
+<Preview>
+  <ChapterScrubberControlledDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use for sequential content: a talk, a long read, a case study, a recording.",
+    "Keep six to thirty chapters. Fewer reads as a list; more stops the wave reaching neighbors.",
+    <>
+      Use <code>card</code> when chapters have descriptions, <code>label</code>{" "}
+      when the title suffices.
+    </>,
+    <>
+      Leave <code>side</code> unset in most layouts. It prefers right or top and
+      flips near the viewport edge. When neither side fits, as on a phone, it
+      opens on the roomier side and narrows to fit. It closes once the rail
+      scrolls out of view.
+    </>,
+    <>
+      Set <code>currentIndex</code> from scroll or playback position so the
+      marker tracks the reader between clicks.
+    </>,
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <ChapterScrubber
+            preview="label"
+            size="sm"
+            defaultCurrentIndex={2}
+            chapters={Array.from({ length: 14 }, (_, i) => ({
+              id: String(i),
+              title: `Chapter ${i + 1}`,
+            }))}
+          />
+        ),
+        description: "Use enough chapters for the wave to lift neighbors.",
+      },
+      negative: {
+        component: (
+          <ChapterScrubber
+            preview="label"
+            size="sm"
+            chapters={Array.from({ length: 3 }, (_, i) => ({
+              id: String(i),
+              title: `Chapter ${i + 1}`,
+            }))}
+          />
+        ),
+        description:
+          "Don't use it for three items. Plain links say more in less space.",
+      },
+    },
+    {
+      positive: {
+        component: (
+          <span className="rounded-lg border border-border bg-popover px-3 py-2 text-sm font-medium shadow-sm">
+            Semantic roles
+          </span>
+        ),
+        description: "Keep titles short enough to read as the crest passes.",
+      },
+      negative: {
+        component: (
+          <span className="max-w-60 rounded-lg border border-border bg-popover px-3 py-2 text-sm font-medium shadow-sm">
+            In which we finally discuss how semantic roles came to be named
+          </span>
+        ),
+        description:
+          "Don't put the chapter's argument in its title. Use the description.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The rail is a listbox; each mark is an option named by its title and
+  description. The current chapter is `aria-selected`.
+- One mark is in the tab order. Arrow keys, Home and End move along the rail;
+  Enter or Space makes a chapter current.
+- Focus raises the wave and preview exactly as hover does.
+
+<StorybookLink
+  id="special-components-chapter-scrubber"
+  name="Chapter scrubber"
+/>
