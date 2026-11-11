@@ -1,0 +1,189 @@
+---
+title: Tooltip
+description: A short label that appears when a control is hovered or focused.
+---
+
+import { BoldIcon, ItalicIcon, LockIcon, UnderlineIcon } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
+import { Kbd } from "@workspace/ui/components/kbd"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <Tooltip>
+    <TooltipTrigger render={<Button variant="outline" />}>Hover</TooltipTrigger>
+    <TooltipContent>Add to library</TooltipContent>
+  </Tooltip>
+</Preview>
+
+## When to use it
+
+Use Tooltip for a short label shown on hover or focus, such as an icon
+button's name or why something is locked. It opens on hover after a short
+delay and at once on keyboard focus, Escape closes it without moving focus,
+and it flips to stay on screen.
+
+## Installation
+
+<Install
+  name="tooltip"
+  exports={["Tooltip", "TooltipContent", "TooltipProvider", "TooltipTrigger"]}
+/>
+
+## Sides
+
+The preferred side. It flips when there isn't room.
+
+<Preview>
+  <Tooltip>
+    <TooltipTrigger render={<Button variant="outline" />}>Top</TooltipTrigger>
+    <TooltipContent side="top">Opens on the top</TooltipContent>
+  </Tooltip>
+  <Tooltip>
+    <TooltipTrigger render={<Button variant="outline" />}>Right</TooltipTrigger>
+    <TooltipContent side="right">Opens on the right</TooltipContent>
+  </Tooltip>
+  <Tooltip>
+    <TooltipTrigger render={<Button variant="outline" />}>
+      {"Bottom"}
+    </TooltipTrigger>
+    <TooltipContent side="bottom">Opens on the bottom</TooltipContent>
+  </Tooltip>
+  <Tooltip>
+    <TooltipTrigger render={<Button variant="outline" />}>Left</TooltipTrigger>
+    <TooltipContent side="left">Opens on the left</TooltipContent>
+  </Tooltip>
+</Preview>
+
+## Icon buttons
+
+A formatting toolbar in one TooltipProvider, so once one tooltip is open its
+neighbors open without the delay. Each tooltip gives the button name and
+shortcut.
+
+<Preview>
+  <TooltipProvider>
+    <div className="flex gap-1">
+      <Tooltip>
+        <TooltipTrigger
+          render={<Button variant="ghost" size="icon-sm" aria-label="Bold" />}
+        >
+          <BoldIcon aria-hidden="true" />
+        </TooltipTrigger>
+        <TooltipContent className="flex items-center gap-2">
+          {"Bold"}
+          <Kbd>Ctrl B</Kbd>
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger
+          render={<Button variant="ghost" size="icon-sm" aria-label="Italic" />}
+        >
+          <ItalicIcon aria-hidden="true" />
+        </TooltipTrigger>
+        <TooltipContent className="flex items-center gap-2">
+          {"Italic"}
+          <Kbd>Ctrl I</Kbd>
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button variant="ghost" size="icon-sm" aria-label="Underline" />
+          }
+        >
+          <UnderlineIcon aria-hidden="true" />
+        </TooltipTrigger>
+        <TooltipContent className="flex items-center gap-2">
+          {"Underline"}
+          <Kbd>Ctrl U</Kbd>
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  </TooltipProvider>
+</Preview>
+
+## Reason
+
+A lock explaining why a row can't be changed. The lock is a focusable trigger,
+so keyboard users reach the reason too.
+
+<Preview>
+  <div className="flex items-center gap-2 text-sm">
+    {"Elena Marsh"}
+    <Tooltip>
+      <TooltipTrigger
+        aria-label="Locked: the workspace owner can't be removed"
+        className="inline-flex size-6 items-center justify-center rounded-sm text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring-subtle"
+      >
+        <LockIcon className="size-3.5" aria-hidden="true" />
+      </TooltipTrigger>
+      <TooltipContent>{"The workspace owner can’t be removed"}</TooltipContent>
+    </Tooltip>
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "A few words: a name, a shortcut or a short reason.",
+    "Use to name icon-only buttons and explain a locked or disabled control.",
+    "Wrap a toolbar of icon buttons in one TooltipProvider, so moving along it skips the delay.",
+    "No links, buttons or other clickable content. Use a popover.",
+    "Information needed to finish a task goes on the page, not in a tooltip.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Tooltip>
+            <TooltipTrigger render={<Button variant="outline" />}>
+              {"Publish"}
+            </TooltipTrigger>
+            <TooltipContent>{"Ctrl Enter"}</TooltipContent>
+          </Tooltip>
+        ),
+        description: "Add a hint the label leaves out, such as the shortcut.",
+      },
+      negative: {
+        component: (
+          <Tooltip>
+            <TooltipTrigger render={<Button variant="outline" />}>
+              {"Publish"}
+            </TooltipTrigger>
+            <TooltipContent>{"Publish"}</TooltipContent>
+          </Tooltip>
+        ),
+        description: "Don't repeat a visible label; it adds noise.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Screen readers don't read the tooltip. Put the same words on the trigger
+  with `aria-label`, or in visible text linked with `aria-describedby`.
+- The trigger must be focusable so keyboard users can open it. A disabled
+  button isn't; use `aria-disabled`, or put the tooltip on a separate
+  focusable icon.
+- Touch screens have no hover, so nothing should exist only in a tooltip.
+- Opens on focus, closes on Escape, and stays open while the pointer is over
+  it, per WCAG 1.4.13.
+
+<StorybookLink id="base-components-overlays-tooltip" name="Tooltip" />

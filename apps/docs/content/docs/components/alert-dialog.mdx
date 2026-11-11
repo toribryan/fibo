@@ -1,0 +1,171 @@
+---
+title: Alert dialog
+description: Asks for a decision before something that can't be undone, with Cancel focused and no click-outside dismiss.
+---
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@workspace/ui/components/alert-dialog"
+import { Button } from "@workspace/ui/components/button"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <AlertDialog>
+    <AlertDialogTrigger render={<Button variant="outline" />}>
+      Delete project
+    </AlertDialogTrigger>
+    <AlertDialogContent size="sm">
+      <AlertDialogHeader>
+        <AlertDialogTitle>Delete Atlas redesign?</AlertDialogTitle>
+        <AlertDialogDescription>
+          {
+            "Its files and comments are deleted for everyone. This can't be undone."
+          }
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogAction variant="destructive">
+          Delete project
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+</Preview>
+
+## When to use it
+
+Use Alert dialog for a modal question before a step that can't be undone,
+such as deleting a project. It's announced as a question that needs an
+answer, and Cancel takes focus on open, so Enter alone never confirms. There
+is no close button and no click-outside dismiss: only Cancel or Escape
+leaves. It shares Dialog's look and motion, `sm` by default.
+
+## Installation
+
+<Install
+  name="alert-dialog"
+  exports={[
+    "AlertDialog",
+    "AlertDialogTrigger",
+    "AlertDialogContent",
+    "AlertDialogHeader",
+    "AlertDialogTitle",
+    "AlertDialogDescription",
+    "AlertDialogFooter",
+    "AlertDialogCancel",
+    "AlertDialogAction",
+  ]}
+/>
+
+It installs Dialog, for the shared styles, and Button with it.
+
+Cancel goes before the action in the footer, since it takes focus. Both
+close the dialog. For an action that has to finish first, control `open` and
+close it when the work is done.
+
+## Not destructive
+
+A confirmation that loses nothing, such as publishing, keeps the default
+button.
+
+<Preview>
+  <AlertDialog>
+    <AlertDialogTrigger render={<Button variant="outline" />}>
+      Publish
+    </AlertDialogTrigger>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Publish to the whole workspace?</AlertDialogTitle>
+        <AlertDialogDescription>
+          {"Everyone in Northwind gets a notification and can comment."}
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Not yet</AlertDialogCancel>
+        <AlertDialogAction>Publish</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Ask only when the step can't be undone, or undoing it is costly. Otherwise do it and offer Undo in a Toast.",
+    "Ask a question in the title that names the thing: Delete Atlas redesign?, not Are you sure?",
+    "Say what's lost in the description, in one or two sentences.",
+    "Label the action with the verb from the title, and use the destructive variant when something is deleted.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 flex-col gap-2 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <span className="font-semibold">Delete Atlas redesign?</span>
+            <span className="text-xs text-muted-foreground">
+              Its files are deleted for everyone.
+            </span>
+            <span className="flex justify-end gap-2">
+              <span className="rounded-md border border-border px-2 py-1 text-xs">
+                Cancel
+              </span>
+              <span className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground">
+                Delete project
+              </span>
+            </span>
+          </div>
+        ),
+        description: "Name the thing in the title and the verb on the button.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 flex-col gap-2 rounded-xl border border-border bg-popover p-4 text-sm shadow-lg">
+            <span className="font-semibold">Are you sure?</span>
+            <span className="text-xs text-muted-foreground">
+              This action is permanent.
+            </span>
+            <span className="flex justify-end gap-2">
+              <span className="rounded-md border border-border px-2 py-1 text-xs">
+                No
+              </span>
+              <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground">
+                Yes
+              </span>
+            </span>
+          </div>
+        ),
+        description:
+          "Don't ask a vague question with Yes and No. People click through it.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Named by AlertDialogTitle and described by AlertDialogDescription, so the
+  question is read out on open.
+- Focus is trapped inside and returns to the trigger on close.
+- Escape cancels. A click outside does nothing, so a stray click can't
+  dismiss the question.
+
+<StorybookLink id="base-components-overlays-alert-dialog" name="Alert dialog" />
