@@ -1,0 +1,117 @@
+---
+title: Kbd
+description: Shows a key or a keyboard shortcut in text.
+---
+
+import { ArrowUpIcon, CommandIcon } from "lucide-react"
+import { Kbd, KbdGroup } from "@workspace/ui/components/kbd"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <Kbd>Esc</Kbd>
+</Preview>
+
+## When to use it
+
+Use Kbd for a key or keyboard shortcut, in running text or beside the command
+it triggers. It renders a `<kbd>` element and sits on the text line without
+changing its height.
+
+## Installation
+
+<Install name="kbd" exports={["Kbd", "KbdGroup"]} />
+
+## Shortcut
+
+KbdGroup joins keys into a combination, as HTML nests `<kbd>` for a shortcut.
+Symbol keys such as Command take an icon with visually hidden text.
+
+<Preview>
+  <KbdGroup>
+    <Kbd>
+      <CommandIcon aria-hidden="true" />
+      <span className="sr-only">Command</span>
+    </Kbd>
+    <Kbd>K</Kbd>
+  </KbdGroup>
+</Preview>
+
+## In text
+
+<Preview>
+  <div className="text-sm text-muted-foreground">
+    Press{" "}
+    <KbdGroup>
+      <Kbd>Ctrl</Kbd>
+      <span>+</span>
+      <Kbd>B</Kbd>
+    </KbdGroup>{" "}
+    to toggle the sidebar, or <Kbd>/</Kbd> to search.
+  </div>
+</Preview>
+
+## Keys
+
+Named keys, and a symbol key as an icon.
+
+<Preview>
+  <div className="flex flex-wrap gap-2">
+    <Kbd>Tab</Kbd>
+    <Kbd>Enter</Kbd>
+    <Kbd>Space</Kbd>
+    <Kbd>
+      <ArrowUpIcon aria-hidden="true" />
+      <span className="sr-only">Up arrow</span>
+    </Kbd>
+    <Kbd>F6</Kbd>
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Write keys as printed on the keyboard: Esc, Enter, Tab.",
+    "Show the shortcut for the current platform: Cmd on a Mac, Ctrl elsewhere.",
+    "Put shortcuts next to the command they trigger, such as in a menu item or tooltip.",
+    "Don't use Kbd for code or text people type. Use a code element.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <p className="text-sm">
+            Press <Kbd>Esc</Kbd> to close.
+          </p>
+        ),
+        description: "Use the key's name as printed on the keyboard.",
+      },
+      negative: {
+        component: (
+          <p className="text-sm">
+            Type <Kbd>npm install</Kbd> to begin.
+          </p>
+        ),
+        description: "Don't use Kbd for commands or code. Use a code element.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Screen readers read the key's text. Give an icon key visually hidden text
+  with its name, such as “Command”.
+- Mark the icon itself `aria-hidden`, so only the name is read.
+- Not interactive. Never takes focus or responds to clicks.
+
+<StorybookLink id="base-components-display-kbd" name="Kbd" />
