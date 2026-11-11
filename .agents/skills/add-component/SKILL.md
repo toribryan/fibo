@@ -124,6 +124,18 @@ lead `<Canvas>` above the tabs.
   and render the real parts in specimens rather than copying their markup.
 - "On this page" lists only the open tab's headings, with nothing to set.
 
+### The docs site page
+
+The docs site (`apps/docs`, `plans/016-docs-site.md`) carries the guidance
+too: `apps/docs/content/docs/components/<name>.mdx`. Copy
+`apps/docs/content/docs/components/button.mdx` and keep its order: a lead
+`<Preview>`, When to use it, Installation, one to three example sections,
+Guidelines, Do's and don'ts, Accessibility, and `<StorybookLink>` last. API
+reference, data attributes and anatomy stay in Storybook. An example that
+needs state goes in `apps/docs/components/demos/<name>.tsx` with
+`"use client"`; never import a story file. Add the page to its group in
+`apps/docs/content/docs/components/meta.json`.
+
 ## 5. Register the metadata
 
 - Add an entry to `packages/ui/components.meta.json`: `title`, a one-line
