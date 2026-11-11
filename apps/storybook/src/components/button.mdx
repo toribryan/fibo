@@ -25,7 +25,10 @@ canceling a step.
 
 - Six variants, from the filled primary to a plain link, in four text sizes and
   four icon sizes.
-- Icons marked with `data-icon` pull the padding in on their side.
+- `iconStart` and `iconEnd` take an icon component and pull the padding in
+  on their side.
+- `loading` swaps the start icon for a spinner, blocks presses and keeps
+  focus on the button.
 - Renders as a link, or any other element, through Base UI's `render` prop.
 - `destructive` is a red tint, so it never outshouts the primary action.
 
@@ -49,9 +52,24 @@ Four text sizes, `xs` to `lg`, and four square `icon` sizes to match.
 
 ### With an icon
 
-`data-icon` on the icon tightens the padding on that side.
+`iconStart` or `iconEnd` takes the icon component and tightens the padding on
+that side. An icon placed as a child with `data-icon="inline-start"` does the
+same.
 
 <Canvas of={Stories.WithIcon} />
+
+### Loading
+
+`loading` shows a spinner and sets `aria-busy`. The button stays focusable,
+so focus isn't lost while the action runs, but presses do nothing.
+
+<Canvas of={Stories.Loading} />
+
+### Fill width
+
+`fillWidth` stretches the button to its container, for narrow forms.
+
+<Canvas of={Stories.FillWidth} />
 
 ### Icon only
 
@@ -64,6 +82,12 @@ An `icon` size, named with `aria-label`.
 `disabled` dims the button and blocks the pointer.
 
 <Canvas of={Stories.Disabled} />
+
+### Focused
+
+The keyboard focus ring.
+
+<Canvas of={Stories.Focused} />
 
 ## Usage
 
@@ -89,10 +113,17 @@ One default button per view. Every other action takes a quieter variant.
     "One default (primary) button per view. Every other action gets a lower emphasis variant.",
     "Keep labels to one to three words, in sentence case, starting with a verb.",
     <>
-      Mark icons with <code>data-icon="inline-start"</code> or{" "}
-      <code>"inline-end"</code> so the padding adjusts for them.
+      Pass icons as <code>iconStart</code> or <code>iconEnd</code> so the
+      padding adjusts for them.
     </>,
-    "The label sets the width. Stretch a button only on narrow layouts where it spans the container.",
+    <>
+      Set <code>loading</code> while the action runs rather than disabling the
+      button, so focus stays put.
+    </>,
+    <>
+      The label sets the width. Use <code>fillWidth</code> only on narrow
+      layouts where the button spans the container.
+    </>,
     "Keep 8px between buttons in a group.",
   ]}
 />
@@ -141,9 +172,8 @@ One default button per view. Every other action takes a quieter variant.
     {
       positive: {
         component: (
-          <Button variant="outline">
+          <Button variant="outline" iconEnd={ArrowRightIcon}>
             Continue
-            <ArrowRightIcon data-icon="inline-end" />
           </Button>
         ),
         description: "Put a directional icon after the label it points from.",
@@ -184,11 +214,22 @@ rendering as a link.
       when: "The button is disabled.",
     },
     {
-      attribute: "data-icon",
-      element: "An icon inside the button",
+      attribute: "data-loading",
+      element: "The button",
       when: (
         <>
-          You set it: <code>inline-start</code> or <code>inline-end</code>.
+          <code>loading</code> is set.
+        </>
+      ),
+    },
+    {
+      attribute: "data-icon",
+      element: "An icon or the spinner inside the button",
+      when: (
+        <>
+          <code>inline-start</code> or <code>inline-end</code>, set by{" "}
+          <code>iconStart</code>, <code>iconEnd</code> and <code>loading</code>,
+          or by you on a child icon.
         </>
       ),
     },
@@ -200,7 +241,13 @@ rendering as a link.
 <UsageGuidelines
   guidelines={[
     <>
-      Icon-only buttons need an <code>aria-label</code>. The icon is decorative.
+      Icon-only buttons need an <code>aria-label</code>. Icons are{" "}
+      <code>aria-hidden</code>.
+    </>,
+    <>
+      A loading button sets <code>aria-busy</code> and{" "}
+      <code>aria-disabled</code> and stays in the tab order. Announce the
+      result, such as with a toast, when the action finishes.
     </>,
     <>
       Disable a button only when the reason is obvious nearby. Otherwise keep it

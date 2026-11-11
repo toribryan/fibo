@@ -3,7 +3,7 @@ title: Button
 description: Triggers an action, such as submitting a form, opening a dialog, or confirming or canceling a step.
 ---
 
-import { ArrowRightIcon } from "lucide-react"
+import { ArrowRightIcon, PlusIcon } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   ComponentRules,
@@ -41,6 +41,20 @@ outshouts the primary action.
   <Button variant="link">Link</Button>
 </Preview>
 
+## Icons, loading and width
+
+`iconStart` and `iconEnd` take an icon component. `loading` swaps the start
+icon for a spinner and blocks presses while keeping focus. `fillWidth`
+stretches the button to its container.
+
+<Preview>
+  <Button iconStart={PlusIcon}>New project</Button>
+  <Button variant="outline" iconEnd={ArrowRightIcon}>
+    Continue
+  </Button>
+  <Button loading>Saving</Button>
+</Preview>
+
 ## Guidelines
 
 <UsageGuidelines
@@ -48,10 +62,17 @@ outshouts the primary action.
     "One default button per view. Every other action gets a quieter variant.",
     "Keep labels to one to three words, in sentence case, starting with a verb.",
     <>
-      Mark icons with <code>data-icon="inline-start"</code> or{" "}
-      <code>"inline-end"</code> so the padding adjusts for them.
+      Pass icons as <code>iconStart</code> or <code>iconEnd</code> so the
+      padding adjusts for them.
     </>,
-    "The label sets the width. Stretch a button only on narrow layouts where it spans the container.",
+    <>
+      Set <code>loading</code> while the action runs rather than disabling the
+      button, so focus stays put.
+    </>,
+    <>
+      The label sets the width. Use <code>fillWidth</code> only on narrow
+      layouts where the button spans the container.
+    </>,
     "Keep 8px between buttons in a group.",
   ]}
 />
@@ -84,9 +105,8 @@ outshouts the primary action.
     {
       positive: {
         component: (
-          <Button variant="outline">
+          <Button variant="outline" iconEnd={ArrowRightIcon}>
             Continue
-            <ArrowRightIcon data-icon="inline-end" />
           </Button>
         ),
         description: "Put a directional icon after the label it points from.",
@@ -107,7 +127,9 @@ outshouts the primary action.
 
 ## Accessibility
 
-- Icon-only buttons need an `aria-label`. The icon is decorative.
+- Icon-only buttons need an `aria-label`. Icons are `aria-hidden`.
+- A loading button sets `aria-busy` and `aria-disabled` and stays in the tab
+  order. Announce the result, such as with a toast, when the action finishes.
 - Disable a button only when the reason is obvious nearby. Otherwise keep it
   enabled and explain what's missing on submit.
 - The focus ring is a 3px `ring-subtle` halo over a `ring` border, and it

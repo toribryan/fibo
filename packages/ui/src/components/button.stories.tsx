@@ -34,7 +34,12 @@ const meta: Meta<typeof Button> = {
       ],
     },
     disabled: { control: "boolean" },
+    loading: { control: "boolean" },
+    fillWidth: { control: "boolean" },
+    iconStart: { control: false },
+    iconEnd: { control: false },
   },
+  parameters: { controls: { exclude: ["iconStart", "iconEnd", "onClick"] } },
   args: {
     children: "Button",
     variant: "default",
@@ -101,19 +106,48 @@ export const Disabled: Story = {
   },
 }
 
+export const Focused: Story = {
+  play: async ({ canvas, userEvent }) => {
+    await userEvent.tab()
+    await expect(canvas.getByRole("button", { name: "Button" })).toHaveFocus()
+  },
+}
+
+export const Loading: Story = {
+  args: { loading: true, children: "Saving" },
+  play: async ({ args, canvas, userEvent }) => {
+    const button = canvas.getByRole("button", { name: "Saving" })
+    await expect(button).toHaveAttribute("aria-busy", "true")
+    await userEvent.tab()
+    await expect(button).toHaveFocus()
+    await userEvent.keyboard("{Enter}")
+    await userEvent.click(button)
+    await expect(args.onClick).not.toHaveBeenCalled()
+  },
+}
+
 export const WithIcon: Story = {
   render: (args: ComponentProps<typeof Button>) => (
     <div className="flex flex-wrap items-center gap-3">
-      <Button {...args}>
-        <PlusIcon data-icon="inline-start" />
+      <Button {...args} iconStart={PlusIcon}>
         New project
       </Button>
-      <Button {...args} variant="outline">
+      <Button {...args} variant="outline" iconEnd={ArrowRightIcon}>
         Continue
-        <ArrowRightIcon data-icon="inline-end" />
       </Button>
     </div>
   ),
+}
+
+export const FillWidth: Story = {
+  args: { fillWidth: true, children: "Sign in" },
+  decorators: [
+    (Story) => (
+      <div className="w-72">
+        <Story />
+      </div>
+    ),
+  ],
 }
 
 export const IconOnly: Story = {
