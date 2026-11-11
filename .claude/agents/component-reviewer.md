@@ -11,6 +11,7 @@ Given a component name, read:
 - `packages/ui/src/components/<name>.tsx`
 - `packages/ui/src/components/<name>.stories.tsx`
 - `apps/storybook/src/components/<name>.mdx`
+- `apps/docs/content/docs/components/<name>.mdx`, the docs site page
 - its entry in `packages/ui/components.meta.json`
 - `AGENTS.md` for the conventions
 
@@ -42,6 +43,10 @@ Check each item and report only the ones that fail, with file and line:
    Sentence case headings. A page split with `<DocTabs>` puts those sections
    in a Build tab that comes first, the design material in a Design tab
    after it, and one Anatomy (see the add-component skill).
+   The docs site page follows `apps/docs/content/docs/components/button.mdx`,
+   keeps the same guidelines as the Storybook page, imports no story file,
+   ends with `<StorybookLink>`, and is listed in its group in
+   `apps/docs/content/docs/components/meta.json`.
 7. **Tests.** Interactive parts have a `play` function on `Default` covering
    pointer and keyboard. Bare stories name the part with `aria-label`. Logic
    that stories cannot show has a `<name>.test.tsx`. No story imports from

@@ -1,0 +1,54 @@
+---
+title: Drop zone
+description: Wraps an area people can drop files onto, with an overlay while they drag and files split by type.
+---
+
+import { UsageGuidelines } from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  DropZoneDemo,
+  DropZoneDraggingDemo,
+} from "@/components/demos/drop-zone"
+
+<Preview>
+  <DropZoneDemo />
+</Preview>
+
+## When to use it
+
+Use Drop zone to let people drop files onto an area, usually a whole
+conversation panel, so the target is easy to hit. It splits dropped files by
+`accept` into `onDropFiles` and `onRejectFiles`, ignores text and links
+dragged across it, and never changes what it covers. In a chat,
+`ChatComposerDropZone` wires it to the composer for you.
+
+## Installation
+
+<Install name="drop-zone" exports={["DropZone", "matchesAccept"]} />
+
+## While dragging
+
+The overlay: a dashed ring, what happens on drop, and the limits.
+
+<Preview>
+  <DropZoneDraggingDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Wrap the whole conversation panel, not just the text box.",
+    "Say what happens in the label, such as Drop files to attach, and the limits in the description.",
+    "Tell people why a file was left out with onRejectFiles, for example in a toast.",
+    "Always offer a file picker too. Dropping is a shortcut, not the only way in.",
+  ]}
+/>
+
+## Accessibility
+
+- Dragging needs a pointer, so a file picker such as the composer's Attach
+  files is the keyboard path.
+- The overlay is `aria-hidden`: it only mirrors a drag already in progress.
+
+<StorybookLink id="base-components-forms-drop-zone" name="Drop zone" />

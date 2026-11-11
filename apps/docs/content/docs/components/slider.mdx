@@ -1,0 +1,116 @@
+---
+title: Slider
+description: Picks a number, or a range, by dragging along a track.
+---
+
+import {
+  Slider,
+  SliderLabel,
+  SliderValue,
+} from "@workspace/ui/components/slider"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <div className="w-full max-w-sm">
+    <Slider defaultValue={[40]} aria-label="Volume" />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Slider when the rough position matters more than the exact number, like
+volume, brightness or a price range. One thumb picks a value, two pick a
+range, and arrows, Page Up and Page Down, Home and End all move it.
+
+## Installation
+
+<Install name="slider" exports={["Slider", "SliderLabel", "SliderValue"]} />
+
+## Range
+
+Two thumbs, each named through `thumbLabels`.
+
+<Preview>
+  <div className="w-full max-w-sm">
+    <Slider
+      defaultValue={[20, 80]}
+      thumbLabels={["Minimum price", "Maximum price"]}
+    />
+  </div>
+</Preview>
+
+## With label and value
+
+`SliderLabel` and `SliderValue` go inside the slider, on one row above the
+track. The label names the thumb; the value is formatted with `format`, here
+as a percentage.
+
+<Preview>
+  <div className="w-full max-w-sm">
+    <Slider defaultValue={[60]} format={{ style: "unit", unit: "percent" }}>
+      <SliderLabel>Brightness</SliderLabel>
+      <SliderValue />
+    </Slider>
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a slider when the rough position matters more than the exact number, like volume, brightness or a price range.",
+    "When people need an exact number, use an input, or show the value beside the slider.",
+    "Show the value next to the label while it changes.",
+    <>
+      Match <code>step</code> to the useful precision. A price range rarely
+      needs single cents.
+    </>,
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 flex-col gap-3">
+            <div className="flex justify-between text-sm">
+              <span className="font-medium">Brightness</span>
+              <span className="font-mono text-muted-foreground">60%</span>
+            </div>
+            <Slider defaultValue={[60]} aria-label="Brightness" />
+          </div>
+        ),
+        description: "Show the value while people drag, beside a clear label.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 flex-col gap-3">
+            <span className="text-sm font-medium">Quantity</span>
+            <Slider defaultValue={[3]} max={1000} aria-label="Quantity" />
+          </div>
+        ),
+        description:
+          "Don't use a slider for an exact number across a wide range. Dragging to 3 of 1,000 is fiddly; use an input.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Each thumb is announced as a slider with its value. Name it with
+  `aria-label`, or with `thumbLabels` for a range.
+- Arrow keys move one step, Page Up and Page Down move ten, and Home and End
+  jump to the minimum and maximum.
+- When the bare number isn't meaningful, like a price, pass `format` with
+  `Intl.NumberFormatOptions`, such as a currency.
+- The thumb shows a focus ring on keyboard focus, and on hover as a drag cue.
+
+<StorybookLink id="base-components-forms-slider" name="Slider" />

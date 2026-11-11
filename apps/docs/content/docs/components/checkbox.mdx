@@ -1,0 +1,92 @@
+---
+title: Checkbox
+description: Turns a single option on or off, or picks many from a list.
+---
+
+import { Checkbox } from "@workspace/ui/components/checkbox"
+import { Label } from "@workspace/ui/components/label"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <div className="flex items-center gap-2">
+    <Checkbox id="preview-terms" />
+    <Label htmlFor="preview-terms">Accept terms and conditions</Label>
+  </div>
+</Preview>
+
+## When to use it
+
+Use Checkbox to turn one option on or off, or to pick any number from a list,
+when the change applies on form submit. For a setting that applies
+immediately, use a switch.
+
+## Installation
+
+<Install name="checkbox" exports={["Checkbox"]} />
+
+## States
+
+Checked, unchecked, indeterminate and disabled. `indeterminate` shows a dash
+for a partly-on group, such as select all with some rows selected, and screen
+readers hear "mixed".
+
+<Preview>
+  <Checkbox aria-label="Unchecked" />
+  <Checkbox aria-label="Checked" defaultChecked />
+  <Checkbox aria-label="Indeterminate" indeterminate />
+  <Checkbox aria-label="Disabled" disabled />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Always pair a checkbox with a visible Label. The label is part of the hit area.",
+    "Write labels as positive statements, so checked means yes.",
+    "Stack options in a column. Rows are hard to scan.",
+    "For a setting that applies immediately, use a switch.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex items-center gap-2">
+            <Checkbox id="rule-yes" defaultChecked />
+            <Label htmlFor="rule-yes">Email me when someone replies</Label>
+          </div>
+        ),
+        description: "Phrase the label so ticking it turns something on.",
+      },
+      negative: {
+        component: (
+          <div className="flex items-center gap-2">
+            <Checkbox id="rule-no" />
+            <Label htmlFor="rule-no">Don't stop sending me emails</Label>
+          </div>
+        ),
+        description:
+          "Don't use negatives. People have to work out what checked means.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Connect the label with `htmlFor` and `id`, or wrap the checkbox in the
+  Label.
+- The hit area extends past the 16px box on every side, to the 24px minimum
+  target.
+- Mark errors with `aria-invalid`. The box turns destructive and keeps its
+  focus ring.
+
+<StorybookLink id="base-components-forms-checkbox" name="Checkbox" />

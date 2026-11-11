@@ -1,0 +1,131 @@
+---
+title: Date picker
+description: A field that opens a calendar to pick a day, or a range with presets and Apply; a popover on desktop, a drawer on phones.
+---
+
+import {
+  DatePicker,
+  DateRangePicker,
+} from "@workspace/ui/components/date-picker"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  DatePickerMinMaxDemo,
+  DatePickerPresetsDemo,
+} from "@/components/demos/date-picker"
+
+<Preview>
+  <DatePicker
+    label="Due date"
+    placeholder="Select a date"
+    defaultValue={new Date(2026, 9, 14)}
+  />
+</Preview>
+
+## When to use it
+
+Use `DatePicker` for one day, such as a due date: it closes as soon as a day
+is chosen. Use `DateRangePicker` for a span, such as a report period or a
+stay: it keeps a draft with presets and applies both ends together. Below the
+`sm` breakpoint both open as a drawer from the bottom.
+
+## Installation
+
+<Install
+  name="date-picker"
+  exports={["DatePicker", "DateRangePicker", "defaultDateRangePresets"]}
+/>
+
+Also installs Calendar, Button, Sheet and `lib/dates.ts`. Also exports
+`defaultDatePresets` and the `DateRange`, `DateRangePreset` and `DatePreset`
+types.
+
+## Range
+
+Two picks, a live preview between them, the range and its length in the
+footer, then Apply. Cancel and Escape leave the value as it was. `onChange`
+fires on Apply, never on a half-picked range.
+
+<Preview>
+  <DateRangePicker
+    label="Date range"
+    defaultValue={{ from: new Date(2026, 9, 5), to: new Date(2026, 9, 11) }}
+  />
+</Preview>
+
+## Presets and bounds
+
+Presets are functions of today, so "Last 7 days" stays right tomorrow. A
+preset picks and closes, like a day. Days outside `minDate`, `maxDate` or
+`isDateDisabled` are struck through, and a preset that lands on one is
+disabled.
+
+<Preview>
+  <DatePickerPresetsDemo />
+  <DatePickerMinMaxDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use DatePicker for one day, such as a due date, and DateRangePicker for a span, such as a report period or a stay. Don't use two DatePickers for a range.",
+    "Offer presets for the most-picked ranges. The defaults suit reports; a booking flow wants This weekend or Next week.",
+    "Bound the calendar to what's allowed instead of validating after Apply.",
+    <>
+      Leave <code>type</code> on <code>auto</code> in products. Force{" "}
+      <code>drawer</code> or <code>popover</code> only to show or test one.
+    </>,
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <DateRangePicker
+            label="Report period"
+            type="popover"
+            defaultValue={{
+              from: new Date(2026, 9, 5),
+              to: new Date(2026, 9, 11),
+            }}
+          />
+        ),
+        description: "Do use one range picker for a span of dates.",
+      },
+      negative: {
+        component: (
+          <div className="flex gap-2">
+            <DatePicker label="From" type="popover" placeholder="From" />
+            <DatePicker label="To" type="popover" placeholder="To" />
+          </div>
+        ),
+        description:
+          "Don't split it into two pickers. Nothing stops the end coming before the start, and nobody sees the range.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The trigger is a button named by the label and the value, such as Date
+  range: Oct 5 – 11, 2026. Inside a Field, the FieldLabel and the value name
+  it instead, and clicking the label focuses it. The panel is a dialog named
+  by the label, which the drawer also shows as its title.
+- Opening moves focus to the picked day, or today, so the arrows work at
+  once. Escape closes and returns focus to the trigger.
+- The calendar's grid keyboard model applies inside; see Calendar.
+- Presets are toggle buttons: the one matching the draft is `aria-pressed`.
+- Apply stays disabled until both ends are picked, and the footer says what's
+  missing.
+- Day cells in the drawer are 44 pixels, above the minimum touch target.
+
+<StorybookLink id="base-components-forms-date-picker" name="Date picker" />

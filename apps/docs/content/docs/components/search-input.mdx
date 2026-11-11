@@ -1,0 +1,119 @@
+---
+title: Search input
+description: A search box with a Cmd+K shortcut and a clear button, and a compact trigger for a header whose search opens in a command menu.
+---
+
+import { SearchIcon } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+} from "@workspace/ui/components/field"
+import {
+  SearchInput,
+  SearchTrigger,
+} from "@workspace/ui/components/search-input"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import { FilteredListDemo } from "@/components/demos/search-input"
+
+<Preview>
+  <div className="w-72">
+    <SearchInput hotkey={null} placeholder="Search…" />
+  </div>
+</Preview>
+
+## When to use it
+
+Use SearchInput where search is the page's main job. Cmd+K on macOS, Ctrl+K
+elsewhere, focuses it from anywhere on the page. With a query, a clear button
+replaces the key hint, and Escape clears first, then leaves the field. Use
+SearchTrigger in a header whose search opens in a Command menu or dialog.
+
+## Installation
+
+<Install name="search-input" exports={["SearchInput", "SearchTrigger"]} />
+
+It installs Input group, Kbd and Button with it.
+
+## Filtering a list
+
+Controlled with `value` and `onValueChange`. The list filters on each
+keystroke and announces its changes. `hotkey={null}` drops the shortcut and
+its hint, for a second search on the page.
+
+<Preview>
+  <FilteredListDemo />
+</Preview>
+
+## In a field
+
+The Field's label, description and invalid state reach the input.
+
+<Preview>
+  <Field className="w-72" invalid>
+    <FieldLabel>Find a teammate</FieldLabel>
+    <SearchInput hotkey={null} defaultValue="zz" />
+    <FieldDescription>No one by that name.</FieldDescription>
+  </Field>
+</Preview>
+
+## Search trigger
+
+A ghost button with the icon and the shortcut hint. No visible text, so
+`aria-label` names it, Search by default. Pass it as Command menu's `trigger`
+with the menu's `hotkey={null}`, so the trigger handles Cmd+K.
+
+<Preview>
+  <SearchTrigger hotkey={null} />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use SearchInput where search is the page's main job, such as a docs index or a table of people.",
+    "Use SearchTrigger in a header or toolbar, where the search opens in a Command menu or dialog.",
+    "The placeholder names what can be searched, such as Search projects…, not instructions.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: <SearchTrigger hotkey={null} />,
+        description: "Use SearchTrigger to keep the header compact.",
+      },
+      negative: {
+        component: (
+          <Button variant="outline">
+            <SearchIcon aria-hidden="true" />
+            Search
+          </Button>
+        ),
+        description:
+          "Don't build a search button by hand; it loses the shortcut and its hint.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The field is a searchbox and the trigger a button. Both are named Search
+  unless given an aria-label; inside a Field, the FieldLabel names the field.
+- The shortcut is announced through aria-keyshortcuts; the visible hint is
+  hidden from assistive technology.
+- Escape clears the query before it leaves the field, so a slip never loses
+  focus, and doesn't close a dialog around it.
+- The clear button is named Clear search and returns focus to the field.
+- While disabled, neither binds the shortcut, so the browser keeps its own.
+
+<StorybookLink id="base-components-forms-search-input" name="Search input" />

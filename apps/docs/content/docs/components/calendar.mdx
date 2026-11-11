@@ -1,0 +1,153 @@
+---
+title: Calendar
+description: A month grid for picking a day or a range, with full keyboard use; pages side by side, scrolls on phones, or fills a page with a month of events.
+---
+
+import { Calendar } from "@workspace/ui/components/calendar"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  CalendarDisabledDaysDemo,
+  CalendarMonthDemo,
+} from "@/components/demos/calendar"
+
+<Preview>
+  <div className="rounded-xl border border-border p-3">
+    <Calendar
+      defaultMonth={new Date(2026, 9, 1)}
+      defaultValue={new Date(2026, 9, 15)}
+    />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Calendar alone when the dates are the content, such as availability on a
+booking page. In a form, use Date picker, which opens a Calendar from a field.
+`type="scroll"` stacks a year of months for a phone drawer, and
+`type="month"` fills a page with a month of events.
+
+## Installation
+
+<Install name="calendar" exports={["Calendar"]} />
+
+Installs Button and `lib/dates.ts`, its date helpers. `useToday` is exported
+too.
+
+## Range
+
+`mode="range"` picks a start and an end, drawn as one bar per week, with a
+preview under the pointer before the second pick. Two months sit side by side
+and stack when there isn't room.
+
+<Preview>
+  <div className="rounded-xl border border-border p-3">
+    <Calendar
+      mode="range"
+      months={2}
+      defaultMonth={new Date(2026, 9, 1)}
+      defaultValue={{ from: new Date(2026, 9, 6), to: new Date(2026, 9, 12) }}
+    />
+  </div>
+</Preview>
+
+## Disabled days
+
+Days before `minDate`, after `maxDate` or rejected by `isDateDisabled` are
+struck through and can't be picked. They still take keyboard focus.
+
+<Preview>
+  <div className="rounded-xl border border-border p-3">
+    <CalendarDisabledDaysDemo />
+  </div>
+</Preview>
+
+## Month view
+
+`type="month"` is a month of events that fills its parent, so the parent needs
+a height. Each cell shows its day, the first two events and a count of the
+rest; picking a day lists all its events. Below 768px wide the cells shrink to
+the day and up to three dots.
+
+<Preview>
+  <CalendarMonthDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use Calendar alone when the dates are the content, such as availability on a booking page. In a form, use Date picker so the field takes one line until needed.",
+    "Show two months for a range that often crosses a month end, such as a stay or a report period, and one for a single day.",
+    <>
+      Set bounds with <code>minDate</code> and <code>maxDate</code> rather than
+      rejecting a pick after the fact.
+    </>,
+    "Start the week where readers do: Monday in most of Europe, Sunday in the US.",
+    <>
+      Use <code>type="month"</code> when events are the content and the calendar
+      has most of the page. Give its parent a height. Pass actions such as New
+      event as children so they sit in its header.
+    </>,
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Calendar
+            defaultMonth={new Date(2026, 9, 1)}
+            minDate={new Date(2026, 9, 5)}
+          />
+        ),
+        description:
+          "Disable days that can't be picked, so the rule shows before a pick.",
+      },
+      negative: {
+        component: (
+          <div className="flex flex-col items-center gap-2">
+            <Calendar
+              defaultMonth={new Date(2026, 9, 1)}
+              defaultValue={new Date(2026, 9, 2)}
+            />
+            <p className="text-sm text-destructive">
+              Pick a day from October 5.
+            </p>
+          </div>
+        ),
+        description: "Don't allow the pick and then explain why it was wrong.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Each month is a grid labeled by its title. Column headers carry the full
+  weekday name, and each day button the full date, such as Tuesday, October
+  20, 2026.
+- The grid is one tab stop. Arrows move by a day or a week, Home and End to
+  the ends of the week, Page Up and Page Down by a month, and with Shift by a
+  year. Moving past the page turns it.
+- Enter or Space picks the focused day. The picked days' cells are
+  `aria-selected`, and today is `aria-current`.
+- Unpickable days are `aria-disabled` rather than disabled, so they stay in
+  the keyboard path and are announced as unavailable.
+- In range mode a polite live region says what happened: the start and that
+  an end is needed, then the range and its length.
+- In the month type each cell holds one day button, so the grid keeps the
+  same keyboard model. Cards and dots are hidden from assistive technology.
+  The button is described by a list of the day's events instead.
+- The month type's events become buttons in the selected day's list, outside
+  the grid, so nothing inside a cell takes focus. Tab moves from the grid to
+  that list.
+- The page slide fades in and is off under reduced motion.
+
+<StorybookLink id="base-components-forms-calendar" name="Calendar" />

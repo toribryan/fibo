@@ -1,0 +1,43 @@
+---
+title: Label
+description: Names a form control and widens its hit area.
+---
+
+import { Input } from "@workspace/ui/components/input"
+import { Label } from "@workspace/ui/components/label"
+import { UsageGuidelines } from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <div className="flex w-full max-w-xs flex-col gap-2">
+    <Label htmlFor="email">Email</Label>
+    <Input id="email" type="email" placeholder="you@example.com" />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Label to name any form control. Clicking it focuses or toggles the
+control, and it dims with its control when the control is disabled. Match
+`htmlFor` to the control's `id`, or wrap the control in the label.
+
+## Installation
+
+<Install name="label" exports={["Label"]} />
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Write labels as short nouns or questions, in sentence case, with no colon.",
+    "Place the label above inputs and textareas, and to the right of checkboxes.",
+    "Mark the optional fields, not the required ones, when most fields are required.",
+  ]}
+/>
+
+## Accessibility
+
+- Connect every label with `htmlFor` or by wrapping the control.
+- Dims with a disabled control, so the pair reads as one unit.
+
+<StorybookLink id="base-components-forms-label" name="Label" />

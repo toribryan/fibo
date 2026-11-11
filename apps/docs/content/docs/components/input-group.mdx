@@ -1,0 +1,144 @@
+---
+title: Input group
+description: An input with an icon, text or button beside it, drawn as one field.
+---
+
+import { AtSignIcon, SearchIcon } from "lucide-react"
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+} from "@workspace/ui/components/field"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@workspace/ui/components/input-group"
+import { Kbd } from "@workspace/ui/components/kbd"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import { ClearableSearchDemo } from "@/components/demos/input-group"
+
+<Preview>
+  <InputGroup className="w-72">
+    <InputGroupAddon>
+      <SearchIcon aria-hidden="true" />
+    </InputGroupAddon>
+    <InputGroupInput type="search" placeholder="Search" aria-label="Search" />
+  </InputGroup>
+</Preview>
+
+## When to use it
+
+Use Input group when an icon, text, a Kbd or a Button belongs inside the
+field. The group draws the border, focus ring and invalid state around the
+addons, and pressing an addon focuses the input. Put the label outside the
+group, in a FieldLabel or `aria-label`.
+
+## Installation
+
+<Install
+  name="input-group"
+  exports={["InputGroup", "InputGroupAddon", "InputGroupInput"]}
+/>
+
+## Ghost, in a menu
+
+`variant="ghost"` drops the border and background, so the popup is the field.
+Used by Command menu and Filter menu.
+
+<Preview>
+  <div className="w-72 overflow-hidden rounded-xl border border-border bg-popover shadow-lg">
+    <InputGroup variant="ghost" className="h-11 border-b border-border">
+      <InputGroupAddon>
+        <SearchIcon aria-hidden="true" />
+      </InputGroupAddon>
+      <InputGroupInput placeholder="Type a command" aria-label="Command" />
+      <InputGroupAddon align="inline-end">
+        <Kbd>Esc</Kbd>
+      </InputGroupAddon>
+    </InputGroup>
+    <p className="px-3 py-6 text-center text-sm text-muted-foreground">
+      Recent commands show here.
+    </p>
+  </div>
+</Preview>
+
+## With a button
+
+An end addon with an icon button that clears the search. Name the button.
+
+<Preview>
+  <ClearableSearchDemo />
+</Preview>
+
+## In a field
+
+The Field's label, description and invalid state reach the input.
+
+<Preview>
+  <Field className="w-72" invalid>
+    <FieldLabel>Handle</FieldLabel>
+    <InputGroup>
+      <InputGroupAddon>
+        <AtSignIcon aria-hidden="true" />
+      </InputGroupAddon>
+      <InputGroupInput defaultValue="ada" />
+    </InputGroup>
+    <FieldDescription>Letters, numbers and dashes.</FieldDescription>
+  </Field>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "One addon on each side at most. More reads as a toolbar, not a field.",
+    "Use a leading icon only when it says what the field is for, such as search or a handle's @.",
+    "Use the ghost variant only where the surface around it marks the field, such as a popup's header.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <InputGroup className="w-56">
+            <InputGroupAddon>
+              <SearchIcon aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput aria-label="Search" placeholder="Search" />
+          </InputGroup>
+        ),
+        description: "Draw the icon inside the group, so the ring wraps it.",
+      },
+      negative: {
+        component: (
+          <div className="flex w-56 items-center gap-2">
+            <SearchIcon className="size-4 text-muted-foreground" />
+            <InputGroup>
+              <InputGroupInput aria-label="Search" placeholder="Search" />
+            </InputGroup>
+          </div>
+        ),
+        description: "Don't set an icon outside the field it belongs to.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The group has the group role; the input needs its own name, from a
+  FieldLabel or aria-label.
+- Hide decorative icons in addons with aria-hidden.
+- Pressing an addon focuses the input without blurring it first, so the caret
+  stays put. Buttons in an addon work as usual.
+
+<StorybookLink id="base-components-forms-input-group" name="Input group" />

@@ -1,0 +1,99 @@
+---
+title: Input
+description: A single line of free text.
+---
+
+import { Input } from "@workspace/ui/components/input"
+import { Label } from "@workspace/ui/components/label"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <div className="flex w-full max-w-xs flex-col gap-2">
+    <Label htmlFor="work-email">Work email</Label>
+    <Input id="work-email" type="email" placeholder="you@example.com" />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Input for a single line of free text: a name, an email, a search term. It
+fills the width of its container and takes every native `input` prop and
+type. For more than one line, use a Textarea.
+
+## Installation
+
+<Install name="input" exports={["Input"]} />
+
+## Sizes
+
+`size="sm"` matches a small Select or Button in dense forms and toolbars.
+`size` sets the height instead of the native width; set width with
+`className`.
+
+<Preview>
+  <div className="flex w-full max-w-xs flex-col gap-3">
+    <Input aria-label="Default size" placeholder="Default" />
+    <Input size="sm" aria-label="Search" placeholder="Search" />
+  </div>
+</Preview>
+
+## Invalid and disabled
+
+`aria-invalid` turns the border and the focus ring destructive. `disabled`
+dims it and blocks the pointer.
+
+<Preview>
+  <div className="flex w-full max-w-xs flex-col gap-3">
+    <Input aria-label="Email" aria-invalid defaultValue="not-an-email" />
+    <Input aria-label="Locked" disabled defaultValue="Can't edit this" />
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Give every input a visible Label above it. Placeholder text disappears on the first keystroke.",
+    "Size the container to the expected answer. A postcode field shouldn't span the page.",
+    "Set the right type (email, tel, url, search) so phones show the matching keyboard.",
+    "For more than one line, use a Textarea.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex w-56 flex-col gap-2">
+            <Label htmlFor="rule-email">Email</Label>
+            <Input id="rule-email" placeholder="you@example.com" />
+          </div>
+        ),
+        description:
+          "Use a label for the question and a placeholder for an example.",
+      },
+      negative: {
+        component: <Input className="w-56" placeholder="Email" />,
+        description:
+          "Don't use the placeholder as the label. It vanishes on the first keystroke.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Connect the label with `htmlFor` and `id`.
+- Mark errors with `aria-invalid` and point to the message with
+  `aria-describedby`.
+- Add `autoComplete` for personal details so browsers and password managers
+  can fill them.
+
+<StorybookLink id="base-components-forms-input" name="Input" />

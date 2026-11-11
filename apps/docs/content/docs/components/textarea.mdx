@@ -1,0 +1,65 @@
+---
+title: Textarea
+description: Several lines of free text that grow with the content.
+---
+
+import { Label } from "@workspace/ui/components/label"
+import { Textarea } from "@workspace/ui/components/textarea"
+import { UsageGuidelines } from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <div className="flex w-full max-w-sm flex-col gap-2">
+    <Label htmlFor="preview-notes">Notes</Label>
+    <Textarea id="preview-notes" placeholder="Anything we should know?" />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Textarea for answers that may run past one line: notes, descriptions,
+messages. It grows with its content through `field-sizing: content`, from a
+64px minimum height, so it never needs its own scrollbar.
+
+## Installation
+
+<Install name="textarea" exports={["Textarea"]} />
+
+## States
+
+`aria-invalid` turns the border and the focus ring destructive. `disabled`
+dims the textarea and blocks the pointer.
+
+<Preview>
+  <div className="flex w-full max-w-sm flex-col gap-4">
+    <Textarea
+      aria-label="Invalid example"
+      aria-invalid
+      defaultValue="Too short"
+    />
+    <Textarea
+      aria-label="Disabled example"
+      disabled
+      defaultValue="Can't edit this"
+    />
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use for answers that may run past one line: notes, descriptions, messages.",
+    "Pair with a visible Label; state any length limit before people hit it.",
+    "Set a taller min height through className when the expected answer is long.",
+  ]}
+/>
+
+## Accessibility
+
+- Mark errors with `aria-invalid` and link the message with
+  `aria-describedby`.
+- Don't disable resizing and auto-grow together in a fixed-height container;
+  content gets clipped.
+
+<StorybookLink id="base-components-forms-textarea" name="Textarea" />

@@ -1,0 +1,128 @@
+---
+title: Switch
+description: Turns a setting on or off, taking effect at once.
+---
+
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+} from "@workspace/ui/components/field"
+import { Label } from "@workspace/ui/components/label"
+import { Switch } from "@workspace/ui/components/switch"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <div className="flex items-center gap-2">
+    <Switch id="preview-wifi" defaultChecked />
+    <Label htmlFor="preview-wifi">Wi-Fi</Label>
+  </div>
+</Preview>
+
+## When to use it
+
+Use Switch for a setting that applies the moment it changes, with no save
+button. `checked` and `onCheckedChange` control it; `defaultChecked` leaves it
+uncontrolled. Save the change as soon as it fires. If the change applies only
+on form submit, use a checkbox.
+
+## Installation
+
+<Install name="switch" exports={["Switch"]} />
+
+## Sizes
+
+The default 32 by 18 pixel track, and `size="sm"` for dense tables and
+toolbars.
+
+<Preview>
+  <Switch aria-label="Airplane mode" defaultChecked />
+  <Switch size="sm" aria-label="Airplane mode, small" defaultChecked />
+</Preview>
+
+## Settings list
+
+Label and description on the left, switch on the right, so the switches line
+up.
+
+<Preview>
+  <div className="flex w-full max-w-sm flex-col divide-y divide-border rounded-xl border border-border bg-card">
+    <Field orientation="horizontal" className="p-4">
+      <FieldContent>
+        <FieldLabel>Push notifications</FieldLabel>
+        <FieldDescription>Alerts on this device.</FieldDescription>
+      </FieldContent>
+      <Switch defaultChecked />
+    </Field>
+    <Field orientation="horizontal" className="p-4">
+      <FieldContent>
+        <FieldLabel>Email digest</FieldLabel>
+        <FieldDescription>A summary every Monday.</FieldDescription>
+      </FieldContent>
+      <Switch />
+    </Field>
+    <Field orientation="horizontal" className="p-4">
+      <FieldContent>
+        <FieldLabel>Read receipts</FieldLabel>
+        <FieldDescription>Show when you've read a message.</FieldDescription>
+      </FieldContent>
+      <Switch defaultChecked />
+    </Field>
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use for a setting that applies the moment it changes, like notifications.",
+    "If the change applies only on form submit, use a checkbox.",
+    "Label the setting, not the action: “Wi-Fi”, not “Turn on Wi-Fi”. The switch shows the state.",
+    "In a settings list, label and description go left, switch right, so switches line up.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="flex items-center gap-2">
+            <Switch id="rule-yes" defaultChecked />
+            <Label htmlFor="rule-yes">Dark mode</Label>
+          </div>
+        ),
+        description: "Use a switch for a setting that applies at once.",
+      },
+      negative: {
+        component: (
+          <div className="flex items-center gap-2">
+            <Switch id="rule-no" />
+            <Label htmlFor="rule-no">I agree to the terms</Label>
+          </div>
+        ),
+        description:
+          "Don't use a switch for consent or a form answer. Use a checkbox.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Announced as a switch, on or off, with `aria-checked`. Space toggles it.
+- Link a Label with `htmlFor` and `id`, or set `aria-label` when there's no
+  visible label.
+- The hit area extends past the track on every side to meet the 24px minimum
+  target.
+- The thumb's position shows the state as well as the track's color, so state
+  never relies on color alone.
+
+<StorybookLink id="base-components-forms-switch" name="Switch" />
