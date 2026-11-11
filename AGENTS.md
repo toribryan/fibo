@@ -22,7 +22,7 @@ Node 24 (pinned in `.nvmrc`).
 | `apps/storybook/src/components/`   | One `.mdx` docs page per component                                   |
 | `apps/storybook/src/blocks/`       | Storybook-only docs blocks: anatomy, catalog, hero, `DocLink`        |
 | `packages/docs-blocks/`            | Docs blocks both sites use: foundations, guidelines, install, tables |
-| `apps/docs/`                       | Docs site (Fumadocs), being split out of Storybook: `plans/016`      |
+| `apps/docs/`                       | Docs site (Fumadocs), the site's root: `plans/016-docs-site.md`      |
 | `apps/registry/`                   | Builds the shadcn registry and `llms.txt`, see below                 |
 | `apps/registry/codemods/`          | jscodeshift transforms that migrate off deprecated parts             |
 | `packages/ui/src/21st/`            | One demo per Special component published on 21st.dev                 |
@@ -42,7 +42,7 @@ Node 24 (pinned in `.nvmrc`).
 pnpm install
 pnpm storybook        # Storybook on :6006
 pnpm dev              # every app in dev mode
-pnpm build            # the registry and Storybook
+pnpm build            # the registry, Storybook and the docs site
 pnpm build:site       # build, then assemble the deployable site in dist/
 pnpm registry:build   # registry only
 pnpm 21st:export      # self-contained copies for 21st.dev, see below
@@ -214,11 +214,13 @@ CI runs it on every pull request. Run it after adding a token or changing how
 the registry is built.
 
 The site is static. `vercel.json` runs `pnpm build:site`, which puts the
-built Storybook at the root of `dist/` with the registry at `dist/r/` and
-`llms.txt` beside it. So fibo.toribryan.com opens on Storybook, a component's
-docs live at `/?path=/docs/base-components-<group>-<name>--docs` or
-`/?path=/docs/special-components-<name>--docs`, and installs resolve
-`/r/<name>.json`. Nothing that needs a server at request time will work there.
+docs site at the root of `dist/`, the built Storybook at `dist/storybook/`,
+the registry at `dist/r/` and `llms.txt` beside it. So fibo.toribryan.com
+opens on the docs site, a component's page lives at
+`/docs/components/<name>/` (a block's at `/docs/blocks/<name>/`), its
+Storybook page at `/storybook/?path=/docs/...`, and installs resolve
+`/r/<name>.json`. Old `/?path=` links redirect to `/storybook/`. Nothing that
+needs a server at request time will work there.
 
 `pnpm 21st:export` writes a copy of each Special component that has a demo in
 `packages/ui/src/21st` to `apps/registry/21st/<name>`, with `cn` and any fibo

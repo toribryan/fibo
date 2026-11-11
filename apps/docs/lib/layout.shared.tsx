@@ -6,6 +6,6 @@ export function baseOptions(): BaseLayoutProps {
   return {
     nav: { title: "fibo" },
     githubUrl: GITHUB,
-    links: [{ text: "Storybook", url: STORYBOOK, external: true }],
+    links: [{ text: "Storybook", url: `${STORYBOOK}/`, external: true }],
   }
 }

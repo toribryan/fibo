@@ -91,5 +91,6 @@ MDX and read better as text than Storybook's iframe.
    leaving intro, examples and API reference, plus the link to the docs
    page.
 
-Until phase 4, the Storybook pages stay the published docs and keep
-changing; a phase 3 port copies the latest version.
+From phase 4 on, the docs site is the published docs: guidance changes land
+in `apps/docs` first, and until phase 5 the Storybook page is updated to
+match.
