@@ -147,6 +147,15 @@ const CALLOUTS: Callout[] = [
   { token: "primary-foreground", side: "right", fromBelow: true },
 ]
 
+function subscribeToTheme(onChange: () => void) {
+  const observer = new MutationObserver(onChange)
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  })
+  return () => observer.disconnect()
+}
+
 /**
  * fibo's neutrals as a twelve-step scale, grouped by the job each step does,
  * above a card whose parts are labeled with the tokens that color them.
@@ -154,12 +163,16 @@ const CALLOUTS: Callout[] = [
  * token or a step picks out the other.
  */
 function ColorScale() {
-  const [mode, setMode] = useState<Mode>(() =>
-    typeof document !== "undefined" &&
-    document.documentElement.classList.contains("dark")
-      ? "dark"
-      : "light"
+  // Follows the page's theme until a mode is picked. The server has no theme,
+  // so it renders light and hydration switches to the page's.
+  const pageMode = useSyncExternalStore(
+    subscribeToTheme,
+    () =>
+      document.documentElement.classList.contains("dark") ? "dark" : "light",
+    () => "light" as const
   )
+  const [picked, setMode] = useState<Mode | null>(null)
+  const mode = picked ?? pageMode
   const [active, setActive] = useState<
     { token: string } | { step: number } | null
   >(null)
