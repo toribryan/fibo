@@ -14,6 +14,9 @@ export type Theme = "light" | "dark"
 const KEY = "fibo-theme"
 
 export function readTheme(): Theme {
+  // The docs site embeds stories in an iframe and passes its own theme.
+  const requested = new URLSearchParams(window.location.search).get("theme")
+  if (requested === "light" || requested === "dark") return requested
   try {
     const saved = window.localStorage.getItem(KEY)
     if (saved === "light" || saved === "dark") return saved
