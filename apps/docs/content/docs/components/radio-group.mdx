@@ -1,0 +1,183 @@
+---
+title: Radio group
+description: Picks exactly one option from a short list.
+---
+
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldItem,
+  FieldLabel,
+} from "@workspace/ui/components/field"
+import { Label } from "@workspace/ui/components/label"
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@workspace/ui/components/radio-group"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <RadioGroup defaultValue="pro" aria-label="Plan" className="w-56">
+    <div className="flex items-center gap-2">
+      <RadioGroupItem value="hobby" id="plan-hobby" />
+      <Label htmlFor="plan-hobby">Hobby</Label>
+    </div>
+    <div className="flex items-center gap-2">
+      <RadioGroupItem value="pro" id="plan-pro" />
+      <Label htmlFor="plan-pro">Pro</Label>
+    </div>
+    <div className="flex items-center gap-2">
+      <RadioGroupItem value="team" id="plan-team" />
+      <Label htmlFor="plan-team">Team</Label>
+    </div>
+  </RadioGroup>
+</Preview>
+
+## When to use it
+
+Use Radio group when people pick exactly one option and should see every
+option at once. Arrow keys move the selection and the group is one Tab stop.
+For longer lists, or tight space, use Select.
+
+## Installation
+
+<Install name="radio-group" exports={["RadioGroup", "RadioGroupItem"]} />
+
+## With descriptions
+
+A line under each label, linked with `aria-describedby`.
+
+<Preview>
+  <Field className="w-72">
+    <RadioGroup defaultValue="pro" aria-label="Plan" className="gap-4">
+      <FieldItem>
+        <RadioGroupItem value="hobby" className="mt-0.5" />
+        <FieldContent>
+          <FieldLabel>Hobby</FieldLabel>
+          <FieldDescription>For side projects. One seat.</FieldDescription>
+        </FieldContent>
+      </FieldItem>
+      <FieldItem>
+        <RadioGroupItem value="pro" className="mt-0.5" />
+        <FieldContent>
+          <FieldLabel>Pro</FieldLabel>
+          <FieldDescription>
+            For freelancers. Unlimited projects.
+          </FieldDescription>
+        </FieldContent>
+      </FieldItem>
+      <FieldItem>
+        <RadioGroupItem value="team" className="mt-0.5" />
+        <FieldContent>
+          <FieldLabel>Team</FieldLabel>
+          <FieldDescription>
+            For studios. Shared billing and roles.
+          </FieldDescription>
+        </FieldContent>
+      </FieldItem>
+    </RadioGroup>
+  </Field>
+</Preview>
+
+## Horizontal
+
+For two or three short options.
+
+<Preview>
+  <RadioGroup
+    defaultValue="pro"
+    aria-label="Plan"
+    className="flex w-auto gap-6"
+  >
+    <div className="flex items-center gap-2">
+      <RadioGroupItem value="hobby" id="row-hobby" />
+      <Label htmlFor="row-hobby">Hobby</Label>
+    </div>
+    <div className="flex items-center gap-2">
+      <RadioGroupItem value="pro" id="row-pro" />
+      <Label htmlFor="row-pro">Pro</Label>
+    </div>
+    <div className="flex items-center gap-2">
+      <RadioGroupItem value="team" id="row-team" />
+      <Label htmlFor="row-team">Team</Label>
+    </div>
+  </RadioGroup>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use for two to about six options that people should compare side by side.",
+    "For longer lists, or tight space, use Select.",
+    "Start with a sensible option chosen. A radio group can't be cleared once someone picks.",
+    "Order options logically: smallest to largest, most to least common, or alphabetically.",
+    "Stack options in a column. Use a row only for two or three short labels.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <RadioGroup defaultValue="monthly" aria-label="Billing">
+            {["Monthly", "Yearly"].map((label) => (
+              <div key={label} className="flex items-center gap-2">
+                <RadioGroupItem
+                  value={label.toLowerCase()}
+                  id={`rule-yes-${label}`}
+                />
+                <Label htmlFor={`rule-yes-${label}`}>{label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        ),
+        description: "Show a short list with a sensible default chosen.",
+      },
+      negative: {
+        component: (
+          <RadioGroup aria-label="Country" className="grid-cols-3 gap-2">
+            {[
+              "Austria",
+              "Belgium",
+              "Croatia",
+              "Denmark",
+              "Estonia",
+              "Finland",
+              "France",
+              "Germany",
+              "Greece",
+            ].map((label) => (
+              <div key={label} className="flex items-center gap-2">
+                <RadioGroupItem value={label} id={`rule-no-${label}`} />
+                <Label htmlFor={`rule-no-${label}`}>{label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        ),
+        description: "Don't lay out a long list as radios. Use Select.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Name the group with `aria-label`, or wrap it in a fieldset with a legend,
+  so screen readers announce what the options are for.
+- Tab enters the group on the chosen option and leaves in one step. Arrow
+  keys move between options and choose as they go.
+- Connect each Label with `htmlFor` and `id`. The label is part of the hit
+  area.
+- The dot marks the chosen option alongside the fill, so it doesn't rely on
+  color alone.
+
+<StorybookLink id="base-components-forms-radio-group" name="Radio group" />

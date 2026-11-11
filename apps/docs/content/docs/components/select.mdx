@@ -1,0 +1,218 @@
+---
+title: Select
+description: Picks one option from a list that opens on demand.
+---
+
+import { Label } from "@workspace/ui/components/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
+import {
+  ComponentRules,
+  Tip,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <Select
+    items={[
+      { value: "apple", label: "Apple" },
+      { value: "banana", label: "Banana" },
+      { value: "blueberry", label: "Blueberry" },
+    ]}
+  >
+    <SelectTrigger aria-label="Fruit" className="w-48">
+      <SelectValue placeholder="Pick a fruit" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="apple">Apple</SelectItem>
+      <SelectItem value="banana">Banana</SelectItem>
+      <SelectItem value="blueberry">Blueberry</SelectItem>
+    </SelectContent>
+  </Select>
+</Preview>
+
+## When to use it
+
+Use Select for one choice from about six or more options, or when space is
+tight. It's announced as a combobox with a listbox, and the list opens over
+the trigger with the chosen option aligned to it, as native menus do. Pass
+`items` to Select so the trigger shows the option's label, not its raw value,
+before the list first opens.
+
+## Installation
+
+<Install
+  name="select"
+  exports={[
+    "Select",
+    "SelectTrigger",
+    "SelectValue",
+    "SelectContent",
+    "SelectItem",
+  ]}
+/>
+
+Also exports `SelectGroup`, `SelectLabel` and `SelectSeparator`, which split a
+longer list into labeled sections.
+
+## With label
+
+A Label connected to the trigger with `htmlFor` and `id`.
+
+<Preview>
+  <div className="flex w-56 flex-col gap-2">
+    <Label htmlFor="timezone">Timezone</Label>
+    <Select
+      defaultValue="europe-london"
+      items={[
+        { value: "europe-london", label: "London" },
+        { value: "america-new-york", label: "New York" },
+        { value: "asia-tokyo", label: "Tokyo" },
+      ]}
+    >
+      <SelectTrigger id="timezone" className="w-full">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="europe-london">London</SelectItem>
+        <SelectItem value="america-new-york">New York</SelectItem>
+        <SelectItem value="asia-tokyo">Tokyo</SelectItem>
+      </SelectContent>
+    </Select>
+  </div>
+</Preview>
+
+## Sizes and states
+
+`size="sm"` on the trigger, for dense forms. `aria-invalid` on the trigger
+turns its border destructive, and `disabled` on the Select dims the trigger
+and stops it opening.
+
+<Preview>
+  <Select>
+    <SelectTrigger size="sm" aria-label="Small" className="w-40">
+      <SelectValue placeholder="Small" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="one">One</SelectItem>
+    </SelectContent>
+  </Select>
+  <Select>
+    <SelectTrigger aria-label="Invalid" aria-invalid className="w-40">
+      <SelectValue placeholder="Invalid" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="one">One</SelectItem>
+    </SelectContent>
+  </Select>
+  <Select disabled>
+    <SelectTrigger aria-label="Disabled" className="w-40">
+      <SelectValue placeholder="Disabled" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="one">One</SelectItem>
+    </SelectContent>
+  </Select>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use a select for one choice from about six or more options, or when space is tight.",
+    "For fewer options people should compare, use a radio group.",
+    "Write a placeholder that says what to pick, like “Pick a timezone”, or preselect a sensible option.",
+    "Group long lists under short labels, and sort options within each group.",
+    "Don't use a select when people need to search or type their own value.",
+  ]}
+/>
+
+<Tip>
+  `alignItemWithTrigger={false}` on SelectContent opens the list below the
+  trigger instead of over it, as a menu does.
+</Tip>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Select
+            defaultValue="london"
+            items={[
+              { value: "berlin", label: "Berlin" },
+              { value: "lisbon", label: "Lisbon" },
+              { value: "london", label: "London" },
+              { value: "new-york", label: "New York" },
+              { value: "tokyo", label: "Tokyo" },
+              { value: "sydney", label: "Sydney" },
+            ]}
+          >
+            <SelectTrigger aria-label="Timezone" className="w-44">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[
+                "Berlin",
+                "Lisbon",
+                "London",
+                "New York",
+                "Tokyo",
+                "Sydney",
+              ].map((city) => (
+                <SelectItem
+                  key={city}
+                  value={city.toLowerCase().replace(" ", "-")}
+                >
+                  {city}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ),
+        description: "Use a select for a longer list, with a sensible default.",
+      },
+      negative: {
+        component: (
+          <Select
+            items={[
+              { value: "yes", label: "Yes" },
+              { value: "no", label: "No" },
+            ]}
+          >
+            <SelectTrigger aria-label="Subscribe" className="w-44">
+              <SelectValue placeholder="Subscribe?" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="yes">Yes</SelectItem>
+              <SelectItem value="no">No</SelectItem>
+            </SelectContent>
+          </Select>
+        ),
+        description:
+          "Don't hide two options behind a click. Use a radio group or a checkbox.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Name the trigger with a Label connected by `htmlFor`, or with `aria-label`
+  when there's no visible label.
+- Enter or Space opens the list. Arrow keys move through the options, Enter
+  chooses, and Escape closes. Focus returns to the trigger either way.
+- While the list is open, typing a letter jumps to the next option that
+  starts with it.
+- The chosen option shows a check as well as the highlight, so it doesn't
+  rely on color alone.
+
+<StorybookLink id="base-components-forms-select" name="Select" />

@@ -1,0 +1,155 @@
+---
+title: Rich text editor
+description: "Formatted writing on Tiptap: headings, marks, lists, quotes and links from a toolbar or Markdown shortcuts, with an optional character limit."
+---
+
+import { RichTextEditor } from "@workspace/ui/components/rich-text-editor"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <div className="w-full max-w-xl">
+    <RichTextEditor
+      label="Editor"
+      placeholder="Write something…"
+      minHeight={140}
+    />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Rich text editor where formatting changes meaning: notes, proposals,
+release notes, replies. Formatting comes from the toolbar, a shortcut, or
+Markdown as you type (`## `, `- `, `1. `, `> `, backticks). For a plain
+message or short answer, use Textarea or Chat composer.
+
+The writing area isn't a form control, so a label's `for` can't target it.
+Name it with `aria-labelledby` and the label's `id`. The editor owns the
+document once mounted: `defaultValue` seeds it and `onChange` reports changes
+as HTML. Sanitize that HTML on the server before showing it to anyone else.
+
+## Installation
+
+<Install name="rich-text-editor" exports={["RichTextEditor"]} />
+
+Also installs Button, Input, Tooltip, `@tiptap/react`, `@tiptap/starter-kit`
+and `@tiptap/extensions`.
+
+## Minimal tools
+
+`tools` picks which buttons show. They keep the toolbar's order regardless of
+list order.
+
+<Preview>
+  <div className="w-full max-w-xl">
+    <RichTextEditor
+      label="Comment"
+      tools={["bold", "italic", "link"]}
+      minHeight={80}
+      placeholder="Add a comment…"
+    />
+  </div>
+</Preview>
+
+## With a limit
+
+From 80% of `maxLength`, the remaining count shows in the corner and turns
+destructive at the limit.
+
+<Preview>
+  <div className="w-full max-w-xl">
+    <RichTextEditor
+      label="Release note"
+      maxLength={120}
+      minHeight={140}
+      defaultValue="<p>Keep release notes short: what changed, who it affects, and what to do next. Link the pull request, not the diff.</p>"
+    />
+  </div>
+</Preview>
+
+## Read only
+
+`editable={false}` drops the toolbar and shows the document as it reads.
+
+<Preview>
+  <div className="w-full max-w-xl">
+    <RichTextEditor
+      editable={false}
+      minHeight={0}
+      label="Release note"
+      defaultValue="<h2>Tokens 2.0</h2><p>Every part now reads <strong>semantic tokens</strong> only. Named roles replace opacity modifiers:</p><ul><li><p><code>-subtle</code> for tints</p></li><li><p><code>-hover</code> for pointer states</p></li></ul><blockquote><p>Figma and code use the same name.</p></blockquote>"
+    />
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use where formatting changes meaning: notes, proposals, release notes, replies. For a plain message or short answer, use Textarea or Chat composer.",
+    "Show only the tools the content needs. A comment box rarely needs headings or code.",
+    "State a length limit before people reach it, in the label or a description, not only in the counter.",
+    "Store and send the HTML; sanitize it wherever it's shown to someone else.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <div className="w-full">
+            <RichTextEditor
+              label="Comment"
+              tools={["bold", "italic", "link"]}
+              minHeight={60}
+              placeholder="Add a comment…"
+            />
+          </div>
+        ),
+        description: "Trim the toolbar to what the content needs.",
+      },
+      negative: {
+        component: (
+          <div className="w-full">
+            <RichTextEditor
+              label="Comment"
+              minHeight={60}
+              placeholder="Add a comment…"
+            />
+          </div>
+        ),
+        description:
+          "Don't hand a one-line comment box every tool. The toolbar outweighs the writing.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The writing area is a multi-line `textbox`, named by `aria-labelledby` when
+  it's given and by `label` otherwise. Point `aria-labelledby` at a visible
+  label.
+- The toolbar is one tab stop. Arrow keys, Home and End move between its
+  buttons, following the ARIA toolbar pattern. Marks and blocks carry
+  `aria-pressed`.
+- Clicking a tool keeps focus and the selection in the writing area. Running
+  one from the keyboard sends focus back there.
+- Undo and Redo stay focusable when disabled, so the toolbar's keyboard path
+  never changes length.
+- Escape closes the link row and returns to the writing area. The visible
+  count is hidden from screen readers; a separate `aria-live="polite"` region
+  reads it when it first shows, at each further ten characters, and at the
+  limit, not on every keystroke.
+
+<StorybookLink
+  id="base-components-forms-rich-text-editor"
+  name="Rich text editor"
+/>

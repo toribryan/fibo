@@ -1,0 +1,115 @@
+---
+title: Voice memo
+description: An aluminum recorder with a live transcript beside it.
+---
+
+import { VoiceMemo } from "@workspace/ui/components/voice-memo"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+export const script =
+  "Quick note for the design review. The token drift check passes in both themes, so the only open item is the empty state copy. Ask Ana whether we keep the illustration."
+
+<Preview>
+  <div className="flex min-h-64 w-full max-w-xl items-start">
+    <VoiceMemo simulate={script} defaultAwake />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Voice memo for quick spoken notes: one take, started and stopped with a
+press. The first press wakes the device; later presses start and stop
+listening. Words fill a live transcript beside it, which saves as a `.md`
+file. It uses the browser's speech recognition, or shows text from another
+service through `transcript` and `interim`. This example types out a script
+in place of the microphone.
+
+## Installation
+
+<Install
+  name="voice-memo"
+  exports={[
+    "VoiceMemo",
+    "voiceMemoVariants",
+    "formatElapsed",
+    "transcriptToMarkdown",
+    "tidyPhrase",
+    "type VoiceMemoProps",
+    "type VoiceMemoResult",
+    "type VoiceMemoSegment",
+  ]}
+/>
+
+## Below
+
+`side="bottom"` opens the transcript under the device, for narrow columns.
+
+<Preview>
+  <div className="flex min-h-80 w-full max-w-sm items-start">
+    <VoiceMemo side="bottom" defaultRecording simulate={script} />
+  </div>
+</Preview>
+
+## Small and burgundy
+
+`size="sm"` fits a toolbar or a sidebar. `variant="burgundy"` anodizes the
+device deep wine red, and looks the same in both themes.
+
+<Preview>
+  <VoiceMemo size="sm" variant="burgundy" defaultAwake />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use for quick spoken notes: one take, started and stopped with a press. For long recordings that need editing, use a full transcription tool.",
+    "Do something with the text in onComplete, such as saving a note. A transcript that vanishes on close teaches people not to bother.",
+    "Open the transcript to the right when there's room, and below in narrow columns and on phones.",
+    "Keep the wordmark to one short word; it fits about six letters.",
+    "Set lang to the spoken language; the recognizer doesn't detect it.",
+    "Reserve simulate for previews and demos. In production it types the same script for everyone.",
+    "Give each memo a recognizable title, such as the meeting. It heads and names the Markdown file.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: <VoiceMemo size="sm" wordmark="notes" />,
+        description: "Raise one short word on the device.",
+      },
+      negative: {
+        component: <VoiceMemo size="sm" wordmark="Meeting notes" />,
+        description: "Don't fit a phrase; the lettering runs off the edge.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Asleep, the device is a button named Wake; Enter or Space wakes it and
+  announces Ready. Awake, it's a toggle button named Transcribe, pressed while
+  listening. Enter or Space starts and stops it; focus stays on it.
+- State doesn't rely on the light's color: the button's name and pressed state
+  convey asleep, ready or listening.
+- Start and stop are announced once in a status region, with the word count on
+  stop. Words aren't read out as they arrive, which would talk over the
+  speaker.
+- The transcript is a region the device references with aria-controls. Its
+  text is a focusable log, scrollable and readable by keyboard.
+- Once stopped, Tab moves from the device to copy, download and close.
+- Failures, such as a blocked microphone or a browser without recognition,
+  show in the transcript and are announced.
+- Under reduced motion, the device doesn't hop, shake, lift or press in, the
+  light holds still, and the transcript fades in without growing.
+
+<StorybookLink id="special-components-voice-memo" name="Voice memo" />

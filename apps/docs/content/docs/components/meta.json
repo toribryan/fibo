@@ -1,4 +1,26 @@
 {
   "title": "Components",
-  "pages": ["button"]
+  "pages": [
+    "---Actions---",
+    "button",
+    "---Forms---",
+    "attachment",
+    "calendar",
+    "chat-composer",
+    "checkbox",
+    "date-picker",
+    "drop-zone",
+    "field",
+    "input",
+    "input-group",
+    "label",
+    "radio-group",
+    "rich-text-editor",
+    "search-input",
+    "select",
+    "slider",
+    "switch",
+    "textarea",
+    "voice-memo"
+  ]
 }

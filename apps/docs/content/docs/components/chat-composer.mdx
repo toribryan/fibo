@@ -1,0 +1,277 @@
+---
+title: Chat composer
+description: A message box built from parts around one draft, with attachments, native emoji, dictation, suggested replies and slash commands in the Command menu.
+---
+
+import {
+  ChatComposerAttachments,
+  ChatComposerCommonActions,
+  ChatComposerFooter,
+  ChatComposerFrame,
+  ChatComposerHeader,
+  ChatComposerInput,
+  ChatComposerSubmit,
+  ChatComposerSuggestedReply,
+  LocalChatComposerProvider,
+} from "@workspace/ui/components/chat-composer"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import { ChatComposerDemo } from "@/components/demos/chat-composer"
+
+<Preview>
+  <div className="w-full max-w-xl">
+    <ChatComposerDemo />
+  </div>
+</Preview>
+
+## When to use it
+
+Use Chat composer for writing a message in a conversation. Type / in the
+example to open its commands. Enter sends, Shift+Enter breaks the line, and
+the text box grows with the draft.
+
+A provider holds the draft and its actions, and every part reads it from
+context. `LocalChatComposerProvider` keeps the draft in component state;
+`ChatComposerProvider` takes external state and actions from a store, a
+server or a sync layer. There are no boolean feature props: drag and drop,
+emoji, commands, dictation and suggested replies are parts. Render one to
+enable it, omit it to disable it.
+
+## Installation
+
+<Install
+  name="chat-composer"
+  exports={[
+    "LocalChatComposerProvider",
+    "ChatComposerFrame",
+    "ChatComposerInput",
+    "ChatComposerFooter",
+    "ChatComposerCommonActions",
+    "ChatComposerSubmit",
+  ]}
+/>
+
+Installs Button, Attachment, Drop zone, Command menu, Tooltip and Progress.
+
+## With attachments
+
+Picked or dropped files show in the header as Attachment parts: images as
+thumbnails, other files as chips. Each shows its upload, and send waits until
+every one is ready.
+
+<Preview>
+  <div className="w-full max-w-xl">
+    <LocalChatComposerProvider
+      defaultValue="Both files from the review."
+      defaultAttachments={[
+        { id: "a", name: "token-audit.pdf", size: 482000 },
+        {
+          id: "b",
+          name: "drift-report.csv",
+          size: 38000,
+          status: "loading",
+        },
+        {
+          id: "c",
+          name: "button-states.fig",
+          size: 1830000,
+          status: "error",
+          error: "Too large",
+        },
+      ]}
+    >
+      <ChatComposerFrame>
+        <ChatComposerHeader className="empty:hidden">
+          <ChatComposerAttachments />
+        </ChatComposerHeader>
+        <ChatComposerInput placeholder="Message #design" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  </div>
+</Preview>
+
+## Suggested replies
+
+Each suggestion fills the draft and hands focus back. It never sends, so
+people can change it first.
+
+<Preview>
+  <div className="w-full max-w-xl">
+    <LocalChatComposerProvider>
+      <ChatComposerFrame>
+        <ChatComposerHeader>
+          <ChatComposerSuggestedReply>Sounds good</ChatComposerSuggestedReply>
+          <ChatComposerSuggestedReply>
+            Can you share the file?
+          </ChatComposerSuggestedReply>
+          <ChatComposerSuggestedReply>Looking now</ChatComposerSuggestedReply>
+        </ChatComposerHeader>
+        <ChatComposerInput placeholder="Reply to Ada" />
+        <ChatComposerFooter>
+          <ChatComposerCommonActions />
+          <ChatComposerSubmit />
+        </ChatComposerFooter>
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  </div>
+</Preview>
+
+## Minimal
+
+A text box and send button in one row. No header, footer or drop zone, so it
+can go down to 160px with `min-w-40`.
+
+<Preview>
+  <div className="w-full max-w-xl">
+    <LocalChatComposerProvider>
+      <ChatComposerFrame className="min-w-40 flex-row items-end">
+        <ChatComposerInput placeholder="Ask anything" />
+        {/* The margin centers the button on one line of text: 48px tall with
+            16px text, 44px from md, where the text drops to 14px. */}
+        <ChatComposerSubmit className="m-2 shrink-0 md:my-1.5" />
+      </ChatComposerFrame>
+    </LocalChatComposerProvider>
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Compose variants from parts instead of adding props. Edit, thread reply and forward are compositions of the same parts.",
+    <>
+      Keep state out of the parts. For a draft that survives reloads or syncs
+      across devices, replace <code>LocalChatComposerProvider</code> with a{" "}
+      <code>ChatComposerProvider</code> fed by your store.
+    </>,
+    <>
+      Wrap everything that needs the draft in the provider. A send button
+      outside the frame works as long as it is inside the provider.
+    </>,
+    <>
+      Omit <code>ChatComposerCommonActions</code> when a composer needs a
+      different set, and list its actions explicitly.
+    </>,
+    <>
+      Wrap the whole conversation panel in <code>ChatComposerDropZone</code>, so
+      files can land anywhere on it.
+    </>,
+    <>
+      Render <code>ChatComposerCommandMenu</code> to turn slash commands on.
+      Without it, / is just a character and the command button types one.
+    </>,
+    "Put suggested replies in the header. They fill the draft and never send on their own.",
+    "Below 240px, use the one-row layout or leave out Common actions. The frame's minimum width stops the footer overlapping; it does not make the composer fit.",
+    <>
+      Return a promise from <code>onSubmit</code> for async sends. The send
+      button shows busy, and a rejection keeps the draft.
+    </>,
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <LocalChatComposerProvider>
+            <ChatComposerFrame className="w-72">
+              <ChatComposerHeader>Editing message</ChatComposerHeader>
+              <ChatComposerInput aria-label="Edit message" />
+              <ChatComposerFooter className="justify-end">
+                <ChatComposerSubmit>Save</ChatComposerSubmit>
+              </ChatComposerFooter>
+            </ChatComposerFrame>
+          </LocalChatComposerProvider>
+        ),
+        description:
+          "Compose a variant: a header for context and only the actions it needs.",
+      },
+      negative: {
+        component: (
+          <code className="rounded-md bg-muted px-2 py-1 text-xs">
+            {"<Composer isEditing isThread hideAttach />"}
+          </code>
+        ),
+        description:
+          "Don't add a boolean per case. Each flag doubles the states to get right.",
+      },
+    },
+    {
+      positive: {
+        component: (
+          <LocalChatComposerProvider>
+            <ChatComposerFrame className="w-72">
+              <ChatComposerInput placeholder="Message #design" />
+              <ChatComposerFooter>
+                <ChatComposerCommonActions />
+                <ChatComposerSubmit />
+              </ChatComposerFooter>
+            </ChatComposerFrame>
+          </LocalChatComposerProvider>
+        ),
+        description: "Keep the send button at the end of the footer.",
+      },
+      negative: {
+        component: (
+          <LocalChatComposerProvider>
+            <ChatComposerFrame className="w-72">
+              <ChatComposerFooter>
+                <ChatComposerSubmit />
+                <ChatComposerCommonActions />
+              </ChatComposerFooter>
+              <ChatComposerInput placeholder="Message #design" />
+            </ChatComposerFrame>
+          </LocalChatComposerProvider>
+        ),
+        description:
+          "Don't move it. People look for it where they finish typing.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The text box is named Message by default. Pass `aria-label` for a more
+  specific name, such as Edit message.
+- Icon buttons are named by their label, which is also their tooltip. The send
+  button is named Send.
+- Enter sends and Shift+Enter breaks the line. Enter that confirms an input
+  method editor composition never sends.
+- Each attachment has a Remove button named after the file. A loading one is
+  aria-busy, and a failed one offers Retry.
+- Typing / opens the command menu as a dialog with focus in its search. Escape
+  closes it and returns to the text box, with the slash left out of the draft.
+- The emoji grid takes focus on its first emoji. Arrow keys move through it,
+  Enter picks, and focus returns to the text box.
+- The dictation button is a toggle: aria-pressed is true while it listens.
+  Escape also stops it, and focus returns to the text box at the end of the
+  dictated words.
+- When dictation fails, the reason shows in the mic's tooltip and is read out
+  through a status region.
+- On touch, the + is named More actions and opens a sheet titled Add to
+  message. Focus moves into the sheet, and its rows read their full labels.
+- On touch, Return adds a line, and the keyboard's Return key says so through
+  enterkeyhint. The send button is the only way to send.
+- Dictation uses the browser's speech recognition. Chrome sends the audio to
+  Google to transcribe, so say so where privacy matters, or pass your own
+  engine to recognition.
+- Suggested replies are buttons. Picking one fills the draft and focuses the
+  text box; it never sends.
+- Dropping files is a shortcut for the attach button, which works from the
+  keyboard. Give both the same `accept`.
+- The send button is aria-busy while sending. Its progress ring holds still
+  under reduced motion.
+- After a send, focus returns to the text box.
+
+<StorybookLink id="special-components-chat-composer" name="Chat composer" />

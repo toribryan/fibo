@@ -1,0 +1,140 @@
+---
+title: Field
+description: A label, description and error wired to one form control, with a group that sets the size of a whole form.
+---
+
+import { Checkbox } from "@workspace/ui/components/checkbox"
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@workspace/ui/components/field"
+import { Input } from "@workspace/ui/components/input"
+import { Switch } from "@workspace/ui/components/switch"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Preview>
+  <Field className="w-80">
+    <FieldLabel>Work email</FieldLabel>
+    <Input type="email" placeholder="you@company.com" />
+    <FieldDescription>We send receipts here.</FieldDescription>
+    <FieldError>Enter an email address.</FieldError>
+  </Field>
+</Preview>
+
+## When to use it
+
+Use Field around every form control: it names the control from `FieldLabel`
+and describes it with `FieldDescription` without `id`s, for Input, Textarea,
+Select, Checkbox, Radio group, Switch and Slider. One control per Field. For a
+group of options, put the Radio group in the Field and each option in a
+`FieldItem`. `FieldGroup size="sm"` makes every control inside it small.
+
+## Installation
+
+<Install
+  name="field"
+  exports={[
+    "Field",
+    "FieldGroup",
+    "FieldLabel",
+    "FieldDescription",
+    "FieldError",
+    "FieldContent",
+    "FieldItem",
+    "fieldVariants",
+  ]}
+/>
+
+## Invalid
+
+Set `invalid` from client validation or a server response. The control's
+border turns destructive and `FieldError` shows.
+
+<Preview>
+  <Field invalid className="w-80">
+    <FieldLabel>Work email</FieldLabel>
+    <Input type="email" placeholder="you@company.com" />
+    <FieldDescription>We send receipts here.</FieldDescription>
+    <FieldError>Enter an email address.</FieldError>
+  </Field>
+</Preview>
+
+## Horizontal
+
+`orientation="horizontal"` places a checkbox or switch beside its label. A
+checkbox leads its label; a switch follows it. `FieldContent` stacks the label
+and description.
+
+<Preview>
+  <div className="flex w-80 flex-col gap-6">
+    <Field orientation="horizontal">
+      <Checkbox className="mt-0.5" />
+      <FieldContent>
+        <FieldLabel>Email me about replies</FieldLabel>
+        <FieldDescription>At most once an hour.</FieldDescription>
+      </FieldContent>
+    </Field>
+    <Field orientation="horizontal">
+      <FieldContent>
+        <FieldLabel>Read receipts</FieldLabel>
+        <FieldDescription>Show when you've read a message.</FieldDescription>
+      </FieldContent>
+      <Switch defaultChecked />
+    </Field>
+  </div>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Give every control a FieldLabel. Placeholders vanish on input and are no substitute.",
+    "Use FieldDescription for what's needed up front, such as a format. One sentence.",
+    "Write FieldError as an instruction: Enter an email address, not Invalid input.",
+    "Use one size per form, set on FieldGroup.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <Field className="w-64">
+            <FieldLabel>Work email</FieldLabel>
+            <Input placeholder="you@company.com" />
+          </Field>
+        ),
+        description: "Label every field; use the placeholder for an example.",
+      },
+      negative: {
+        component: (
+          <Field className="w-64">
+            <Input placeholder="Work email" aria-label="Work email" />
+          </Field>
+        ),
+        description: "Don't use the placeholder as the label.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- FieldLabel is a label element tied to the control; clicking it focuses or
+  toggles the control.
+- FieldDescription and FieldError are linked with `aria-describedby` and read
+  with the control.
+- `invalid` also sets `aria-invalid` on the control, so state isn't conveyed
+  by color alone.
+
+<StorybookLink id="base-components-forms-field" name="Field" />

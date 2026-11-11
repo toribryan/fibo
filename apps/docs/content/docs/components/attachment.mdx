@@ -1,0 +1,91 @@
+---
+title: Attachment
+description: One added file as a chip or an image thumbnail, with its upload status and buttons to remove or retry.
+---
+
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import {
+  AttachmentDefaultDemo,
+  AttachmentFailedDemo,
+  AttachmentListDemo,
+  AttachmentRawErrorDemo,
+  AttachmentStatusesDemo,
+} from "@/components/demos/attachment"
+
+<Preview>
+  <AttachmentDefaultDemo />
+</Preview>
+
+## When to use it
+
+Use Attachment for each file someone has added, in a chat draft, a form or a
+sent message. `type` picks the shape: `file` is a one-line chip with the name
+and size, `image` is a 56px thumbnail. It shows an upload but never runs one;
+whoever runs the upload owns `status`.
+
+## Installation
+
+<Install
+  name="attachment"
+  exports={["Attachment", "attachmentVariants", "formatBytes"]}
+/>
+
+## Statuses
+
+`status` follows an upload: `ready`, `loading` or `error`. On error the text
+replaces the size, and retry sits before remove.
+
+<Preview>
+  <AttachmentStatusesDemo />
+</Preview>
+
+## In a list
+
+One attachment per file. Retry the failed one to watch it upload.
+
+<Preview>
+  <AttachmentListDemo />
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Use type image for pictures people should recognise at a glance, and file for everything else.",
+    "Keep remove in every status, including while a file uploads.",
+    "Show one attachment per file. A failed file never blocks the others.",
+    "Keep error text to a few words, such as Upload failed or Too large.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: <AttachmentFailedDemo />,
+        description: "Say what went wrong in a few words, and offer retry.",
+      },
+      negative: {
+        component: <AttachmentRawErrorDemo />,
+        description: "Don't show a raw error. It squeezes out the file name.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- Remove and retry are buttons named with the file, such as Remove
+  token-audit.pdf.
+- A loading attachment sets `aria-busy` and reads Uploading.
+- The image's alt text is the file name. On error, the tile's retry button
+  reads the error.
+- The loading spinner stops under reduced motion.
+
+<StorybookLink id="base-components-forms-attachment" name="Attachment" />
