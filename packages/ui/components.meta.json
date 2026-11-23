@@ -21,6 +21,13 @@
     "group": "Display",
     "figma": "169-13"
   },
+  "breadcrumb": {
+    "title": "Breadcrumb",
+    "description": "Shows where a page sits in the app, with a segment that opens a menu to switch between siblings.",
+    "tier": "base-components",
+    "group": "Navigation",
+    "status": "new"
+  },
   "button": {
     "title": "Button",
     "description": "Triggers an action or event on click.",
@@ -236,8 +243,7 @@
     "title": "Search input",
     "description": "A search box with a Cmd+K shortcut and a clear button, and a compact trigger for a header whose search opens in a command menu.",
     "tier": "base-components",
-    "group": "Forms",
-    "status": "new"
+    "group": "Forms"
   },
   "select": {
     "title": "Select",

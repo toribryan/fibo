@@ -1,0 +1,275 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks"
+
+import * as Stories from "../../../../packages/ui/src/components/breadcrumb.stories"
+import { Anatomy } from "../blocks/anatomy"
+import { RelatedComponents } from "../blocks/catalog"
+import { DataAttributes } from "@workspace/docs-blocks/data-attributes"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+
+<Meta of={Stories} />
+
+# Breadcrumb
+
+Shows where a page sits in the app. A segment can open a menu to switch to a
+sibling, such as another database, without going back up the trail.
+
+<Canvas of={Stories.Default} />
+
+## Features
+
+- A trail of links ending on the current page, marked `aria-current="page"`.
+- `BreadcrumbMenuTrigger` turns a segment into a Menu trigger, with an
+  optional icon and an up-down chevron.
+- `BreadcrumbLink` takes `render`, so a router's link keeps the styles.
+- Any separator, and an ellipsis for collapsed levels.
+
+## Installation
+
+<Install
+  name="breadcrumb"
+  exports={[
+    "Breadcrumb",
+    "BreadcrumbList",
+    "BreadcrumbItem",
+    "BreadcrumbLink",
+    "BreadcrumbPage",
+    "BreadcrumbSeparator",
+    "BreadcrumbEllipsis",
+    "BreadcrumbMenuTrigger",
+  ]}
+/>
+
+Also installs Menu.
+
+## Examples
+
+### Links
+
+A plain trail that ends on the current page.
+
+<Canvas of={Stories.Links} />
+
+### Collapsed
+
+An ellipsis stands in for levels left out of a deep trail.
+
+<Canvas of={Stories.Collapsed} />
+
+### Slash separator
+
+Pass any text or icon to `BreadcrumbSeparator`. Slashes suit a trail of
+workspaces and projects.
+
+<Canvas of={Stories.SlashSeparator} />
+
+## Usage
+
+```tsx
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbMenuTrigger,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import {
+  Menu,
+  MenuContent,
+  MenuRadioGroup,
+  MenuRadioItem,
+} from "@/components/ui/menu"
+
+export function DatabaseTrail({ database, databases, onSwitch }: Props) {
+  return (
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/databases">Databases</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <Menu>
+            <BreadcrumbMenuTrigger icon={<DatabaseIcon />}>
+              {database}
+            </BreadcrumbMenuTrigger>
+            <MenuContent>
+              <MenuRadioGroup value={database} onValueChange={onSwitch}>
+                {databases.map((name) => (
+                  <MenuRadioItem key={name} value={name} closeOnClick>
+                    {name}
+                  </MenuRadioItem>
+                ))}
+              </MenuRadioGroup>
+            </MenuContent>
+          </Menu>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  )
+}
+```
+
+The menu trigger shows the current choice as its label, so the trail still
+reads as a path.
+
+## Anatomy
+
+<Anatomy
+  root={{
+    name: "Breadcrumb",
+    slot: "breadcrumb",
+    children: [
+      {
+        name: "List",
+        slot: "breadcrumb-list",
+        children: [
+          {
+            name: "Item",
+            slot: "breadcrumb-item",
+            children: [
+              { name: "Link", slot: "breadcrumb-link" },
+              { name: "Page", slot: "breadcrumb-page" },
+              { name: "Ellipsis", slot: "breadcrumb-ellipsis" },
+              {
+                name: "Menu trigger",
+                slot: "breadcrumb-menu-trigger",
+                children: [{ name: "Icon", slot: "breadcrumb-menu-icon" }],
+              },
+            ],
+          },
+          { name: "Separator", slot: "breadcrumb-separator" },
+        ],
+      },
+    ],
+  }}
+/>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Put it at the top of the page, above the title.",
+    "Start from the highest level people navigate from, not the site's home, when the app has one.",
+    "Use one menu segment per trail, on the level people switch most: a database, a project, a workspace.",
+    "Keep segment names short; long ones truncate.",
+    "Collapse the middle of a trail deeper than four levels with an ellipsis.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <span className="text-sm text-muted-foreground">
+            Databases <span aria-hidden="true">›</span>{" "}
+            <span className="font-medium text-foreground">Orion</span>
+          </span>
+        ),
+        description: "Label the menu segment with the current choice.",
+      },
+      negative: {
+        component: (
+          <span className="text-sm text-muted-foreground">
+            Databases <span aria-hidden="true">›</span>{" "}
+            <span className="font-medium text-foreground">Select database</span>
+          </span>
+        ),
+        description:
+          "Don't label it with an instruction; the trail stops saying where you are.",
+      },
+    },
+  ]}
+/>
+
+## API reference
+
+<ArgTypes of={Stories.Default} />
+
+`BreadcrumbMenuTrigger` takes Menu trigger's props plus `icon`, and must sit
+inside a `Menu`.
+
+### Data attributes
+
+<DataAttributes
+  rows={[
+    {
+      attribute: 'data-slot="breadcrumb"',
+      element: "Root nav",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="breadcrumb-list"',
+      element: "Ordered list",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="breadcrumb-item"',
+      element: "List item",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="breadcrumb-link"',
+      element: "Link",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="breadcrumb-page"',
+      element: "Current page",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="breadcrumb-separator"',
+      element: "Separator",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="breadcrumb-ellipsis"',
+      element: "Ellipsis",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="breadcrumb-menu-trigger"',
+      element: "Menu trigger",
+      when: "Always.",
+    },
+    {
+      attribute: 'data-slot="breadcrumb-menu-icon"',
+      element: "Menu trigger icon",
+      when: "icon is set.",
+    },
+    {
+      attribute: "data-popup-open",
+      element: "Menu trigger",
+      when: "Its menu is open.",
+    },
+  ]}
+/>
+
+## Accessibility
+
+<UsageGuidelines
+  guidelines={[
+    "The root is a nav named “Breadcrumb”. Pass aria-label to rename it.",
+    "The levels are an ordered list; separators are hidden from screen readers.",
+    "BreadcrumbPage carries aria-current=“page”.",
+    "The ellipsis reads as “More pages”. Make it a menu trigger if people need to reach the hidden levels.",
+    "The menu trigger is a button named by its label, announced as having a menu. If you add aria-label, keep the visible label in it.",
+  ]}
+/>
+
+## Related components
+
+<RelatedComponents names={["Menu", "Tabs"]} />
+
+## References
+
+- [WAI-ARIA APG: Breadcrumb pattern](https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/)
+- [WAI-ARIA APG: Menu button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/)

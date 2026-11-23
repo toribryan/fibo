@@ -88,14 +88,14 @@ notes.
 
 <!-- parts:start: written by pnpm registry:build -->
 
-**39 base components.** The standard set. They depend on nothing beyond Base UI, `class-variance-authority` and `lucide-react`, except Data table (TanStack Table) and Rich text editor (Tiptap).
+**40 base components.** The standard set. They depend on nothing beyond Base UI, `class-variance-authority` and `lucide-react`, except Data table (TanStack Table) and Rich text editor (Tiptap).
 
 | Group      | Parts                                                                                                                                                                                                                                                                                                                                                                            |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Actions    | [Button][button], [Jump bar][jump-bar]                                                                                                                                                                                                                                                                                                                                           |
 | Forms      | [Attachment][attachment], [Calendar][calendar], [Checkbox][checkbox], [Date picker][date-picker], [Drop zone][drop-zone], [Field][field], [Input][input], [Input group][input-group], [Label][label], [Radio group][radio-group], [Rich text editor][rich-text-editor], [Search input][search-input], [Select][select], [Slider][slider], [Switch][switch], [Textarea][textarea] |
 | Display    | [Avatar][avatar], [Badge][badge], [Count][count], [Data table][data-table], [Kbd][kbd], [Message list][message-list], [Separator][separator], [Status dot][status-dot], [Table][table]                                                                                                                                                                                           |
-| Navigation | [Pagination][pagination], [Tabs][tabs]                                                                                                                                                                                                                                                                                                                                           |
+| Navigation | [Breadcrumb][breadcrumb], [Pagination][pagination], [Tabs][tabs]                                                                                                                                                                                                                                                                                                                 |
 | Overlays   | [Alert dialog][alert-dialog], [Dialog][dialog], [Menu][menu], [Sheet][sheet], [Tooltip][tooltip]                                                                                                                                                                                                                                                                                 |
 | Feedback   | [Empty state][empty-state], [Progress][progress], [Skeleton][skeleton], [Toast][toast], [Typing indicator][typing-indicator]                                                                                                                                                                                                                                                     |
 
@@ -122,6 +122,7 @@ notes.
 [attachment]: https://fibo.toribryan.com/?path=/docs/base-components-forms-attachment--docs
 [avatar]: https://fibo.toribryan.com/?path=/docs/base-components-display-avatar--docs
 [badge]: https://fibo.toribryan.com/?path=/docs/base-components-display-badge--docs
+[breadcrumb]: https://fibo.toribryan.com/?path=/docs/base-components-navigation-breadcrumb--docs
 [button]: https://fibo.toribryan.com/?path=/docs/base-components-actions-button--docs
 [calendar]: https://fibo.toribryan.com/?path=/docs/base-components-forms-calendar--docs
 [checkbox]: https://fibo.toribryan.com/?path=/docs/base-components-forms-checkbox--docs
