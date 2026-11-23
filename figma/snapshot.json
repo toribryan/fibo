@@ -461,6 +461,7 @@
       "description": "TEXT",
       "showDescription": "BOOLEAN",
       "error": "TEXT",
+      "control": "SLOT",
       "orientation": ["vertical", "horizontal"],
       "state": ["default", "invalid", "disabled"]
     },
@@ -475,7 +476,8 @@
       "value": "TEXT",
       "startAddon": "BOOLEAN",
       "startAddonSwap": "INSTANCE_SWAP",
-      "endAddon": "BOOLEAN",
+      "showEndAddon": "BOOLEAN",
+      "endAddon": "SLOT",
       "variant": ["default", "ghost"],
       "size": ["sm", "default"],
       "state": ["default", "focused", "invalid", "disabled"]
@@ -485,13 +487,16 @@
       "state": ["default", "disabled"]
     },
     "RadioGroup": {
-      "option1": "TEXT",
-      "option2": "TEXT",
-      "option3": "TEXT"
+      "items": "SLOT"
     },
     "RadioGroupItem": {
       "checked": ["false", "true"],
       "state": ["default", "focused", "invalid", "disabled"]
+    },
+    "FieldItem": {
+      "label": "TEXT",
+      "description": "TEXT",
+      "showDescription": "BOOLEAN"
     },
     "RichTextEditor": {
       "toolbar": "BOOLEAN",
@@ -612,7 +617,7 @@
     "_DataTableBulkActions": {
       "moreActions": "BOOLEAN",
       "delete": "BOOLEAN",
-      "customActions": "SLOT",
+      "actions": "SLOT",
       "pattern": [
         "delete only",
         "export",
@@ -666,7 +671,9 @@
     },
     "Table": {
       "showFooter": "BOOLEAN",
-      "showCaption": "BOOLEAN"
+      "showCaption": "BOOLEAN",
+      "body": "SLOT",
+      "header": "SLOT"
     },
     "TableHead": {
       "label": "TEXT"
@@ -674,6 +681,20 @@
     "TableCell": {
       "value": "TEXT",
       "state": ["default", "hover", "selected"]
+    },
+    "TableRow": {
+      "cells": "SLOT"
+    },
+    "_Breadcrumb": {
+      "items": "SLOT"
+    },
+    "_BreadcrumbItem": {
+      "label": "TEXT",
+      "showSeparator": "BOOLEAN",
+      "showIcon": "BOOLEAN",
+      "icon": "INSTANCE_SWAP",
+      "type": ["link", "page", "menu", "ellipsis"],
+      "state": ["default", "hover", "focus"]
     },
     "Pagination": {
       "showRange": "BOOLEAN",
@@ -690,6 +711,8 @@
       "state": ["default", "selected", "disabled"]
     },
     "Tabs": {
+      "list": "SLOT",
+      "content": "SLOT",
       "variant": ["default", "line"],
       "size": ["sm", "default"],
       "orientation": ["horizontal", "vertical"]
@@ -773,7 +796,9 @@
       "footer": "SLOT",
       "size": ["sm", "default", "lg"]
     },
-    "Menu": {},
+    "Menu": {
+      "items": "SLOT"
+    },
     "MenuItem": {
       "label": "TEXT",
       "showIcon": "BOOLEAN",
@@ -804,6 +829,8 @@
       "description": "TEXT",
       "showCloseButton": "BOOLEAN",
       "showFooter": "BOOLEAN",
+      "body": "SLOT",
+      "footer": "SLOT",
       "side": ["top", "right", "bottom", "left"]
     },
     "Tooltip": {
@@ -816,6 +843,7 @@
       "mediaSwap": "INSTANCE_SWAP",
       "showDescription": "BOOLEAN",
       "showActions": "BOOLEAN",
+      "actions": "SLOT",
       "size": ["sm", "default"]
     },
     "Progress": {
@@ -830,6 +858,7 @@
     "Toast": {
       "showDescription": "BOOLEAN",
       "showAction": "BOOLEAN",
+      "action": "SLOT",
       "type": ["default", "success", "info", "warning", "error", "loading"]
     },
     "TypingIndicator": {
@@ -932,11 +961,12 @@
       "context": "TEXT",
       "shortcut": "BOOLEAN",
       "opensPage": "BOOLEAN",
-      "slotContent": "SLOT",
-      "showSlot": "BOOLEAN",
+      "trailing": "SLOT",
+      "showTrailing": "BOOLEAN",
       "state": ["default", "highlighted", "disabled"]
     },
     "FloatingNav": {
+      "items": "SLOT",
       "labels": ["active", "always"],
       "size": ["sm", "default"],
       "variant": ["default", "glass"]
@@ -1007,7 +1037,8 @@
       "meta": "TEXT",
       "title": "TEXT",
       "description": "TEXT",
-      "showContent": "BOOLEAN"
+      "showContent": "BOOLEAN",
+      "content": "SLOT"
     },
     "PixelSnail": {
       "ground": "BOOLEAN",
