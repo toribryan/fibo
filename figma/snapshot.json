@@ -833,6 +833,9 @@
       "footer": "SLOT",
       "side": ["top", "right", "bottom", "left"]
     },
+    "SheetFooter/Save": {},
+    "SheetFooter/Filters": {},
+    "SheetFooter/Done": {},
     "Tooltip": {
       "label": "TEXT"
     },
@@ -846,6 +849,9 @@
       "actions": "SLOT",
       "size": ["sm", "default"]
     },
+    "EmptyStateActions/Create": {},
+    "EmptyStateActions/Create or import": {},
+    "EmptyStateActions/Clear filters": {},
     "Progress": {
       "showHeader": "BOOLEAN",
       "label": "TEXT",
