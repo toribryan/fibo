@@ -4,7 +4,7 @@
     "key": "LJZ5Tt4Ba7NPPi8Xnq8i0e",
     "name": "Fibo-DS"
   },
-  "readAt": "2026-11-10",
+  "readAt": "2026-11-23",
   "variables": {
     "Color": {
       "background": {
@@ -374,29 +374,13 @@
     }
   },
   "components": {
-    "Avatar": {
-      "initials": "TEXT",
-      "size": ["sm", "default", "lg"],
-      "type": ["image", "initials"]
-    },
-    "Badge": {
-      "label": "TEXT",
-      "variant": [
-        "default",
-        "secondary",
-        "destructive",
-        "outline",
-        "success",
-        "warning",
-        "info"
-      ]
-    },
     "Button": {
       "label": "TEXT",
       "iconStart": "BOOLEAN",
       "iconEnd": "BOOLEAN",
       "iconStartSwap": "INSTANCE_SWAP",
       "iconEndSwap": "INSTANCE_SWAP",
+      "loading": "BOOLEAN",
       "variant": [
         "default",
         "outline",
@@ -416,77 +400,6 @@
         "icon-lg"
       ]
     },
-    "Checkbox": {
-      "checked": ["unchecked", "checked", "indeterminate"],
-      "state": ["default", "focused", "invalid", "disabled"]
-    },
-    "Input": {
-      "value": "TEXT",
-      "iconStart": "BOOLEAN",
-      "iconStartSwap": "INSTANCE_SWAP",
-      "size": ["sm", "default"],
-      "state": ["default", "filled", "focused", "invalid", "disabled"]
-    },
-    "InputGroup": {
-      "value": "TEXT",
-      "startAddon": "BOOLEAN",
-      "startAddonSwap": "INSTANCE_SWAP",
-      "endAddon": "BOOLEAN",
-      "variant": ["default", "ghost"],
-      "size": ["sm", "default"],
-      "state": ["default", "focused", "invalid", "disabled"]
-    },
-    "Kbd": {
-      "label": "TEXT"
-    },
-    "Label": {
-      "text": "TEXT",
-      "state": ["default", "disabled"]
-    },
-    "Select": {
-      "value": "TEXT",
-      "iconStart": "BOOLEAN",
-      "iconStartSwap": "INSTANCE_SWAP",
-      "size": ["sm", "default"],
-      "state": ["default", "focused", "disabled"]
-    },
-    "Textarea": {
-      "value": "TEXT",
-      "state": ["default", "filled", "focused", "invalid", "disabled"]
-    },
-    "DataTable": {
-      "rows": "SLOT",
-      "cards": "SLOT",
-      "footer": "BOOLEAN",
-      "selection": ["none", "some", "page", "all matching"],
-      "width": ["narrow", "default"],
-      "narrowLayout": ["scroll", "cards"]
-    },
-    "ChatComposerFrame": {
-      "parts": "SLOT",
-      "dropLabel": "TEXT",
-      "state": ["default", "focused", "disabled", "dragging"]
-    },
-    "TypingIndicator": {
-      "text": "TEXT",
-      "icon": "INSTANCE_SWAP",
-      "indicator": ["dots", "custom"]
-    },
-    "MessageListDivider": {
-      "label": "TEXT",
-      "show label": "BOOLEAN",
-      "unread": ["false", "true"]
-    },
-    "MessageListMessage": {
-      "author": "TEXT",
-      "time": "TEXT",
-      "body": "TEXT",
-      "reply": "BOOLEAN",
-      "reply author": "TEXT",
-      "reply text": "TEXT",
-      "show time": "BOOLEAN",
-      "type": ["first", "continuation", "system", "deleted"]
-    },
     "JumpBar": {
       "unread label": "TEXT",
       "mark read label": "TEXT",
@@ -495,245 +408,13 @@
       "jump label": "TEXT",
       "type": ["unread-above", "new-below", "history"]
     },
-    "ChapterScrubber": {
-      "orientation": ["vertical", "horizontal"],
-      "variant": ["tick", "dot"],
-      "state": ["rest", "scrubbing"]
-    },
-    "ChapterScrubberPreview": {
-      "meta": "TEXT",
-      "title": "TEXT",
-      "description": "TEXT",
-      "showMeta": "BOOLEAN",
-      "preview": ["card", "label"]
-    },
-    "CommandMenu": {
-      "hints": "BOOLEAN",
-      "variant": ["default", "inset"],
-      "view": ["home", "results", "page"],
-      "preview": ["false", "true"]
-    },
-    "CommandMenuItem": {
-      "label": "TEXT",
-      "iconStart": "BOOLEAN",
-      "iconStartSwap": "INSTANCE_SWAP",
-      "showContext": "BOOLEAN",
-      "context": "TEXT",
-      "shortcut": "BOOLEAN",
-      "opensPage": "BOOLEAN",
-      "state": ["default", "highlighted", "disabled"]
-    },
-    "CommandMenuTrigger": {
-      "label": "TEXT"
-    },
-    "ReactionsPill": {
-      "emoji": "TEXT",
-      "count": "TEXT",
-      "state": ["default", "hover", "active"]
-    },
-    "ReactionsTrigger": {
-      "type": ["inline", "floating"],
-      "state": ["default", "hover", "open"]
-    },
-    "ReactionsPanel": {},
-    "IntegrationVisual": {
-      "layout": ["corners", "orbit", "sides"]
-    },
-    "IntegrationVisualTile": {
-      "icon": "INSTANCE_SWAP",
-      "status": ["active", "idle"]
-    },
-    "IntegrationVisualHub": {
-      "icon": "INSTANCE_SWAP",
-      "text": "TEXT",
-      "content": ["icon", "text"]
-    },
-    "TokenFlow": {
-      "showUse": ["false", "true"]
-    },
-    "TokenFlowChip": {
-      "label": "TEXT"
-    },
-    "FloatingNav": {
-      "labels": ["active", "always"],
-      "size": ["sm", "default"],
-      "variant": ["default", "glass"]
-    },
-    "FloatingNavItem": {
-      "label": "TEXT",
-      "icon": "INSTANCE_SWAP",
-      "type": ["icon", "text"],
-      "labels": ["active", "always"],
-      "size": ["sm", "default"],
-      "state": ["default", "current"],
-      "variant": ["default", "glass"]
-    },
-    "MapPin": {
-      "label": "TEXT",
-      "showIcon": "BOOLEAN",
-      "icon": "INSTANCE_SWAP",
-      "type": ["dot", "icon", "label"],
-      "variant": ["default", "success", "warning", "info", "destructive"],
-      "size": ["sm", "default"],
-      "state": ["rest", "open"]
-    },
-    "MapPinPreview": {
-      "showImage": "BOOLEAN",
-      "showMeta": "BOOLEAN",
-      "meta": "TEXT",
-      "title": "TEXT",
-      "description": "TEXT",
-      "showContent": "BOOLEAN"
-    },
-    "StickerAvatar": {
-      "showStatus": "BOOLEAN",
-      "initials": "TEXT",
-      "shape": ["cutout", "round", "initials"]
-    },
-    "StatusDot": {
-      "status": ["present", "away", "offline"],
-      "variant": ["color", "mono"],
-      "size": ["xs", "sm", "default", "lg"]
-    },
-    "StickerAvatarCount": {
-      "count": "TEXT"
-    },
-    "VoiceMemo": {
-      "showTranscript": "BOOLEAN",
-      "side": ["right", "bottom"]
-    },
-    "VoiceMemoDevice": {
-      "wordmark": "TEXT",
-      "size": ["sm", "default"],
-      "recording": ["false", "true"],
-      "variant": ["default", "burgundy"]
-    },
-    "VoiceMemoTranscript": {
-      "transcript": "TEXT",
-      "state": ["listening", "done"]
-    },
-    "RadioGroupItem": {
-      "checked": ["false", "true"],
-      "state": ["default", "focused", "invalid", "disabled"]
-    },
-    "RadioGroup": {
-      "option1": "TEXT",
-      "option2": "TEXT",
-      "option3": "TEXT"
-    },
-    "Slider": {
-      "thumbs": ["one", "two"],
-      "state": ["default", "focused", "disabled"]
-    },
-    "Switch": {
-      "size": ["sm", "default"],
-      "checked": ["false", "true"],
-      "state": ["default", "focused", "disabled"]
-    },
-    "TableHead": {
-      "label": "TEXT"
-    },
-    "TableCell": {
-      "value": "TEXT",
-      "state": ["default", "hover", "selected"]
-    },
-    "Table": {
-      "showFooter": "BOOLEAN",
-      "showCaption": "BOOLEAN"
-    },
-    "Pagination": {
-      "showRange": "BOOLEAN",
-      "range": "TEXT",
-      "page": "TEXT",
-      "position": ["first", "middle", "last"]
-    },
-    "MenuItem": {
-      "label": "TEXT",
-      "showIcon": "BOOLEAN",
-      "icon": "INSTANCE_SWAP",
-      "showShortcut": "BOOLEAN",
-      "shortcut": "TEXT",
-      "variant": ["default", "destructive"],
-      "state": ["default", "highlighted", "disabled"]
-    },
-    "MenuCheckboxItem": {
-      "label": "TEXT",
-      "checked": ["false", "true"]
-    },
-    "MenuRadioItem": {
-      "label": "TEXT",
-      "checked": ["false", "true"]
-    },
-    "MenuSubTrigger": {
-      "label": "TEXT",
-      "state": ["default", "open"]
-    },
-    "MenuLabel": {
-      "label": "TEXT"
-    },
-    "MenuSeparator": {},
-    "Menu": {},
-    "Separator": {
-      "showLabel": "BOOLEAN",
-      "label": "TEXT",
-      "orientation": ["horizontal", "vertical"]
-    },
-    "Sheet": {
-      "title": "TEXT",
-      "description": "TEXT",
-      "showCloseButton": "BOOLEAN",
-      "showFooter": "BOOLEAN",
-      "side": ["top", "right", "bottom", "left"]
-    },
-    "Tooltip": {
-      "label": "TEXT"
-    },
-    "Progress": {
-      "showHeader": "BOOLEAN",
-      "label": "TEXT",
-      "value": "TEXT",
-      "type": ["circle", "bar"],
-      "size": ["xs", "sm", "default", "lg"],
-      "state": ["default", "indeterminate"]
-    },
-    "Skeleton": {},
-    "Toast": {
-      "showDescription": "BOOLEAN",
-      "showAction": "BOOLEAN",
-      "type": ["default", "success", "info", "warning", "error", "loading"]
-    },
-    "FilterMenu": {
-      "search": ["button", "inline"],
-      "view": ["fields", "values", "search"]
-    },
-    "FilterMenuRow": {
-      "label": "TEXT",
-      "showIcon": "BOOLEAN",
-      "icon": "INSTANCE_SWAP",
-      "count": "TEXT",
-      "kind": ["field", "option"],
-      "checked": ["false", "true"],
-      "state": ["default", "highlighted"]
-    },
-    "PixelSnail": {
-      "ground": "BOOLEAN",
-      "size": ["sm", "default", "lg"]
-    },
-    "EmptyState": {
-      "title": "TEXT",
-      "description": "TEXT",
-      "showMedia": "BOOLEAN",
-      "mediaSwap": "INSTANCE_SWAP",
-      "showDescription": "BOOLEAN",
-      "showActions": "BOOLEAN",
-      "size": ["sm", "default"]
-    },
-    "Field": {
-      "description": "TEXT",
-      "showDescription": "BOOLEAN",
+    "Attachment": {
+      "name": "TEXT",
+      "size": "TEXT",
+      "showSize": "BOOLEAN",
       "error": "TEXT",
-      "orientation": ["vertical", "horizontal"],
-      "state": ["default", "invalid", "disabled"]
+      "type": ["file", "image"],
+      "status": ["ready", "loading", "error"]
     },
     "CalendarDay": {
       "day": "TEXT",
@@ -759,6 +440,10 @@
       "mode": ["single", "range"],
       "size": ["default", "lg"]
     },
+    "Checkbox": {
+      "checked": ["unchecked", "checked", "indeterminate"],
+      "state": ["default", "focused", "invalid", "disabled"]
+    },
     "DatePickerTrigger": {
       "value": "TEXT",
       "size": ["sm", "default"],
@@ -767,12 +452,224 @@
     "DateRangePickerPanel": {},
     "DatePickerDrawer": {},
     "DateRangePickerDrawer": {},
+    "DropZone": {
+      "label": "TEXT",
+      "description": "TEXT",
+      "showDescription": "BOOLEAN"
+    },
+    "Field": {
+      "description": "TEXT",
+      "showDescription": "BOOLEAN",
+      "error": "TEXT",
+      "orientation": ["vertical", "horizontal"],
+      "state": ["default", "invalid", "disabled"]
+    },
+    "Input": {
+      "value": "TEXT",
+      "iconStart": "BOOLEAN",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "size": ["sm", "default"],
+      "state": ["default", "filled", "focused", "invalid", "disabled"]
+    },
+    "InputGroup": {
+      "value": "TEXT",
+      "startAddon": "BOOLEAN",
+      "startAddonSwap": "INSTANCE_SWAP",
+      "endAddon": "BOOLEAN",
+      "variant": ["default", "ghost"],
+      "size": ["sm", "default"],
+      "state": ["default", "focused", "invalid", "disabled"]
+    },
+    "Label": {
+      "text": "TEXT",
+      "state": ["default", "disabled"]
+    },
+    "RadioGroup": {
+      "option1": "TEXT",
+      "option2": "TEXT",
+      "option3": "TEXT"
+    },
+    "RadioGroupItem": {
+      "checked": ["false", "true"],
+      "state": ["default", "focused", "invalid", "disabled"]
+    },
     "RichTextEditor": {
       "toolbar": "BOOLEAN",
       "count": "BOOLEAN",
       "state": ["default", "focused", "invalid", "disabled", "read only"]
     },
     "RichTextEditorLinkRow": {},
+    "Select": {
+      "value": "TEXT",
+      "iconStart": "BOOLEAN",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "size": ["sm", "default"],
+      "state": ["default", "focused", "disabled"]
+    },
+    "Slider": {
+      "thumbs": ["one", "two"],
+      "state": ["default", "focused", "disabled"]
+    },
+    "Switch": {
+      "size": ["sm", "default"],
+      "checked": ["false", "true"],
+      "state": ["default", "focused", "disabled"]
+    },
+    "Textarea": {
+      "value": "TEXT",
+      "state": ["default", "filled", "focused", "invalid", "disabled"]
+    },
+    "Avatar": {
+      "initials": "TEXT",
+      "size": ["sm", "default", "lg"],
+      "type": ["image", "initials"]
+    },
+    "Badge": {
+      "label": "TEXT",
+      "variant": [
+        "default",
+        "secondary",
+        "destructive",
+        "outline",
+        "success",
+        "warning",
+        "info"
+      ]
+    },
+    "Count": {
+      "value": "TEXT"
+    },
+    "DataTable": {
+      "rows": "SLOT",
+      "cards": "SLOT",
+      "footer": "BOOLEAN",
+      "selection": ["none", "some", "page", "all matching"],
+      "width": ["narrow", "default"],
+      "narrowLayout": ["scroll", "cards"]
+    },
+    "DataTableHeaderCell": {
+      "label": "TEXT",
+      "type": ["primary", "text", "person", "status", "numeric", "actions"],
+      "pinned": ["none", "start", "end"]
+    },
+    "DataTableRow": {
+      "cells": "SLOT",
+      "state": ["default", "hover", "selected", "unselectable"]
+    },
+    "DataTableCell": {
+      "value": "TEXT",
+      "locked": "BOOLEAN",
+      "icon": "INSTANCE_SWAP",
+      "secondary": "BOOLEAN",
+      "secondaryText": "TEXT",
+      "rowActions": "SLOT",
+      "type": ["primary", "text", "person", "status", "numeric", "actions"],
+      "pinned": ["none", "start", "end"]
+    },
+    "DataTableCard": {
+      "fields": "SLOT",
+      "title": "TEXT",
+      "locked": "BOOLEAN",
+      "status": "BOOLEAN",
+      "state": ["default", "selected", "unselectable"]
+    },
+    "DataTableCardField": {
+      "label": "TEXT",
+      "value": "TEXT"
+    },
+    "DataTableFiltersSheet": {
+      "controls": "SLOT"
+    },
+    "_DataTableToolbar": {
+      "actions": "SLOT",
+      "title": "TEXT",
+      "count": "TEXT",
+      "selectedLabel": "TEXT",
+      "selectAllMatching": "BOOLEAN",
+      "showTitle": "BOOLEAN",
+      "filters": "SLOT",
+      "selectAll": "BOOLEAN",
+      "clear": "BOOLEAN",
+      "selectedOnly": "BOOLEAN",
+      "state": ["idle", "selecting"],
+      "width": ["default", "narrow"]
+    },
+    "_DataTableHeaderRow": {
+      "columns": "SLOT",
+      "selection": ["none", "some", "all"]
+    },
+    "_DataTableBulkActions": {
+      "moreActions": "BOOLEAN",
+      "delete": "BOOLEAN",
+      "customActions": "SLOT",
+      "pattern": [
+        "delete only",
+        "export",
+        "set field",
+        "several",
+        "one item",
+        "one item (2+ selected)",
+        "custom",
+        "review"
+      ],
+      "width": ["default", "narrow"]
+    },
+    "_DataTableFooter": {
+      "range": "TEXT",
+      "page": "TEXT",
+      "count": "TEXT",
+      "pages": "BOOLEAN",
+      "content": ["pagination", "selection count"]
+    },
+    "DataTableSkeletonCell": {
+      "type": ["primary", "text", "person", "status", "numeric", "actions"]
+    },
+    "DataTableSkeletonCard": {},
+    "Kbd": {
+      "label": "TEXT"
+    },
+    "MessageListMessage": {
+      "author": "TEXT",
+      "time": "TEXT",
+      "body": "TEXT",
+      "reply": "BOOLEAN",
+      "reply author": "TEXT",
+      "reply text": "TEXT",
+      "show time": "BOOLEAN",
+      "type": ["first", "continuation", "system", "deleted"]
+    },
+    "MessageListDivider": {
+      "label": "TEXT",
+      "show label": "BOOLEAN",
+      "unread": ["false", "true"]
+    },
+    "Separator": {
+      "showLabel": "BOOLEAN",
+      "label": "TEXT",
+      "orientation": ["horizontal", "vertical"]
+    },
+    "StatusDot": {
+      "status": ["present", "away", "offline"],
+      "variant": ["color", "mono"],
+      "size": ["xs", "sm", "default", "lg"]
+    },
+    "Table": {
+      "showFooter": "BOOLEAN",
+      "showCaption": "BOOLEAN"
+    },
+    "TableHead": {
+      "label": "TEXT"
+    },
+    "TableCell": {
+      "value": "TEXT",
+      "state": ["default", "hover", "selected"]
+    },
+    "Pagination": {
+      "showRange": "BOOLEAN",
+      "range": "TEXT",
+      "page": "TEXT",
+      "position": ["first", "middle", "last"]
+    },
     "TabsTrigger": {
       "label": "TEXT",
       "icon": "BOOLEAN",
@@ -785,6 +682,134 @@
       "variant": ["default", "line"],
       "size": ["sm", "default"],
       "orientation": ["horizontal", "vertical"]
+    },
+    "SideNavigationBadge": {
+      "type": ["count", "dot"],
+      "tone": ["default", "emphasis"]
+    },
+    "SideNavigationItem": {
+      "label": "TEXT",
+      "showBadge": "BOOLEAN",
+      "trailing": "SLOT",
+      "iconStart": "BOOLEAN",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "state": ["default", "hover", "current", "focus"],
+      "collapsed": ["false", "true"]
+    },
+    "SideNavigationSubitem": {
+      "label": "TEXT",
+      "showBadge": "BOOLEAN",
+      "trailing": "SLOT",
+      "state": ["default", "hover", "current", "focus"]
+    },
+    "SideNavigationGroupLabel": {
+      "label": "TEXT",
+      "collapsed": ["false", "true"]
+    },
+    "SideNavigationInset": {
+      "content": "SLOT"
+    },
+    "SideNavigationGroup": {
+      "label": "TEXT",
+      "iconStart": "BOOLEAN",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "items": "SLOT",
+      "open": ["false", "true"],
+      "containsCurrent": ["false", "true"],
+      "state": ["default", "hover", "focus"],
+      "collapsed": ["false", "true"]
+    },
+    "SideNavigationTrigger": {},
+    "SideNavigationHeader": {
+      "name": "TEXT",
+      "initials": "TEXT",
+      "showClose": "BOOLEAN",
+      "showSwitcher": "BOOLEAN",
+      "collapsed": ["false", "true"]
+    },
+    "SideNavigationUser": {
+      "name": "TEXT",
+      "email": "TEXT",
+      "showEmail": "BOOLEAN",
+      "collapsed": ["false", "true"]
+    },
+    "SideNavigation": {
+      "header": "SLOT",
+      "content": "SLOT",
+      "footer": "SLOT",
+      "showTrigger": "BOOLEAN",
+      "variant": ["default", "inset"],
+      "collapsed": ["false", "true"]
+    },
+    "SideNavigationCallout": {
+      "title": "TEXT",
+      "description": "TEXT",
+      "showAction": "BOOLEAN",
+      "showDismiss": "BOOLEAN"
+    },
+    "Menu": {},
+    "MenuItem": {
+      "label": "TEXT",
+      "showIcon": "BOOLEAN",
+      "icon": "INSTANCE_SWAP",
+      "showShortcut": "BOOLEAN",
+      "shortcut": "TEXT",
+      "variant": ["default", "destructive"],
+      "state": ["default", "highlighted", "disabled"]
+    },
+    "MenuCheckboxItem": {
+      "label": "TEXT",
+      "checked": ["false", "true"]
+    },
+    "MenuRadioItem": {
+      "label": "TEXT",
+      "checked": ["false", "true"]
+    },
+    "MenuSubTrigger": {
+      "label": "TEXT",
+      "state": ["default", "open"]
+    },
+    "MenuLabel": {
+      "label": "TEXT"
+    },
+    "MenuSeparator": {},
+    "Sheet": {
+      "title": "TEXT",
+      "description": "TEXT",
+      "showCloseButton": "BOOLEAN",
+      "showFooter": "BOOLEAN",
+      "side": ["top", "right", "bottom", "left"]
+    },
+    "Tooltip": {
+      "label": "TEXT"
+    },
+    "EmptyState": {
+      "title": "TEXT",
+      "description": "TEXT",
+      "showMedia": "BOOLEAN",
+      "mediaSwap": "INSTANCE_SWAP",
+      "showDescription": "BOOLEAN",
+      "showActions": "BOOLEAN",
+      "size": ["sm", "default"]
+    },
+    "Progress": {
+      "showHeader": "BOOLEAN",
+      "label": "TEXT",
+      "value": "TEXT",
+      "type": ["circle", "bar"],
+      "size": ["xs", "sm", "default", "lg"],
+      "state": ["default", "indeterminate"]
+    },
+    "Skeleton": {},
+    "Toast": {
+      "showDescription": "BOOLEAN",
+      "showAction": "BOOLEAN",
+      "type": ["default", "success", "info", "warning", "error", "loading"]
+    },
+    "TypingIndicator": {
+      "text": "TEXT",
+      "icon": "INSTANCE_SWAP",
+      "indicator": ["dots", "custom"]
     },
     "AnnotatedText": {
       "text": "TEXT",
@@ -805,6 +830,200 @@
       "label": "TEXT",
       "showIcon": "BOOLEAN",
       "icon": "INSTANCE_SWAP"
+    },
+    "ChapterScrubber": {
+      "orientation": ["vertical", "horizontal"],
+      "variant": ["tick", "dot"],
+      "state": ["rest", "scrubbing"]
+    },
+    "ChapterScrubberPreview": {
+      "meta": "TEXT",
+      "title": "TEXT",
+      "description": "TEXT",
+      "showMeta": "BOOLEAN",
+      "preview": ["card", "label"]
+    },
+    "_ChatComposerHeaderContext": {
+      "label": "TEXT",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "iconStart": "BOOLEAN"
+    },
+    "_ChatComposerCommonActions": {
+      "actions": "SLOT"
+    },
+    "ChatComposerFrame": {
+      "showFooter": "BOOLEAN",
+      "header": "SLOT",
+      "showHeader": "BOOLEAN",
+      "footer": "SLOT",
+      "placeholder": "TEXT",
+      "value": "TEXT",
+      "state": ["default", "focused", "disabled"],
+      "draft": ["empty", "filled"]
+    },
+    "_ChatComposerSuggestedReply": {
+      "label": "TEXT"
+    },
+    "ChatComposerFrame/Minimal": {
+      "placeholder": "TEXT",
+      "value": "TEXT",
+      "state": ["default", "focused", "disabled"],
+      "draft": ["empty", "filled"]
+    },
+    "_ChatComposerActionsSheet": {
+      "actions": "SLOT"
+    },
+    "ChatComposerHeader/Edit": {},
+    "ChatComposerHeader/Reply": {},
+    "ChatComposerHeader/Attachments": {
+      "attachments": "SLOT"
+    },
+    "ChatComposerHeader/SuggestedReplies": {
+      "replies": "SLOT"
+    },
+    "ChatComposerFooter/Message": {
+      "showActions": "BOOLEAN"
+    },
+    "ChatComposerFooter/Edit": {
+      "showHint": "BOOLEAN"
+    },
+    "ChatComposerFooter/ThreadReply": {
+      "checkboxLabel": "TEXT"
+    },
+    "ChatComposerFooter/SendOnly": {},
+    "ChatComposerFooter/Touch": {},
+    "CommandMenu": {
+      "hints": "BOOLEAN",
+      "variant": ["default", "inset"],
+      "view": ["home", "results", "page"],
+      "preview": ["false", "true"]
+    },
+    "CommandMenuItem": {
+      "label": "TEXT",
+      "iconStart": "BOOLEAN",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "showContext": "BOOLEAN",
+      "context": "TEXT",
+      "shortcut": "BOOLEAN",
+      "opensPage": "BOOLEAN",
+      "slotContent": "SLOT",
+      "showSlot": "BOOLEAN",
+      "state": ["default", "highlighted", "disabled"]
+    },
+    "FloatingNav": {
+      "labels": ["active", "always"],
+      "size": ["sm", "default"],
+      "variant": ["default", "glass"]
+    },
+    "FloatingNavItem": {
+      "label": "TEXT",
+      "icon": "INSTANCE_SWAP",
+      "type": ["icon", "text"],
+      "labels": ["active", "always"],
+      "size": ["sm", "default"],
+      "state": ["default", "current"],
+      "variant": ["default", "glass"]
+    },
+    "FloatingToolbarButton": {
+      "label": "TEXT",
+      "iconStart": "BOOLEAN",
+      "iconStartSwap": "INSTANCE_SWAP",
+      "type": ["icon", "text"],
+      "state": ["default", "hover", "pressed", "focus", "disabled"],
+      "variant": ["default", "destructive"]
+    },
+    "FloatingToolbarSelection": {
+      "count": "TEXT",
+      "showClear": "BOOLEAN"
+    },
+    "FloatingToolbar": {
+      "start": "SLOT",
+      "actions": "SLOT",
+      "showStart": "BOOLEAN"
+    },
+    "FilterMenu": {
+      "search": ["button", "inline"],
+      "view": ["fields", "values", "search"]
+    },
+    "FilterMenuRow": {
+      "label": "TEXT",
+      "showIcon": "BOOLEAN",
+      "icon": "INSTANCE_SWAP",
+      "count": "TEXT",
+      "kind": ["field", "option"],
+      "checked": ["false", "true"],
+      "state": ["default", "highlighted"]
+    },
+    "IntegrationVisual": {
+      "layout": ["corners", "orbit", "sides"]
+    },
+    "IntegrationVisualHub": {
+      "icon": "INSTANCE_SWAP",
+      "text": "TEXT",
+      "content": ["icon", "text"]
+    },
+    "IntegrationVisualTile": {
+      "icon": "INSTANCE_SWAP",
+      "status": ["active", "idle"]
+    },
+    "MapPin": {
+      "label": "TEXT",
+      "showIcon": "BOOLEAN",
+      "icon": "INSTANCE_SWAP",
+      "type": ["dot", "icon", "label"],
+      "variant": ["default", "success", "warning", "info", "destructive"],
+      "size": ["sm", "default"],
+      "state": ["rest", "open"]
+    },
+    "MapPinPreview": {
+      "showImage": "BOOLEAN",
+      "showMeta": "BOOLEAN",
+      "meta": "TEXT",
+      "title": "TEXT",
+      "description": "TEXT",
+      "showContent": "BOOLEAN"
+    },
+    "PixelSnail": {
+      "ground": "BOOLEAN",
+      "size": ["sm", "default", "lg"]
+    },
+    "ReactionsPill": {
+      "emoji": "TEXT",
+      "count": "TEXT",
+      "state": ["default", "hover", "active"]
+    },
+    "ReactionsTrigger": {
+      "type": ["inline", "floating"],
+      "state": ["default", "hover", "open"]
+    },
+    "ReactionsPanel": {},
+    "StickerAvatar": {
+      "showStatus": "BOOLEAN",
+      "initials": "TEXT",
+      "shape": ["cutout", "round", "initials"]
+    },
+    "StickerAvatarCount": {
+      "count": "TEXT"
+    },
+    "TokenFlow": {
+      "showUse": ["false", "true"]
+    },
+    "TokenFlowChip": {
+      "label": "TEXT"
+    },
+    "VoiceMemo": {
+      "showTranscript": "BOOLEAN",
+      "side": ["right", "bottom"]
+    },
+    "VoiceMemoDevice": {
+      "wordmark": "TEXT",
+      "size": ["sm", "default"],
+      "recording": ["false", "true"],
+      "variant": ["default", "burgundy"]
+    },
+    "VoiceMemoTranscript": {
+      "transcript": "TEXT",
+      "state": ["listening", "done"]
     }
   }
 }
