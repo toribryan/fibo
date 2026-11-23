@@ -31,7 +31,10 @@
     "DatePickerTrigger.size": "A real prop, typed FieldSize from lib/field-size.ts (sm, default), which the drift parser can't resolve across files.",
     "Tabs.orientation": "Base UI's Tabs orientation prop, passed through rather than declared in tabs.tsx.",
     "ChatComposerFrame.draft": "Code reads empty or filled from the draft itself; designers pick it by hand.",
-    "ChatComposerFrame/Minimal.draft": "Code reads empty or filled from the draft itself; designers pick it by hand."
+    "ChatComposerFrame/Minimal.draft": "Code reads empty or filled from the draft itself; designers pick it by hand.",
+    "SearchInput.size": "A real prop, typed FieldSize from lib/field-size.ts (sm, default), which the drift parser can't resolve across files.",
+    "SearchTrigger.size": "A real prop, typed FieldSize from lib/field-size.ts (sm, default), which the drift parser can't resolve across files.",
+    "AlertDialog.size": "A real prop, taken from dialogContentVariants in dialog.tsx (sm, default, lg), which the drift parser can't resolve across files."
   },
   "codeOnlyProps": {
     "input-group.align": "InputGroupAddon's align, inline-start or inline-end; Figma turns each side on with startAddon and endAddon instead.",
@@ -40,7 +43,8 @@
   },
   "componentFiles": {
     "DateRangePickerPanel": "date-picker",
-    "DateRangePickerDrawer": "date-picker"
+    "DateRangePickerDrawer": "date-picker",
+    "SearchTrigger": "search-input"
   },
   "codeOnlyComponents": {
     "count": "Count is figures in text, styled by the part it sits in; in Figma it is typed into that part's text layer, such as 99+ or +4."

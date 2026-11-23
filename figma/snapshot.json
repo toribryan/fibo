@@ -499,6 +499,17 @@
       "state": ["default", "focused", "invalid", "disabled", "read only"]
     },
     "RichTextEditorLinkRow": {},
+    "SearchInput": {
+      "value": "TEXT",
+      "showShortcut": "BOOLEAN",
+      "variant": ["default", "ghost"],
+      "size": ["sm", "default"],
+      "state": ["default", "filled", "focused", "disabled"]
+    },
+    "SearchTrigger": {
+      "showShortcut": "BOOLEAN",
+      "size": ["sm", "default"]
+    },
     "Select": {
       "value": "TEXT",
       "iconStart": "BOOLEAN",
@@ -746,6 +757,21 @@
       "description": "TEXT",
       "showAction": "BOOLEAN",
       "showDismiss": "BOOLEAN"
+    },
+    "AlertDialog": {
+      "title": "TEXT",
+      "description": "TEXT",
+      "footer": "SLOT",
+      "size": ["sm", "default", "lg"]
+    },
+    "Dialog": {
+      "title": "TEXT",
+      "description": "TEXT",
+      "showCloseButton": "BOOLEAN",
+      "showFooter": "BOOLEAN",
+      "body": "SLOT",
+      "footer": "SLOT",
+      "size": ["sm", "default", "lg"]
     },
     "Menu": {},
     "MenuItem": {
