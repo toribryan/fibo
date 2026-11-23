@@ -1,0 +1,89 @@
+---
+title: Slots
+description: Who owns accessibility when a part takes content it doesn't control.
+---
+
+import { Tip } from "@workspace/docs-blocks/guidelines"
+
+A slot is any place a part renders content it doesn't own: the children of a
+compound part, the Base UI `render` prop, and Figma slot properties such as
+Chat composer `header` and `footer`. The part owns the structure around the
+slot. Whoever fills the slot owns what the content means.
+
+| The part owns                                                                | The content owns                             |
+| ---------------------------------------------------------------------------- | -------------------------------------------- |
+| The container's role (`dialog`, `listbox`, `tablist`)                        | The meaning of what's inside                 |
+| IDs that link parts (`aria-labelledby`, `aria-describedby`, `aria-controls`) | A name for anything icon-only                |
+| Keyboard behavior and focus                                                  | The heading level, which depends on the page |
+| State (`aria-expanded`, `aria-selected`, `data-state`)                       | Not putting a control inside another control |
+
+## Building a part with slots
+
+1. **Link parts through parts, not `ReactNode` props.** A `title` prop that
+   takes any node can't be named by the dialog. A `DialogTitle` part can,
+   because Base UI gives it the ID the popup points `aria-labelledby` at.
+   If a slot needs to be referenced, make it a part and pass the ID through
+   context.
+2. **Test required parts.** If the part has no name without its title or
+   label part, its `Default` story's `play` function asserts the accessible
+   name, so dropping the part fails CI.
+3. **Hide decorative icons.** An icon placed beside text gets
+   `aria-hidden`. The text next to it is the name.
+4. **Don't fix the heading level.** A part can't know where it sits in the
+   page outline. Take the heading element through `render`, or render a
+   `div` and let the page supply the heading.
+5. **Render slots in reading order.** Focus and screen reader order follow the
+   DOM. Don't move a slot visually with `order` or `flex-direction: row-reverse`.
+6. **Give repeated content list semantics.** If a slot holds a set of items, the
+   part renders the `ul` and `li` (or `role="list"`), so the consumer doesn't
+   have to remember.
+7. **Keep controls out of controls.** A part that is a link or button can't have
+   a slot that takes buttons. Put the action slot next to the link in the DOM
+   and stretch the link over the part with `::after`.
+8. **Document the slot.** The part's Accessibility section says, per slot, what
+   the part handles and what the content has to supply.
+
+## Filling a slot
+
+- **`render` needs a real control.** Base UI merges the part's role, ARIA
+  attributes, ref and handlers into the element you pass. A `div`, or a
+  component that doesn't forward `ref` and spread props, drops focus and
+  keyboard handling without an error.
+
+  ```tsx
+  <DialogTrigger render={<Button variant="outline" />}>Edit</DialogTrigger>
+  ```
+
+- **Name icon-only content.** An icon button in a slot needs an `aria-label`
+  written as the action. See [Naming](/docs/foundations/accessibility#naming).
+- **Use the slot for its job.** Chat composer `header` is for context above the
+  input (Attachment, Suggested reply), not for controls that belong in `footer`.
+  Tab order runs header, input, footer.
+
+<Tip>
+  If content in a slot needs `aria-labelledby` pointing outside the slot, the
+  slot is probably the wrong shape. Ask for a part instead.
+</Tip>
+
+## In Figma
+
+Figma slots carry no accessibility data, so the contract lives in the slot's
+setup and description.
+
+- **Limit what fits.** Set preferred values on every slot, and use
+  `allowPreferredValuesOnly` when only certain parts are valid, as Side
+  navigation group does for `items`.
+- **Name slots after code.** A slot's name matches the code part or prop it
+  becomes (`header`, `footer`, `trailing`), so handoff points at the part that
+  does the wiring.
+- **Write the contract in the description.** One line per slot: what it
+  accepts and whether that content needs a name.
+
+## Testing
+
+- Every slot configuration shown in the docs has a story, so axe runs on it,
+  not only on the default.
+- A slot that changes focus order or adds a control gets keyboard steps in a
+  `play` function.
+- Screen reader output for filled slots isn't covered by CI. Check complex
+  parts such as Chat composer and Data table by hand with VoiceOver.
