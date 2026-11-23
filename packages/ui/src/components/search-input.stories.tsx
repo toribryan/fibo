@@ -10,7 +10,6 @@ import { SearchInput, SearchTrigger } from "./search-input.js"
 const meta: Meta<typeof SearchInput> = {
   title: "Base components/Forms/Search input",
   component: SearchInput,
-  tags: ["new"],
   argTypes: {
     variant: { control: "inline-radio", options: ["default", "ghost"] },
     size: { control: "inline-radio", options: ["sm", "default"] },

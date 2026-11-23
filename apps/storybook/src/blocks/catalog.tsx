@@ -7,6 +7,7 @@ import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronsUpDownIcon,
   CircleCheckIcon,
   CompassIcon,
   HouseIcon,
@@ -408,6 +409,16 @@ const PREVIEWS: Record<string, ReactNode> = {
         </span>
       ))}
     </div>
+  ),
+  breadcrumb: (
+    <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+      Databases
+      <ChevronRightIcon className="size-3.5" />
+      <span className="flex h-7 items-center gap-1.5 rounded-4xl bg-muted px-2 font-medium text-foreground">
+        Orion
+        <ChevronsUpDownIcon className="size-3.5 text-muted-foreground" />
+      </span>
+    </span>
   ),
   pagination: (
     <div className="flex items-center gap-1 text-sm">

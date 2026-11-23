@@ -1,0 +1,150 @@
+---
+title: Breadcrumb
+description: Shows where a page sits in the app, with a segment that opens a menu to switch between siblings.
+---
+
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@workspace/ui/components/breadcrumb"
+import {
+  ComponentRules,
+  UsageGuidelines,
+} from "@workspace/docs-blocks/guidelines"
+import { Install } from "@workspace/docs-blocks/install"
+import { BreadcrumbMenuDemo } from "@/components/demos/breadcrumb"
+
+<Preview>
+  <BreadcrumbMenuDemo />
+</Preview>
+
+## When to use it
+
+Use Breadcrumb at the top of a page more than two levels deep, so people see
+where they are and can step back up. When people often move between
+siblings, such as databases or projects, make that level a
+`BreadcrumbMenuTrigger` inside a Menu, labeled with the current choice.
+
+## Installation
+
+<Install
+  name="breadcrumb"
+  exports={[
+    "Breadcrumb",
+    "BreadcrumbList",
+    "BreadcrumbItem",
+    "BreadcrumbLink",
+    "BreadcrumbPage",
+    "BreadcrumbSeparator",
+    "BreadcrumbEllipsis",
+    "BreadcrumbMenuTrigger",
+  ]}
+/>
+
+Also installs Menu.
+
+## Links
+
+A plain trail that ends on the current page. `BreadcrumbLink` takes `render`,
+so a router's link keeps the styles.
+
+<Preview>
+  <Breadcrumb>
+    <BreadcrumbList>
+      <BreadcrumbItem>
+        <BreadcrumbLink href="#">Home</BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbLink href="#">Components</BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+      </BreadcrumbItem>
+    </BreadcrumbList>
+  </Breadcrumb>
+</Preview>
+
+## Collapsed
+
+An ellipsis stands in for levels left out of a deep trail.
+
+<Preview>
+  <Breadcrumb>
+    <BreadcrumbList>
+      <BreadcrumbItem>
+        <BreadcrumbLink href="#">Home</BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbEllipsis />
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbLink href="#">Navigation</BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+      </BreadcrumbItem>
+    </BreadcrumbList>
+  </Breadcrumb>
+</Preview>
+
+## Guidelines
+
+<UsageGuidelines
+  guidelines={[
+    "Put it at the top of the page, above the title.",
+    "Start from the highest level people navigate from, not the site's home, when the app has one.",
+    "Use one menu segment per trail, on the level people switch most: a database, a project, a workspace.",
+    "Keep segment names short; long ones truncate.",
+    "Collapse the middle of a trail deeper than four levels with an ellipsis.",
+  ]}
+/>
+
+## Do's and don'ts
+
+<ComponentRules
+  rules={[
+    {
+      positive: {
+        component: (
+          <span className="text-sm text-muted-foreground">
+            Databases <span aria-hidden="true">›</span>{" "}
+            <span className="font-medium text-foreground">Orion</span>
+          </span>
+        ),
+        description: "Label the menu segment with the current choice.",
+      },
+      negative: {
+        component: (
+          <span className="text-sm text-muted-foreground">
+            Databases <span aria-hidden="true">›</span>{" "}
+            <span className="font-medium text-foreground">Select database</span>
+          </span>
+        ),
+        description:
+          "Don't label it with an instruction; the trail stops saying where you are.",
+      },
+    },
+  ]}
+/>
+
+## Accessibility
+
+- The root is a nav named "Breadcrumb". Pass `aria-label` to rename it.
+- The levels are an ordered list; separators are hidden from screen readers.
+- `BreadcrumbPage` carries `aria-current="page"`.
+- The ellipsis reads as "More pages". Make it a menu trigger if people need to
+  reach the hidden levels.
+- The menu trigger is a button named by its label, announced as having a
+  menu. If you add `aria-label`, keep the visible label in it.
+
+<StorybookLink id="base-components-navigation-breadcrumb" name="Breadcrumb" />
