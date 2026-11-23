@@ -270,6 +270,18 @@ const fileFor = (name) =>
     : ([...files]
         .filter((file) => name.startsWith(`${file}-`))
         .sort((a, b) => b.length - a.length)[0] ?? name)
+// A Figma slot is named after the part it becomes (Dialog `footer` is
+// DialogFooter, data-slot="dialog-footer") or the prop that takes it, so
+// handoff points at the code that wires it up.
+function slotInCode(file, name, slot) {
+  const source = readFileSync(file, "utf8")
+  const part = kebab(slot)
+  return (
+    source.includes(`data-slot="${name}-${part}"`) ||
+    source.includes(`data-slot="${part}"`) ||
+    new RegExp(`\\b${slot}\\??:`).test(source)
+  )
+}
 // A file can back several Figma components (Integration visual, tile, hub),
 // so the props Figma covers are pooled per file.
 const seenByFile = new Map()
@@ -288,6 +300,18 @@ for (const [component, properties] of Object.entries(snapshot.components)) {
   const { seen } = seenByFile.get(name)
 
   for (const [prop, definition] of Object.entries(properties)) {
+    if (definition === "SLOT") {
+      const key = `${component}.${prop}`
+      if (!config.figmaOnlySlots[key] && !slotInCode(file, name, prop)) {
+        add(
+          "warn",
+          "components",
+          key,
+          `Figma slot with no ${name}.tsx part or prop of that name`
+        )
+      }
+      continue
+    }
     if (!Array.isArray(definition)) continue
     const key = `${component}.${prop}`
     if (config.ignoredProps.includes(prop) || config.figmaOnlyProps[key]) {

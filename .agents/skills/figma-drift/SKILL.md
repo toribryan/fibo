@@ -88,6 +88,11 @@ What it compares, and how:
   cva variant with no property, is a warning. `state` is ignored, since
   hover, focus and disabled are CSS states in code. Components on one side
   only are notes.
+- **Slots.** A Figma slot is named after the part it becomes or the prop
+  that takes it, so Dialog `footer` passes on `data-slot="dialog-footer"`.
+  A slot that is a part's children in code (Menu `items`) is listed in
+  `figmaOnlySlots` with a reason. A slot with neither is a warning, since
+  designers can fill it with something code can't render.
 - **Conventions.** Every `size` option, in code and in Figma, comes from
   `xs`, `sm`, `default`, `lg`, `xl` or `icon-<step>`, listed smallest
   first. Off-scale names and out-of-order options are errors on both sides.
