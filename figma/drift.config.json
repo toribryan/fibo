@@ -41,6 +41,18 @@
     "reactions.position": "Which viewport corner the floating bar pins to; Figma shows the bar on its own.",
     "annotated-text.tone": "Figma keeps tone out of the variant set so it stays at ten marks rather than sixty; designers bind the mark's stroke to the tone token (foreground, muted-foreground or a status icon token) instead."
   },
+  "figmaOnlySlots": {
+    "Field.control": "The control is a child of Field in code, with no wrapping part; the slot is where that child goes.",
+    "InputGroup.endAddon": "The children of InputGroupAddon with align inline-end; one addon part serves both sides, so the slot is named for its side.",
+    "RadioGroup.items": "RadioGroup children in code, each a RadioGroupItem in a FieldItem.",
+    "TableRow.cells": "TableRow children in code, one TableCell per column.",
+    "Menu.items": "MenuContent children in code: MenuItem, MenuCheckboxItem, MenuRadioItem, MenuSubTrigger, MenuLabel and MenuSeparator.",
+    "DataTableRow.cells": "Code renders cells from column definitions; the slot holds the cells a designer would get from those columns.",
+    "DataTableCell.rowActions": "The row actions column renders the buttons passed in the column definition, not a part.",
+    "DataTableCard.fields": "Code renders card fields from column definitions on narrow screens.",
+    "DataTableFiltersSheet.controls": "The filter controls are FilterMenu fields rendered in a Sheet on narrow screens, not a named part.",
+    "ChatComposerHeader/SuggestedReplies.replies": "A Figma-only composition; each reply is a ChatComposerSuggestedReply part."
+  },
   "componentFiles": {
     "DateRangePickerPanel": "date-picker",
     "DateRangePickerDrawer": "date-picker",
