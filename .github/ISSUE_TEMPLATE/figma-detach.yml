@@ -1,0 +1,32 @@
+name: Figma detach
+description: Tell us why you detached a component in the Figma library.
+labels: [figma detach]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      placeholder: Menu
+    validations:
+      required: true
+  - type: dropdown
+    id: reason
+    attributes:
+      label: Why did you detach it
+      options:
+        - I needed content the component doesn't take
+        - I needed a layout it doesn't have (direction, spacing, size)
+        - A property or slot didn't do what I expected
+        - It looked wrong (a bug)
+        - It was faster than finding the right setting
+        - It's meant to be detached (a template or example)
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: What did you change after detaching
+      description: A link to the frame or a screenshot helps most.
+    validations:
+      required: true

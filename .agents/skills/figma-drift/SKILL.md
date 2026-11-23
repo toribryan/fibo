@@ -137,3 +137,15 @@ the person's go-ahead. A token is changed in Figma, then synced.
 Group by severity, then area. For each finding: what differs, which side
 moved, and the change you propose, with the file or Figma page it touches.
 End with one line: in sync, or the number of errors and warnings left.
+
+## Detach audit
+
+Separate from the drift check, and run monthly (`plans/019-figma-adoption.md`).
+In one message, one `use_figma` call per page running
+[`audit-detaches.js`](audit-detaches.js) with its `PAGE_ID`, on the library
+or on a file that uses it. It is read-only and returns detached frames
+grouped by the component they came from, with up to three node ids each.
+Compare with the baseline in plan 019, open the listed nodes to see what was
+changed after detaching, and read new issues labelled `figma detach`. Report
+which components need a slot, variant or property, and which detaches were
+right; don't change the library without the person's go-ahead.
