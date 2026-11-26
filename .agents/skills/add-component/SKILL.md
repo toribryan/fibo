@@ -40,7 +40,13 @@ If unsure, it is a base component.
 - Motion: respect `prefers-reduced-motion`, and keep continuous animation
   off unless it is the point of the part.
 - Accessibility: keyboard reachable, visible `focus-visible` ring
-  (`ring-[3px] ring-ring-subtle`), names on icon-only controls.
+  (`ring-[3px] ring-ring-subtle`), names on icon-only controls, and the
+  rest of the list under Accessibility in `AGENTS.md`.
+- Put the ref and spread props on the focusable element, `className` on the
+  root. Don't name a prop after a native attribute it would hide (`type` on
+  a button, `size` on an input without `Omit`).
+- A one-piece field (`TextField`) is built only from the composed parts and
+  passes its other props to the control. See `plans/018-field-components.md`.
 - Sizes come from the shared scale (`xs`, `sm`, `default`, `lg`, `xl`,
   `icon-<step>`), listed smallest first. Name a visual style `variant` and a
   structural kind `type`, and match the Figma property's name and options.
@@ -74,9 +80,13 @@ If unsure, it is a base component.
   `storybook/test` that drives it by pointer and by keyboard and asserts the
   result (`aria-pressed`, focus, callbacks through `fn()` args). Never import
   from `vitest` in a story file.
+- Interactive parts also get `Disabled` and `Focused` stories (`Focused`
+  presses Tab in its `play`, so Chromatic snapshots the ring), plus
+  `Invalid` and `Loading` where the part has those states.
 - A story without a visible label names the part with `aria-label` in its
   args. Every story is checked with axe and fails on a violation.
-- Put logic a story cannot show (formatting, limits, controlled callbacks) in
+- Put logic a story cannot show (formatting, limits, controlled callbacks,
+  the ARIA an interactive part promises) in
   `<name>.test.tsx` next to the component, using `vitest-browser-react`. Model:
   `reactions.test.tsx`.
 

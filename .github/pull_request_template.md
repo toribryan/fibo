@@ -7,4 +7,5 @@
 - [ ] `pnpm format:check`, `pnpm lint`, `pnpm build` and `pnpm typecheck` pass
 - [ ] Checked in Storybook in light and dark, by keyboard, and with reduced motion
 - [ ] New or changed components have stories, a docs page and a `components.meta.json` entry
+- [ ] Interactive parts have `Default` (with `play`), `Disabled` and `Focused` stories, and `Invalid` or `Loading` where they apply
 - [ ] Added a `changes/*.md` entry if users would notice, or labeled the PR `no changelog`
